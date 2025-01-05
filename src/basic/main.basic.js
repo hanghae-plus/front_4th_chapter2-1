@@ -1,14 +1,13 @@
+import { ID_BY_COMPONENT, CURRENCY } from "./const";
+
 import {
-  CURRENCY,
-  DISC_DAY_OF_THE_WEEK,
   DISC_INITIAL_BUFFERS,
   DISC_INTERVALS,
-  DISC_MSG,
-  DISC_PROB,
   DISC_RATES,
-  ID_BY_COMPONENT,
+  DISC_DAY_OF_THE_WEEK,
   ITEM_DISC_MIN_QTY,
-} from "./const";
+  discountAlertProcessor,
+} from "./utils";
 
 const productList = [
   { id: "p1", name: "상품1", val: 10000, qty: 50 },
@@ -58,7 +57,7 @@ function main() {
   stockInfo.id = ID_BY_COMPONENT.STOCK_INFO_ID;
   stockInfo.className = "text-sm text-gray-500 mt-2";
 
-  updateSelOpts();
+  updateSelectOpts();
 
   wrap.appendChild(wrapTitle);
   wrap.appendChild(cart);
@@ -71,47 +70,38 @@ function main() {
 
   calcCart();
 
+  setLuckyDiscAlert();
+  setAdditionalDiscAlert();
+}
+
+const setLuckyDiscAlert = () => {
   setTimeout(function () {
     setInterval(function () {
       const luckyItem =
         productList[Math.floor(Math.random() * productList.length)];
-      if (Math.random() < DISC_PROB.LUCKY_DISC && luckyItem.qty > 0) {
-        luckyItem.val = Math.round(luckyItem.val * (1 - DISC_RATES.LUCKY_DISC));
-        alert(DISC_MSG.LUCKY_DISC(luckyItem.name, DISC_RATES.LUCKY_DISC * 100));
-        updateSelOpts();
-      }
+      discountAlertProcessor(luckyItem, "LUCKY_DISC");
     }, DISC_INTERVALS.LUCKY_DISC);
   }, Math.random() * DISC_INITIAL_BUFFERS.LUCKY_DISC);
+};
 
+const setAdditionalDiscAlert = () => {
   setTimeout(function () {
     setInterval(function () {
-      if (lastSel) {
-        const suggest = productList.find(function (item) {
-          return item.id !== lastSel && item.qty > 0;
-        });
-        if (suggest) {
-          alert(
-            DISC_MSG.ADDITIONAL_DISC(
-              suggest.name,
-              DISC_RATES.ADDITIONAL_DISC * 100,
-            ),
-          );
-          suggest.val = Math.round(
-            suggest.val * (1 - DISC_RATES.ADDITIONAL_DISC),
-          );
-          updateSelOpts();
-        }
-      }
+      if (!lastSel) return;
+      const suggestedItem = productList.find(function (item) {
+        return item.id !== lastSel;
+      });
+      discountAlertProcessor(suggestedItem, "ADDITIONAL_DISC");
     }, DISC_INTERVALS.ADDITIONAL_DISC);
   }, Math.random() * DISC_INITIAL_BUFFERS.ADDITIONAL_DISC);
-}
+};
 
-function updateSelOpts() {
+function updateSelectOpts() {
   select.innerHTML = "";
   productList.forEach(function (item) {
     const opt = document.createElement("option");
     opt.value = item.id;
-    opt.textContent = item.name + " - " + item.val + CURRENCY;
+    opt.textContent = `${item.name} - ${item.val}${CURRENCY}`;
     if (item.qty === 0) opt.disabled = true;
     select.appendChild(opt);
   });
@@ -188,18 +178,16 @@ const renderBonusPts = () => {
     ptsTag.className = "text-blue-500 ml-2";
     sum.appendChild(ptsTag);
   }
-  ptsTag.textContent = "(포인트: " + bonusPts + ")";
+  ptsTag.textContent = `(포인트: ${bonusPts})`;
 };
 
 function updateStockInfo() {
   let infoMsg = "";
   productList.forEach(function (item) {
     if (item.qty < 5) {
-      infoMsg +=
-        item.name +
-        ": " +
-        (item.qty > 0 ? "재고 부족 (" + item.qty + "개 남음)" : "품절") +
-        "\n";
+      infoMsg += `${item.name}: ${
+        item.qty > 0 ? `재고 부족 (${item.qty}개 남음)` : "품절"
+      }\n`;
     }
   });
   stockInfo.textContent = infoMsg;
@@ -218,8 +206,9 @@ addBtn.addEventListener("click", function () {
       const newQty =
         parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
       if (newQty <= itemToAdd.qty) {
-        item.querySelector("span").textContent =
-          itemToAdd.name + " - " + itemToAdd.val + `${CURRENCY} x ` + newQty;
+        item.querySelector(
+          "span",
+        ).textContent = `${itemToAdd.name} - ${itemToAdd.val}${CURRENCY} x ${newQty}`;
         itemToAdd.qty--;
       } else {
         alert("재고가 부족합니다.");
@@ -274,10 +263,9 @@ cart.addEventListener("click", function (event) {
           prod.qty +
             parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
       ) {
-        itemElem.querySelector("span").textContent =
-          itemElem.querySelector("span").textContent.split("x ")[0] +
-          "x " +
-          newQty;
+        itemElem.querySelector("span").textContent = `${
+          itemElem.querySelector("span").textContent.split("x ")[0]
+        }x ${newQty}`;
         prod.qty -= qtyChange;
       } else if (newQty <= 0) {
         itemElem.remove();
