@@ -21,5 +21,10 @@
     "jsdom": "^25.0.0",
     "vite": "^5.1.0",
     "vitest": "^2.1.1"
-  }
+  },
+  "description": "## 기본과제: 더티코드 개선",
+  "main": "eslint.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
