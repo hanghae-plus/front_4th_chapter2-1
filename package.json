@@ -1,5 +1,5 @@
 {
-  "name": "front-3rd-chapter-1",
+  "name": "front-4th-chapter2-1",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -7,11 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start:basic": "vite serve --open ./index.basic.html",
-    "start:advanced": "vite serve --open ./index.advanced.html",
+    "start:basic": "vite --mode basic",
+    "start:advanced": "vite --mode advanced",
     "test": "vitest",
-    "test:basic": "vitest basic.test.js",
-    "test:advanced": "vitest advanced.test.js",
+    "test:basic": "vitest --mode basic",
+    "test:advanced": "vitest --mode advanced",
     "test:ui": "vitest --ui"
   },
   "devDependencies": {
