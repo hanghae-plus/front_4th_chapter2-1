@@ -120,7 +120,7 @@ function calcCart() {
   ({ totalAmt, discRate } = applySpecialdayDiscount(totalAmt, discRate));
 
   updateCartUI(totalAmt, discRate);
-  updateStockInfo();
+  updateStockInfoUI();
   updatePointUI();
 }
 
@@ -200,19 +200,25 @@ const updatePointUI = () => {
   pointTag.textContent = '(포인트: ' + bonusPoint + ')';
 };
 
-function updateStockInfo() {
-  var infoMsg = '';
-  prodList.forEach(function (item) {
-    if (item.q < 5) {
-      infoMsg +=
-        item.name +
-        ': ' +
-        (item.q > 0 ? '재고 부족 (' + item.q + '개 남음)' : '품절') +
-        '\n';
-    }
-  });
-  stockInfo.textContent = infoMsg;
-}
+//updateStockInfoUI
+
+const updateStockInfoUI = () => {
+  const lowStockItems = getLowStockItems(prodList);
+
+  const stockInfoTag = lowStockItems
+    .map(
+      (item) =>
+        `${item.name}: ${item.q > 0 ? `재고 부족 (${item.q}개 남음)` : '품절'}`
+    )
+    .join('\n');
+
+  stockInfo.textContent = stockInfoTag;
+};
+
+const getLowStockItems = (prodList) => {
+  return prodList.filter((it) => it.q < 5);
+};
+//updateStockInfoUI
 main();
 addBtn.addEventListener('click', function () {
   var selItem = sel.value;
