@@ -1,6 +1,6 @@
 var prodList, sel, addBtn, cartDisp, sum, stockInfo;
 var lastSel,
-  bonusPts = 0,
+  bonusPoint = 0,
   totalAmt = 0,
   itemCnt = 0;
 function main() {
@@ -121,7 +121,7 @@ function calcCart() {
 
   updateCartUI(totalAmt, discRate);
   updateStockInfo();
-  renderBonusPts();
+  updatePointUI();
 }
 
 const findProductById = (productId) => {
@@ -185,17 +185,21 @@ const updateCartUI = (finalTotal, discountRate) => {
 };
 
 //calcCart refactor
-const renderBonusPts = () => {
-  bonusPts = Math.floor(totalAmt / 1000);
-  var ptsTag = document.getElementById('loyalty-points');
-  if (!ptsTag) {
-    ptsTag = document.createElement('span');
-    ptsTag.id = 'loyalty-points';
-    ptsTag.className = 'text-blue-500 ml-2';
-    sum.appendChild(ptsTag);
+
+const updatePointUI = () => {
+  bonusPoint = Math.floor(totalAmt / 1000);
+  let pointTag = document.getElementById('loyalty-points');
+
+  if (!pointTag) {
+    pointTag = document.createElement('span');
+    pointTag.id = 'loyalty-points';
+    pointTag.className = 'text-blue-500 ml-2';
+    sum.appendChild(pointTag);
   }
-  ptsTag.textContent = '(포인트: ' + bonusPts + ')';
+
+  pointTag.textContent = '(포인트: ' + bonusPoint + ')';
 };
+
 function updateStockInfo() {
   var infoMsg = '';
   prodList.forEach(function (item) {
