@@ -14,6 +14,13 @@ export default {
   plugins: ['react'],
   rules: {
     'prettier/prettier': 'error',
-     "@typescript-eslint/no-explicit-any": "error"
+     "@typescript-eslint/no-explicit-any": "error",
+     "no-unused-vars": "warn", 
+     "no-console": "warn",
+     "eqeqeq": "error", 
+     "prefer-const": "error", 
+     "no-var": "error", 
+     "no-multiple-empty-lines": ["warn", { max: 1 }], 
+     "camelcase": "warn", 
   },
 };
