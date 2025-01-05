@@ -66,7 +66,6 @@ export default [
         'error',
         { argsIgnorePattern: '^_' }, // 사용하지 않는 변수 중 '_'로 시작하는 인자는 무시
       ],
-      '@typescript-eslint/explicit-function-return-type': 'warn', // 함수 반환 타입 명시 권장
 
       // 최신 JavaScript 스타일 규칙
       'prefer-const': 'error', // 가능하면 const 사용
@@ -100,6 +99,7 @@ export default [
       // 코드 품질 향상 (SonarJS)
       'sonarjs/cognitive-complexity': 'warn', // 복잡도 제한
       'sonarjs/no-identical-expressions': 'warn', // 동일한 표현식 방지
+      'sonarjs/pseudo-random': 'warn', // 난수 사용 경고
 
       // 모던 JavaScript (Unicorn)
       'unicorn/prefer-module': 'error', // ESM 모듈 사용
