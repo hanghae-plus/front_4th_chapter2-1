@@ -1,14 +1,14 @@
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
 export default defineConfig(({ mode }) => {
   const projectConfig = {
     basic: {
-      outDir: 'dist/basic',
-      openFile: '/index.basic.html',
+      outDir: "dist/basic",
+      openFile: "/index.basic.html",
     },
     advanced: {
-      outDir: 'dist/advance',
-      openFile: '/index.advanced.html',
+      outDir: "dist/advance",
+      openFile: "/index.advanced.html",
     },
   };
 
