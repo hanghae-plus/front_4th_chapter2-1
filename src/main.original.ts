@@ -82,6 +82,7 @@ function updateSelOpts() {
     sel.appendChild(opt);
   });
 }
+
 function calcCart() {
   totalAmt = 0;
   itemCnt = 0;
