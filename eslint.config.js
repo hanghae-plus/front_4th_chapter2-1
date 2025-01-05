@@ -12,6 +12,7 @@ export default [
   eslint.configs.recommended,
   {
     ignores: ['node_modules/', 'dist/', 'build/', 'eslint.config.js'],
+
     languageOptions: {
       ecmaVersion: 2021,
       globals: {
@@ -34,17 +35,18 @@ export default [
       // JavaScript
       curly: ['warn', 'all'],
       eqeqeq: 'error',
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-implicit-coercion': 'error',
+      'no-redeclare': 'warn',
+      'no-shadow': 'off',
+      'no-var': 'error',
+
       // Import
       'import/newline-after-import': 'warn',
       'import/no-duplicates': 'warn',
       'import/order': ['off'],
       'import/prefer-default-export': 'off',
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'no-implicit-coercion': 'error',
 
-      'no-redeclare': 'warn',
-      'no-shadow': 'off',
-      'no-var': 'error',
       // perfectionist 규칙
       'perfectionist/sort-objects': [
         'error',
