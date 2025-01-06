@@ -98,17 +98,17 @@ function main() {
   }, Math.random() * 20000);
 }
 
-// INFO: 옵션 수정 함수
-function updateSelOpts() {
-  sel.innerHTML = '';
-  prodList.forEach(function (item) {
-    var opt = document.createElement('option');
-    opt.value = item.id;
-    opt.textContent = item.name + ' - ' + item.val + '원';
-    if (item.q === 0) opt.disabled = true;
-    sel.appendChild(opt);
-  });
-}
+// // INFO: 옵션 수정 함수
+// function updateSelOpts() {
+//   sel.innerHTML = '';
+//   prodList.forEach(function (item) {
+//     var opt = document.createElement('option');
+//     opt.value = item.id;
+//     opt.textContent = item.name + ' - ' + item.val + '원';
+//     if (item.q === 0) opt.disabled = true;
+//     sel.appendChild(opt);
+//   });
+// }
 
 // // INFO: 카트 계산 로직 함수
 // function calcCart() {
