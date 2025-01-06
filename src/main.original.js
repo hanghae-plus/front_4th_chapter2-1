@@ -1,7 +1,7 @@
-var lastSel,
-  bonusPts = 0,
-  totalAmt = 0,
-  itemCnt = 0;
+let lastSel = 0;
+let bonusPts = 0;
+let totalAmt = 0;
+let itemCnt = 0;
 
 const PRODUCTS = [
   { id: "p1", name: "상품1", val: 10000, q: 50 },
@@ -26,6 +26,34 @@ const render = (root) => {
   `;
 };
 
+const alertEvent = (callback, intervalMs, delayMs) => {
+  setTimeout(function () {
+    setInterval(callback, intervalMs);
+  }, Math.random() * delayMs);
+};
+
+const saleEvent = () => {
+  const luckyItem = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
+  if (Math.random() < 0.3 && luckyItem.q > 0) {
+    luckyItem.val = Math.round(luckyItem.val * 0.8);
+    alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
+    updateSelOpts();
+  }
+};
+
+const lastSelEvent = () => {
+  if (lastSel) {
+    var suggest = PRODUCTS.find(function (item) {
+      return item.id !== lastSel && item.q > 0;
+    });
+    if (suggest) {
+      alert(suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!");
+      suggest.val = Math.round(suggest.val * 0.95);
+      updateSelOpts();
+    }
+  }
+};
+
 const main = () => {
   const root = document.querySelector("#app");
   render(root);
@@ -33,33 +61,8 @@ const main = () => {
   updateSelOpts();
   calcCart();
 
-  setTimeout(function () {
-    setInterval(function () {
-      var luckyItem = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
-      if (Math.random() < 0.3 && luckyItem.q > 0) {
-        luckyItem.val = Math.round(luckyItem.val * 0.8);
-        alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
-        updateSelOpts();
-      }
-    }, 30000);
-  }, Math.random() * 10000);
-
-  setTimeout(function () {
-    setInterval(function () {
-      if (lastSel) {
-        var suggest = PRODUCTS.find(function (item) {
-          return item.id !== lastSel && item.q > 0;
-        });
-        if (suggest) {
-          alert(
-            suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!"
-          );
-          suggest.val = Math.round(suggest.val * 0.95);
-          updateSelOpts();
-        }
-      }
-    }, 60000);
-  }, Math.random() * 20000);
+  alertEvent(saleEvent, 30000, Math.random() * 10000);
+  alertEvent(lastSelEvent, 60000, Math.random() * 20000);
 };
 
 function updateSelOpts() {
