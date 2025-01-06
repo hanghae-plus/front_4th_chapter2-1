@@ -21,7 +21,7 @@ const productList = [
 ];
 
 // 적립 포인트
-const renderLoyaltyPoints = () => {
+const updateLoyaltyPoints = () => {
   let loyaltyPoints = document.getElementById("loyalty-points");
 
   const point = Math.floor(totalPrice / 1000);
@@ -38,10 +38,27 @@ const renderLoyaltyPoints = () => {
   loyaltyPoints.textContent = `(포인트: ${point})`;
 };
 
-// 콤보박스
-const updateSelOpts = () => {
+// 재고 메시지
+const updateStockInfo = () => {
+  let msg = "";
+
   productList.forEach((product) => {
-    let productOptions = document.createElement("option");
+    const { name, remaining } = product;
+
+    if (remaining < 5) {
+      msg += `\n ${name}: ${
+        remaining > 0 ? `재고 부족 (${remaining}개 남음)` : "품절"
+      }`;
+    }
+  });
+
+  stockInfo.textContent = msg;
+};
+
+// 콤보박스
+const renderProductOptions = () => {
+  productList.forEach((product) => {
+    const productOptions = document.createElement("option");
 
     productOptions.value = product.id;
     productOptions.textContent = `${product.name} - ${product.price}원`;
@@ -49,23 +66,6 @@ const updateSelOpts = () => {
 
     sel.appendChild(productOptions);
   });
-};
-
-// 재고 메시지
-const updateStockInfo = () => {
-  let msg = "";
-
-  productList.forEach((product) => {
-    if (product.remaining < 5) {
-      msg += `${product.name}: ${
-        product.remaining > 0
-          ? "재고 부족 (" + product.remaining + "개 남음)"
-          : "품절"
-      } \n`;
-    }
-  });
-
-  stockInfo.textContent = msg;
 };
 
 // 장바구니 계산
@@ -143,7 +143,7 @@ const handleCalcCart = () => {
 
   updateStockInfo();
 
-  renderLoyaltyPoints();
+  updateLoyaltyPoints();
 };
 
 function main() {
@@ -177,7 +177,7 @@ function main() {
   hTxt.textContent = "장바구니";
   addBtn.textContent = "추가";
 
-  updateSelOpts();
+  renderProductOptions();
 
   wrap.appendChild(hTxt);
   wrap.appendChild(carts);
@@ -201,7 +201,7 @@ function main() {
 
         alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
 
-        updateSelOpts();
+        renderProductOptions();
       }
     }, 30000);
   }, Math.random() * 10000);
@@ -219,7 +219,7 @@ function main() {
             `${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`
           );
           suggest.price = Math.round(suggest.price * (1 - RATES["5%"]));
-          updateSelOpts();
+          renderProductOptions();
         }
       }
     }, 60000);
