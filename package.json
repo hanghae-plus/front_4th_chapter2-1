@@ -17,9 +17,23 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/user-event": "^14.5.2",
+    "@vitejs/plugin-react-swc": "^3.7.2",
     "@vitest/ui": "^2.1.1",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-import-resolver-typescript": "^3.7.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.2.1",
+    "eslint-plugin-react": "^7.37.3",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "eslint-plugin-testing-library": "^7.1.1",
     "jsdom": "^25.0.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
     "vite": "^5.1.0",
+    "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^2.1.1"
   }
 }
