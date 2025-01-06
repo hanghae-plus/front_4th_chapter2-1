@@ -1,4 +1,5 @@
 import Header from './components/Header';
+import { updateStockInfoMessage } from './components/stock/updateStockInfoMessage';
 import { CONSTANTS } from './constants';
 import { helper } from './utils/helper';
 
@@ -185,7 +186,8 @@ function calculateCart() {
     totalDisplay.appendChild(discountSpan);
   }
 
-  updateStockInfo();
+  const updatedMessage = updateStockInfoMessage(products);
+  stockInfo.textContent = updatedMessage;
   renderBonusPts();
 }
 
@@ -201,16 +203,6 @@ const renderBonusPts = () => {
   }
   pointsTag.textContent = '(포인트: ' + bonusPoints + ')';
 };
-
-function updateStockInfo() {
-  let infoMessage = '';
-  products.forEach(function (product) {
-    if (product.quantity < CONSTANTS.STOCK_WARNING_THRESHOLD) {
-      infoMessage += helper.getWarningMessage(product.name, product.quantity);
-    }
-  });
-  stockInfo.textContent = infoMessage;
-}
 
 main();
 
