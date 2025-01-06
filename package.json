@@ -14,7 +14,9 @@
     "test:advanced": "vitest advanced.test.js",
     "test:ui": "vitest --ui",
     "lint:basic": "eslint ./src/basic",
-    "lint:advanced": "eslint ./src/advanced"
+    "lint:advanced": "eslint ./src/advanced",
+    "pretty:basic": "prettier --write ./src/basic",
+    "pretty:advanced": "prettier --write ./src/advanced"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
