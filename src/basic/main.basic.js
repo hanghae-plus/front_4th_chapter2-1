@@ -1,5 +1,6 @@
 var prodList, sel, addBtn, cartDisp, sum, stockInfo;
 var lastSel, bonusPts=0, totalAmt=0, itemCnt=0;
+
 function main() {
   prodList=[
     {id: 'p1', name: '상품1', val: 10000, q: 50 },
@@ -59,11 +60,11 @@ function main() {
           alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
           suggest.val=Math.round(suggest.val * 0.95);
           updateSelOpts();
-        }
+         }
       }
     }, 60000);
   }, Math.random() * 20000);
-};
+}
 function updateSelOpts() {
   sel.innerHTML='';
   prodList.forEach(function (item) {
