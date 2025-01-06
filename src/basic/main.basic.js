@@ -200,6 +200,57 @@ const handleAddToCart = () => {
   }
 };
 
+const reduceCartItem = (itemDiv, product, currentQuantity) => {
+  itemDiv.remove();
+  // 장바구니에서 제거한 만큼 재고 복원
+  product.remaining += currentQuantity;
+};
+
+// 수량 변경
+const updateCartQuantity = (itemDiv, quantityChange, product) => {
+  const itemSpan = itemDiv.querySelector("span");
+  const currentQuantity = parseInt(itemSpan.textContent.split("x ")[1]);
+  const newQuantity = currentQuantity + quantityChange;
+
+  if (newQuantity > product.remaining + currentQuantity) {
+    alert("재고가 부족합니다.");
+    return;
+  }
+
+  if (newQuantity > 0) {
+    itemSpan.textContent = `${product.name} - ${product.price}원 x ${newQuantity}`;
+    product.remaining -= quantityChange;
+  } else {
+    reduceCartItem(itemDiv, product);
+  }
+};
+
+// 클릭 이벤트
+const handleClickCart = (event) => {
+  const clickedBtn = event.target; // 수량 변경 클릭한 버튼
+  if (!clickedBtn) return;
+
+  const { rowId, change } = clickedBtn.dataset; // 클릭한 버튼의 ID (왜냐면 상품명-버튼 한 row라서)
+
+  const product = productList.find((product) => product.id === rowId); // productList에서 해당 아이템 찾기
+
+  const itemDiv = document.getElementById(rowId); // (id로 element조회)
+  const quantitySpan = itemDiv.querySelector("span");
+  const itemQuantity = parseInt(quantitySpan.textContent.split("x ")[1]);
+
+  // 수량 변경
+  if (clickedBtn.classList.contains("quantity-change")) {
+    const quantityChange = parseInt(change);
+    updateCartQuantity(itemDiv, quantityChange, product);
+  }
+  // 삭제
+  else if (clickedBtn.classList.contains("remove-item")) {
+    reduceCartItem(itemDiv, product, itemQuantity);
+  }
+
+  handleCalcCart();
+};
+
 function main() {
   let root = document.getElementById("app");
 
@@ -282,57 +333,5 @@ function main() {
 
 main();
 
-// 수량 변경
-const updateCartQuantity = () => {};
-
-// 수량 삭제
-const deleteCartItem = () => {};
-
-// 클릭 이벤트
-const handleClickCart = (event) => {
-  const clickedBtn = event.target; // 수량 변경 클릭한 버튼
-  if (!clickedBtn) return;
-
-  const { rowId, change } = clickedBtn.dataset; // 클릭한 버튼의 ID (왜냐면 상품명-버튼 한 row라서)
-  if (!rowId) return;
-
-  const clickedItem = productList.find((product) => product.id === rowId); // productList에서 해당 아이템 찾기
-  const itemDiv = document.getElementById(rowId); // (id로 element조회)
-
-  const quantitySpan = itemDiv.querySelector("span");
-  const itemQuantity = parseInt(quantitySpan.textContent.split("x ")[1]);
-
-  // 수량 변경
-  if (clickedBtn.classList.contains("quantity-change")) {
-    const quantityChange = parseInt(change);
-
-    const changedQuantity = itemQuantity + quantityChange;
-
-    if (changedQuantity > clickedItem.remaining + itemQuantity) {
-      alert("재고가 부족합니다.");
-      return;
-    }
-
-    if (changedQuantity > 0) {
-      quantitySpan.textContent = `${
-        quantitySpan.textContent.split("x ")[0]
-      }x ${changedQuantity}`;
-      clickedItem.remaining -= quantityChange;
-    } else {
-      itemDiv.remove();
-      clickedItem.remaining -= quantityChange;
-    }
-  }
-  // 삭제
-  else if (clickedBtn.classList.contains("remove-item")) {
-    clickedItem.remaining += itemQuantity;
-    itemDiv.remove();
-  }
-
-  handleCalcCart();
-};
-
 addBtn.addEventListener("click", handleAddToCart);
-
-// 장바구니 수량 변경 및 삭제
 carts.addEventListener("click", handleClickCart);
