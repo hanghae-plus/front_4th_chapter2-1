@@ -19,10 +19,7 @@ const productList = [
 
 let select, addBtn, cart, sum, stockInfo;
 
-let lastSel,
-  bonusPts = 0,
-  totalPriceWithDisc = 0,
-  itemCnt = 0;
+let lastSel;
 
 function main() {
   const root = document.getElementById("app");
@@ -68,7 +65,7 @@ function main() {
   contents.appendChild(wrap);
   root.appendChild(contents);
 
-  calcCart();
+  updateCartData();
 
   setLuckyDiscAlert();
   setAdditionalDiscAlert();
@@ -107,70 +104,68 @@ function updateSelectOpts() {
   });
 }
 
-function calcCart() {
-  totalPriceWithDisc = 0;
-  itemCnt = 0;
+function updateCartData() {
+  const { priceWithDisc, discRate } = getDiscPriceAndRate(cart);
+  updateDiscInfo(priceWithDisc, discRate);
+  updateBonusPts(priceWithDisc);
+  updateStockInfo();
+}
 
+const getDiscPriceAndRate = (cart) => {
   const cartItems = cart.children;
   let totalPrice = 0;
+  let priceWithDisc = 0;
+  let itemCnt = 0;
 
   for (let i = 0; i < cartItems.length; i++) {
-    (function () {
-      let curItem;
-      for (let j = 0; j < productList.length; j++) {
-        if (productList[j].id === cartItems[i].id) {
-          curItem = productList[j];
-          break;
-        }
-      }
-      const qty = parseInt(
-        cartItems[i].querySelector("span").textContent.split("x ")[1],
-      );
-      const itemTotalPrice = curItem.val * qty;
-      let disc = 0;
-      itemCnt += qty;
-      totalPrice += itemTotalPrice;
-      if (qty >= ITEM_DISC_MIN_QTY) {
-        disc = DISC_RATES.ITEM_DISC[curItem.id];
-      }
-      totalPriceWithDisc += itemTotalPrice * (1 - disc);
-    })();
+    const curItem = productList.find(
+      (product) => product.id === cartItems[i].id,
+    );
+    const qty = parseInt(
+      cartItems[i].querySelector("span").textContent.split("x ")[1],
+    );
+    const itemTotalPrice = curItem.val * qty;
+    itemCnt += qty;
+    totalPrice += itemTotalPrice;
+
+    const disc =
+      qty >= ITEM_DISC_MIN_QTY ? DISC_RATES.ITEM_DISC[curItem.id] : 0;
+
+    priceWithDisc += itemTotalPrice * (1 - disc);
   }
 
   let discRate = 0;
 
   if (itemCnt >= 30) {
-    const bulkDisc = totalPriceWithDisc * DISC_RATES.BULK_DISC;
-    const itemDisc = totalPrice - totalPriceWithDisc;
+    const bulkDisc = totalPrice * DISC_RATES.BULK_DISC;
+    const itemDisc = totalPrice - priceWithDisc;
     if (bulkDisc > itemDisc) {
-      totalPriceWithDisc = totalPrice * (1 - DISC_RATES.BULK_DISC);
-      discRate = DISC_RATES.BULK_DISC;
-    } else {
-      discRate = (totalPrice - totalPriceWithDisc) / totalPrice;
+      priceWithDisc = totalPrice * (1 - DISC_RATES.BULK_DISC);
     }
-  } else {
-    discRate = (totalPrice - totalPriceWithDisc) / totalPrice;
   }
+  discRate = (totalPrice - priceWithDisc) / totalPrice;
 
   if (new Date().getDay() === DISC_DAY_OF_THE_WEEK) {
-    totalPriceWithDisc *= 1 - DISC_RATES.DAY_OF_THE_WEEK_DISC;
+    priceWithDisc *= 1 - DISC_RATES.DAY_OF_THE_WEEK_DISC;
     discRate = Math.max(discRate, DISC_RATES.DAY_OF_THE_WEEK_DISC);
   }
 
-  sum.textContent = "총액: " + Math.round(totalPriceWithDisc) + CURRENCY;
+  return { priceWithDisc, discRate };
+};
 
-  if (discRate > 0) {
+const updateDiscInfo = (price, rate) => {
+  sum.textContent = `총액: ${Math.round(price)}${CURRENCY}`;
+
+  if (rate > 0) {
     const span = document.createElement("span");
     span.className = "text-green-500 ml-2";
-    span.textContent = "(" + (discRate * 100).toFixed(1) + "% 할인 적용)";
+    span.textContent = `(${(rate * 100).toFixed(1)}% 할인 적용)`;
     sum.appendChild(span);
   }
-  updateStockInfo();
-  renderBonusPts();
-}
+};
 
-const renderBonusPts = () => {
-  bonusPts = Math.floor(totalPriceWithDisc / 1000);
+const updateBonusPts = (price) => {
+  const bonusPts = Math.floor(price / 1000);
   let ptsTag = document.getElementById(ID_BY_COMPONENT.PTS_TAG_ID);
   if (!ptsTag) {
     ptsTag = document.createElement("span");
@@ -181,7 +176,7 @@ const renderBonusPts = () => {
   ptsTag.textContent = `(포인트: ${bonusPts})`;
 };
 
-function updateStockInfo() {
+const updateStockInfo = () => {
   let infoMsg = "";
   productList.forEach(function (item) {
     if (item.qty < 5) {
@@ -191,7 +186,7 @@ function updateStockInfo() {
     }
   });
   stockInfo.textContent = infoMsg;
-}
+};
 
 main();
 
@@ -235,7 +230,7 @@ addBtn.addEventListener("click", function () {
       cart.appendChild(newItem);
       itemToAdd.qty--;
     }
-    calcCart();
+    updateCartData();
     lastSel = selItem;
   }
 });
@@ -280,6 +275,6 @@ cart.addEventListener("click", function (event) {
       prod.qty += remQty;
       itemElem.remove();
     }
-    calcCart();
+    updateCartData();
   }
 });

@@ -39,8 +39,8 @@ export const DISC_MSG = Object.freeze({
 });
 
 export const discountAlertProcessor = (item, type) => {
-  if (type !== "LUCKY_DISCOUNT" || type !== "ADDITIONAL_DISCOUNT") {
-    throw Error();
+  if (type !== "LUCKY_DISC" && type !== "ADDITIONAL_DISC") {
+    throw Error(`${type} is not a supported discount type to alert.`);
   }
 
   if (Math.random() >= DISC_PROB[type] || item.qty <= 0) return;
