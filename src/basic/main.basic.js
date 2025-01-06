@@ -8,10 +8,7 @@ const DISCOUNT_RATES = {
 };
 
 // 전역 변수
-let sel, addBtn, carts, sum, stockInfo;
-let lastSelectedProduct,
-  finalPrice = 0,
-  totalQuantity = 0;
+let lastSelectedProduct;
 
 const productList = [
   { id: "p1", name: "상품1", price: 10000, remaining: 50 },
@@ -54,13 +51,10 @@ const setUpEvents = () => {
   // 임의의 시간마다 깜짝세일 20%
   setTimeout(() => {
     setInterval(() => {
-      const luckyItem =
-        productList[Math.floor(Math.random() * productList.length)];
+      const luckyItem = productList[Math.floor(Math.random() * productList.length)];
 
       if (Math.random() < 0.3 && luckyItem.remaining > 0) {
-        luckyItem.price = Math.round(
-          luckyItem.price * (1 - DISCOUNT_RATES["20%"])
-        );
+        luckyItem.price = Math.round(luckyItem.price * (1 - DISCOUNT_RATES["20%"]));
 
         alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
 
@@ -73,18 +67,12 @@ const setUpEvents = () => {
   setTimeout(() => {
     setInterval(() => {
       if (lastSelectedProduct) {
-        const suggest = productList.find(
-          (item) => item.id !== lastSelectedProduct && item.remaining > 0
-        );
+        const suggest = productList.find((item) => item.id !== lastSelectedProduct && item.remaining > 0);
 
         if (suggest) {
-          alert(
-            `${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`
-          );
+          alert(`${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
 
-          suggest.price = Math.round(
-            suggest.price * (1 - DISCOUNT_RATES["5%"])
-          );
+          suggest.price = Math.round(suggest.price * (1 - DISCOUNT_RATES["5%"]));
 
           renderProductOptions();
         }
@@ -94,7 +82,7 @@ const setUpEvents = () => {
 };
 
 // 적립 포인트
-const updateLoyaltyPoints = () => {
+const updateLoyaltyPoints = (finalPrice) => {
   let loyaltyPoints = document.getElementById("loyalty-points");
 
   const point = Math.floor(finalPrice / 1000);
@@ -105,7 +93,7 @@ const updateLoyaltyPoints = () => {
     loyaltyPoints.id = "loyalty-points";
     loyaltyPoints.className = "text-blue-500 ml-2";
 
-    sum.appendChild(loyaltyPoints);
+    document.getElementById("cart-total").appendChild(loyaltyPoints);
   }
 
   loyaltyPoints.textContent = `(포인트: ${point})`;
@@ -113,23 +101,24 @@ const updateLoyaltyPoints = () => {
 
 // 재고 메시지
 const updateStockInfo = () => {
-  let msg = "";
+  const stockInfo = document.getElementById("stock-status");
+
+  let stockMessage = "";
 
   productList.forEach((product) => {
     const { name, remaining } = product;
+    const isWarningSoldOut = () => remaining < 5;
 
-    if (remaining < 5) {
-      msg += `\n ${name}: ${
-        remaining > 0 ? `재고 부족 (${remaining}개 남음)` : "품절"
-      }`;
+    if (isWarningSoldOut) {
+      stockMessage += `\n ${name}: ${remaining > 0 ? `재고 부족 (${remaining}개 남음)` : "품절"}`;
     }
   });
 
-  stockInfo.textContent = msg;
+  stockInfo.textContent = stockMessage;
 };
 
 // 콤보박스
-const renderProductOptions = () => {
+const renderProductOptions = (selects) => {
   productList.forEach((product) => {
     const productOptions = document.createElement("option");
 
@@ -137,22 +126,21 @@ const renderProductOptions = () => {
     productOptions.textContent = `${product.name} - ${product.price}원`;
     productOptions.disabled = product.remaining === 0;
 
-    sel.appendChild(productOptions);
+    selects.appendChild(productOptions);
   });
 };
 
 const renderCartMessage = (finalPrice, discountRate) => {
-  sum.textContent = `총액: ${Math.round(finalPrice)}원`;
+  const totalDiv = document.getElementById("cart-total");
+  totalDiv.textContent = `총액: ${Math.round(finalPrice)}원`;
 
   if (discountRate > 0) {
     const discountSpan = document.createElement("span");
 
     discountSpan.className = "text-green-500 ml-2";
-    discountSpan.textContent = `(${(discountRate * 100).toFixed(
-      1
-    )}% 할인 적용)`;
+    discountSpan.textContent = `(${(discountRate * 100).toFixed(1)}% 할인 적용)`;
 
-    sum.appendChild(discountSpan);
+    totalDiv.appendChild(discountSpan);
   }
 };
 
@@ -191,17 +179,16 @@ const renderNewItemToCart = ({ id, name, price }) => {
 // 장바구니 계산
 const calculateCart = () => {
   // 총 금액과 수량을 초기화
-  finalPrice = 0;
-  totalQuantity = 0;
+  let finalPrice = 0;
+  let totalQuantity = 0;
 
-  const cartItems = carts.children;
+  const cartDiv = document.getElementById("cart-items");
+  const cartItems = cartDiv.children;
 
   let originalTotal = 0; // 원가
 
   for (let i = 0; i < cartItems.length; i++) {
-    const targetItem = productList.find(
-      (product) => product.id === cartItems[i].id
-    );
+    const targetItem = productList.find((product) => product.id === cartItems[i].id);
     const quantity = parseQuantity(cartItems[i].querySelector("span"));
     const itemTotalPrice = targetItem.price * quantity;
 
@@ -239,7 +226,7 @@ const calculateCart = () => {
   // UI 업데이트
   renderCartMessage(finalPrice, discountRate);
   updateStockInfo();
-  updateLoyaltyPoints();
+  updateLoyaltyPoints(finalPrice);
 };
 
 const reduceCartItem = (itemDiv, remaining, currentQuantity) => {
@@ -329,51 +316,50 @@ const handleClickCart = (event) => {
 function main() {
   const root = document.getElementById("app");
 
-  const cont = document.createElement("div");
-  cont.className = "bg-gray-100 p-8";
+  const containerDiv = document.createElement("div");
+  containerDiv.className = "bg-gray-100 p-8";
 
-  const wrap = document.createElement("div");
-  wrap.className =
-    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
+  const wrapDiv = document.createElement("div");
+  wrapDiv.className = "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
 
-  const hTxt = document.createElement("h1");
-  hTxt.className = "text-2xl font-bold mb-4";
-  hTxt.textContent = "장바구니";
+  const cartH1 = document.createElement("h1");
+  cartH1.className = "text-2xl font-bold mb-4";
+  cartH1.textContent = "장바구니";
 
-  carts = document.createElement("div");
-  carts.id = "cart-items";
+  const cartDiv = document.createElement("div");
+  cartDiv.id = "cart-items";
 
-  sum = document.createElement("div");
-  sum.id = "cart-total";
-  sum.className = "text-xl font-bold my-4";
+  const totalDiv = document.createElement("div");
+  totalDiv.id = "cart-total";
+  totalDiv.className = "text-xl font-bold my-4";
 
-  sel = document.createElement("select");
-  sel.id = "product-select";
-  sel.className = "border rounded p-2 mr-2";
+  const selects = document.createElement("select");
+  selects.id = "product-select";
+  selects.className = "border rounded p-2 mr-2";
 
-  addBtn = document.createElement("button");
+  const addBtn = document.createElement("button");
   addBtn.id = "add-to-cart";
   addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded";
   addBtn.textContent = "추가";
 
-  stockInfo = document.createElement("div");
+  const stockInfo = document.createElement("div");
   stockInfo.id = "stock-status";
   stockInfo.className = "text-sm text-gray-500 mt-2";
 
   // 제품 옵션 렌더링
-  renderProductOptions();
+  renderProductOptions(selects);
 
   // DOM 구조 구성
-  wrap.appendChild(hTxt);
-  wrap.appendChild(carts);
-  wrap.appendChild(sum);
-  wrap.appendChild(sel);
-  wrap.appendChild(addBtn);
-  wrap.appendChild(stockInfo);
+  wrapDiv.appendChild(cartH1);
+  wrapDiv.appendChild(cartDiv);
+  wrapDiv.appendChild(totalDiv);
+  wrapDiv.appendChild(selects);
+  wrapDiv.appendChild(addBtn);
+  wrapDiv.appendChild(stockInfo);
 
-  cont.appendChild(wrap);
+  containerDiv.appendChild(wrapDiv);
 
-  root.appendChild(cont);
+  root.appendChild(containerDiv);
 
   // 장바구니 계산
   calculateCart();
@@ -385,5 +371,6 @@ function main() {
 // 초기화 및 이벤트 리스너 등록
 main();
 
-addBtn.addEventListener("click", handleAddToCart);
-carts.addEventListener("click", handleClickCart);
+document.getElementById("add-to-cart").addEventListener("click", handleAddToCart);
+
+document.getElementById("cart-items").addEventListener("click", handleClickCart);
