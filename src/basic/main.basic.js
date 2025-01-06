@@ -1,3 +1,19 @@
+/**
+ * 1. 가독성. 
+ *  - 게슈탈트 원칙. 
+ *  - 위에서 아래로 읽기.
+ *  - 적절한 공백
+ *  - 프리티어
+ * 2. 좋은 구조
+ *  - 데이터 관점 보다는 역할 관점으로 묶기.
+ * 3. 좋은 이름 짓기
+ *  - push(), add(), insert(), new(), create(), append(), spawn()
+ *  - get(), fetch(), from(), of()
+ *  - current, selected
+ *  - key, index
+ *  - is, has
+ */
+
 var prodList, sel, addBtn, cartDisp, sum, stockInfo;
 var lastSel, bonusPts=0, totalAmt=0, itemCnt=0;
 function main() {
