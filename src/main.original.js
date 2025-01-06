@@ -1,94 +1,115 @@
-var prodList, sel, addBtn, cartDisp, sum, stockInfo;
-var lastSel, bonusPts=0, totalAmt=0, itemCnt=0;
+import { productList } from "./models/userData"
+
+var selected, addBtn, cartItems, sum, stockInfo;
+var lastSel, bonusPts = 0, totalAmt = 0, itemCnt = 0;
+
+// 상황을 보니, main 컴포넌트 자식으로 select 컴포넌트를 설계하는 과정이 있어도 되겠다
+// 위 설계 과정을 가지고 basic 에서 유사 리액트를 어떻게 구현해나갈지 미리 같이 고민해놓자
+// 그래야 리팩토링 파트에서 어렵지 않을 것 이다
 function main() {
-  prodList=[
-    {id: 'p1', name: '상품1', val: 10000, q: 50 },
-    {id: 'p2', name: '상품2', val: 20000, q: 30 },
-    {id: 'p3', name: '상품3', val: 30000, q: 20 },
-    {id: 'p4', name: '상품4', val: 15000, q: 0 },
-    {id: 'p5', name: '상품5', val: 25000, q: 10 }
-  ];
-  var root=document.getElementById('app');
-  let cont=document.createElement('div');
-  var wrap=document.createElement('div');
-  let hTxt=document.createElement('h1');
-  cartDisp=document.createElement('div');
-  sum=document.createElement('div');
-  sel=document.createElement('select');
-  addBtn=document.createElement('button');
-  stockInfo=document.createElement('div');
-  cartDisp.id='cart-items';
-  sum.id='cart-total';
-  sel.id='product-select';
-  addBtn.id='add-to-cart';
-  stockInfo.id='stock-status';
-  cont.className='bg-gray-100 p-8';
-  wrap.className='max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  hTxt.className='text-2xl font-bold mb-4';
-  sum.className='text-xl font-bold my-4';
-  sel.className='border rounded p-2 mr-2';
-  addBtn.className='bg-blue-500 text-white px-4 py-2 rounded';
-  stockInfo.className='text-sm text-gray-500 mt-2';
-  hTxt.textContent='장바구니';
-  addBtn.textContent='추가';
-  updateSelOpts();
+  // main component nodes
+  var root = document.getElementById('app');
+  let cont = document.createElement('div');
+  var wrap = document.createElement('div');
+  let hTxt = document.createElement('h1');
+  cartItems = document.createElement('div');
+  sum = document.createElement('div');
+  selected = document.createElement('select');
+  addBtn = document.createElement('button');
+  stockInfo = document.createElement('div');
+  
+  // ids
+  cartItems.id='cart-items';
+  sum.id = 'cart-total';
+  selected.id = 'product-select';
+  addBtn.id = 'add-to-cart';
+  stockInfo.id = 'stock-status';
+
+  // classes
+  cont.className = 'bg-gray-100 p-8';
+  wrap.className = 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
+  hTxt.className = 'text-2xl font-bold mb-4';
+  sum.className = 'text-xl font-bold my-4';
+  selected.className = 'border rounded p-2 mr-2';
+  addBtn.className = 'bg-blue-500 text-white px-4 py-2 rounded';
+  stockInfo.className = 'text-sm text-gray-500 mt-2';
+  
+  // contents
+  hTxt.textContent = '장바구니';
+  addBtn.textContent = '추가';
+  
   wrap.appendChild(hTxt);
-  wrap.appendChild(cartDisp);
+  wrap.appendChild(cartItems);
   wrap.appendChild(sum);
-  wrap.appendChild(sel);
+  wrap.appendChild(selected);
   wrap.appendChild(addBtn);
   wrap.appendChild(stockInfo);
   cont.appendChild(wrap);
   root.appendChild(cont);
-  calcCart();
+
+  cartCalculator();
+
+  // 랜덤한 시간마다(시간이 지나면(시간마다?)) 3초동안 세일을 알림
   setTimeout(function () {
     setInterval(function () {
-      var luckyItem=prodList[Math.floor(Math.random() * prodList.length)];
+      var luckyItem=productList[Math.floor(Math.random() * productList.length)];
       if(Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val=Math.round(luckyItem.val * 0.8);
         alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
-        updateSelOpts();
       }
+      // 다만 setTimeout 과 setInterval 을 동시에 사용하는 것은 과잉 구현에 속함
+      // 하지만 논쟁의 대상으로 UX 를 조정하기 위해, 첫 랜더링 시간만 조정한 것 일수도 있다
+      // setTimeout 으로 첫 이벤트 페이지만 setTimeout 으로 조정되며 그 후에는 setInterval 로 사용자에게 보여지는 것이다
     }, 30000);
-  }, Math.random() * 10000);
+    // 더 빠르게 사용자에게 노출이 되는 UX 차이가 있기 때문에 아래 로직과 중복 로직으로 제거 대상이 되지는 않음
+  }, Math.random() * 10000); 
+
+// 랜덤한 시간마다(시간이 지나면(시간마다?)) 6초동안 세일을 알린다
   setTimeout(function () {
     setInterval(function () {
       if(lastSel) {
-        var suggest=prodList.find(function (item) { return item.id !== lastSel && item.q > 0; });
+        var suggest=productList.find(function (item) { return item.id !== lastSel && item.q > 0; });
         if(suggest) {
           alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
           suggest.val=Math.round(suggest.val * 0.95);
-          updateSelOpts();
         }
       }
     }, 60000);
+    // 위와 반대되는 사유
   }, Math.random() * 20000);
+
+  updateSelectOptions();
 };
-function updateSelOpts() {
-  sel.innerHTML='';
-  prodList.forEach(function (item) {
+
+// select 노드의 옵션을 업데이트하는 함수
+function updateSelectOptions() {
+  selected.innerHTML='';
+  productList.forEach(function (item) {
+    console.log(item)
     var opt=document.createElement('option');
     opt.value=item.id;
     opt.textContent=item.name + ' - ' + item.val + '원';
     if(item.q === 0) opt.disabled=true;
-    sel.appendChild(opt);
+    selected.appendChild(opt);
   });
 }
-function calcCart() {
+
+// 장바구니를 계산하는 함수
+function cartCalculator() {
   totalAmt=0;
   itemCnt=0;
-  var cartItems=cartDisp.children;
+  var cartChild=cartItems.children;
   var subTot=0;
-  for (var i=0; i < cartItems.length; i++) {
+  for (var i=0; i < cartChild.length; i++) {
     (function () {
       var curItem;
-      for (var j=0; j < prodList.length; j++) {
-        if(prodList[j].id === cartItems[i].id) {
-          curItem=prodList[j];
+      for (var j=0; j < productList.length; j++) {
+        if(productList[j].id === cartChild[i].id) {
+          curItem=productList[j];
           break;
         }
       }
-      var q=parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
+      var q=parseInt(cartChild[i].querySelector('span').textContent.split('x ')[1]);
       var itemTot=curItem.val * q;
       var disc=0;
       itemCnt += q;
@@ -130,6 +151,8 @@ function calcCart() {
   updateStockInfo();
   renderBonusPts();
 }
+
+// 
 const renderBonusPts=() => {
   bonusPts = Math.floor(totalAmt / 1000);
   var ptsTag=document.getElementById('loyalty-points');
@@ -141,9 +164,11 @@ const renderBonusPts=() => {
   }
   ptsTag.textContent='(포인트: ' + bonusPts + ')';
 };
+
+// 
 function updateStockInfo() {
   var infoMsg='';
-  prodList.forEach(function (item) {
+  productList.forEach(function (item) {
     if(item.q < 5) {infoMsg += item.name + ': ' + (item.q > 0 ? '재고 부족 ('+item.q+'개 남음)' : '품절') + '\n';
     }
   });
@@ -151,8 +176,8 @@ function updateStockInfo() {
 }
 main();
 addBtn.addEventListener('click', function () {
-  var selItem=sel.value;
-  var itemToAdd=prodList.find(function (p) { return p.id === selItem; });
+  var selItem=selected.value;
+  var itemToAdd=productList.find(function (p) { return p.id === selItem; });
   if(itemToAdd && itemToAdd.q > 0) {
     var item=document.getElementById(itemToAdd.id);
     if(item) {
@@ -169,19 +194,19 @@ addBtn.addEventListener('click', function () {
         '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' + itemToAdd.id + '" data-change="-1">-</button>' +
         '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' + itemToAdd.id + '" data-change="1">+</button>' +
         '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' + itemToAdd.id + '">삭제</button></div>';
-      cartDisp.appendChild(newItem);
+        cartItems.appendChild(newItem);
       itemToAdd.q--;
     }
-    calcCart();
+    cartCalculator();
     lastSel=selItem;
   }
 });
-cartDisp.addEventListener('click', function (event) {
+cartItems.addEventListener('click', function (event) {
   var tgt=event.target;
   if(tgt.classList.contains('quantity-change') || tgt.classList.contains('remove-item')) {
     var prodId=tgt.dataset.productId;
     var itemElem=document.getElementById(prodId);
-    var prod=prodList.find(function (p) { return p.id === prodId; });
+    var prod=productList.find(function (p) { return p.id === prodId; });
     if(tgt.classList.contains('quantity-change')) {
       var qtyChange=parseInt(tgt.dataset.change);
       var newQty=parseInt(itemElem.querySelector('span').textContent.split('x ')[1]) + qtyChange;
@@ -199,6 +224,6 @@ cartDisp.addEventListener('click', function (event) {
       prod.q += remQty;
       itemElem.remove();
     }
-    calcCart();
+    cartCalculator();
   }
 });
