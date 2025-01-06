@@ -14,17 +14,15 @@
  *  - is, has
  */
 
-let bonusPoint = 0;
-const renderBonusPoint = () => {
-  bonusPoint = Math.floor(totalAmt / 1000);
-  let ptsTag = document.getElementById('loyalty-points');
-  if (!ptsTag) {
-    ptsTag = document.createElement('span');
-    ptsTag.id = 'loyalty-points';
-    ptsTag.className = 'text-blue-500 ml-2';
-    sum.appendChild(ptsTag);
+const renderLoyaltyPointsElement = (loyaltyPoint) => {
+  let $loyaltyPoints = document.getElementById('loyalty-points');
+  if (!$loyaltyPoints) {
+    $loyaltyPoints = document.createElement('span');
+    $loyaltyPoints.id = 'loyalty-points';
+    $loyaltyPoints.className = 'text-blue-500 ml-2';
+    sum.appendChild($loyaltyPoints);
   }
-  ptsTag.textContent = '(포인트: ' + bonusPoint + ')';
+  $loyaltyPoints.textContent = '(포인트: ' + loyaltyPoint + ')';
 };
 
 function updateStockInfo() {
@@ -41,11 +39,9 @@ function updateStockInfo() {
   stockInfo.textContent = infoMsg;
 }
 
-let itemCnt = 0;
-let totalAmt = 0;
 function calcCart() {
-  totalAmt = 0;
-  itemCnt = 0;
+  let totalAmount = 0;
+  let itemCnt = 0;
   let cartItems = cartDisp.children;
   let subTot = 0;
   for (let i = 0; i < cartItems.length; i++) {
@@ -71,35 +67,38 @@ function calcCart() {
         else if (curItem.id === 'p4') disc = 0.05;
         else if (curItem.id === 'p5') disc = 0.25;
       }
-      totalAmt += itemTot * (1 - disc);
+      totalAmount += itemTot * (1 - disc);
     })();
   }
   let discRate = 0;
   if (itemCnt >= 30) {
-    let bulkDisc = totalAmt * 0.25;
-    let itemDisc = subTot - totalAmt;
+    let bulkDisc = totalAmount * 0.25;
+    let itemDisc = subTot - totalAmount;
     if (bulkDisc > itemDisc) {
-      totalAmt = subTot * (1 - 0.25);
+      totalAmount = subTot * (1 - 0.25);
       discRate = 0.25;
     } else {
-      discRate = (subTot - totalAmt) / subTot;
+      discRate = (subTot - totalAmount) / subTot;
     }
   } else {
-    discRate = (subTot - totalAmt) / subTot;
+    discRate = (subTot - totalAmount) / subTot;
   }
   if (new Date().getDay() === 2) {
-    totalAmt *= 1 - 0.1;
+    totalAmount *= 1 - 0.1;
     discRate = Math.max(discRate, 0.1);
   }
-  sum.textContent = '총액: ' + Math.round(totalAmt) + '원';
+  sum.textContent = '총액: ' + Math.round(totalAmount) + '원';
   if (discRate > 0) {
     let span = document.createElement('span');
     span.className = 'text-green-500 ml-2';
     span.textContent = '(' + (discRate * 100).toFixed(1) + '% 할인 적용)';
     sum.appendChild(span);
   }
+
   updateStockInfo();
-  renderBonusPoint();
+
+  let loyaltyPoint = totalAmount > 0 ? Math.floor(totalAmount / 1000) : 0;
+  renderLoyaltyPointsElement(loyaltyPoint);
 }
 
 function updateSelOpts() {
