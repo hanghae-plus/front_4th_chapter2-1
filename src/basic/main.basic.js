@@ -1,4 +1,6 @@
 import Header from './components/Header';
+import { getTotalBonusPoints } from './components/points/getTotalBonusPoints';
+import { renderBonusPoints } from './components/points/renderBonusPoints';
 import { updateStockInfoMessage } from './components/stock/updateStockInfoMessage';
 import { CONSTANTS } from './constants';
 import { helper } from './utils/helper';
@@ -10,8 +12,7 @@ let products,
   totalDisplay,
   stockInfo,
   lastSelectedItem;
-let bonusPoints = 0,
-  totalAmount = 0,
+let totalAmount = 0,
   itemCount = 0;
 
 function main() {
@@ -188,21 +189,9 @@ function calculateCart() {
 
   const updatedMessage = updateStockInfoMessage(products);
   stockInfo.textContent = updatedMessage;
-  renderBonusPts();
+  const bonusPoints = getTotalBonusPoints(totalAmount);
+  renderBonusPoints(bonusPoints);
 }
-
-const renderBonusPts = () => {
-  bonusPoints = Math.floor(totalAmount / CONSTANTS.LOYALTY_POINTS_RATE);
-
-  let pointsTag = document.getElementById('loyalty-points');
-  if (!pointsTag) {
-    pointsTag = document.createElement('span');
-    pointsTag.id = 'loyalty-points';
-    pointsTag.className = 'text-blue-500 ml-2';
-    totalDisplay.appendChild(pointsTag);
-  }
-  pointsTag.textContent = '(포인트: ' + bonusPoints + ')';
-};
 
 main();
 

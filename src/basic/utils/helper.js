@@ -39,6 +39,12 @@ const getDiscountedAmountMessage = amount => `(${amount}% 할인 적용)`;
 const getWarningMessage = (name, quantity) =>
   `${name}: ${quantity > 0 ? '재고 부족 (' + quantity + '개 남음)' : '품절'}\n`;
 
+/**
+ * @param {string} points - 보너스 포인트
+ * @return {string} (포인트: {points})
+ */
+const getBonusPointsMessage = points => `(포인트: ${points})`;
+
 export const helper = {
   getLightningSaleMessage,
   getSuggestionMessage,
@@ -46,4 +52,5 @@ export const helper = {
   getTotalAmountMessage,
   getDiscountedAmountMessage,
   getWarningMessage,
+  getBonusPointsMessage,
 };
