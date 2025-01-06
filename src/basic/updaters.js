@@ -11,7 +11,7 @@ export const updateSelectOpts = (select, productList) => {
   });
 };
 
-export const updateDiscInfo = (document, price, rate) => {
+export const updateDiscInfo = (price, rate) => {
   const sum = document.querySelector(`#${ID_BY_COMPONENT.SUM_ID}`);
   sum.textContent = `총액: ${Math.round(price)}${CURRENCY}`;
 
@@ -23,7 +23,7 @@ export const updateDiscInfo = (document, price, rate) => {
   }
 };
 
-export const updateBonusPts = (document, price) => {
+export const updateBonusPts = (price) => {
   const sum = document.querySelector(`#${ID_BY_COMPONENT.SUM_ID}`);
   const bonusPts = Math.floor(price / 1000);
 
@@ -37,7 +37,7 @@ export const updateBonusPts = (document, price) => {
   ptsTag.textContent = `(포인트: ${bonusPts})`;
 };
 
-export const updateStockInfo = (document, productList) => {
+export const updateStockInfo = (productList) => {
   const stockInfo = document.querySelector(`#${ID_BY_COMPONENT.STOCK_INFO_ID}`);
 
   let infoMsg = "";
