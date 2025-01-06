@@ -1,7 +1,7 @@
 import {
+  afterEach,
   beforeAll,
   beforeEach,
-  afterEach,
   describe,
   expect,
   it,
@@ -29,12 +29,14 @@ describe('basic test', () => {
     });
 
     beforeEach(() => {
-      vi.useRealTimers();
+      const mockDate = new Date('2024-10-14'); // 월요일
+      vi.setSystemTime(mockDate);
       vi.spyOn(window, 'alert').mockImplementation(() => {});
     });
 
     afterEach(() => {
       vi.restoreAllMocks();
+      vi.useRealTimers();
     });
 
     it('초기 상태: 상품 목록이 올바르게 그려졌는지 확인', () => {
@@ -128,7 +130,6 @@ describe('basic test', () => {
 
     it('화요일 할인이 적용되는지 확인', () => {
       const mockDate = new Date('2024-10-15'); // 화요일
-      vi.useFakeTimers();
       vi.setSystemTime(mockDate);
       sel.value = 'p1';
       addBtn.click();
