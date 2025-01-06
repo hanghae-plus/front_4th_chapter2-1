@@ -1,13 +1,12 @@
 import { products } from './data/product';
-import { calculateDayDiscountRate, calculateItemDiscount } from './services/calcProductDiscount';
+import { calculateFinalAmount } from './services/calcProductDiscount';
+import { Cart } from './stores/cart.store';
 import { createElement } from './utils/createElement';
 import { updateSelectOptions } from './utils/select.utils';
 
 let $select, $addToCartButton, $cartItemsContainer, $totalPrice, $stockStatus;
 let lastSel,
-  bonusPts = 0,
-  totalAmount = 0,
-  itemCnt = 0;
+  bonusPts = 0;
 
 function main() {
   const $root = document.getElementById('app');
@@ -86,53 +85,9 @@ function main() {
 }
 
 function calculateCartTotalAndDiscount() {
-  totalAmount = 0;
-  itemCnt = 0;
-  const $cartItems = $cartItemsContainer.children;
-  let originalTotalPrice = 0;
+  const { amount, discountRate } = calculateFinalAmount(Cart.items);
 
-  //#green
-  for (let i = 0; i < $cartItems.length; i++) {
-    const currentItem = products.find((product) => product.id === $cartItems[i].id);
-
-    const quantity = parseInt($cartItems[i].querySelector('span').textContent.split('x ')[1]);
-    const itemTotalPrice = currentItem.originalPrice * quantity;
-
-    const discount = calculateItemDiscount(currentItem.id, quantity);
-
-    itemCnt += quantity;
-    originalTotalPrice += itemTotalPrice;
-    totalAmount += itemTotalPrice * (1 - discount);
-  }
-  //#
-
-  //#blue
-  let discountRate = 0;
-
-  if (itemCnt >= 30) {
-    const bulkDisc = totalAmount * 0.25;
-    const itemDisc = originalTotalPrice - totalAmount;
-
-    if (bulkDisc > itemDisc) {
-      totalAmount = originalTotalPrice * (1 - 0.25);
-      discountRate = 0.25;
-    } else {
-      discountRate = (originalTotalPrice - totalAmount) / originalTotalPrice;
-    }
-  } else {
-    discountRate = (originalTotalPrice - totalAmount) / originalTotalPrice;
-  }
-  //#
-
-  //#red 요일 할인 부분
-  const dayDiscountRate = calculateDayDiscountRate();
-
-  totalAmount *= 1 - dayDiscountRate;
-  discountRate = Math.max(discountRate, dayDiscountRate);
-  //#
-
-  //#aqua
-  $totalPrice.textContent = '총액: ' + Math.round(totalAmount) + '원';
+  $totalPrice.textContent = '총액: ' + Math.round(amount) + '원';
   if (discountRate > 0) {
     const span = document.createElement('span');
 
@@ -140,11 +95,11 @@ function calculateCartTotalAndDiscount() {
     span.textContent = '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
     $totalPrice.appendChild(span);
   }
-  //#
   updateStockInfo();
-  renderBonusPts();
+  renderBonusPts(amount);
 }
-const renderBonusPts = () => {
+
+const renderBonusPts = (totalAmount: number) => {
   bonusPts = Math.floor(totalAmount / 1000);
   let ptsTag = document.getElementById('loyalty-points');
 
@@ -173,12 +128,13 @@ function updateStockInfo() {
 }
 main();
 $addToCartButton.addEventListener('click', function () {
-  const selItem = $select.value;
+  const selectedItem = $select.value;
   const itemToAdd = products.find(function (p) {
-    return p.id === selItem;
+    return p.id === selectedItem;
   });
 
   if (itemToAdd && itemToAdd.quantity > 0) {
+    Cart.addItem(itemToAdd);
     const item = document.getElementById(itemToAdd.id);
 
     if (item) {
@@ -215,7 +171,7 @@ $addToCartButton.addEventListener('click', function () {
       itemToAdd.quantity--;
     }
     calculateCartTotalAndDiscount();
-    lastSel = selItem;
+    lastSel = selectedItem;
   }
 });
 $cartItemsContainer.addEventListener('click', function (event) {
