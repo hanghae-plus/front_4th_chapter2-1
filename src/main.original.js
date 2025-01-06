@@ -149,7 +149,7 @@ function updateStockInfo() {
   });
   stockInfo.textContent=infoMsg;
 }
-main();
+main(); // 랜더링 담당자
 addBtn.addEventListener('click', function () {
   var selItem=sel.value;
   var itemToAdd=prodList.find(function (p) { return p.id === selItem; });
