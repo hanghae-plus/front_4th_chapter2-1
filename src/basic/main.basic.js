@@ -215,25 +215,21 @@ const reduceCartItem = (itemDiv, remaining, currentQuantity) => {
 };
 
 // 수량 변경
-const updateCartQuantity = (
-  itemDiv,
-  quantityChange,
-  { name, remaining, price }
-) => {
+const updateCartQuantity = (itemDiv, quantityChange, product) => {
   const itemSpan = itemDiv.querySelector("span");
   const currentQuantity = parseQuantity(itemSpan);
   const newQuantity = currentQuantity + quantityChange;
 
-  if (newQuantity > remaining + currentQuantity) {
+  if (newQuantity > product.remaining + currentQuantity) {
     alert("재고가 부족합니다.");
     return;
   }
 
   if (newQuantity > 0) {
-    itemSpan.textContent = `${name} - ${price}원 x ${newQuantity}`;
-    remaining -= quantityChange;
+    itemSpan.textContent = `${product.name} - ${product.price}원 x ${newQuantity}`;
+    product.remaining -= quantityChange;
   } else {
-    reduceCartItem(itemDiv, remaining);
+    reduceCartItem(itemDiv, product.remaining);
   }
 };
 
@@ -261,6 +257,45 @@ const handleClickCart = (event) => {
   }
 
   handleCalcCart();
+};
+
+const setUpEvents = () => {
+  // 임의의 시간마다 깜짝세일 20%
+  setTimeout(() => {
+    setInterval(() => {
+      const luckyItem =
+        productList[Math.floor(Math.random() * productList.length)];
+
+      if (Math.random() < 0.3 && luckyItem.remaining > 0) {
+        luckyItem.price = Math.round(luckyItem.price * (1 - RATES["20%"]));
+
+        alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
+
+        renderProductOptions();
+      }
+    }, 30000);
+  }, Math.random() * 10000);
+
+  // 추천세일 5%
+  setTimeout(() => {
+    setInterval(() => {
+      if (lastSelectedProduct) {
+        const suggest = productList.find(
+          (item) => item.id !== lastSelectedProduct && item.remaining > 0
+        );
+
+        if (suggest) {
+          alert(
+            `${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`
+          );
+
+          suggest.price = Math.round(suggest.price * (1 - RATES["5%"]));
+
+          renderProductOptions();
+        }
+      }
+    }, 60000);
+  }, Math.random() * 20000);
 };
 
 function main() {
@@ -309,40 +344,7 @@ function main() {
 
   handleCalcCart();
 
-  // 임의의 시간마다 깜짝세일 20%
-  setTimeout(() => {
-    setInterval(() => {
-      let luckyItem =
-        productList[Math.floor(Math.random() * productList.length)];
-
-      if (Math.random() < 0.3 && luckyItem.remaining > 0) {
-        luckyItem.price = Math.round(luckyItem.price * (1 - RATES["20%"]));
-
-        alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
-
-        renderProductOptions();
-      }
-    }, 30000);
-  }, Math.random() * 10000);
-
-  // 추천세일 5%
-  setTimeout(() => {
-    setInterval(() => {
-      if (lastSelectedProduct) {
-        let suggest = productList.find(
-          (item) => item.id !== lastSelectedProduct && item.remaining > 0
-        );
-
-        if (suggest) {
-          alert(
-            `${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`
-          );
-          suggest.price = Math.round(suggest.price * (1 - RATES["5%"]));
-          renderProductOptions();
-        }
-      }
-    }, 60000);
-  }, Math.random() * 20000);
+  setUpEvents();
 }
 
 main();
