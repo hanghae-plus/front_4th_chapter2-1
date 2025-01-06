@@ -1,5 +1,5 @@
-const Cart = () => {
-  var root = document.getElementById('app');
+export const Cart = () => {
+  const root = document.getElementById('app');
 
   // 타입 에러 처리를 위한 임시 유효성
   if (!root) return;
@@ -14,28 +14,28 @@ const Cart = () => {
   // INFO: 카트 계산 로직 함수
   function calcCart() {
     // 임시 변수
-    var sum;
+    let sum;
 
     totalAmt = 0;
     itemCnt = 0;
-    var cartItems = cartDisp.children;
-    var subTot = 0;
+    const cartItems = cartDisp.children;
+    let subTot = 0;
     for (var i = 0; i < cartItems.length; i++) {
       (function () {
-        var curItem;
+        let curItem;
 
         // 타입 에러 처리를 위한 임시 유효성
         if (!curItem) return;
 
-        for (var j = 0; j < prodList.length; j++) {
+        for (let j = 0; j < prodList.length; j++) {
           if (prodList[j].id === cartItems[i].id) {
             curItem = prodList[j];
             break;
           }
         }
-        var q = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
-        var itemTot = curItem.val * q;
-        var disc = 0;
+        const q = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
+        const itemTot = curItem.val * q;
+        let disc = 0;
         itemCnt += q;
         subTot += itemTot;
         if (q >= 10) {
@@ -50,8 +50,8 @@ const Cart = () => {
     }
     let discRate = 0;
     if (itemCnt >= 30) {
-      var bulkDisc = totalAmt * 0.25;
-      var itemDisc = subTot - totalAmt;
+      const bulkDisc = totalAmt * 0.25;
+      const itemDisc = subTot - totalAmt;
       if (bulkDisc > itemDisc) {
         totalAmt = subTot * (1 - 0.25);
         discRate = 0.25;
@@ -67,7 +67,7 @@ const Cart = () => {
     }
     sum.textContent = '총액: ' + Math.round(totalAmt) + '원';
     if (discRate > 0) {
-      var span = document.createElement('span');
+      const span = document.createElement('span');
       span.className = 'text-green-500 ml-2';
       span.textContent = '(' + (discRate * 100).toFixed(1) + '% 할인 적용)';
       sum.appendChild(span);
@@ -80,25 +80,25 @@ const Cart = () => {
   root.addEventListener('click', function (event) {
     // cart-items로 클릭인지 처리
 
-    var tgt = event.target;
+    const tgt = event.target;
 
     // 타입 에러 처리를 위한 임시 유효성
     if (!tgt) return;
 
     if (tgt.classList.contains('quantity-change') || tgt.classList.contains('remove-item')) {
-      var prodId = tgt.dataset.productId;
-      var itemElem = document.getElementById(prodId);
+      const prodId = tgt.dataset.productId;
+      const itemElem = document.getElementById(prodId);
 
       // 타입 에러 처리를 위한 임시 유효성
       if (!itemElem) return;
 
-      var prod = prodList.find(function (p) {
+      const prod = prodList.find(function (p) {
         return p.id === prodId;
       });
 
       if (tgt.classList.contains('quantity-change')) {
-        var qtyChange = parseInt(tgt.dataset.change);
-        var newQty = parseInt(itemElem.querySelector('span').textContent.split('x ')[1]) + qtyChange;
+        const qtyChange = parseInt(tgt.dataset.change);
+        const newQty = parseInt(itemElem.querySelector('span').textContent.split('x ')[1]) + qtyChange;
 
         if (newQty > 0 && newQty <= prod.q + parseInt(itemElem.querySelector('span').textContent.split('x ')[1])) {
           itemElem.querySelector('span').textContent =
@@ -111,7 +111,7 @@ const Cart = () => {
           alert('재고가 부족합니다.');
         }
       } else if (tgt.classList.contains('remove-item')) {
-        var remQty = parseInt(itemElem.querySelector('span').textContent.split('x ')[1]);
+        const remQty = parseInt(itemElem.querySelector('span').textContent.split('x ')[1]);
         prod.q += remQty;
         itemElem.remove();
       }

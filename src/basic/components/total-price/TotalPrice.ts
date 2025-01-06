@@ -1,4 +1,4 @@
-const TotalPrice = () => {
+export const TotalPrice = () => {
   // mock 변수선언
   const totalAmt = 30000;
   const discRate = 1000;

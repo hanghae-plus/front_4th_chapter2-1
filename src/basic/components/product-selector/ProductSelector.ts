@@ -6,7 +6,7 @@ const prodList = [
   { id: 'p5', name: '상품5', val: 25000, q: 10 },
 ];
 
-const ProductSelector = () => {
+export const ProductSelector = () => {
   const render = `
         <select class="border rounded p-2 mr-2">
         ${prodList.map((product) => {
@@ -23,20 +23,20 @@ const ProductSelector = () => {
 root.addEventListener('click', function () {
   // addBtn 클릭인지 확인해야함
 
-  var selItem = sel.value;
+  const selItem = sel.value;
 
-  var itemToAdd = prodList.find(function (p) {
+  const itemToAdd = prodList.find(function (p) {
     return p.id === selItem;
   });
 
   if (itemToAdd && itemToAdd.q > 0) {
-    var item = document.getElementById(itemToAdd.id);
+    const item = document.getElementById(itemToAdd.id);
 
     // 타입 에러 처리를 위한 임시 유효성
     if (!item) return;
 
     if (item) {
-      var newQty = parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
+      const newQty = parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
       if (newQty <= itemToAdd.q) {
         item.querySelector('span').textContent = itemToAdd.name + ' - ' + itemToAdd.val + '원 x ' + newQty;
         itemToAdd.q--;
@@ -44,7 +44,7 @@ root.addEventListener('click', function () {
         alert('재고가 부족합니다.');
       }
     } else {
-      var newItem = document.createElement('div');
+      const newItem = document.createElement('div');
       newItem.id = itemToAdd.id;
       newItem.className = 'flex justify-between items-center mb-2';
       newItem.innerHTML =

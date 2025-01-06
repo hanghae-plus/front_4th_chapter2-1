@@ -5,7 +5,7 @@ interface CartItemProps {
   q: number;
 }
 
-const CartItem = (props) => {
+export const CartItem = (props) => {
   const { id, name, val, q } = props;
 
   const render = `
