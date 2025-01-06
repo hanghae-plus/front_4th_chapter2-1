@@ -22,6 +22,14 @@ const productList = [
   { id: "p5", name: "상품5", price: 25000, remaining: 10 },
 ];
 
+// 현재 상품 수량 추출
+const parseQuantity = (element) => {
+  const textContent = element.textContent;
+  const quantity = textContent.split("x ")[1];
+
+  return parseInt(quantity);
+};
+
 // 적립 포인트
 const updateLoyaltyPoints = () => {
   let loyaltyPoints = document.getElementById("loyalty-points");
@@ -72,6 +80,7 @@ const renderProductOptions = () => {
 
 // 장바구니 계산
 const handleCalcCart = () => {
+  // 총 금액과 수량을 초기화
   totalPrice = 0;
   totalQuantity = 0;
 
@@ -157,9 +166,9 @@ const renderNewItemToCart = ({ id, name, price }) => {
   newItemDiv.innerHTML = `
     <span>${name} - ${price}원 x 1</span>
     <div>
-      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-row-id="${id}" data-change="-1">-</button>
-      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-row-id="${id}" data-change="1">+</button>
-      <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-row-id="${id}">삭제</button>
+      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${id}" data-change="-1">-</button>
+      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${id}" data-change="1">+</button>
+      <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${id}">삭제</button>
     </div>
   `;
 
@@ -179,8 +188,7 @@ const handleAddToCart = () => {
     if (inCartItem) {
       const quantitySpan = inCartItem.querySelector("span");
 
-      const currentQuantity =
-        parseInt(quantitySpan.textContent.split("x ")[1]) + 1;
+      const currentQuantity = parseQuantity(quantitySpan) + 1;
 
       if (itemToAdd.remaining < currentQuantity) {
         alert("재고가 부족합니다.");
@@ -200,28 +208,32 @@ const handleAddToCart = () => {
   }
 };
 
-const reduceCartItem = (itemDiv, product, currentQuantity) => {
+const reduceCartItem = (itemDiv, remaining, currentQuantity) => {
   itemDiv.remove();
   // 장바구니에서 제거한 만큼 재고 복원
-  product.remaining += currentQuantity;
+  remaining += currentQuantity;
 };
 
 // 수량 변경
-const updateCartQuantity = (itemDiv, quantityChange, product) => {
+const updateCartQuantity = (
+  itemDiv,
+  quantityChange,
+  { name, remaining, price }
+) => {
   const itemSpan = itemDiv.querySelector("span");
-  const currentQuantity = parseInt(itemSpan.textContent.split("x ")[1]);
+  const currentQuantity = parseQuantity(itemSpan);
   const newQuantity = currentQuantity + quantityChange;
 
-  if (newQuantity > product.remaining + currentQuantity) {
+  if (newQuantity > remaining + currentQuantity) {
     alert("재고가 부족합니다.");
     return;
   }
 
   if (newQuantity > 0) {
-    itemSpan.textContent = `${product.name} - ${product.price}원 x ${newQuantity}`;
-    product.remaining -= quantityChange;
+    itemSpan.textContent = `${name} - ${price}원 x ${newQuantity}`;
+    remaining -= quantityChange;
   } else {
-    reduceCartItem(itemDiv, product);
+    reduceCartItem(itemDiv, remaining);
   }
 };
 
@@ -230,13 +242,13 @@ const handleClickCart = (event) => {
   const clickedBtn = event.target; // 수량 변경 클릭한 버튼
   if (!clickedBtn) return;
 
-  const { rowId, change } = clickedBtn.dataset; // 클릭한 버튼의 ID (왜냐면 상품명-버튼 한 row라서)
+  const { productId, change } = clickedBtn.dataset; // 클릭한 버튼의 ID (왜냐면 상품명-버튼 한 row라서)
 
-  const product = productList.find((product) => product.id === rowId); // productList에서 해당 아이템 찾기
+  const product = productList.find((product) => product.id === productId); // productList에서 해당 아이템 찾기
 
-  const itemDiv = document.getElementById(rowId); // (id로 element조회)
+  const itemDiv = document.getElementById(productId); // (id로 element조회)
   const quantitySpan = itemDiv.querySelector("span");
-  const itemQuantity = parseInt(quantitySpan.textContent.split("x ")[1]);
+  const itemQuantity = parseQuantity(quantitySpan);
 
   // 수량 변경
   if (clickedBtn.classList.contains("quantity-change")) {
@@ -290,7 +302,9 @@ function main() {
   wrap.appendChild(sel);
   wrap.appendChild(addBtn);
   wrap.appendChild(stockInfo);
+
   cont.appendChild(wrap);
+
   root.appendChild(cont);
 
   handleCalcCart();
