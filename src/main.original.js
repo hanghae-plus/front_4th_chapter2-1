@@ -1,4 +1,3 @@
-var sel, addBtn, cartDisp, sum, stockInfo;
 var lastSel,
   bonusPts = 0,
   totalAmt = 0,
@@ -12,41 +11,28 @@ const PRODUCTS = [
   { id: "p5", name: "상품5", val: 25000, q: 10 },
 ];
 
-function main() {
-  var root = document.getElementById("app");
-  let cont = document.createElement("div");
-  var wrap = document.createElement("div");
-  let hTxt = document.createElement("h1");
-  cartDisp = document.createElement("div");
-  sum = document.createElement("div");
-  sel = document.createElement("select");
-  addBtn = document.createElement("button");
-  stockInfo = document.createElement("div");
-  cartDisp.id = "cart-items";
-  sum.id = "cart-total";
-  sel.id = "product-select";
-  addBtn.id = "add-to-cart";
-  stockInfo.id = "stock-status";
-  cont.className = "bg-gray-100 p-8";
-  wrap.className =
-    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
-  hTxt.className = "text-2xl font-bold mb-4";
-  sum.className = "text-xl font-bold my-4";
-  sel.className = "border rounded p-2 mr-2";
-  addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded";
-  stockInfo.className = "text-sm text-gray-500 mt-2";
-  hTxt.textContent = "장바구니";
-  addBtn.textContent = "추가";
+const render = (root) => {
+  root.innerHTML = `
+    <div id="cont" class="bg-gray-100 p-8">
+      <div id="wrap class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
+        <h1 class="text-2xl font-bold mb-4">장바구니</h1>
+        <div id="cart-items"></div>
+        <div id="cart-total" class="text-xl font-bold my-4"></div>
+        <select id="product-select" class="text-xl font-bold my-4"></select>
+        <button id="add-to-cart" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
+        <div id="stock-status" class="text-sm text-gray-500 mt-2"></div>
+      </div>
+    </div>
+  `;
+};
+
+const main = () => {
+  const root = document.querySelector("#app");
+  render(root);
+
   updateSelOpts();
-  wrap.appendChild(hTxt);
-  wrap.appendChild(cartDisp);
-  wrap.appendChild(sum);
-  wrap.appendChild(sel);
-  wrap.appendChild(addBtn);
-  wrap.appendChild(stockInfo);
-  cont.appendChild(wrap);
-  root.appendChild(cont);
   calcCart();
+
   setTimeout(function () {
     setInterval(function () {
       var luckyItem = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
@@ -57,6 +43,7 @@ function main() {
       }
     }, 30000);
   }, Math.random() * 10000);
+
   setTimeout(function () {
     setInterval(function () {
       if (lastSel) {
@@ -73,20 +60,23 @@ function main() {
       }
     }, 60000);
   }, Math.random() * 20000);
-}
+};
+
 function updateSelOpts() {
-  sel.innerHTML = "";
+  const sel = document.querySelector("#product-select");
   PRODUCTS.forEach(function (item) {
-    var opt = document.createElement("option");
-    opt.value = item.id;
-    opt.textContent = item.name + " - " + item.val + "원";
-    if (item.q === 0) opt.disabled = true;
-    sel.appendChild(opt);
+    const opt = `<option value="${item.id}" ${item.q === 0 ? "disabled" : ""}>${
+      item.name + " - " + item.val + "원"
+    }</option>`;
+    sel.innerHTML += opt;
   });
 }
+
 function calcCart() {
   totalAmt = 0;
   itemCnt = 0;
+  const cartDisp = document.querySelector("#cart-items");
+  const sum = document.querySelector("#cart-total");
   var cartItems = cartDisp.children;
   var subTot = 0;
   for (var i = 0; i < cartItems.length; i++) {
@@ -142,8 +132,10 @@ function calcCart() {
   updateStockInfo();
   renderBonusPts();
 }
+
 const renderBonusPts = () => {
   bonusPts = Math.floor(totalAmt / 1000);
+  const sum = document.querySelector("#cart-total");
   var ptsTag = document.getElementById("loyalty-points");
   if (!ptsTag) {
     ptsTag = document.createElement("span");
@@ -153,8 +145,10 @@ const renderBonusPts = () => {
   }
   ptsTag.textContent = "(포인트: " + bonusPts + ")";
 };
+
 function updateStockInfo() {
   var infoMsg = "";
+  const stockInfo = document.querySelector("#stock-status");
   PRODUCTS.forEach(function (item) {
     if (item.q < 5) {
       infoMsg +=
@@ -166,8 +160,12 @@ function updateStockInfo() {
   });
   stockInfo.textContent = infoMsg;
 }
+
 main();
-addBtn.addEventListener("click", function () {
+
+document.querySelector("#add-to-cart").addEventListener("click", function () {
+  const sel = document.querySelector("#product-select");
+  const cartDisp = document.querySelector("#cart-items");
   var selItem = sel.value;
   var itemToAdd = PRODUCTS.find(function (p) {
     return p.id === selItem;
@@ -210,46 +208,51 @@ addBtn.addEventListener("click", function () {
     lastSel = selItem;
   }
 });
-cartDisp.addEventListener("click", function (event) {
-  var tgt = event.target;
-  if (
-    tgt.classList.contains("quantity-change") ||
-    tgt.classList.contains("remove-item")
-  ) {
-    var prodId = tgt.dataset.productId;
-    var itemElem = document.getElementById(prodId);
-    var prod = PRODUCTS.find(function (p) {
-      return p.id === prodId;
-    });
-    if (tgt.classList.contains("quantity-change")) {
-      var qtyChange = parseInt(tgt.dataset.change);
-      var newQty =
-        parseInt(itemElem.querySelector("span").textContent.split("x ")[1]) +
-        qtyChange;
-      if (
-        newQty > 0 &&
-        newQty <=
-          prod.q +
-            parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
-      ) {
-        itemElem.querySelector("span").textContent =
-          itemElem.querySelector("span").textContent.split("x ")[0] +
-          "x " +
-          newQty;
-        prod.q -= qtyChange;
-      } else if (newQty <= 0) {
+
+document
+  .querySelector("#cart-items")
+  .addEventListener("click", function (event) {
+    var tgt = event.target;
+    if (
+      tgt.classList.contains("quantity-change") ||
+      tgt.classList.contains("remove-item")
+    ) {
+      var prodId = tgt.dataset.productId;
+      var itemElem = document.getElementById(prodId);
+      var prod = PRODUCTS.find(function (p) {
+        return p.id === prodId;
+      });
+      if (tgt.classList.contains("quantity-change")) {
+        var qtyChange = parseInt(tgt.dataset.change);
+        var newQty =
+          parseInt(itemElem.querySelector("span").textContent.split("x ")[1]) +
+          qtyChange;
+        if (
+          newQty > 0 &&
+          newQty <=
+            prod.q +
+              parseInt(
+                itemElem.querySelector("span").textContent.split("x ")[1]
+              )
+        ) {
+          itemElem.querySelector("span").textContent =
+            itemElem.querySelector("span").textContent.split("x ")[0] +
+            "x " +
+            newQty;
+          prod.q -= qtyChange;
+        } else if (newQty <= 0) {
+          itemElem.remove();
+          prod.q -= qtyChange;
+        } else {
+          alert("재고가 부족합니다.");
+        }
+      } else if (tgt.classList.contains("remove-item")) {
+        var remQty = parseInt(
+          itemElem.querySelector("span").textContent.split("x ")[1]
+        );
+        prod.q += remQty;
         itemElem.remove();
-        prod.q -= qtyChange;
-      } else {
-        alert("재고가 부족합니다.");
       }
-    } else if (tgt.classList.contains("remove-item")) {
-      var remQty = parseInt(
-        itemElem.querySelector("span").textContent.split("x ")[1]
-      );
-      prod.q += remQty;
-      itemElem.remove();
+      calcCart();
     }
-    calcCart();
-  }
-});
+  });
