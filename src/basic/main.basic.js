@@ -157,9 +157,9 @@ const renderNewItemToCart = ({ id, name, price }) => {
   newItemDiv.innerHTML = `
     <span>${name} - ${price}원 x 1</span>
     <div>
-      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${id}" data-change="-1">-</button>
-      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${id}" data-change="1">+</button>
-      <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${id}">삭제</button>
+      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-row-id="${id}" data-change="-1">-</button>
+      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-row-id="${id}" data-change="1">+</button>
+      <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-row-id="${id}">삭제</button>
     </div>
   `;
 
@@ -282,50 +282,57 @@ function main() {
 
 main();
 
-addBtn.addEventListener("click", handleAddToCart);
+// 수량 변경
+const updateCartQuantity = () => {};
 
-// 장바구니 수량 변경 및 삭제
-carts.addEventListener("click", (event) => {
-  let clickedBtn = event.target;
+// 수량 삭제
+const deleteCartItem = () => {};
 
-  let prodId = clickedBtn.dataset.productId;
-  const productElement = document.getElementById(prodId);
-  const prod = productList.find((product) => product.id === prodId);
+// 클릭 이벤트
+const handleClickCart = (event) => {
+  const clickedBtn = event.target; // 수량 변경 클릭한 버튼
+  if (!clickedBtn) return;
 
-  const productQuantity = parseInt(
-    productElement.querySelector("span").textContent.split("x ")[1]
-  );
+  const { rowId, change } = clickedBtn.dataset; // 클릭한 버튼의 ID (왜냐면 상품명-버튼 한 row라서)
+  if (!rowId) return;
+
+  const clickedItem = productList.find((product) => product.id === rowId); // productList에서 해당 아이템 찾기
+  const itemDiv = document.getElementById(rowId); // (id로 element조회)
+
+  const quantitySpan = itemDiv.querySelector("span");
+  const itemQuantity = parseInt(quantitySpan.textContent.split("x ")[1]);
 
   // 수량 변경
   if (clickedBtn.classList.contains("quantity-change")) {
-    const quantityChange = parseInt(clickedBtn.dataset.change);
+    const quantityChange = parseInt(change);
 
-    const changedQuantity = productQuantity + quantityChange;
+    const changedQuantity = itemQuantity + quantityChange;
 
-    if (
-      changedQuantity > 0 &&
-      changedQuantity <= prod.remaining + productQuantity
-    ) {
-      productElement.querySelector("span").textContent =
-        productElement.querySelector("span").textContent.split("x ")[0] +
-        "x " +
-        changedQuantity;
-
-      prod.remaining -= quantityChange;
-    } else if (changedQuantity <= 0) {
-      productElement.remove();
-
-      prod.remaining -= quantityChange;
-    } else {
+    if (changedQuantity > clickedItem.remaining + itemQuantity) {
       alert("재고가 부족합니다.");
+      return;
+    }
+
+    if (changedQuantity > 0) {
+      quantitySpan.textContent = `${
+        quantitySpan.textContent.split("x ")[0]
+      }x ${changedQuantity}`;
+      clickedItem.remaining -= quantityChange;
+    } else {
+      itemDiv.remove();
+      clickedItem.remaining -= quantityChange;
     }
   }
   // 삭제
   else if (clickedBtn.classList.contains("remove-item")) {
-    prod.remaining += productQuantity;
-
-    productElement.remove();
+    clickedItem.remaining += itemQuantity;
+    itemDiv.remove();
   }
 
   handleCalcCart();
-});
+};
+
+addBtn.addEventListener("click", handleAddToCart);
+
+// 장바구니 수량 변경 및 삭제
+carts.addEventListener("click", handleClickCart);
