@@ -1,8 +1,9 @@
 import js from '@eslint/js';
 import eslintConfigPrettier from 'eslint-config-prettier';
 import eslintPluginImport from 'eslint-plugin-import';
-import eslintPluginJest from 'eslint-plugin-jest';
 import eslintPluginPrettier from 'eslint-plugin-prettier';
+import eslintPluginTailwindcss from 'eslint-plugin-tailwindcss';
+import eslintPluginVitest from 'eslint-plugin-vitest';
 import globals from 'globals';
 
 export default [
@@ -22,10 +23,14 @@ export default [
     plugins: {
       prettier: eslintPluginPrettier,
       import: eslintPluginImport,
-      jest: eslintPluginJest,
+      tailwindcss: eslintPluginTailwindcss,
+      vitest: eslintPluginVitest,
     },
     rules: {
       'prettier/prettier': 'error',
+      ...eslintPluginImport.configs.recommended.rules,
+      ...eslintPluginVitest.configs.recommended.rules,
+      ...eslintPluginTailwindcss.configs.recommended.rules,
       'import/order': [
         'error',
         {
@@ -43,6 +48,7 @@ export default [
           },
         },
       ],
+      'no-console': 'warn',
     },
   },
   eslintConfigPrettier,
