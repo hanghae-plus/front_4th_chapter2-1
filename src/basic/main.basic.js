@@ -1,7 +1,4 @@
-let sel, addBtn, sum, stockInfo;
-
-let carts = document.getElementById("carts"); // 초기화 시 캐싱
-
+let sel, addBtn, carts, sum, stockInfo;
 let lastSelectedProduct,
   finalPrice = 0,
   totalQuantity = 0;
@@ -99,6 +96,23 @@ const renderProductOptions = () => {
   });
 };
 
+const updateCartMsg = (finalPrice, discountRate) => {
+  sum.textContent = `총액: ${Math.round(finalPrice)}원`;
+
+  if (discountRate > 0) {
+    const discountSpan = document.createElement("span");
+
+    discountSpan.className = "text-green-500 ml-2";
+    discountSpan.textContent = `(${(discountRate * 100).toFixed(
+      1
+    )}% 할인 적용)`;
+
+    sum.appendChild(discountSpan);
+  }
+};
+
+const applyDiscounts = () => {};
+
 // 장바구니 계산
 const handleCalcCart = () => {
   // 총 금액과 수량을 초기화
@@ -147,19 +161,8 @@ const handleCalcCart = () => {
     discountRate = Math.max(discountRate, DISCOUNT_RATES["10%"]);
   }
 
-  sum.textContent = `총액: ${Math.round(finalPrice)}원`;
-
-  if (discountRate > 0) {
-    const discountSpan = document.createElement("span");
-
-    discountSpan.className = "text-green-500 ml-2";
-    discountSpan.textContent = `(${(discountRate * 100).toFixed(
-      1
-    )}% 할인 적용)`;
-
-    sum.appendChild(discountSpan);
-  }
-
+  // UI 업데이트
+  updateCartMsg(finalPrice, discountRate);
   updateStockInfo();
   updateLoyaltyPoints();
 };
