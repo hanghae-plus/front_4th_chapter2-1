@@ -1,4 +1,6 @@
-let sel, addBtn, carts, sum, stockInfo;
+let sel, addBtn, sum, stockInfo;
+
+let carts = document.getElementById("carts"); // 초기화 시 캐싱
 
 let lastSelectedProduct,
   totalPrice = 0,
@@ -146,6 +148,58 @@ const handleCalcCart = () => {
   updateLoyaltyPoints();
 };
 
+const renderNewItemToCart = ({ id, name, price }) => {
+  const carts = document.getElementById("cart-items");
+  const newItemDiv = document.createElement("div");
+
+  newItemDiv.id = id;
+  newItemDiv.className = "flex justify-between items-center mb-2";
+  newItemDiv.innerHTML = `
+    <span>${name} - ${price}원 x 1</span>
+    <div>
+      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${id}" data-change="-1">-</button>
+      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${id}" data-change="1">+</button>
+      <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${id}">삭제</button>
+    </div>
+  `;
+
+  carts.appendChild(newItemDiv);
+};
+
+// 장바구니 추가
+const handleAddToCart = () => {
+  const selectedItem = document.getElementById("product-select");
+  const selectedID = selectedItem.value;
+  const itemToAdd = productList.find((product) => product.id === selectedID);
+
+  if (itemToAdd.remaining > 0) {
+    const inCartItem = document.getElementById(itemToAdd.id);
+
+    // 기존에 장바구니에 추가되어있을 때
+    if (inCartItem) {
+      const quantitySpan = inCartItem.querySelector("span");
+
+      const currentQuantity =
+        parseInt(quantitySpan.textContent.split("x ")[1]) + 1;
+
+      if (itemToAdd.remaining < currentQuantity) {
+        alert("재고가 부족합니다.");
+        return;
+      }
+
+      quantitySpan.textContent = `${itemToAdd.name} - ${itemToAdd.price}원 x ${currentQuantity}`;
+      itemToAdd.remaining--;
+    }
+    // 장바구니에 새로 추가할 때
+    else {
+      renderNewItemToCart(itemToAdd);
+      itemToAdd.remaining--;
+    }
+    handleCalcCart();
+    lastSelectedProduct = itemToAdd.id;
+  }
+};
+
 function main() {
   let root = document.getElementById("app");
 
@@ -228,49 +282,7 @@ function main() {
 
 main();
 
-//
-addBtn.addEventListener("click", () => {
-  const selectedID = sel.value;
-  const itemToAdd = productList.find((product) => product.id === selectedID);
-
-  if (itemToAdd && itemToAdd.remaining > 0) {
-    const item = document.getElementById(itemToAdd.id);
-
-    if (item) {
-      const quantity =
-        parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
-
-      if (quantity <= itemToAdd.remaining) {
-        item.querySelector(
-          "span"
-        ).textContent = `${itemToAdd.name} - ${itemToAdd.price}원 x ${quantity}`;
-        itemToAdd.remaining--;
-      } else {
-        alert("재고가 부족합니다.");
-      }
-    } else {
-      const newProductContainer = document.createElement("div");
-
-      newProductContainer.id = itemToAdd.id;
-      newProductContainer.className = "flex justify-between items-center mb-2";
-      newProductContainer.innerHTML = `
-        <span>${itemToAdd.name} - ${itemToAdd.price}원 x 1</span>
-        <div>
-          <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>
-          <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>
-          <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${itemToAdd.id}">삭제</button>
-        </div>
-      `;
-
-      carts.appendChild(newProductContainer);
-
-      itemToAdd.remaining--;
-    }
-    handleCalcCart();
-
-    lastSelectedProduct = selectedID;
-  }
-});
+addBtn.addEventListener("click", handleAddToCart);
 
 // 장바구니 수량 변경 및 삭제
 carts.addEventListener("click", (event) => {
