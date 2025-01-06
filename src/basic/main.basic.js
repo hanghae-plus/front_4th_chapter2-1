@@ -22,45 +22,45 @@ function main() {
     { id: 'p5', name: '상품5', price: 25_000, quantity: 10 },
   ];
 
-  const root = document.getElementById('app');
-  const containerDiv = document.createElement('div');
   const contentWrapper = document.createElement('div');
-
-  cartDisplay = document.createElement('div');
-  totalDisplay = document.createElement('div');
-  productSelector = document.createElement('select');
-  addToCartButton = document.createElement('button');
-  stockInfo = document.createElement('div');
-
-  cartDisplay.id = 'cart-items';
-  totalDisplay.id = 'cart-total';
-  productSelector.id = 'product-select';
-  addToCartButton.id = 'add-to-cart';
-  stockInfo.id = 'stock-status';
-
-  containerDiv.className = 'bg-gray-100 p-8';
   contentWrapper.className =
     'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-
-  totalDisplay.className = 'text-xl font-bold my-4';
-  productSelector.className = 'border rounded p-2 mr-2';
-  addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  stockInfo.className = 'text-sm text-gray-500 mt-2';
-
-  addToCartButton.textContent = '추가';
-
-  updateSelectOptions();
-
   const header = Header({ title: '장바구니' });
   contentWrapper.appendChild(header);
+
+  cartDisplay = document.createElement('div');
+  cartDisplay.id = 'cart-items';
   contentWrapper.appendChild(cartDisplay);
+
+  totalDisplay = document.createElement('div');
+  totalDisplay.id = 'cart-total';
+  totalDisplay.className = 'text-xl font-bold my-4';
   contentWrapper.appendChild(totalDisplay);
+
+  productSelector = document.createElement('select');
+  productSelector.id = 'product-select';
+  productSelector.className = 'border rounded p-2 mr-2';
   contentWrapper.appendChild(productSelector);
+
+  addToCartButton = document.createElement('button');
+  addToCartButton.id = 'add-to-cart';
+  addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
+  addToCartButton.textContent = '추가';
   contentWrapper.appendChild(addToCartButton);
+
+  stockInfo = document.createElement('div');
+  stockInfo.id = 'stock-status';
+  stockInfo.className = 'text-sm text-gray-500 mt-2';
   contentWrapper.appendChild(stockInfo);
+
+  const containerDiv = document.createElement('div');
+  containerDiv.className = 'bg-gray-100 p-8';
   containerDiv.appendChild(contentWrapper);
+
+  const root = document.getElementById('app');
   root.appendChild(containerDiv);
 
+  updateSelectOptions();
   calculateCart();
 
   setTimeout(function () {
