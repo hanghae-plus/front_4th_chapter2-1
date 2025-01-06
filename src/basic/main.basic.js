@@ -118,17 +118,17 @@ const PRODUCT_LIST = [
   { id: 'p4', name: '상품4', val: 15000, q: 0 },
   { id: 'p5', name: '상품5', val: 25000, q: 10 },
 ];
-let $cartDisp;
 let $sum;
 let $stockInfo;
-let lastSel;
 let $sel;
 function main() {
+  let lastSel;
+
   let $hTxt = document.createElement('h1');
   $hTxt.className = 'text-2xl font-bold mb-4';
   $hTxt.textContent = '장바구니';
 
-  $cartDisp = document.createElement('div');
+  let $cartDisp = document.createElement('div');
   $cartDisp.id = 'cart-items';
   $cartDisp.addEventListener('click', function (event) {
     let tgt = event.target;
