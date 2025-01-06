@@ -4,6 +4,7 @@ import {
   DISC_DAY_OF_THE_WEEK,
   DISC_RATES,
   ITEM_DISC_MIN_QTY,
+  DISC_PROB,
 } from "./const";
 
 const DISC_MSG = Object.freeze({
@@ -12,7 +13,7 @@ const DISC_MSG = Object.freeze({
     `${item}은(는) 어떠세요? 지금 구매하시면 ${rate}% 추가 할인!`,
 });
 
-const discountAlertProcessor = (item, type) => {
+const discountAlertProcessor = (item, type, updater) => {
   if (type !== "LUCKY_DISC" && type !== "ADDITIONAL_DISC") {
     throw Error(`${type} is not a supported discount type to alert.`);
   }
@@ -21,27 +22,29 @@ const discountAlertProcessor = (item, type) => {
 
   item.val = Math.round(item.val * (1 - DISC_RATES[type]));
   alert(DISC_MSG[type](item.name, DISC_RATES[type] * 100));
-  updateSelOpts();
+  updater();
 };
 
-export const setLuckyDiscAlert = (productList) => {
+export const setLuckyDiscAlert = (productList, updater) => {
   setTimeout(() => {
     setInterval(() => {
       const luckyItem =
         productList[Math.floor(Math.random() * productList.length)];
-      discountAlertProcessor(luckyItem, "LUCKY_DISC");
+      discountAlertProcessor(luckyItem, "LUCKY_DISC", () =>
+        updater(productList),
+      );
     }, DISC_INTERVALS.LUCKY_DISC);
   }, Math.random() * DISC_INITIAL_BUFFERS.LUCKY_DISC);
 };
 
-export const setAdditionalDiscAlert = (productList, lastSel) => {
+export const setAdditionalDiscAlert = (productList, lastSel, updater) => {
   setTimeout(() => {
     setInterval(() => {
       if (!lastSel) return;
-      const suggestedItem = productList.find(function (item) {
-        return item.id !== lastSel;
-      });
-      discountAlertProcessor(suggestedItem, "ADDITIONAL_DISC");
+      const suggestedItem = productList.find((item) => item.id !== lastSel);
+      discountAlertProcessor(suggestedItem, "ADDITIONAL_DISC", () =>
+        updater(productList),
+      );
     }, DISC_INTERVALS.ADDITIONAL_DISC);
   }, Math.random() * DISC_INITIAL_BUFFERS.ADDITIONAL_DISC);
 };

@@ -1,7 +1,9 @@
 import { CURRENCY, ID_BY_COMPONENT } from "./const";
 
-export const updateSelectOpts = (select, productList) => {
-  select.setAttribute("innerHTML", "");
+export const updateSelectOpts = (productList) => {
+  const select = document.querySelector(`#${ID_BY_COMPONENT.SELECT_ID}`);
+  select.innerHTML = "";
+
   productList.forEach(function (item) {
     const opt = document.createElement("option");
     opt.value = item.id;

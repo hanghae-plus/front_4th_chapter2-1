@@ -23,9 +23,8 @@ export const handleClickAddBtn = (productList, updater) => {
     );
     const newQty = curQty + 1;
     if (newQty <= itemToAdd.qty + curQty) {
-      curItem.querySelector(
-        "span",
-      ).textContent = `${itemToAdd.name} - ${itemToAdd.val}${CURRENCY} x ${newQty}`;
+      curItem.querySelector("span").textContent =
+        `${itemToAdd.name} - ${itemToAdd.val}${CURRENCY} x ${newQty}`;
       itemToAdd.qty--;
     } else {
       showOutOfStockAlert();
