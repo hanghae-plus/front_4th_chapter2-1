@@ -11,8 +11,8 @@ const PRODUCTS = [
   { id: "p5", name: "상품5", price: 25000, quantity: 10 },
 ];
 
-const render = (root) => {
-  root.innerHTML = `
+function MainPage() {
+  return `
     <div id="cont" class="bg-gray-100 p-8">
       <div id="wrap class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <h1 class="text-2xl font-bold mb-4">장바구니</h1>
@@ -24,6 +24,33 @@ const render = (root) => {
       </div>
     </div>
   `;
+}
+
+function Item({ product }) {
+  return `
+    <div id="${product.id}" class="flex justify-between items-center mb-2">
+      <span>${product.name} - ${product.price}원 x 1</span>
+      <div>
+        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>
+        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>
+        <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${itemToAdd.id}">삭제</button>
+      </div>
+    </div>
+  `;
+}
+
+function ItemOption({ item }) {
+  return `
+    <option value="${item.id}" ${item.quantity === 0 ? "disabled" : ""}>
+      ${item.name + " - " + item.price + "원"}
+    </option>
+  `;
+}
+
+const render = (target) => {
+  return (page) => {
+    target.innerHTML = page;
+  };
 };
 
 const alertEvent = (callback, intervalMs, delayMs) => {
@@ -56,7 +83,7 @@ const lastSelEvent = () => {
 
 const main = () => {
   const root = document.querySelector("#app");
-  render(root);
+  render(root)(MainPage());
 
   updateSelOpts();
   calcCart();
@@ -67,12 +94,8 @@ const main = () => {
 
 const updateSelOpts = () => {
   const sel = document.querySelector("#product-select");
-  PRODUCTS.forEach((item) => {
-    const opt = `<option value="${item.id}" ${
-      item.quantity === 0 ? "disabled" : ""
-    }>${item.name + " - " + item.price + "원"}</option>`;
-    sel.innerHTML += opt;
-  });
+  const options = PRODUCTS.map((item) => ItemOption(item));
+  render(sel)(options);
 };
 
 const calcCart = () => {
@@ -167,7 +190,6 @@ const addToCartClickHandler = () => {
 
   if (itemToAdd && itemToAdd.quantity > 0) {
     const item = document.getElementById(itemToAdd.id);
-    console.log(item, selItem);
     if (item) {
       const newQty =
         parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
@@ -179,17 +201,7 @@ const addToCartClickHandler = () => {
         alert("재고가 부족합니다.");
       }
     } else {
-      const newItem = `
-        <div id="${itemToAdd.id}" class="flex justify-between items-center mb-2">
-          <span>${itemToAdd.name} - ${itemToAdd.price}원 x 1</span>
-          <div>
-            <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>
-            <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>
-            <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${itemToAdd.id}">삭제</button>
-          </div>
-        </div>
-      `;
-      cartItems.innerHTML += newItem;
+      render(cartItems)(Item(itemToAdd));
       itemToAdd.quantity--;
     }
     calcCart();
@@ -201,32 +213,25 @@ document
   .querySelector("#add-to-cart")
   .addEventListener("click", addToCartClickHandler);
 
-document.querySelector("#cart-items").addEventListener("click", (event) => {
-  const tgt = event.target;
+const cartItemsClickHandler = (event) => {
+  const { classList, dataset } = event.target;
   if (
-    tgt.classList.contains("quantity-change") ||
-    tgt.classList.contains("remove-item")
+    classList.contains("quantity-change") ||
+    classList.contains("remove-item")
   ) {
-    const prodId = tgt.dataset.productId;
-    const itemElem = document.getElementById(prodId);
+    const { productId, change } = dataset;
+    const itemElem = document.getElementById(productId);
     const prod = PRODUCTS.find((p) => {
-      return p.id === prodId;
+      return p.id === productId;
     });
-    if (tgt.classList.contains("quantity-change")) {
-      const qtyChange = parseInt(tgt.dataset.change);
-      const newQty =
-        parseInt(itemElem.querySelector("span").textContent.split("x ")[1]) +
-        qtyChange;
-      if (
-        newQty > 0 &&
-        newQty <=
-          prod.quantity +
-            parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
-      ) {
-        itemElem.querySelector("span").textContent =
-          itemElem.querySelector("span").textContent.split("x ")[0] +
-          "x " +
-          newQty;
+    if (classList.contains("quantity-change")) {
+      const qtyChange = parseInt(change);
+      const [itemPrice, curQuantity] = itemElem
+        .querySelector("span")
+        .textContent.split("x ");
+      const newQty = parseInt(itemPrice) + qtyChange;
+      if (newQty > 0 && newQty <= prod.quantity + parseInt(curQuantity)) {
+        itemElem.querySelector("span").textContent = itemPrice + "x " + newQty;
         prod.quantity -= qtyChange;
       } else if (newQty <= 0) {
         itemElem.remove();
@@ -234,13 +239,15 @@ document.querySelector("#cart-items").addEventListener("click", (event) => {
       } else {
         alert("재고가 부족합니다.");
       }
-    } else if (tgt.classList.contains("remove-item")) {
-      const remQty = parseInt(
-        itemElem.querySelector("span").textContent.split("x ")[1]
-      );
+    } else if (classList.contains("remove-item")) {
+      const remQty = parseInt(curQuantity);
       prod.quantity += remQty;
       itemElem.remove();
     }
     calcCart();
   }
-});
+};
+
+document
+  .querySelector("#cart-items")
+  .addEventListener("click", cartItemsClickHandler);
