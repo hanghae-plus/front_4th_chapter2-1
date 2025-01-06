@@ -1,3 +1,5 @@
+import Header from './components/Header';
+
 // 할인율
 const DISCOUNT_RATES = {
   p1: 0.1,
@@ -62,7 +64,6 @@ function main() {
   const root = document.getElementById('app');
   const containerDiv = document.createElement('div');
   const contentWrapper = document.createElement('div');
-  const mainHeader = document.createElement('h1');
 
   cartDisplay = document.createElement('div');
   totalDisplay = document.createElement('div');
@@ -79,18 +80,18 @@ function main() {
   containerDiv.className = 'bg-gray-100 p-8';
   contentWrapper.className =
     'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  mainHeader.className = 'text-2xl font-bold mb-4';
+
   totalDisplay.className = 'text-xl font-bold my-4';
   productSelector.className = 'border rounded p-2 mr-2';
   addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
   stockInfo.className = 'text-sm text-gray-500 mt-2';
 
-  mainHeader.textContent = '장바구니';
   addToCartButton.textContent = '추가';
 
   updateSelectOptions();
 
-  contentWrapper.appendChild(mainHeader);
+  const header = Header({ title: '장바구니' });
+  contentWrapper.appendChild(header);
   contentWrapper.appendChild(cartDisplay);
   contentWrapper.appendChild(totalDisplay);
   contentWrapper.appendChild(productSelector);
