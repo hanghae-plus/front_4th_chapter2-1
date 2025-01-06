@@ -11,6 +11,32 @@ var lastSelectedProduct,
   totalAmount = 0,
   itemCount = 0;
 
+// 할인 정책 상수
+const PROMOTION_CONFIG = {
+  FLASH_SALE: {
+    INTERVAL: 30000, // 30초
+    INITIAL_DELAY: 10000, // 10초
+    PROBABILITY: 0.3, // 30% 확률
+    DISCOUNT_RATE: 0.8, // 20% 할인 (1 - 0.2)
+  },
+  RECOMMENDATION: {
+    INTERVAL: 60000, // 60초
+    INITIAL_DELAY: 20000, // 20초
+    DISCOUNT_RATE: 0.95, // 5% 할인 (1 - 0.05)
+  },
+};
+// 상품별 할인율 상수
+const PRODUCT_DISCOUNTS = {
+  p1: 0.1, // 10% 할인
+  p2: 0.15, // 15% 할인
+  p3: 0.2, // 20% 할인
+  p4: 0.05, // 5% 할인
+  p5: 0.25, // 25% 할인
+};
+// (대량구매) 30개 이상 구매 시 25% 할인
+const BULK_PURCHASE_THRESHOLD = 30;
+const BULK_PURCHASE_DISCOUNT_RATE = 0.25;
+
 function main() {
   // 상품 목록 초기화
   productList = [
@@ -65,7 +91,7 @@ function main() {
   container.appendChild(wrapper);
   root.appendChild(container);
 
-  calculateCartTotal();
+  processCartChanges();
 
   // 번개세일 타이머
   setTimeout(function () {
@@ -73,14 +99,20 @@ function main() {
       var luckyItem =
         productList[Math.floor(Math.random() * productList.length)];
 
-      if (Math.random() < 0.3 && luckyItem.stock > 0) {
-        luckyItem.price = Math.round(luckyItem.price * 0.8);
+      if (
+        Math.random() < PROMOTION_CONFIG.FLASH_SALE.PROBABILITY &&
+        luckyItem.stock > 0
+      ) {
+        luckyItem.price = Math.round(
+          luckyItem.price * PROMOTION_CONFIG.FLASH_SALE.DISCOUNT_RATE
+        );
         alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
         updateProductOptions();
       }
-    }, 30000);
-  }, Math.random() * 10000);
+    }, PROMOTION_CONFIG.FLASH_SALE.INTERVAL);
+  }, Math.random() * PROMOTION_CONFIG.FLASH_SALE.INITIAL_DELAY);
 
+  // 추천 상품 타이머
   // 추천 상품 타이머
   setTimeout(function () {
     setInterval(function () {
@@ -93,12 +125,14 @@ function main() {
           alert(
             suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!"
           );
-          suggest.price = Math.round(suggest.price * 0.95);
+          suggest.price = Math.round(
+            suggest.price * PROMOTION_CONFIG.RECOMMENDATION.DISCOUNT_RATE
+          );
           updateProductOptions();
         }
       }
-    }, 60000);
-  }, Math.random() * 20000);
+    }, PROMOTION_CONFIG.RECOMMENDATION.INTERVAL);
+  }, Math.random() * PROMOTION_CONFIG.RECOMMENDATION.INITIAL_DELAY);
 }
 
 // 상품 선택 옵션 업데이트
@@ -145,11 +179,7 @@ function processCartChanges() {
 
       // 할인 적용
       if (quantity >= 10) {
-        if (curItem.id === "p1") discount = 0.1;
-        else if (curItem.id === "p2") discount = 0.15;
-        else if (curItem.id === "p3") discount = 0.2;
-        else if (curItem.id === "p4") discount = 0.05;
-        else if (curItem.id === "p5") discount = 0.25;
+        discount = PRODUCT_DISCOUNTS[curItem.id] || 0;
       }
 
       totalAmount += itemTot * (1 - discount);
@@ -160,8 +190,9 @@ function processCartChanges() {
   let discRate = 0;
 
   // 30개 이상 구매 시 25% 할인
-  if (itemCount >= 30) {
-    var bulkDisc = totalAmount * 0.25;
+  if (itemCount >= BULK_PURCHASE_THRESHOLD) {
+    var bulkDisc = totalAmount * BULK_PURCHASE_DISCOUNT_RATE;
+
     var itemDisc = subTot - totalAmount;
 
     if (bulkDisc > itemDisc) {
@@ -214,9 +245,10 @@ const renderBonusPoints = () => {
 // 재고 상태 업데이트
 function updateStockStatus() {
   var infoMsg = "";
+  const LOW_STOCK_THRESHOLD = 5;
 
   productList.forEach(function (item) {
-    if (item.stock < 5) {
+    if (item.stock < LOW_STOCK_THRESHOLD) {
       infoMsg +=
         item.name +
         ": " +
