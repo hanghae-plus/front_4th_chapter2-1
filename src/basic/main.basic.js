@@ -6,7 +6,7 @@ let lastSelectedProduct,
   finalPrice = 0,
   totalQuantity = 0;
 
-const RATES = {
+const DISCOUNT_RATES = {
   "5%": 0.05,
   "10%": 0.1,
   "15%": 0.15,
@@ -28,6 +28,27 @@ const parseQuantity = (element) => {
   const quantity = textContent.split("x ")[1];
 
   return parseInt(quantity);
+};
+
+// 할인율 적용
+const setDiscountRates = (productID) => {
+  switch (productID) {
+    // 상품1 > 10개 이상 구매 시 10% 할인
+    case "p1":
+      return DISCOUNT_RATES["10%"];
+    // 상품2 > 10개 이상 구매 시 15% 할인
+    case "p2":
+      return DISCOUNT_RATES["15%"];
+    // 상품3 > 10개 이상 구매 시 20% 할인
+    case "p3":
+      return DISCOUNT_RATES["20%"];
+    case "p4":
+      return DISCOUNT_RATES["5%"];
+    case "p5":
+      return DISCOUNT_RATES["25%"];
+    default:
+      return 0;
+  }
 };
 
 // 적립 포인트
@@ -93,44 +114,37 @@ const handleCalcCart = () => {
       (product) => product.id === cartItems[i].id
     );
     const quantity = parseQuantity(cartItems[i].querySelector("span"));
-    const itemTotal = targetItem.price * quantity;
+    const itemTotalPrice = targetItem.price * quantity;
 
     let discount = 0;
 
     totalQuantity += quantity;
-    originalTotal += itemTotal;
+    originalTotal += itemTotalPrice;
 
     if (quantity >= 10) {
-      // 상품1 > 10개 이상 구매 시 10% 할인
-      if (targetItem.id === "p1") discount = RATES["10%"];
-      // 상품2 > 10개 이상 구매 시 15% 할인
-      else if (targetItem.id === "p2") discount = RATES["15%"];
-      // 상품3 > 10개 이상 구매 시 20% 할인
-      else if (targetItem.id === "p3") discount = RATES["20%"];
-      else if (targetItem.id === "p4") discount = RATES["5%"];
-      else if (targetItem.id === "p5") discount = RATES["25%"];
+      discount = setDiscountRates(targetItem.id);
     }
 
-    finalPrice += itemTotal * (1 - discount); // 할인가 적용한 최종가격
+    finalPrice += itemTotalPrice * (1 - discount); // 할인가 적용한 최종가격
   }
 
   let discountRate = (originalTotal - finalPrice) / originalTotal;
 
   // 상품 종류와 상관 없이, 30개 이상 구매할 경우 25% 할인
   if (totalQuantity >= 30) {
-    const bulkOrderDiscount = finalPrice * RATES["25%"];
+    const bulkOrderDiscount = finalPrice * DISCOUNT_RATES["25%"];
     const totalDiscount = originalTotal - finalPrice;
 
     if (bulkOrderDiscount > totalDiscount) {
-      finalPrice = originalTotal * (1 - RATES["25%"]);
-      discountRate = RATES["25%"];
+      finalPrice = originalTotal * (1 - DISCOUNT_RATES["25%"]);
+      discountRate = DISCOUNT_RATES["25%"];
     }
   }
 
   // 화요일에는 특별할인 10%
   if (new Date().getDay() === 2) {
-    finalPrice *= 1 - RATES["10%"];
-    discountRate = Math.max(discountRate, RATES["10%"]);
+    finalPrice *= 1 - DISCOUNT_RATES["10%"];
+    discountRate = Math.max(discountRate, DISCOUNT_RATES["10%"]);
   }
 
   sum.textContent = `총액: ${Math.round(finalPrice)}원`;
@@ -260,7 +274,9 @@ const setUpEvents = () => {
         productList[Math.floor(Math.random() * productList.length)];
 
       if (Math.random() < 0.3 && luckyItem.remaining > 0) {
-        luckyItem.price = Math.round(luckyItem.price * (1 - RATES["20%"]));
+        luckyItem.price = Math.round(
+          luckyItem.price * (1 - DISCOUNT_RATES["20%"])
+        );
 
         alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
 
@@ -282,7 +298,9 @@ const setUpEvents = () => {
             `${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`
           );
 
-          suggest.price = Math.round(suggest.price * (1 - RATES["5%"]));
+          suggest.price = Math.round(
+            suggest.price * (1 - DISCOUNT_RATES["5%"])
+          );
 
           renderProductOptions();
         }
