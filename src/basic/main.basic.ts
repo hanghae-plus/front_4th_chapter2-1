@@ -1,13 +1,14 @@
 import { products } from './data/product';
-import { Product } from './types/product.type';
+import { calculateDayDiscountRate, calculateItemDiscount } from './services/calcProductDiscount';
 import { createElement } from './utils/createElement';
 import { updateSelectOptions } from './utils/select.utils';
 
 let $select, $addToCartButton, $cartItemsContainer, $totalPrice, $stockStatus;
 let lastSel,
   bonusPts = 0,
-  totalAmt = 0,
+  totalAmount = 0,
   itemCnt = 0;
+
 function main() {
   const $root = document.getElementById('app');
   const $container = createElement('div', {
@@ -17,10 +18,11 @@ function main() {
     id: 'cart-wrap',
     className: 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8',
   });
-  const $hTxt = createElement('h1', {
+  const $head = createElement('h1', {
     className: 'text-2xl font-bold mb-4',
     textContent: '장바구니',
   });
+
   $cartItemsContainer = createElement('div', {
     id: 'cart-items',
   });
@@ -44,7 +46,7 @@ function main() {
 
   updateSelectOptions($select, products);
 
-  $wrap.appendChild($hTxt);
+  $wrap.appendChild($head);
   $wrap.appendChild($cartItemsContainer);
   $wrap.appendChild($totalPrice);
   $wrap.appendChild($select);
@@ -53,10 +55,11 @@ function main() {
   $container.appendChild($wrap);
   $root.appendChild($container);
 
-  calcCart();
+  calculateCartTotalAndDiscount();
   setTimeout(function () {
     setInterval(function () {
       const luckyItem = products[Math.floor(Math.random() * products.length)];
+
       if (Math.random() < 0.3 && luckyItem.quantity > 0) {
         luckyItem.originalPrice = Math.round(luckyItem.originalPrice * 0.8);
         // alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
@@ -71,6 +74,7 @@ function main() {
         const suggest = products.find(function (item) {
           return item.id !== lastSel && item.quantity > 0;
         });
+
         if (suggest) {
           // alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
           suggest.originalPrice = Math.round(suggest.originalPrice * 0.95);
@@ -81,65 +85,69 @@ function main() {
   }, Math.random() * 20000);
 }
 
-function calcCart() {
-  totalAmt = 0;
+function calculateCartTotalAndDiscount() {
+  totalAmount = 0;
   itemCnt = 0;
-  const cartItems = $cartItemsContainer.children;
-  let subTot = 0;
-  for (let i = 0; i < cartItems.length; i++) {
-    (function () {
-      let curItem;
-      for (let j = 0; j < products.length; j++) {
-        if (products[j].id === cartItems[i].id) {
-          curItem = products[j];
-          break;
-        }
-      }
-      const q = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
-      const itemTot = curItem.originalPrice * q;
-      let disc = 0;
-      itemCnt += q;
-      subTot += itemTot;
-      if (q >= 10) {
-        if (curItem.id === 'p1') disc = 0.1;
-        else if (curItem.id === 'p2') disc = 0.15;
-        else if (curItem.id === 'p3') disc = 0.2;
-        else if (curItem.id === 'p4') disc = 0.05;
-        else if (curItem.id === 'p5') disc = 0.25;
-      }
-      totalAmt += itemTot * (1 - disc);
-    })();
+  const $cartItems = $cartItemsContainer.children;
+  let originalTotalPrice = 0;
+
+  //#green
+  for (let i = 0; i < $cartItems.length; i++) {
+    const currentItem = products.find((product) => product.id === $cartItems[i].id);
+
+    const quantity = parseInt($cartItems[i].querySelector('span').textContent.split('x ')[1]);
+    const itemTotalPrice = currentItem.originalPrice * quantity;
+
+    const discount = calculateItemDiscount(currentItem.id, quantity);
+
+    itemCnt += quantity;
+    originalTotalPrice += itemTotalPrice;
+    totalAmount += itemTotalPrice * (1 - discount);
   }
-  let discRate = 0;
+  //#
+
+  //#blue
+  let discountRate = 0;
+
   if (itemCnt >= 30) {
-    const bulkDisc = totalAmt * 0.25;
-    const itemDisc = subTot - totalAmt;
+    const bulkDisc = totalAmount * 0.25;
+    const itemDisc = originalTotalPrice - totalAmount;
+
     if (bulkDisc > itemDisc) {
-      totalAmt = subTot * (1 - 0.25);
-      discRate = 0.25;
+      totalAmount = originalTotalPrice * (1 - 0.25);
+      discountRate = 0.25;
     } else {
-      discRate = (subTot - totalAmt) / subTot;
+      discountRate = (originalTotalPrice - totalAmount) / originalTotalPrice;
     }
   } else {
-    discRate = (subTot - totalAmt) / subTot;
+    discountRate = (originalTotalPrice - totalAmount) / originalTotalPrice;
   }
-  if (new Date().getDay() === 2) {
-    totalAmt *= 1 - 0.1;
-    discRate = Math.max(discRate, 0.1);
-  }
-  $totalPrice.textContent = '총액: ' + Math.round(totalAmt) + '원';
-  if (discRate > 0) {
+  //#
+
+  //#red 요일 할인 부분
+  const dayDiscountRate = calculateDayDiscountRate();
+
+  totalAmount *= 1 - dayDiscountRate;
+  discountRate = Math.max(discountRate, dayDiscountRate);
+  //#
+
+  //#aqua
+  $totalPrice.textContent = '총액: ' + Math.round(totalAmount) + '원';
+  if (discountRate > 0) {
     const span = document.createElement('span');
+
     span.className = 'text-green-500 ml-2';
-    span.textContent = '(' + (discRate * 100).toFixed(1) + '% 할인 적용)';
+    span.textContent = '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
     $totalPrice.appendChild(span);
   }
+  //#
   updateStockInfo();
   renderBonusPts();
 }
 const renderBonusPts = () => {
-  bonusPts = Math.floor(totalAmt / 1000);
+  bonusPts = Math.floor(totalAmount / 1000);
   let ptsTag = document.getElementById('loyalty-points');
+
   if (!ptsTag) {
     ptsTag = document.createElement('span');
     ptsTag.id = 'loyalty-points';
@@ -148,8 +156,10 @@ const renderBonusPts = () => {
   }
   ptsTag.textContent = '(포인트: ' + bonusPts + ')';
 };
+
 function updateStockInfo() {
   let infoMsg = '';
+
   products.forEach(function (item) {
     if (item.quantity < 5) {
       infoMsg +=
@@ -167,10 +177,13 @@ $addToCartButton.addEventListener('click', function () {
   const itemToAdd = products.find(function (p) {
     return p.id === selItem;
   });
+
   if (itemToAdd && itemToAdd.quantity > 0) {
     const item = document.getElementById(itemToAdd.id);
+
     if (item) {
       const newQty = parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
+
       if (newQty <= itemToAdd.quantity) {
         item.querySelector('span').textContent =
           itemToAdd.name + ' - ' + itemToAdd.originalPrice + '원 x ' + newQty;
@@ -180,6 +193,7 @@ $addToCartButton.addEventListener('click', function () {
       }
     } else {
       const newItem = document.createElement('div');
+
       newItem.id = itemToAdd.id;
       newItem.className = 'flex justify-between items-center mb-2';
       newItem.innerHTML =
@@ -200,22 +214,25 @@ $addToCartButton.addEventListener('click', function () {
       $cartItemsContainer.appendChild(newItem);
       itemToAdd.quantity--;
     }
-    calcCart();
+    calculateCartTotalAndDiscount();
     lastSel = selItem;
   }
 });
 $cartItemsContainer.addEventListener('click', function (event) {
   const tgt = event.target;
+
   if (tgt.classList.contains('quantity-change') || tgt.classList.contains('remove-item')) {
     const prodId = tgt.dataset.productId;
     const itemElem = document.getElementById(prodId);
     const prod = products.find(function (p) {
       return p.id === prodId;
     });
+
     if (tgt.classList.contains('quantity-change')) {
       const qtyChange = parseInt(tgt.dataset.change);
       const newQty =
         parseInt(itemElem.querySelector('span').textContent.split('x ')[1]) + qtyChange;
+
       if (
         newQty > 0 &&
         newQty <=
@@ -232,9 +249,10 @@ $cartItemsContainer.addEventListener('click', function (event) {
       }
     } else if (tgt.classList.contains('remove-item')) {
       const remQty = parseInt(itemElem.querySelector('span').textContent.split('x ')[1]);
+
       prod.quantity += remQty;
       itemElem.remove();
     }
-    calcCart();
+    calculateCartTotalAndDiscount();
   }
 });
