@@ -4,6 +4,7 @@ var lastSel,
   totalAmt = 0,
   itemCnt = 0;
 function main() {
+  // 전역변수에 담기는 값
   prodList = [
     { id: "p1", name: "상품1", val: 10000, q: 50 },
     { id: "p2", name: "상품2", val: 20000, q: 30 },
@@ -11,40 +12,63 @@ function main() {
     { id: "p4", name: "상품4", val: 15000, q: 0 },
     { id: "p5", name: "상품5", val: 25000, q: 10 },
   ];
+
+  // 루트 요소
   var root = document.getElementById("app");
+  root.appendChild(cont);
+  // 최상위 루트에서 첫번째로 추가되는 요소는 cont...
+  // cont부터 분리하여 시작
+
+  // 컨텐츠 Div
   let cont = document.createElement("div");
-  var wrap = document.createElement("div");
-  let hTxt = document.createElement("h1");
-  cartDisp = document.createElement("div");
-  sum = document.createElement("div");
-  sel = document.createElement("select");
-  addBtn = document.createElement("button");
-  stockInfo = document.createElement("div");
-  cartDisp.id = "cart-items";
-  sum.id = "cart-total";
-  sel.id = "product-select";
-  addBtn.id = "add-to-cart";
-  stockInfo.id = "stock-status";
   cont.className = "bg-gray-100 p-8";
+  cont.appendChild(wrap);
+  // 컨텐츠는 자식으로 랩퍼요소들을 모두 포함하고있다.
+
+  // 랩퍼 Div
+  // 랩퍼에 수많은 자식요소들이 추가되는데, 이런거는 한번더 분리하는게 좋아보임
+  var wrap = document.createElement("div");
   wrap.className =
     "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
-  hTxt.className = "text-2xl font-bold mb-4";
-  sum.className = "text-xl font-bold my-4";
-  sel.className = "border rounded p-2 mr-2";
-  addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded";
-  stockInfo.className = "text-sm text-gray-500 mt-2";
-  hTxt.textContent = "장바구니";
-  addBtn.textContent = "추가";
-  updateSelOpts();
   wrap.appendChild(hTxt);
   wrap.appendChild(cartDisp);
   wrap.appendChild(sum);
   wrap.appendChild(sel);
   wrap.appendChild(addBtn);
   wrap.appendChild(stockInfo);
-  cont.appendChild(wrap);
-  root.appendChild(cont);
+
+  // 헤더 텍스트 ?
+  let hTxt = document.createElement("h1");
+  hTxt.className = "text-2xl font-bold mb-4";
+  hTxt.textContent = "장바구니";
+
+  // 카트 Display ?
+  cartDisp = document.createElement("div");
+  cartDisp.id = "cart-items";
+
+  // 합계 Div
+  sum = document.createElement("div");
+  sum.id = "cart-total";
+  sum.className = "text-xl font-bold my-4";
+
+  // 선택 요소
+  sel = document.createElement("select");
+  sel.id = "product-select";
+  sel.className = "border rounded p-2 mr-2";
+
+  // 추가 버튼
+  addBtn = document.createElement("button");
+  addBtn.id = "add-to-cart";
+  addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded";
+
+  // 재고 정보 Div
+  stockInfo = document.createElement("div");
+  stockInfo.id = "stock-status";
+  stockInfo.className = "text-sm text-gray-500 mt-2";
+
+  updateSelOpts();
   calcCart();
+
   setTimeout(function () {
     setInterval(function () {
       var luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
@@ -73,6 +97,7 @@ function main() {
   }, Math.random() * 20000);
 }
 function updateSelOpts() {
+  // sel, prodList, opt
   sel.innerHTML = "";
   prodList.forEach(function (item) {
     var opt = document.createElement("option");
@@ -83,6 +108,7 @@ function updateSelOpts() {
   });
 }
 function calcCart() {
+  // cardDisp, prodList,
   totalAmt = 0;
   itemCnt = 0;
   var cartItems = cartDisp.children;
@@ -254,7 +280,7 @@ cartDisp.addEventListener("click", function (event) {
 
 // clean code
 const initializeApp = () => {
-  console.log("initializeApp");
+  const $rootElement = document.getElementById("app");
 };
 
-initializeApp();
+// initializeApp();
