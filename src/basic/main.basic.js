@@ -19,7 +19,16 @@ function createElement(tag, options = {}) {
   if (options.id) element.id = options.id;
   if (options.className) element.className = options.className;
   if (options.textContent) element.textContent = options.textContent;
+  if (options.value) element.value = options.value;
   return element;
+}
+
+function getluckyItem() {
+  return productList[Math.floor(Math.random() * productList.length)];
+}
+
+function findSuggest() {
+  return productList.find((item) => item.id !== lastSel && item.count > 0);
 }
 
 function main() {
@@ -52,40 +61,37 @@ function main() {
 
   setTimeout(() => {
     setInterval(() => {
-      var luckyItem = productList[Math.floor(Math.random() * productList.length)];
-      if (Math.random() < 0.3 && luckyItem.count > 0) {
-        luckyItem.price = Math.round(luckyItem.price * 0.8);
-        alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
+      let { count, price, name } = getluckyItem();
+
+      if (Math.random() < 0.3 && count > 0) {
+        let itemPrice = price * 0.8;
+        price = Math.round(itemPrice);
+        alert("번개세일! " + name + "이(가) 20% 할인 중입니다!");
         updateSelOpts();
       }
+
     }, 30000);
   }, Math.random() * 10000);
 
   setTimeout(() => {
     setInterval(() => {
-      if (lastSel) {
-        var suggest = productList.find((item) => {
-          return item.id !== lastSel && item.count > 0;
-        });
-        if (suggest) {
-          alert(
-            suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!"
-          );
-          suggest.price = Math.round(suggest.price * 0.95);
-          updateSelOpts();
-        }
+      let suggest = findSuggest();
+
+      if (suggest) {
+        let { price, name } = suggest;
+        alert(name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!");
+        price = Math.round(price * 0.95);
+        updateSelOpts();
       }
     }, 60000);
   }, Math.random() * 20000);
-
 } // main
 
 function updateSelOpts() {
   productSelectBox.innerHTML = "";
   productList.forEach((item) => {
-    var opt = document.createElement("option");
-    opt.value = item.id;
-    opt.textContent = item.name + " - " + item.price + "원";
+    let opt = createElement("option", { value: item.id, textContent: item.name + " - " + item.price + "원" });
+
     if (item.count === 0) opt.disabled = true;
     productSelectBox.appendChild(opt);
   });
@@ -95,40 +101,39 @@ function calcCart() {
   totalAmt = 0;
   itemCnt = 0;
 
-  var cartItems = cartList.children;
-  var subTot = 0;
+  let cartItems = cartList.children;
+  let subTot = 0;
 
-  for (var i = 0; i < cartItems.length; i++) {
-    (() => {
-      var curItem;
-      for (var j = 0; j < productList.length; j++) {
-        if (productList[j].id === cartItems[i].id) {
-          curItem = productList[j];
-          break;
-        }
+  for (let i = 0; i < cartItems.length; i++) {
+
+    let curItem;
+
+    for (let j = 0; j < productList.length; j++) {
+      if (productList[j].id === cartItems[i].id) {
+        curItem = productList[j];
+        break;
       }
+    }
 
-      var q = parseInt(
-        cartItems[i].querySelector("span").textContent.split("x ")[1]
-      );
+    let q = parseInt(cartItems[i].querySelector("span").textContent.split("x ")[1]);
 
-      var itemTot = curItem.price * q;
-      var disc = 0;
+    let itemTot = curItem.price * q;
+    let disc = 0;
 
-      itemCnt += q;
-      subTot += itemTot;
+    itemCnt += q;
+    subTot += itemTot;
 
-      if (q >= 10) {
-        if (curItem.id === "p1") disc = 0.1;
-        else if (curItem.id === "p2") disc = 0.15;
-        else if (curItem.id === "p3") disc = 0.2;
-        else if (curItem.id === "p4") disc = 0.05;
-        else if (curItem.id === "p5") disc = 0.25;
-      }
+    if (q >= 10) {
+      if (curItem.id === "p1") disc = 0.1;
+      else if (curItem.id === "p2") disc = 0.15;
+      else if (curItem.id === "p3") disc = 0.2;
+      else if (curItem.id === "p4") disc = 0.05;
+      else if (curItem.id === "p5") disc = 0.25;
+    }
 
-      totalAmt += itemTot * (1 - disc);
-    })();
-  }
+    totalAmt += itemTot * (1 - disc);
+
+  } // for
 
   let discRate = 0;
 
@@ -144,7 +149,7 @@ function calcCart() {
     }
   } else {
     discRate = (subTot - totalAmt) / subTot;
-  }
+  } // if - else
 
   if (new Date().getDay() === 2) {
     totalAmt *= 1 - 0.1;
@@ -162,7 +167,7 @@ function calcCart() {
 
   updateStockInfo();
   renderBonusPts();
-}
+} // calcCart
 
 const renderBonusPts = () => {
   bonusPts = Math.floor(totalAmt / 1000);
@@ -194,9 +199,9 @@ function updateStockInfo() {
 
 main();
 
-cartAddBtn.addEventListener("click", function () {
+cartAddBtn.addEventListener("click", () => {
   var selItem = productSelectBox.value;
-  var itemToAdd = productList.find(function (p) {
+  var itemToAdd = productList.find((p) => {
     return p.id === selItem;
   });
   if (itemToAdd && itemToAdd.count > 0) {
