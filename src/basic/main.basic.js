@@ -1,32 +1,34 @@
-import { ID_BY_COMPONENT, CURRENCY } from './const';
+import { ID_BY_COMPONENT } from "./const";
 
 import {
   setAdditionalDiscAlert,
   setLuckyDiscAlert,
   getDiscPriceAndRate,
-} from './discountService';
+} from "./discountService";
+
+import { handleClickAddBtn, handleClickCart } from "./eventHandlers";
 
 import {
   updateBonusPts,
   updateDiscInfo,
   updateSelectOpts,
   updateStockInfo,
-} from './updaters';
+} from "./updaters";
 
 const productList = [
-  { id: 'p1', name: '상품1', val: 10000, qty: 50 },
-  { id: 'p2', name: '상품2', val: 20000, qty: 30 },
-  { id: 'p3', name: '상품3', val: 30000, qty: 20 },
-  { id: 'p4', name: '상품4', val: 15000, qty: 0 },
-  { id: 'p5', name: '상품5', val: 25000, qty: 10 },
+  { id: "p1", name: "상품1", val: 10000, qty: 50 },
+  { id: "p2", name: "상품2", val: 20000, qty: 30 },
+  { id: "p3", name: "상품3", val: 30000, qty: 20 },
+  { id: "p4", name: "상품4", val: 15000, qty: 0 },
+  { id: "p5", name: "상품5", val: 25000, qty: 10 },
 ];
 
 let lastSel;
 
 function main() {
-  const root = document.getElementById('app');
-  const contents = document.createElement('div');
-  contents.className = 'bg-gray-100 p-8';
+  const root = document.getElementById("app");
+  const contents = document.createElement("div");
+  contents.className = "bg-gray-100 p-8";
   contents.innerHTML = `
     <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
       <h1 class="text-2xl font-bold mb-4">장바구니</h1>
@@ -60,7 +62,7 @@ function updateCartData() {
 main();
 
 const addBtn = document.querySelector(`#${ID_BY_COMPONENT.ADD_BTN_ID}`);
-addBtn.addEventListener('click', () =>
+addBtn.addEventListener("click", () =>
   handleClickAddBtn(productList, (selItem) => {
     updateCartData();
     lastSel = selItem;
@@ -68,7 +70,7 @@ addBtn.addEventListener('click', () =>
 );
 
 const cart = document.querySelector(`#${ID_BY_COMPONENT.CART_ID}`);
-cart.addEventListener('click', (e) =>
+cart.addEventListener("click", (e) =>
   handleClickCart(e, productList, () => {
     updateCartData();
   }),
