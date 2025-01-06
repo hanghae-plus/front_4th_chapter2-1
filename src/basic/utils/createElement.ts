@@ -1,8 +1,8 @@
-export const createElement = (
+export const createElement = <T extends HTMLElement>(
   tagName: string,
   attributes?: Record<string, string | (() => void)>
-) => {
-  const element = document.createElement(tagName);
+): T => {
+  const element = document.createElement(tagName) as T;
 
   if (attributes) {
     Object.entries(attributes).forEach(([key, value]) => {
@@ -10,8 +10,6 @@ export const createElement = (
         element.className = value as string;
       } else if (key === 'textContent') {
         element.textContent = value as string;
-      } else if (key.startsWith('on') && typeof value === 'function') {
-        element.addEventListener(key.slice(2).toLowerCase(), value as EventListener);
       } else {
         element.setAttribute(key, value as string);
       }

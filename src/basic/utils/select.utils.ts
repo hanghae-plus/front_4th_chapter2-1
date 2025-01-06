@@ -1,8 +1,10 @@
+import { createElement } from './createElement';
+
 import type { Product } from '../types/product.type';
 
 function createSelectOptions(products: Product[]): HTMLOptionElement[] {
   return products.map((product) => {
-    const opt = document.createElement('option');
+    const opt = createElement<HTMLOptionElement>('option');
 
     opt.value = product.id;
     opt.textContent = product.name + ' - ' + product.originalPrice + '원';
