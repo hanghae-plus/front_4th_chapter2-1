@@ -1,5 +1,6 @@
 import { products } from './data/product';
 import { Product } from './types/product.type';
+import { createElement } from './utils/createElement';
 import { updateSelectOptions } from './utils/select.utils';
 
 let $select, $addToCartButton, $cartItemsContainer, $totalPrice, $stockStatus;
@@ -9,31 +10,37 @@ let lastSel,
   itemCnt = 0;
 function main() {
   const $root = document.getElementById('app');
-  const $container = document.createElement('div');
-  const $wrap = document.createElement('div');
-  const $hTxt = document.createElement('h1');
-  $cartItemsContainer = document.createElement('div');
-  $totalPrice = document.createElement('div');
-  $select = document.createElement('select');
-  $addToCartButton = document.createElement('button');
-  $stockStatus = document.createElement('div');
-
-  $cartItemsContainer.id = 'cart-items';
-  $totalPrice.id = 'cart-total';
-  $select.id = 'product-select';
-  $addToCartButton.id = 'add-to-cart';
-  $stockStatus.id = 'stock-status';
-
-  $container.className = 'bg-gray-100 p-8';
-  $wrap.className =
-    'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  $hTxt.className = 'text-2xl font-bold mb-4';
-  $totalPrice.className = 'text-xl font-bold my-4';
-  $select.className = 'border rounded p-2 mr-2';
-  $addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  $stockStatus.className = 'text-sm text-gray-500 mt-2';
-  $hTxt.textContent = '장바구니';
-  $addToCartButton.textContent = '추가';
+  const $container = createElement('div', {
+    className: 'bg-gray-100 p-8',
+  });
+  const $wrap = createElement('div', {
+    id: 'cart-wrap',
+    className: 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8',
+  });
+  const $hTxt = createElement('h1', {
+    className: 'text-2xl font-bold mb-4',
+    textContent: '장바구니',
+  });
+  $cartItemsContainer = createElement('div', {
+    id: 'cart-items',
+  });
+  $totalPrice = createElement('div', {
+    id: 'cart-total',
+    className: 'text-xl font-bold my-4',
+  });
+  $select = createElement('select', {
+    id: 'product-select',
+    className: 'border rounded p-2 mr-2',
+  });
+  $addToCartButton = createElement('button', {
+    id: 'add-to-cart',
+    className: 'bg-blue-500 text-white px-4 py-2 rounded',
+    textContent: '추가',
+  });
+  $stockStatus = createElement('div', {
+    id: 'stock-status',
+    className: 'text-sm text-gray-500 mt-2',
+  });
 
   updateSelectOptions($select, products);
 
@@ -45,6 +52,7 @@ function main() {
   $wrap.appendChild($stockStatus);
   $container.appendChild($wrap);
   $root.appendChild($container);
+
   calcCart();
   setTimeout(function () {
     setInterval(function () {
