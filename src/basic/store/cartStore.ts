@@ -1,4 +1,4 @@
-interface Product {
+export interface Product {
   id: string;
   name: string;
   val: number;
@@ -14,10 +14,10 @@ interface State {
   cartList: Product[] | null;
 }
 
-interface ActionTypes {
-  useGetCartList: () => Product[] | null;
-  useAddCartItem: () => void;
-  useRemoveCartItem: () => void;
+interface Actions {
+  getCartList: () => Product[] | null;
+  addCartItem: (item: Product) => void;
+  removeCartItem: () => void;
 }
 
 export const CartStore = (function () {
@@ -31,15 +31,19 @@ export const CartStore = (function () {
     observers.forEach((observer) => observer.update(state));
   }
 
-  const actions: ActionTypes = {
-    useGetCartList: () => {
+  const actions: Actions = {
+    getCartList: () => {
       return state.cartList;
     },
-    useAddCartItem: () => {
+    addCartItem: (item: Product) => {
+      const newCartList = state.cartList ? state.cartList.concat(item) : [item];
+
+      state.cartList = newCartList;
+
       // 아이템 추가 로직
       notifyObservers();
     },
-    useRemoveCartItem: () => {
+    removeCartItem: () => {
       // 아이템 제거 로직
       notifyObservers();
     },
