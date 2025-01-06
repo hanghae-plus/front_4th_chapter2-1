@@ -1,4 +1,4 @@
-import { CURRENCY, ID_BY_COMPONENT } from "./const";
+import { CURRENCY, ID_BY_COMPONENT } from './const';
 
 export const handleClickAddBtn = (productList, updater) => {
   const select = document.querySelector(`#${ID_BY_COMPONENT.SELECT_ID}`);
@@ -19,11 +19,11 @@ export const handleClickAddBtn = (productList, updater) => {
   // 선택된 아이템이 이미 장바구니에 추가된 경우
   if (curItem) {
     const curQty = parseInt(
-      curItem.querySelector("span").textContent.split("x ")[1],
+      curItem.querySelector('span').textContent.split('x ')[1],
     );
     const newQty = curQty + 1;
     if (newQty <= itemToAdd.qty + curQty) {
-      curItem.querySelector("span").textContent =
+      curItem.querySelector('span').textContent =
         `${itemToAdd.name} - ${itemToAdd.val}${CURRENCY} x ${newQty}`;
       itemToAdd.qty--;
     } else {
@@ -33,9 +33,9 @@ export const handleClickAddBtn = (productList, updater) => {
 
   // 선택된 아이템을 새로 장바구니에 추가하는 경우
   else {
-    const newItem = document.createElement("div");
+    const newItem = document.createElement('div');
     newItem.id = itemToAdd.id;
-    newItem.className = "flex justify-between items-center mb-2";
+    newItem.className = 'flex justify-between items-center mb-2';
     newItem.innerHTML = `
         <span>${itemToAdd.name} - ${itemToAdd.val}${CURRENCY} x 1</span>
         <div>
@@ -53,8 +53,8 @@ export const handleClickAddBtn = (productList, updater) => {
 export const handleClickCart = (event, productList, updater) => {
   const tgt = event.target;
   if (
-    !tgt.classList.contains("quantity-change") &&
-    !tgt.classList.contains("remove-item")
+    !tgt.classList.contains('quantity-change') &&
+    !tgt.classList.contains('remove-item')
   )
     return;
 
@@ -62,9 +62,9 @@ export const handleClickCart = (event, productList, updater) => {
   const itemElem = document.getElementById(prodId);
   const prod = productList.find((p) => p.id === prodId);
 
-  if (tgt.classList.contains("quantity-change")) {
+  if (tgt.classList.contains('quantity-change')) {
     handleClickQtyChange(itemElem, prod, tgt);
-  } else if (tgt.classList.contains("remove-item")) {
+  } else if (tgt.classList.contains('remove-item')) {
     handleClickRemoveItem(itemElem, prod);
   }
   updater();
@@ -73,14 +73,14 @@ export const handleClickCart = (event, productList, updater) => {
 const handleClickQtyChange = (itemElem, prod, tgt) => {
   const qtyChange = parseInt(tgt.dataset.change);
   const curQty = parseInt(
-    itemElem.querySelector("span").textContent.split("x ")[1],
+    itemElem.querySelector('span').textContent.split('x ')[1],
   );
   const newQty = curQty + qtyChange;
 
   // 변경될 수량이 0보다 큰 경우
   if (newQty > 0 && newQty <= prod.qty + curQty) {
-    itemElem.querySelector("span").textContent = `${
-      itemElem.querySelector("span").textContent.split("x ")[0]
+    itemElem.querySelector('span').textContent = `${
+      itemElem.querySelector('span').textContent.split('x ')[0]
     }x ${newQty}`;
     prod.qty -= qtyChange;
   }
@@ -99,10 +99,10 @@ const handleClickQtyChange = (itemElem, prod, tgt) => {
 
 const handleClickRemoveItem = (itemElem, prod) => {
   const remQty = parseInt(
-    itemElem.querySelector("span").textContent.split("x ")[1],
+    itemElem.querySelector('span').textContent.split('x ')[1],
   );
   prod.qty += remQty;
   itemElem.remove();
 };
 
-const showOutOfStockAlert = () => alert("재고가 부족합니다.");
+const showOutOfStockAlert = () => alert('재고가 부족합니다.');

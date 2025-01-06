@@ -1,11 +1,11 @@
-import { CURRENCY, ID_BY_COMPONENT } from "./const";
+import { CURRENCY, ID_BY_COMPONENT } from './const';
 
 export const updateSelectOpts = (productList) => {
   const select = document.querySelector(`#${ID_BY_COMPONENT.SELECT_ID}`);
-  select.innerHTML = "";
+  select.innerHTML = '';
 
   productList.forEach(function (item) {
-    const opt = document.createElement("option");
+    const opt = document.createElement('option');
     opt.value = item.id;
     opt.textContent = `${item.name} - ${item.val}${CURRENCY}`;
     if (item.qty === 0) opt.disabled = true;
@@ -18,8 +18,8 @@ export const updateDiscInfo = (price, rate) => {
   sum.textContent = `총액: ${Math.round(price)}${CURRENCY}`;
 
   if (rate > 0) {
-    const span = document.createElement("span");
-    span.className = "text-green-500 ml-2";
+    const span = document.createElement('span');
+    span.className = 'text-green-500 ml-2';
     span.textContent = `(${(rate * 100).toFixed(1)}% 할인 적용)`;
     sum.appendChild(span);
   }
@@ -31,9 +31,9 @@ export const updateBonusPts = (price) => {
 
   let ptsTag = document.getElementById(ID_BY_COMPONENT.PTS_TAG_ID);
   if (!ptsTag) {
-    ptsTag = document.createElement("span");
+    ptsTag = document.createElement('span');
     ptsTag.id = ID_BY_COMPONENT.PTS_TAG_ID;
-    ptsTag.className = "text-blue-500 ml-2";
+    ptsTag.className = 'text-blue-500 ml-2';
     sum.appendChild(ptsTag);
   }
   ptsTag.textContent = `(포인트: ${bonusPts})`;
@@ -42,11 +42,11 @@ export const updateBonusPts = (price) => {
 export const updateStockInfo = (productList) => {
   const stockInfo = document.querySelector(`#${ID_BY_COMPONENT.STOCK_INFO_ID}`);
 
-  let infoMsg = "";
+  let infoMsg = '';
   productList.forEach(function (item) {
     if (item.qty < 5) {
       infoMsg += `${item.name}: ${
-        item.qty > 0 ? `재고 부족 (${item.qty}개 남음)` : "품절"
+        item.qty > 0 ? `재고 부족 (${item.qty}개 남음)` : '품절'
       }\n`;
     }
   });

@@ -5,7 +5,7 @@ import {
   DISC_RATES,
   ITEM_DISC_MIN_QTY,
   DISC_PROB,
-} from "./const";
+} from './const';
 
 const DISC_MSG = Object.freeze({
   LUCKY_DISC: (item, rate) => `번개세일! ${item}이(가) ${rate}% 할인 중입니다!`,
@@ -14,7 +14,7 @@ const DISC_MSG = Object.freeze({
 });
 
 const discountAlertProcessor = (item, type, updater) => {
-  if (type !== "LUCKY_DISC" && type !== "ADDITIONAL_DISC") {
+  if (type !== 'LUCKY_DISC' && type !== 'ADDITIONAL_DISC') {
     throw Error(`${type} is not a supported discount type to alert.`);
   }
 
@@ -30,7 +30,7 @@ export const setLuckyDiscAlert = (productList, updater) => {
     setInterval(() => {
       const luckyItem =
         productList[Math.floor(Math.random() * productList.length)];
-      discountAlertProcessor(luckyItem, "LUCKY_DISC", () =>
+      discountAlertProcessor(luckyItem, 'LUCKY_DISC', () =>
         updater(productList),
       );
     }, DISC_INTERVALS.LUCKY_DISC);
@@ -42,7 +42,7 @@ export const setAdditionalDiscAlert = (productList, lastSel, updater) => {
     setInterval(() => {
       if (!lastSel) return;
       const suggestedItem = productList.find((item) => item.id !== lastSel);
-      discountAlertProcessor(suggestedItem, "ADDITIONAL_DISC", () =>
+      discountAlertProcessor(suggestedItem, 'ADDITIONAL_DISC', () =>
         updater(productList),
       );
     }, DISC_INTERVALS.ADDITIONAL_DISC);
@@ -60,7 +60,7 @@ export const getDiscPriceAndRate = (cart, productList) => {
       (product) => product.id === cartItems[i].id,
     );
     const qty = parseInt(
-      cartItems[i].querySelector("span").textContent.split("x ")[1],
+      cartItems[i].querySelector('span').textContent.split('x ')[1],
     );
     const itemTotalPrice = curItem.val * qty;
     itemCnt += qty;
