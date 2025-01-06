@@ -1,6 +1,7 @@
 import Header from './components/Header';
 import { getTotalBonusPoints } from './components/points/getTotalBonusPoints';
 import { renderBonusPoints } from './components/points/renderBonusPoints';
+import { updateSelectOptions } from './components/productSelect/updateSelectOptions';
 import { updateStockInfoMessage } from './components/stock/updateStockInfoMessage';
 import { CONSTANTS } from './constants';
 import { helper } from './utils/helper';
@@ -62,7 +63,7 @@ function main() {
   const root = document.getElementById('app');
   root.appendChild(containerDiv);
 
-  updateSelectOptions();
+  updateSelectOptions(products);
   calculateCart();
 
   setTimeout(function () {
@@ -77,7 +78,7 @@ function main() {
           luckyItem.price * CONSTANTS.LIGHTNING_SALE_RATE,
         );
         alert(helper.getLightningSaleMessage(luckyItem.name));
-        updateSelectOptions();
+        updateSelectOptions(products);
       }
     }, CONSTANTS.LIGHTNING_SALE_INTERVAL);
   }, Math.random() * CONSTANTS.LIGHTNING_SALE_DELAY);
@@ -94,28 +95,14 @@ function main() {
           suggest.price = Math.round(
             suggest.price * CONSTANTS.SUGGESTION_DISCOUNT_RATE,
           );
-          updateSelectOptions();
+          updateSelectOptions(products);
         }
       }
     }, CONSTANTS.SUGGESTION_INTERVAL);
   }, Math.random() * CONSTANTS.SUGGESTION_DELAY);
 }
 
-function updateSelectOptions() {
-  productSelector.innerHTML = '';
-  products.forEach(function (item) {
-    const selectOption = document.createElement('option');
 
-    selectOption.value = item.id;
-    selectOption.textContent = helper.getNameAndPriceMessage(
-      item.name,
-      item.price,
-    );
-    if (item.quantity === 0) selectOption.disabled = true;
-
-    productSelector.appendChild(selectOption);
-  });
-}
 
 function calculateCart() {
   totalAmount = 0;
