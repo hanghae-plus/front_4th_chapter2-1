@@ -128,21 +128,24 @@ const updateLoyaltyPoints = (finalPrice) => {
   pointStatus.textContent = `(포인트: ${point})`;
 };
 
+const setStockMessage = (product) => {
+  if (product.remaining <= STOCKS.OUT_OF_STOCK) {
+    return `${product.name}: 품절`;
+  } else if (product.remaining < STOCKS.LOW_STOCK_THRESHOLD) {
+    return `${product.name}: 재고 부족 (${product.remaining}개 남음)`;
+  } else {
+    return "";
+  }
+};
+
 // 재고 메시지
 const updateStockStatus = () => {
   const stockStatus = document.getElementById(DOM_IDS.STOCK_STATUS);
 
-  let statusMsg = "";
-
-  productList.forEach((product) => {
-    const { name, remaining } = product;
-
-    if (remaining < STOCKS.LOW_STOCK_THRESHOLD) {
-      statusMsg += `\n ${name}: ${remaining > STOCKS.OUT_OF_STOCK ? `재고 부족 (${remaining}개 남음)` : "품절"}`;
-    }
-  });
-
-  stockStatus.textContent = statusMsg;
+  stockStatus.textContent = productList
+    .map(setStockMessage)
+    .filter((msg) => msg !== "")
+    .join("\n");
 };
 
 // 콤보박스
