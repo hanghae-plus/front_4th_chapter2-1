@@ -29,7 +29,6 @@ describe('basic test', () => {
     });
 
     beforeEach(() => {
-      vi.useRealTimers();
       vi.spyOn(window, 'alert').mockImplementation(() => {});
     });
 
@@ -95,27 +94,48 @@ describe('basic test', () => {
       expect(sum.textContent).toContain('총액: 0원(포인트: 0)');
     });
 
-    it('총액이 올바르게 계산되는지 확인', () => {
-      sel.value = 'p1';
-      addBtn.click();
-      addBtn.click();
-      expect(sum.textContent).toContain('총액: 20000원(포인트: 20)');
-    });
+    describe('금액 계산 테스트', () => {
+      beforeEach(() => {
+        vi.useFakeTimers();
+        vi.setSystemTime(new Date('2025-1-6')); // 월요일
+      });
 
-    it('할인이 올바르게 적용되는지 확인', () => {
-      sel.value = 'p1';
-      for (let i = 0; i < 10; i++) {
+      afterEach(() => {
+        vi.useRealTimers();
+      });
+
+      it('총액이 올바르게 계산되는지 확인', () => {
+        sel.value = 'p1';
         addBtn.click();
-      }
-      expect(sum.textContent).toContain('(10.0% 할인 적용)');
-    });
+        addBtn.click();
+        expect(sum.textContent).toContain('총액: 20000원(포인트: 20)');
+      });
 
-    it('포인트가 올바르게 계산되는지 확인', () => {
-      sel.value = 'p2';
-      addBtn.click();
-      expect(document.getElementById('loyalty-points').textContent).toContain(
-        '(포인트: 128)'
-      );
+      it('할인이 올바르게 적용되는지 확인', () => {
+        sel.value = 'p1';
+        for (let i = 0; i < 10; i++) {
+          addBtn.click();
+        }
+        expect(sum.textContent).toContain('(10.0% 할인 적용)');
+      });
+
+      it('포인트가 올바르게 계산되는지 확인', () => {
+        sel.value = 'p2';
+        addBtn.click();
+        expect(document.getElementById('loyalty-points').textContent).toContain(
+          '(포인트: 128)'
+        );
+      });
+
+      it('화요일 할인이 적용되는지 확인', () => {
+        const mockDate = new Date('2024-10-15'); // 화요일
+        vi.setSystemTime(mockDate);
+        sel.value = 'p1';
+        addBtn.click();
+        expect(document.getElementById('cart-total').textContent).toContain(
+          '(10.0% 할인 적용)'
+        );
+      });
     });
 
     it('번개세일 기능이 정상적으로 동작하는지 확인', () => {
@@ -124,17 +144,6 @@ describe('basic test', () => {
 
     it('추천 상품 알림이 표시되는지 확인', () => {
       // 일부러 랜덤이 가득한 기능을 넣어서 테스트 하기를 어렵게 만들었습니다. 이런 코드는 어떻게 하면 좋을지 한번 고민해보세요!
-    });
-
-    it('화요일 할인이 적용되는지 확인', () => {
-      const mockDate = new Date('2024-10-15'); // 화요일
-      vi.useFakeTimers();
-      vi.setSystemTime(mockDate);
-      sel.value = 'p1';
-      addBtn.click();
-      expect(document.getElementById('cart-total').textContent).toContain(
-        '(10.0% 할인 적용)'
-      );
     });
 
     it('재고가 부족한 경우 추가되지 않는지 확인', () => {
