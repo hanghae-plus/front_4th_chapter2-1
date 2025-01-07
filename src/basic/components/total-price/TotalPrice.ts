@@ -1,13 +1,18 @@
+import { CartStore } from '../../store/cartStore';
+
 export const TotalPrice = () => {
+  const { actions } = CartStore;
+
+  const totalAmount = actions.getTotalAmount();
+
   // mock 변수선언
-  const totalAmt = 30000;
   const discRate = 1000;
 
   const isShowDiscount = discRate > 0;
 
   const render = `
   <div id="cart-total" class="text-xl font-bold my-4">
-  총액: ${Math.round(totalAmt)} 원
+  총액: ${Math.round(totalAmount)} 원
   ${
     isShowDiscount &&
     `<span class="text-green-500 ml-2">
