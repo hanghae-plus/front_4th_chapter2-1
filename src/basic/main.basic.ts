@@ -1,4 +1,5 @@
 import { productList } from './features/product';
+import { renderProductOptionsView } from './features/product/components/ProductOptionsView';
 
 var SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
 var lastSelectedItemValue,
@@ -30,7 +31,7 @@ function main() {
   StockInfoView.className = 'text-sm text-gray-500 mt-2';
   LargeHeading.textContent = '장바구니';
   AddToCartButton.textContent = '추가';
-  updateSelectedOptions();
+  renderProductOptionsView(SelectView, productList);
   Wrapper.appendChild(LargeHeading);
   Wrapper.appendChild(CartItemsView);
   Wrapper.appendChild(TotalCostView);
@@ -47,7 +48,7 @@ function main() {
       if (Math.random() < 0.3 && luckyItem.quantity > 0) {
         luckyItem.price = Math.round(luckyItem.price * 0.8);
         alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
-        updateSelectedOptions();
+        renderProductOptionsView(SelectView, productList);
       }
     }, 30000);
   }, Math.random() * 10000);
@@ -62,22 +63,13 @@ function main() {
             suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!',
           );
           suggest.price = Math.round(suggest.price * 0.95);
-          updateSelectedOptions();
+          renderProductOptionsView(SelectView, productList);
         }
       }
     }, 60000);
   }, Math.random() * 20000);
 }
-function updateSelectedOptions() {
-  SelectView.innerHTML = '';
-  productList.forEach(function (item) {
-    var OptionView = document.createElement('option');
-    OptionView.value = item.id;
-    OptionView.textContent = item.name + ' - ' + item.price + '원';
-    if (item.quantity === 0) OptionView.disabled = true;
-    SelectView.appendChild(OptionView);
-  });
-}
+
 function calculateCartItems() {
   totalAmount = 0;
   itemCount = 0;
