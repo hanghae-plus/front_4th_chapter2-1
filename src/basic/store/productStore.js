@@ -15,6 +15,7 @@ export class ProductStore extends Store {
         { id: 'p4', name: '상품4', price: 15_000, quantity: 0 },
         { id: 'p5', name: '상품5', price: 25_000, quantity: 10 },
       ],
+      lastSelectedItem: null,
     };
   }
 
@@ -54,5 +55,13 @@ export class ProductStore extends Store {
    */
   findProduct(productId) {
     return this.state.products.find(p => p.id === productId);
+  }
+
+  /**
+   * 마지막 선택 상품 기록
+   */
+  setLastSelectedItem(productId) {
+    this.state.lastSelectedItem = productId;
+    this.notify(this.getState());
   }
 }
