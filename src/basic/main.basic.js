@@ -3,7 +3,7 @@ import { DISCOUNT_POLICY } from './policy/discount';
 import { STOCK_POLICY } from './policy/stock';
 import { TIMER_POLICY } from './policy/timer';
 
-let productSelector, addToCartButton, cartDisp, sum, stockInfo;
+let productSelector, addToCartButton, cartItemContainer, sum, stockInfo;
 let lastSel,
   bonusPts = 0,
   totalAmt = 0,
@@ -14,12 +14,12 @@ function main() {
   const cont = document.createElement('div');
   const wrap = document.createElement('div');
   const hTxt = document.createElement('h1');
-  cartDisp = document.createElement('div');
+  cartItemContainer = document.createElement('div');
   sum = document.createElement('div');
   productSelector = document.createElement('select');
   addToCartButton = document.createElement('button');
   stockInfo = document.createElement('div');
-  cartDisp.id = 'cart-items';
+  cartItemContainer.id = 'cart-items';
   sum.id = 'cart-total';
   productSelector.id = 'product-select';
   addToCartButton.id = 'add-to-cart';
@@ -35,7 +35,7 @@ function main() {
   addToCartButton.textContent = '추가';
   updateSelOpts();
   wrap.appendChild(hTxt);
-  wrap.appendChild(cartDisp);
+  wrap.appendChild(cartItemContainer);
   wrap.appendChild(sum);
   wrap.appendChild(productSelector);
   wrap.appendChild(addToCartButton);
@@ -85,7 +85,7 @@ function updateSelOpts() {
 function calcCart() {
   totalAmt = 0;
   itemCnt = 0;
-  const cartItems = cartDisp.children;
+  const cartItems = cartItemContainer.children;
   let subTot = 0;
   for (var i = 0; i < cartItems.length; i++) {
     (function () {
@@ -203,7 +203,7 @@ addToCartButton.addEventListener('click', function () {
         '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' +
         itemToAdd.id +
         '">삭제</button></div>';
-      cartDisp.appendChild(newItem);
+      cartItemContainer.appendChild(newItem);
       itemToAdd.quantity--;
     }
     calcCart();
@@ -211,7 +211,7 @@ addToCartButton.addEventListener('click', function () {
   }
 });
 
-cartDisp.addEventListener('click', function (event) {
+cartItemContainer.addEventListener('click', function (event) {
   const tgt = event.target;
   if (tgt.classList.contains('quantity-change') || tgt.classList.contains('remove-item')) {
     const prodId = tgt.dataset.productId;
