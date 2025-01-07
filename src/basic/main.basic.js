@@ -12,7 +12,7 @@ let lastSelectedProduct,
 
 function main() {
   const root = document.getElementById('app');
-  const cont = document.createElement('div');
+  const container = document.createElement('div');
   const wrap = document.createElement('div');
   const hTxt = document.createElement('h1');
   cartItemContainer = document.createElement('div');
@@ -25,7 +25,7 @@ function main() {
   productSelector.id = 'product-select';
   addToCartButton.id = 'add-to-cart';
   stockStatus.id = 'stock-status';
-  cont.className = 'bg-gray-100 p-8';
+  container.className = 'bg-gray-100 p-8';
   wrap.className = 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
   hTxt.className = 'text-2xl font-bold mb-4';
   cartTotal.className = 'text-xl font-bold my-4';
@@ -41,8 +41,8 @@ function main() {
   wrap.appendChild(productSelector);
   wrap.appendChild(addToCartButton);
   wrap.appendChild(stockStatus);
-  cont.appendChild(wrap);
-  root.appendChild(cont);
+  container.appendChild(wrap);
+  root.appendChild(container);
   calcCart();
   setTimeout(function () {
     setInterval(function () {
