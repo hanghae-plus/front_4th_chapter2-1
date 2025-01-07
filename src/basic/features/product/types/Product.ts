@@ -1,8 +1,8 @@
 interface Product {
   id: string;
   name: string;
-  val: number;
-  q: number;
+  price: number;
+  quantity: number;
 }
 
 export { Product };
