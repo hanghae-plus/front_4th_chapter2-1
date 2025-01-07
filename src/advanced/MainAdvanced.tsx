@@ -1,24 +1,24 @@
+import { DOM_IDS } from "./constants";
+
 function MainAdvanced() {
-  // 야호
-  console.log("test");
   return (
     <div className="bg-gray-100 p-8">
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
-        <h1 className="text-2xl font-bold mb-4">장바구니</h1>
-        <div id="cart-items">carts</div>
-        <div id="cart-total" className="text-xl font-bold my-4">
+      <div className="mx-auto max-w-md overflow-hidden rounded-xl bg-white p-8 shadow-md md:max-w-2xl">
+        <h1 className="mb-4 text-2xl font-bold">장바구니</h1>
+        <div id={DOM_IDS.CART_ITEMS}>carts</div>
+        <div id={DOM_IDS.CART_TOTAL} className="my-4 text-xl font-bold">
           sum
         </div>
-        <select id="product-select" className="border rounded p-2 mr-2">
+        <select id={DOM_IDS.PRODUCT_SELECT} className="mr-2 rounded border p-2">
           select
         </select>
         <button
-          id="add-to-cart"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          id={DOM_IDS.ADD_TO_CART_BTN}
+          className="rounded bg-blue-500 px-4 py-2 text-white"
         >
           추가
         </button>
-        <div id="stock-status" className="text-sm text-gray-500 mt-2">
+        <div id={DOM_IDS.STOCK_STATUS} className="mt-2 text-sm text-gray-500">
           stockInfo
         </div>
       </div>
