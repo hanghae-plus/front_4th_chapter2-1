@@ -27,6 +27,7 @@ export const CartStore = (function () {
 
   const state: State = {
     cartList: null,
+    totalPrice: 0,
   };
 
   function notifyObservers() {

@@ -40,9 +40,6 @@ export const ProductSelector = () => {
     if (targetItem && targetItem.q > 0) {
       const item = document.getElementById(targetItem.id);
 
-      // 타입 에러 처리를 위한 임시 유효성
-      if (!item) return;
-
       if (item) {
         const newQty = parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
         if (newQty <= targetItem.q) {
@@ -65,17 +62,19 @@ export const ProductSelector = () => {
     CartActions.addCartItem(targetItem);
   }
 
-  return `
+  const render = `
         <select id="product-select" class="border rounded p-2 mr-2">
         ${
           productList &&
           productList.map((product) => {
-            const isDisabled = product.q === 0 ? true : false;
+            const isDisabled = product.q === 0 ? 'disabled' : '';
 
-            return `<option value=${product.id} disabled=${isDisabled}>${product.name} - ${product.val}원</option>`;
+            return `<option value="${product.id}" ${isDisabled}>${product.name} - ${product.val}원</option>`;
           })
         }
         </select>
         <button id="add-cart" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
     `;
+
+  return { render };
 };

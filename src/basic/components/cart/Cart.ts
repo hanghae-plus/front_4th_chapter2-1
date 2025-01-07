@@ -3,18 +3,17 @@ import { CartStore } from '../../store/cartStore';
 import { addEventListener } from '../../utils/eventUtil';
 
 export const Cart = () => {
-  const { actions } = CartStore;
+  const { actions, observer } = CartStore;
 
-  const cartList = actions.getCartList();
+  let cartList = actions.getCartList();
 
-  return `
-      <div>
-          <h1 class="text-2xl font-bold mb-4">장바구니</h1>
-          <div id="cart-items">
-          ${cartList?.map((item) => CartItem(item))}
-          </div>
-      </div>
-      `;
+  observer.addObserver({
+    update: () => {
+      console.log('@@@@');
+      cartList = actions.getCartList();
+      // rerender 처리
+    },
+  });
 
   // INFO: 카트 계산 로직 함수
   function calcCart() {
@@ -80,4 +79,15 @@ export const Cart = () => {
     updateStockInfo();
     renderBonusPts();
   }
+
+  const render = `
+      <div>
+          <h1 class="text-2xl font-bold mb-4">장바구니</h1>
+          <div id="cart-items">
+          ${cartList?.map((item) => CartItem(item).render)}
+          </div>
+      </div>
+      `;
+
+  return { render };
 };
