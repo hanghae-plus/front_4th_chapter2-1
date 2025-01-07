@@ -4,6 +4,7 @@ import { renderBonusPoints } from './components/points/renderBonusPoints';
 import { updateSelectOptions } from './components/productSelect/updateSelectOptions';
 import { updateStockInfoMessage } from './components/stock/updateStockInfoMessage';
 import { CONSTANTS } from './constants';
+import { calculateOverallDiscount } from './utils/calculateOverallDiscount';
 import { helper } from './utils/helper';
 
 let products,
@@ -13,8 +14,6 @@ let products,
   totalDisplay,
   stockInfo,
   lastSelectedItem;
-let totalAmount = 0,
-  itemCount = 0;
 
 function main() {
   products = [
@@ -102,13 +101,12 @@ function main() {
   }, Math.random() * CONSTANTS.SUGGESTION_DELAY);
 }
 
-
-
-function calculateCart() {
-  totalAmount = 0;
-  itemCount = 0;
-  const cartItems = cartDisplay.children;
+export function calculateCart() {
+  let totalAmount = 0;
+  let itemCount = 0;
   let preDiscountTotal = 0; // 할인 적용 전 총액
+
+  const cartItems = cartDisplay.children;
 
   for (let i = 0; i < cartItems.length; i++) {
     (function () {
@@ -131,52 +129,35 @@ function calculateCart() {
 
       if (
         quantity >= CONSTANTS.QUANTITY_THRESHOLD &&
-        CONSTANTS.DISCOUNT_RATES[currentProduct.id]
+        helper.getDiscountRate(currentProduct.id)
       ) {
-        discountRate = CONSTANTS.DISCOUNT_RATES[currentProduct.id];
+        discountRate = helper.getDiscountRate(currentProduct.id);
       }
       totalAmount += currentProductAmount * (1 - discountRate);
     })();
   }
 
-  let overallDiscountRate = 0;
-  if (itemCount >= CONSTANTS.BULK_DISCOUNT_THRESHOLD) {
-    const bulkDiscount = totalAmount * CONSTANTS.BULK_DISCOUNT_RATE;
-    const itemDiscount = preDiscountTotal - totalAmount;
+  const { overallDiscountRate, discountedTotalAmount } =
+    calculateOverallDiscount(totalAmount, preDiscountTotal, itemCount);
 
-    if (bulkDiscount > itemDiscount) {
-      totalAmount = preDiscountTotal * (1 - CONSTANTS.BULK_DISCOUNT_RATE);
-      overallDiscountRate = CONSTANTS.BULK_DISCOUNT_RATE;
-    } else {
-      overallDiscountRate = (preDiscountTotal - totalAmount) / preDiscountTotal;
-    }
-  } else {
-    overallDiscountRate = (preDiscountTotal - totalAmount) / preDiscountTotal;
-  }
-
-  if (new Date().getDay() === CONSTANTS.WEEKLY_DISCOUNT_DAY) {
-    totalAmount *= 1 - CONSTANTS.WEEKLY_DISCOUNT_RATE;
-    overallDiscountRate = Math.max(
-      overallDiscountRate,
-      CONSTANTS.WEEKLY_DISCOUNT_RATE,
-    );
-  }
-
-  const roundedAmount = Math.round(totalAmount);
+  const roundedAmount = Math.round(discountedTotalAmount);
   totalDisplay.textContent = helper.getTotalAmountMessage(roundedAmount);
 
   if (overallDiscountRate > 0) {
     const discountSpan = document.createElement('span');
     discountSpan.className = 'text-green-500 ml-2';
+
     const discountedAmount = (overallDiscountRate * 100).toFixed(1);
     discountSpan.textContent =
       helper.getDiscountedAmountMessage(discountedAmount);
+
     totalDisplay.appendChild(discountSpan);
   }
 
   const updatedMessage = updateStockInfoMessage(products);
   stockInfo.textContent = updatedMessage;
-  const bonusPoints = getTotalBonusPoints(totalAmount);
+
+  const bonusPoints = getTotalBonusPoints(discountedTotalAmount);
   renderBonusPoints(bonusPoints);
 }
 

@@ -1,11 +1,4 @@
 // 할인율
-const DISCOUNT_RATES = {
-  p1: 0.1,
-  p2: 0.15,
-  p3: 0.2,
-  p4: 0.05,
-  p5: 0.25,
-};
 const BULK_DISCOUNT_RATE = 0.25; // 대량 구매 할인율
 const WEEKLY_DISCOUNT_DAY = 2; // 화요일
 const WEEKLY_DISCOUNT_RATE = 0.1; // 요일별 할인율
@@ -31,7 +24,6 @@ const SUGGESTION_DELAY = 20_000; // 추천 알림 초기 지연
 const OUT_OF_STOCK_MESSAGE = '재고가 부족합니다.';
 
 export const CONSTANTS = {
-  DISCOUNT_RATES,
   BULK_DISCOUNT_RATE,
   WEEKLY_DISCOUNT_DAY,
   WEEKLY_DISCOUNT_RATE,

@@ -40,6 +40,28 @@ const getWarningMessage = (name, quantity) =>
   `${name}: ${quantity > 0 ? '재고 부족 (' + quantity + '개 남음)' : '품절'}\n`;
 
 /**
+ * 할인율 반환 함수
+ * @param {string} productCode - 상품 코드
+ * @return {number} 할인율
+ */
+function getDiscountRate(productCode) {
+  switch (productCode) {
+    case 'p1':
+      return 0.1;
+    case 'p2':
+      return 0.15;
+    case 'p3':
+      return 0.2;
+    case 'p4':
+      return 0.05;
+    case 'p5':
+      return 0.25;
+    default:
+      return 0;
+  }
+}
+
+/**
  * @param {string} points - 보너스 포인트
  * @return {string} (포인트: {points})
  */
@@ -53,4 +75,5 @@ export const helper = {
   getDiscountedAmountMessage,
   getWarningMessage,
   getBonusPointsMessage,
+  getDiscountRate,
 };
