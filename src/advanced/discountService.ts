@@ -25,37 +25,33 @@ const discountAlertProcessor = (item, type, updater) => {
   updater();
 };
 
-export const setLuckyDiscAlert = (productList, updater) => {
+export const setLuckyDiscAlert = (productList) => {
   setTimeout(() => {
     setInterval(() => {
       const luckyItem =
         productList[Math.floor(Math.random() * productList.length)];
-      discountAlertProcessor(luckyItem, 'LUCKY_DISC', () =>
-        updater(productList),
-      );
+      discountAlertProcessor(luckyItem, 'LUCKY_DISC');
     }, DISC_INTERVALS.LUCKY_DISC);
   }, Math.random() * DISC_INITIAL_BUFFERS.LUCKY_DISC);
 };
 
-export const setAdditionalDiscAlert = (productList, lastSel, updater) => {
+export const setAdditionalDiscAlert = (productList, lastSel) => {
   setTimeout(() => {
     setInterval(() => {
       if (!lastSel) return;
       const suggestedItem = productList.find((item) => item.id !== lastSel);
-      discountAlertProcessor(suggestedItem, 'ADDITIONAL_DISC', () =>
-        updater(productList),
-      );
+      discountAlertProcessor(suggestedItem, 'ADDITIONAL_DISC');
     }, DISC_INTERVALS.ADDITIONAL_DISC);
   }, Math.random() * DISC_INITIAL_BUFFERS.ADDITIONAL_DISC);
 };
 
 export const getDiscPriceAndRate = (cart, productList) => {
-  const cartItems = cart.children;
+  const cartItems = cart?.children;
   let totalPrice = 0;
   let priceWithDisc = 0;
   let itemCnt = 0;
 
-  for (let i = 0; i < cartItems.length; i++) {
+  for (let i = 0; i < cartItems?.length; i++) {
     const curItem = productList.find(
       (product) => product.id === cartItems[i].id,
     );

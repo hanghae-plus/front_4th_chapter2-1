@@ -1,18 +1,5 @@
 import { CURRENCY, ID_BY_COMPONENT } from './const';
 
-export const updateSelectOpts = (productList) => {
-  const select = document.querySelector(`#${ID_BY_COMPONENT.SELECT_ID}`);
-  select.innerHTML = '';
-
-  productList.forEach(function (item) {
-    const opt = document.createElement('option');
-    opt.value = item.id;
-    opt.textContent = `${item.name} - ${item.val}${CURRENCY}`;
-    if (item.qty === 0) opt.disabled = true;
-    select?.appendChild(opt);
-  });
-};
-
 export const updateDiscInfo = (price, rate) => {
   const sum = document.querySelector(`#${ID_BY_COMPONENT.SUM_ID}`);
   sum.textContent = `총액: ${Math.round(price)}${CURRENCY}`;
