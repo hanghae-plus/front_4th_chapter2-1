@@ -18,10 +18,23 @@ const createCartItemDOM = (item: Product) => {
 };
 
 export const renderCartProducts = ($cartProductsContainer: HTMLElement, cartItems: Product[]) => {
-  $cartProductsContainer.innerHTML = '';
-  cartItems.forEach((item) => {
-    const newItem = createCartItemDOM(item);
+  if (cartItems.length === 0) {
+    $cartProductsContainer.innerHTML = '';
 
-    $cartProductsContainer.appendChild(newItem);
+    return;
+  }
+  cartItems.forEach((item) => {
+    const existingItem = $cartProductsContainer.querySelector(`#${item.id}`);
+
+    if (existingItem) {
+      // 기존 아이템 업데이트
+      existingItem.querySelector('span').textContent =
+        `${item.name} - ${item.originalPrice}원 x ${item.quantity}`;
+    } else {
+      // 새 아이템 추가
+      const newItem = createCartItemDOM(item);
+
+      $cartProductsContainer.appendChild(newItem);
+    }
   });
 };
