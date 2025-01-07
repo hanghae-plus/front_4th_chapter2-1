@@ -53,28 +53,23 @@ function renderCartTotal(cartItems) {
   let salePrice = 0;
   let totalQuantity = 0;
   for (let i = 0; i < cartItems.length; i++) {
-    let currentItem;
-
-    for (let j = 0; j < PRODUCT_LIST.length; j++) {
-      if (PRODUCT_LIST[j].id === cartItems[i].id) {
-        currentItem = PRODUCT_LIST[j];
-        break;
-      }
-    }
+    const currentProduct = PRODUCT_LIST.find((product) => {
+      return product.id === cartItems[i].id;
+    });
 
     const quantity = parseInt(
       cartItems[i].querySelector('span').textContent.split('x ')[1]
     );
     let discountRate = 0;
     if (quantity >= 10) {
-      if (currentItem.id === 'p1') discountRate = 0.1;
-      else if (currentItem.id === 'p2') discountRate = 0.15;
-      else if (currentItem.id === 'p3') discountRate = 0.2;
-      else if (currentItem.id === 'p4') discountRate = 0.05;
-      else if (currentItem.id === 'p5') discountRate = 0.25;
+      if (currentProduct.id === 'p1') discountRate = 0.1;
+      else if (currentProduct.id === 'p2') discountRate = 0.15;
+      else if (currentProduct.id === 'p3') discountRate = 0.2;
+      else if (currentProduct.id === 'p4') discountRate = 0.05;
+      else if (currentProduct.id === 'p5') discountRate = 0.25;
     }
 
-    const subtotal = currentItem.price * quantity;
+    const subtotal = currentProduct.price * quantity;
     totalQuantity += quantity;
     retailPrice += subtotal;
     salePrice += subtotal * (1 - discountRate);
