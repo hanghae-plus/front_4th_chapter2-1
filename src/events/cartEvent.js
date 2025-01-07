@@ -15,17 +15,17 @@ export const handleAddToCart = (target) => {
     if (
       newQuantity > 0 &&
       newQuantity <=
-        product.cost +
+        product.stock +
           parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
     ) {
       itemElem.querySelector("span").textContent =
         itemElem.querySelector("span").textContent.split("x ")[0] +
         "x " +
         newQuantity;
-      product.cost -= quantityChange;
+      product.stock -= quantityChange;
     } else if (newQuantity <= 0) {
       itemElem.remove();
-      product.cost -= quantityChange;
+      product.stock -= quantityChange;
     } else {
       alert("재고가 부족합니다.");
     }
@@ -40,6 +40,6 @@ export const handleDeleteToCart = (target) => {
   var removeQuantity = parseInt(
     itemElem.querySelector("span").textContent.split("x ")[1]
   );
-  product.cost += removeQuantity;
+  product.stock += removeQuantity;
   itemElem.remove();
 };
