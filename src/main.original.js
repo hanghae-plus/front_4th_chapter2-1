@@ -54,7 +54,7 @@ function main() {
   setTimeout(function () {
     setInterval(function () {
       if(lastSel) {
-        var suggest=prodList.find(function (item) { return item.id !== lastSel && item.q > 0; });
+        var suggest=prodList.find(function (item) { return item.id != lastSel && item.q > 0; });
         if(suggest) {
           alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
           suggest.val=Math.round(suggest.val * 0.95);
