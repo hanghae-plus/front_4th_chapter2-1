@@ -1,5 +1,6 @@
 import { PRODUCT_LIST } from './data/productData';
 import { eventDiscountLucky, eventDiscountSuggest } from './components/discount';
+import { insertProductOptions } from './components/productSets';
 
 var lastSel,
   bonusPts = 0,
@@ -7,7 +8,7 @@ var lastSel,
   itemCnt = 0;
 function main() {
   renderCartUi();
-  updateProductOptions();
+  insertProductOptions();
   calcCart();
   eventDiscountLucky();
   eventDiscountSuggest(lastSel);
@@ -50,17 +51,7 @@ function renderCartUi() {
   $root.appendChild($container);
 }
 
-function updateProductOptions() {
-  const $productSelect = document.getElementById('product-select');
-  $productSelect.innerHTML = '';
-  PRODUCT_LIST.forEach(function (item) {
-    var opt = document.createElement('option');
-    opt.value = item.id;
-    opt.textContent = item.name + ' - ' + item.val + '원';
-    if (item.q === 0) opt.disabled = true;
-    $productSelect.appendChild(opt);
-  });
-}
+
 function calcCart() {
   totalAmt = 0;
   itemCnt = 0;

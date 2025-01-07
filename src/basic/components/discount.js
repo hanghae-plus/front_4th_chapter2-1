@@ -1,5 +1,8 @@
 import { PRODUCT_LIST } from '../data/productData';
 
+const calculateDiscountRate = (totalPrice, discountedTotalPrice) => (totalPrice - discountedTotalPrice) / totalPrice;
+const calculateDiscountedPrice = (price, discountRate) => price * (1 - discountRate);
+
 // 번개세일 alert
 const eventDiscountLucky = () => {
 	setTimeout(function () {
@@ -33,6 +36,15 @@ const eventDiscountSuggest = (lastSel) => {
 			}
 		}, 60000);
 	}, Math.random() * 20000);
+};
+
+// 할인적용 텍스트 
+const insertDiscountInfo = (discountRate) => {
+	const span = document.createElement('span');
+	span.className = 'text-green-500 ml-2';
+	span.textContent = `(${(discountRate * 100).toFixed(1)}% 할인 적용)`;
+
+	return span;
 };
 
 
