@@ -22,5 +22,9 @@ export default defineConfig(({ mode }) => {
     server: {
       open: config.openFile,
     },
+    test: {
+      environment: "jsdom",
+      globals: true,
+    },
   };
 });

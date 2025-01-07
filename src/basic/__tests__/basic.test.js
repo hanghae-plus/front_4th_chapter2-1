@@ -18,6 +18,7 @@ describe("basic test", () => {
     beforeAll(async () => {
       // DOM 초기화
       document.body.innerHTML = '<div id="app"></div>';
+
       await loadFile();
 
       // 전역 변수 참조
@@ -29,7 +30,9 @@ describe("basic test", () => {
     });
 
     beforeEach(() => {
-      vi.useRealTimers();
+      vi.useFakeTimers();
+      const mockDate = new Date("2025-1-6");
+      vi.setSystemTime(mockDate);
       vi.spyOn(window, "alert").mockImplementation(() => {});
     });
 
