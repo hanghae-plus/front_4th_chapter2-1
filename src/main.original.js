@@ -181,41 +181,40 @@ const CartManager = {
    * @param {number} [quantity=1] - 상품 수량
    * @returns {string} 생성된 HTML 문자열
    */
-  createCartItemHTML(product, quantity = 1) {
+  createCartItemHTML({ id, name, price }, quantity = 1) {
+    const buttonClass = "bg-blue-500 text-white px-2 py-1 rounded mr-1";
+    const createButton = (change, text) => `
+        <button class="quantity-change ${buttonClass}"
+                data-product-id="${id}"
+                data-change="${change}">${text}</button>
+    `;
+
     return `
-          <div id="${product.id}" class="flex justify-between items-center mb-2">
-              <span>${product.name} - ${product.price}원 x ${quantity}</span>
-              <div>
-                  <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-                          data-product-id="${product.id}" 
-                          data-change="-1">-</button>
-                  <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-                          data-product-id="${product.id}" 
-                          data-change="1">+</button>
-                  <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
-                          data-product-id="${product.id}">삭제</button>
-              </div>
-          </div>
-      `;
+        <div id="${id}" class="flex justify-between items-center mb-2">
+            <span>${name} - ${price}원 x ${quantity}</span>
+            <div>
+                ${createButton(-1, "-")}
+                ${createButton(1, "+")}
+                <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
+                        data-product-id="${id}">삭제</button>
+            </div>
+        </div>
+    `;
   },
 
   /**
    * 장바구니의 총액과 수량을 계산
    * @returns {Object} 계산된 총계 정보
-   * @property {number} subTotal - 할인 전 총액
-   * @property {number} totalAmount - 할인 후 총액
-   * @property {number} itemCount - 총 상품 개수
    */
   calculateItemTotals() {
     const cartItems = Array.from(UIManager.elements.cartDisplay.children);
 
     const totals = cartItems.reduce(
       (acc, item) => {
-        const product = ProductManager.findProduct(item.id);
+        const { id, price } = ProductManager.findProduct(item.id);
         const quantity = this.getItemQuantity(item);
-        const itemTotal = product.price * quantity;
-        const discount =
-          quantity >= 10 ? PRODUCT_DISCOUNTS[product.id] || 0 : 0;
+        const itemTotal = price * quantity;
+        const discount = quantity >= 10 ? PRODUCT_DISCOUNTS[id] ?? 0 : 0;
 
         return {
           subTotal: acc.subTotal + itemTotal,
@@ -226,8 +225,9 @@ const CartManager = {
       { subTotal: 0, totalAmount: 0, itemCount: 0 }
     );
 
-    this.state.totalAmount = totals.totalAmount;
-    this.state.itemCount = totals.itemCount;
+    // state 업데이트
+    const { totalAmount, itemCount } = totals;
+    Object.assign(this.state, { totalAmount, itemCount });
 
     return totals;
   },
@@ -290,6 +290,7 @@ const UIManager = {
    */
   createElement(type, id = "", className = "", text = "") {
     const element = document.createElement(type);
+
     if (id) element.id = id;
     if (className) element.className = className;
     if (text) element.textContent = text;
@@ -379,14 +380,20 @@ const UIManager = {
    * 상품 선택 옵션을 업데이트
    */
   updateProductOptions() {
-    this.elements.productSelect.innerHTML = "";
-    ProductManager.list.forEach((item) => {
+    const { productSelect } = this.elements;
+    productSelect.innerHTML = "";
+
+    const options = ProductManager.list.map(({ id, name, price, stock }) => {
       const option = this.createElement("option");
-      option.value = item.id;
-      option.textContent = `${item.name} - ${item.price}원`;
-      if (item.stock === 0) option.disabled = true;
-      this.elements.productSelect.appendChild(option);
+      Object.assign(option, {
+        value: id,
+        textContent: `${name} - ${price}원`,
+        disabled: stock === 0,
+      });
+      return option;
     });
+
+    productSelect.append(...options);
   },
 
   /**
