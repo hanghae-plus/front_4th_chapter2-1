@@ -2,8 +2,7 @@ import { productData } from '../data/data.js';
 
 //함수 모음
 //상품 목록 업데이트
-export const updateSelectedOptions = () => {
-  selectedOptions.innerHTML = '';
+export const updateSelectedOptions = (selectedOptions) => {
   productData.forEach(function (item) {
     const option = document.createElement('option');
     option.value = item.id;
@@ -14,11 +13,11 @@ export const updateSelectedOptions = () => {
 };
 
 //장바구니 계산 로직
-export const calculateCart = () => {
-  totalAmount = 0;
-  itemCount = 0;
-  const cartItems = cartDisplay.children;
+export const calculateCart = (cartDisplay, sum) => {
+  let totalAmount = 0;
+  let itemCount = 0;
   const originalTotal = 0;
+  const cartItems = cartDisplay.children;
   for (var i = 0; i < cartItems.length; i++) {
     (function () {
       var currentItem;
@@ -69,13 +68,13 @@ export const calculateCart = () => {
     span.textContent = '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
     sum.appendChild(span);
   }
-  updateStockInfo();
-  renderBonusPoints();
+  //   updateStockInfo(stockInfo);
+  renderBonusPoints(sum, totalAmount);
 };
 
 //포인트 계산 렌더링
-export const renderBonusPoints = () => {
-  bonusPoints = Math.floor(totalAmount / 1000);
+export const renderBonusPoints = (sum, totalAmount) => {
+  const bonusPoints = Math.floor(totalAmount / 1000);
   const loyaltyPoints = document.getElementById('loyalty-points');
   if (!loyaltyPoints) {
     const loyaltyPoints = document.createElement('span');
@@ -87,7 +86,7 @@ export const renderBonusPoints = () => {
 };
 
 //재고 상태 업데이트
-export const updateStockInfo = () => {
+export const updateStockInfo = (stockInfo) => {
   let infoMessage = '';
   productData.forEach(function (item) {
     if (item.quantity < 5) {

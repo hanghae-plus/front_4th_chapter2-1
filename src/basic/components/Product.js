@@ -6,7 +6,7 @@ export const ProductSelector = () => {
     className: 'border rounded p-2 mr-2',
   });
 
-  updateSelOpts(); // 기존 함수 재사용
+  // updateSelectedOptions(); // 기존 함수 재사용
   return select;
 };
 
