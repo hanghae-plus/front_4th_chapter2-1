@@ -15,9 +15,15 @@
     "test:ui": "vitest --ui"
   },
   "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
     "@eslint/js": "^9.17.0",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/user-event": "^14.5.2",
+    "@types/react": "^19.0.3",
+    "@types/react-dom": "^19.0.2",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
     "@vitest/ui": "^2.1.1",
     "eslint": "^9.17.0",
     "eslint-config-prettier": "^9.1.0",
@@ -26,11 +32,14 @@
     "globals": "^15.14.0",
     "jsdom": "^25.0.0",
     "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
     "vite": "^5.1.0",
     "vitest": "^2.1.1"
   },
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
-    "@vitest/coverage-v8": "^2.1.8"
+    "@vitest/coverage-v8": "^2.1.8",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }
