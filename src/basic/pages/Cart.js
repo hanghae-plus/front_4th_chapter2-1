@@ -63,9 +63,13 @@ export const Cart = () => {
   };
 
   const renderBonusPts = () => {
+    const { totalAmt, itemCnt } = cartStore.getCartState();
+    const calculatedPoints = Math.floor(totalAmt / 1000);
+
     cartStore.setCartState({
-      ...cartStore.getCartState(),
-      bonusPts: Math.floor(totalAmt / 1000),
+      newBonusPts: calculatedPoints,
+      newTotalAmt: totalAmt,
+      newItemCnt: itemCnt,
     });
 
     let $ptsTag = document.getElementById("loyalty-points");
@@ -75,88 +79,70 @@ export const Cart = () => {
       $ptsTag.className = "text-blue-500 ml-2";
       $cartSummary.appendChild($ptsTag);
     }
-    $ptsTag.textContent = "(포인트: " + bonusPts + ")";
+
+    $ptsTag.textContent = "(포인트: " + calculatedPoints + ")";
   };
 
   const calcCart = () => {
     const cartItems = $cartItems.children;
+    let newTotalAmt = 0; // 로컬 변수로 선언
+    let newItemCnt = 0; // 로컬 변수로 선언
+    let subTot = 0;
 
-    // 현재 상태 유지하면서 totalAmt와 itemCnt만 초기화
-    const currentState = cartStore.getCartState();
-    cartStore.setCartState({
-      ...currentState,
-      newTotalAmt: 0,
-      newItemCnt: 0,
-    });
-
-    var subTot = 0;
+    // 모든 계산을 로컬에서 먼저 수행
     for (var i = 0; i < cartItems.length; i++) {
-      (function () {
-        var curItem;
-        for (var j = 0; j < productList.length; j++) {
-          if (productList[j].id === cartItems[i].id) {
-            curItem = productList[j];
-            break;
-          }
-        }
-        var q = parseInt(
-          cartItems[i].querySelector("span").textContent.split("x ")[1],
-        );
-        var itemTot = curItem.val * q;
-        var disc = 0;
+      const curItem = productList.find((p) => p.id === cartItems[i].id);
+      const q = parseInt(
+        cartItems[i].querySelector("span").textContent.split("x ")[1],
+      );
+      const itemTot = curItem.val * q;
+      let disc = 0;
 
-        // itemCnt 누적
-        cartStore.setCartState({
-          ...cartStore.getCartState(),
-          newItemCnt: cartStore.getItemCnt() + q,
-        });
+      newItemCnt += q;
+      subTot += itemTot;
 
-        subTot += itemTot;
-        if (q >= 10) {
-          if (curItem.id === "p1") disc = 0.1;
-          else if (curItem.id === "p2") disc = 0.15;
-          else if (curItem.id === "p3") disc = 0.2;
-          else if (curItem.id === "p4") disc = 0.05;
-          else if (curItem.id === "p5") disc = 0.25;
-        }
+      if (q >= 10) {
+        if (curItem.id === "p1") disc = 0.1;
+        else if (curItem.id === "p2") disc = 0.15;
+        else if (curItem.id === "p3") disc = 0.2;
+        else if (curItem.id === "p4") disc = 0.05;
+        else if (curItem.id === "p5") disc = 0.25;
+      }
 
-        // totalAmt 누적
-        cartStore.setCartState({
-          ...cartStore.getCartState(),
-          newTotalAmt: cartStore.getTotalAmt() + itemTot * (1 - disc),
-        });
-      })();
+      newTotalAmt += itemTot * (1 - disc);
     }
 
     let discRate = 0;
-    const { totalAmt, itemCnt } = cartStore.getCartState();
 
-    if (itemCnt >= 30) {
-      var bulkDisc = totalAmt * 0.25;
-      var itemDisc = subTot - totalAmt;
+    // 대량 구매 할인 적용
+    if (newItemCnt >= 30) {
+      const bulkDisc = newTotalAmt * 0.25;
+      const itemDisc = subTot - newTotalAmt;
       if (bulkDisc > itemDisc) {
-        cartStore.setCartState({
-          ...cartStore.getCartState(),
-          newTotalAmt: subTot * (1 - 0.25),
-        });
+        newTotalAmt = subTot * (1 - 0.25);
         discRate = 0.25;
       } else {
-        discRate = (subTot - totalAmt) / subTot;
+        discRate = (subTot - newTotalAmt) / subTot;
       }
     } else {
-      discRate = (subTot - totalAmt) / subTot;
+      discRate = (subTot - newTotalAmt) / subTot;
     }
 
+    // 화요일 할인 적용
     if (new Date().getDay() === 2) {
-      cartStore.setCartState({
-        ...cartStore.getCartState(),
-        newTotalAmt: cartStore.getTotalAmt() * 0.9,
-      });
+      newTotalAmt *= 0.9;
       discRate = Math.max(discRate, 0.1);
     }
 
-    $cartSummary.textContent =
-      "총액: " + Math.round(cartStore.getTotalAmt()) + "원";
+    // 모든 계산이 끝난 후 한 번에 상태 업데이트
+
+    cartStore.setCartState({
+      newBonusPts: bonusPts,
+      newTotalAmt: newTotalAmt,
+      newItemCnt: newItemCnt,
+    });
+
+    $cartSummary.textContent = "총액: " + Math.round(newTotalAmt) + "원";
 
     if (discRate > 0) {
       const $span = document.createElement("span");
