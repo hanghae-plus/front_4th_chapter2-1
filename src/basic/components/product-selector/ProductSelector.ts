@@ -5,20 +5,8 @@ import { addEventListener } from '../../utils/eventUtil';
 import type { Product } from '../../store/cartStore';
 
 export const ProductSelector = () => {
-  const { actions: ProductActions, observer: productObserver } = ProductStore;
-  const { actions: CartActions, observer: cartObserver } = CartStore;
-
-  cartObserver.addObserver({
-    update: () => {
-      // rerender 처리
-    },
-  });
-
-  productObserver.addObserver({
-    update: () => {
-      // rerender 처리
-    },
-  });
+  const { actions: ProductActions } = ProductStore;
+  const { actions: CartActions } = CartStore;
 
   const productList = ProductActions.getProductList();
 

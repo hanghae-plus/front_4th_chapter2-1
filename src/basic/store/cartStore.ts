@@ -1,3 +1,5 @@
+import { createStore } from '../utils/createStore';
+
 export interface Product {
   id: string;
   name: string;
@@ -5,36 +7,24 @@ export interface Product {
   q: number;
 }
 
-interface Observer {
-  update(state: State): void;
-}
-
-interface State {
-  // userInfo: UserInfoType | null;
+interface CartState {
   cartList: Product[] | null;
   totalPrice: number;
 }
 
-interface Actions {
+interface CartActions {
   getCartList: () => Product[] | null;
   getCartItem: (id: string) => Product | undefined;
   addCartItem: (item: Product) => void;
   removeCartItem: (id: string) => void;
 }
 
-export const CartStore = (function () {
-  const observers: Observer[] = [];
-
-  const state: State = {
+export const CartStore = createStore<CartState, CartActions>(
+  {
     cartList: null,
     totalPrice: 0,
-  };
-
-  function notifyObservers() {
-    observers.forEach((observer) => observer.update(state));
-  }
-
-  const actions: Actions = {
+  },
+  (state, notify) => ({
     getCartList: () => {
       return state.cartList;
     },
@@ -43,36 +33,15 @@ export const CartStore = (function () {
     },
     addCartItem: (item: Product) => {
       const newCartList = state.cartList ? state.cartList.concat(item) : [item];
-
       state.cartList = newCartList;
-
-      // 아이템 추가 로직
-      notifyObservers();
+      state.totalPrice = (state.cartList || []).reduce((sum, item) => sum + item.val * item.q, 0);
+      notify();
     },
     removeCartItem: (id: string) => {
       if (!state.cartList) return;
-
       state.cartList = state.cartList.filter((item) => item.id !== id);
-      // 아이템 제거 로직
-      notifyObservers();
+      state.totalPrice = state.cartList.reduce((sum, item) => sum + item.val * item.q, 0);
+      notify();
     },
-  };
-
-  const observer = {
-    addObserver: (observer: Observer) => {
-      observers.push(observer);
-    },
-    removeObserver: (observer: Observer) => {
-      const index = observers.indexOf(observer);
-      if (index > -1) {
-        observers.splice(index, 1);
-      }
-    },
-  };
-
-  return {
-    state,
-    actions,
-    observer,
-  };
-})();
+  }),
+);

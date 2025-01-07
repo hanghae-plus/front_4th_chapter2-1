@@ -11,8 +11,6 @@ interface CartItemProps {
 export const CartItem = (props: CartItemProps) => {
   const { id, name, val, q } = props;
 
-  console.log('@@render');
-
   const { actions: productActions } = ProductStore;
   const { actions: cartActions } = CartStore;
 

@@ -3,17 +3,9 @@ import { CartStore } from '../../store/cartStore';
 import { addEventListener } from '../../utils/eventUtil';
 
 export const Cart = () => {
-  const { actions, observer } = CartStore;
+  const { actions } = CartStore;
 
-  let cartList = actions.getCartList();
-
-  observer.addObserver({
-    update: () => {
-      console.log('@@@@');
-      cartList = actions.getCartList();
-      // rerender 처리
-    },
-  });
+  const cartList = actions.getCartList();
 
   // INFO: 카트 계산 로직 함수
   function calcCart() {
