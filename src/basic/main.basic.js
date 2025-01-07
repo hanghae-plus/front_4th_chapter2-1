@@ -1,4 +1,4 @@
-let $select, $addButton, $itemsInCart, $totalPrice, $stockInfo;
+import { CartTemplate } from './components/cart/CartTemplate.js';
 
 let productList;
 let lastSelectedItem,
@@ -17,42 +17,11 @@ function main() {
 
   // HTML 생성
   const $root = document.getElementById('app');
-  const $container = document.createElement('div');
-  const $wrapper = document.createElement('div');
-  const $header = document.createElement('h1');
-  $itemsInCart = document.createElement('div');
-  $totalPrice = document.createElement('div');
-  $select = document.createElement('select');
-  $addButton = document.createElement('button');
-  $stockInfo = document.createElement('div');
-  $itemsInCart.id = 'cart-items';
-  $totalPrice.id = 'cart-total';
-  $select.id = 'product-select';
-  $addButton.id = 'add-to-cart';
-  $stockInfo.id = 'stock-status';
-  $container.className = 'bg-gray-100 p-8';
-  $wrapper.className =
-    'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  $header.className = 'text-2xl font-bold mb-4';
-  $totalPrice.className = 'text-xl font-bold my-4';
-  $select.className = 'border rounded p-2 mr-2';
-  $addButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  $stockInfo.className = 'text-sm text-gray-500 mt-2';
-  $header.textContent = '장바구니';
-  $addButton.textContent = '추가';
+
+  $root.innerHTML = CartTemplate();
 
   // Select Html 설정
   updateSelectOptions();
-
-  // Html 추가
-  $wrapper.appendChild($header);
-  $wrapper.appendChild($itemsInCart);
-  $wrapper.appendChild($totalPrice);
-  $wrapper.appendChild($select);
-  $wrapper.appendChild($addButton);
-  $wrapper.appendChild($stockInfo);
-  $container.appendChild($wrapper);
-  $root.appendChild($container);
 
   calculateCart();
 
@@ -84,6 +53,8 @@ function main() {
 }
 
 function updateSelectOptions() {
+  const $select = document.getElementById('product-select');
+
   $select.innerHTML = '';
   productList.forEach(function (item) {
     const $option = document.createElement('option');
@@ -95,6 +66,9 @@ function updateSelectOptions() {
 }
 
 function calculateCart() {
+  const $itemsInCart = document.getElementById('cart-items');
+  const $totalPrice = document.getElementById('cart-total');
+
   totalPrice = 0;
   itemCount = 0;
 
@@ -167,6 +141,8 @@ function calculateCart() {
 }
 
 const renderBonusPoints = () => {
+  const $totalPrice = document.getElementById('cart-total');
+
   bonusPoints = Math.floor(totalPrice / 1000);
   let $pointTag = document.getElementById('loyalty-points');
   if (!$pointTag) {
@@ -180,6 +156,8 @@ const renderBonusPoints = () => {
 };
 
 function updateStockInfo() {
+  const $stockInfo = document.getElementById('stock-status');
+
   let stockMessage = '';
   productList.forEach(function (item) {
     if (item.quantity < 5) {
@@ -196,7 +174,10 @@ function updateStockInfo() {
 main();
 
 // Event Listener
+const $addButton = document.getElementById('add-to-cart');
 $addButton.addEventListener('click', function () {
+  const $select = document.getElementById('product-select');
+
   const selectedItem = $select.value;
   const itemToAdd = productList.find(function (p) {
     return p.id === selectedItem;
@@ -244,6 +225,7 @@ $addButton.addEventListener('click', function () {
   }
 });
 
+const $itemsInCart = document.getElementById('cart-items');
 $itemsInCart.addEventListener('click', function (event) {
   const target = event.target;
   if (target.classList.contains('quantity-change') || target.classList.contains('remove-item')) {
