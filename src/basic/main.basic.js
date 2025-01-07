@@ -3,18 +3,41 @@ let lastSel,
   totalAmt = 0,
   itemCnt = 0;
 
-const renderBonusPts = (totalAmt) => {
-  const bonusPts = Math.floor(totalAmt / 1000);
-  let ptsTag = document.getElementById('loyalty-points');
+const createElement = (tag, options) => {
+  const { id = '', className = '', textContent = '', ...props } = options;
+  const element = document.createElement(tag);
+  element.id = id;
+  element.className = className;
+  element.textContent = textContent;
+  Object.entries(props).forEach(([key, value]) => {
+    element[key] = value;
+  });
 
-  if (!ptsTag) {
-    ptsTag = document.createElement('span');
-    ptsTag.id = 'loyalty-points';
-    ptsTag.className = 'text-blue-500 ml-2';
-    sum.appendChild(ptsTag);
+  return element;
+};
+
+const getOrCreateElement = (tag, options) => {
+  const { parentElement, id, ...props } = options;
+  let element = document.getElementById(id);
+  if (!element) {
+    element = createElement(tag, { id, ...props });
+    parentElement.appendChild(element);
   }
+  return element;
+};
 
-  ptsTag.textContent = '(포인트: ' + bonusPts + ')';
+const POINT_RATIO = 1000;
+const getPointRatio = (totalAmt) => Math.floor(totalAmt / POINT_RATIO);
+const getPointRatioMessage = (totalAmt) =>
+  `(포인트: ${getPointRatio(totalAmt)})`;
+
+const renderBonusPts = (totalAmt, parentElement) => {
+  getOrCreateElement('span', {
+    parentElement,
+    id: 'loyalty-points',
+    className: 'text-blue-500 ml-2',
+    textContent: getPointRatioMessage(totalAmt),
+  });
 };
 
 const LOW_STOCK = 5;
@@ -94,7 +117,7 @@ function calcCart() {
   }
 
   stockInfo.textContent = updateStockInfo(prodList);
-  renderBonusPts(totalAmt);
+  renderBonusPts(totalAmt, sum);
 }
 
 function main() {
