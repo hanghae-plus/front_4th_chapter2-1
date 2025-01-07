@@ -29,6 +29,9 @@ importers:
       jsdom:
         specifier: ^25.0.0
         version: 25.0.1
+      typescript:
+        specifier: ^5.7.2
+        version: 5.7.2
       typescript-eslint:
         specifier: ^8.19.0
         version: 8.19.0(eslint@9.17.0)(typescript@5.7.2)
