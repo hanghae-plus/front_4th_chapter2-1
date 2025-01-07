@@ -1,13 +1,8 @@
-import { calculateCartItems } from './components/cart/calculateCartItems';
 import CartTotal from './components/cartTotal/CartTotal';
-import { renderDiscountedAmount } from './components/cartTotal/renderDiscountedAmount';
+import { renderCalculateCart } from './components/cartTotal/renderCalculateCart';
 import Header from './components/Header';
-import { getTotalBonusPoints } from './components/points/getTotalBonusPoints';
-import { renderBonusPoints } from './components/points/renderBonusPoints';
 import { updateSelectOptions } from './components/productSelect/updateSelectOptions';
-import { updateStockInfoMessage } from './components/stock/updateStockInfoMessage';
 import { CONSTANTS } from './constants';
-import { calculateOverallDiscount } from './utils/calculateOverallDiscount';
 import { helper } from './utils/helper';
 
 let products,
@@ -63,7 +58,7 @@ function main() {
   root.appendChild(containerDiv);
 
   updateSelectOptions(products);
-  calculateCart();
+  renderCalculateCart(products);
 
   setTimeout(function () {
     setInterval(function () {
@@ -99,29 +94,6 @@ function main() {
       }
     }, CONSTANTS.SUGGESTION_INTERVAL);
   }, Math.random() * CONSTANTS.SUGGESTION_DELAY);
-}
-
-export function calculateCart() {
-  const { totalAmount, itemCount, preDiscountTotal } =
-    calculateCartItems(products);
-
-  const { overallDiscountRate, discountedTotalAmount } =
-    calculateOverallDiscount(totalAmount, preDiscountTotal, itemCount);
-
-  const roundedAmount = Math.round(discountedTotalAmount);
-  const totalDisplay = document.getElementById('cart-total');
-  totalDisplay.textContent = helper.getTotalAmountMessage(roundedAmount);
-
-  if (overallDiscountRate > 0) {
-    const discountedAmount = renderDiscountedAmount(overallDiscountRate);
-    totalDisplay.appendChild(discountedAmount);
-  }
-
-  const updatedMessage = updateStockInfoMessage(products);
-  stockInfo.textContent = updatedMessage;
-
-  const bonusPoints = getTotalBonusPoints(discountedTotalAmount);
-  renderBonusPoints(bonusPoints);
 }
 
 main();
@@ -174,7 +146,7 @@ addToCartButton.addEventListener('click', function () {
       productToAdd.quantity--;
     }
 
-    calculateCart();
+    renderCalculateCart(products);
     lastSelectedItem = selectedItem;
   }
 });
@@ -227,6 +199,6 @@ cartDisplay.addEventListener('click', function (event) {
       cartProductElement.remove();
     }
 
-    calculateCart();
+    renderCalculateCart(products);
   }
 });
