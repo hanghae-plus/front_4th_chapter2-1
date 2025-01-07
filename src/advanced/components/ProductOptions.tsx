@@ -6,7 +6,7 @@ function ProductOptions() {
       <option
         key={product.id}
         id={product.id}
-        disabled={product.remaining === 0 ? true : false}
+        disabled={product.remaining === 0}
       >
         {product.name} - {product.price}원
       </option>
