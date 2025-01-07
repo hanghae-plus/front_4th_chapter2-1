@@ -1,5 +1,6 @@
 import { products } from './data/products';
 import { DISCOUNT_POLICY } from './policy/discount';
+import { TIMER_POLICY } from './policy/timer';
 
 let sel, addBtn, cartDisp, sum, stockInfo;
 let lastSel,
@@ -49,7 +50,7 @@ function main() {
         alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
         updateSelOpts();
       }
-    }, 30000);
+    }, TIMER_POLICY.LIGHTNING_SALE_INTERVAL);
   }, Math.random() * 10000);
   setTimeout(function () {
     setInterval(function () {
@@ -63,7 +64,7 @@ function main() {
           updateSelOpts();
         }
       }
-    }, 60000);
+    }, TIMER_POLICY.PRODUCT_RECOMMENDATION_INTERVAL);
   }, Math.random() * 20000);
 }
 
