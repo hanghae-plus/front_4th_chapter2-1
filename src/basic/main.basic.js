@@ -1,5 +1,6 @@
 import { calculateCartItems } from './components/cart/calculateCartItems';
 import CartTotal from './components/cartTotal/CartTotal';
+import { renderDiscountedAmount } from './components/cartTotal/renderDiscountedAmount';
 import Header from './components/Header';
 import { getTotalBonusPoints } from './components/points/getTotalBonusPoints';
 import { renderBonusPoints } from './components/points/renderBonusPoints';
@@ -112,14 +113,8 @@ export function calculateCart() {
   totalDisplay.textContent = helper.getTotalAmountMessage(roundedAmount);
 
   if (overallDiscountRate > 0) {
-    const discountSpan = document.createElement('span');
-    discountSpan.className = 'text-green-500 ml-2';
-
-    const discountedAmount = (overallDiscountRate * 100).toFixed(1);
-    discountSpan.textContent =
-      helper.getDiscountedAmountMessage(discountedAmount);
-
-    totalDisplay.appendChild(discountSpan);
+    const discountedAmount = renderDiscountedAmount(overallDiscountRate);
+    totalDisplay.appendChild(discountedAmount);
   }
 
   const updatedMessage = updateStockInfoMessage(products);
