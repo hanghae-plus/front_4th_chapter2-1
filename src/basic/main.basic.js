@@ -6,7 +6,7 @@ import { TIMER_POLICY } from './policy/timer';
 let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
 
 let lastSelectedProduct,
-  loyaltyPoints = 0,
+  points = 0,
   amount = 0,
   itemCount = 0;
 
@@ -143,19 +143,22 @@ const calcCart = () => {
     cartTotal.appendChild(span);
   }
   renderStockStatus();
-  renderBonusPts();
+  renderPoints();
 };
 
-const renderBonusPts = () => {
-  loyaltyPoints = Math.floor(amount / 1000);
-  let ptsTag = document.getElementById('loyalty-points');
-  if (!ptsTag) {
-    ptsTag = document.createElement('span');
-    ptsTag.id = 'loyalty-points';
-    ptsTag.className = 'text-blue-500 ml-2';
-    cartTotal.appendChild(ptsTag);
+const renderPoints = () => {
+  points = Math.floor(amount / 1000);
+
+  let pointsElement = document.getElementById('points');
+
+  if (!pointsElement) {
+    pointsElement = document.createElement('span');
+    pointsElement.id = 'points';
+    pointsElement.className = 'text-blue-500 ml-2';
+    cartTotal.appendChild(pointsElement);
   }
-  ptsTag.textContent = '(포인트: ' + loyaltyPoints + ')';
+
+  pointsElement.textContent = `(포인트: ${points})`;
 };
 
 const renderStockStatus = () => {
