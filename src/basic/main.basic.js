@@ -104,17 +104,7 @@ const calcCart = () => {
       itemCount += quantity;
       subTotal += itemAmount;
       if (quantity >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
-        if (currentProduct.id === 'p1') {
-          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p1;
-        } else if (currentProduct.id === 'p2') {
-          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p2;
-        } else if (currentProduct.id === 'p3') {
-          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p3;
-        } else if (currentProduct.id === 'p4') {
-          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p4;
-        } else if (currentProduct.id === 'p5') {
-          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p5;
-        }
+        discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES[currentProduct.id] || 0;
       }
       amount += applyDiscount({ amount: itemAmount, discountRate });
     })();
