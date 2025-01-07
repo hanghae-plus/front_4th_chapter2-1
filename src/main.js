@@ -11,6 +11,7 @@ function main() {
     { id: "p4", name: "상품4", val: 15000, q: 0 },
     { id: "p5", name: "상품5", val: 25000, q: 10 },
   ];
+  //------------init HTML---------------
   var root = document.getElementById("app");
   let cont = document.createElement("div");
   var wrap = document.createElement("div");
@@ -45,6 +46,8 @@ function main() {
   cont.appendChild(wrap);
   root.appendChild(cont);
   calcCart();
+
+  //---------TIMEOUT EVENT----------------
   setTimeout(function () {
     setInterval(function () {
       var luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
@@ -72,6 +75,8 @@ function main() {
     }, 60000);
   }, Math.random() * 20000);
 }
+
+//----------판매 상품 추가 함수-----------
 function updateSelOpts() {
   sel.innerHTML = "";
   prodList.forEach(function (item) {
@@ -82,6 +87,8 @@ function updateSelOpts() {
     sel.appendChild(opt);
   });
 }
+
+//----------총액 계산 함수-----------
 function calcCart() {
   totalAmt = 0;
   itemCnt = 0;
@@ -140,6 +147,8 @@ function calcCart() {
   updateStockInfo();
   renderBonusPts();
 }
+
+//----------보너스 포인트 계산과 렌더링 함수-----------
 const renderBonusPts = () => {
   bonusPts = Math.floor(totalAmt / 1000);
   var ptsTag = document.getElementById("loyalty-points");
@@ -151,6 +160,8 @@ const renderBonusPts = () => {
   }
   ptsTag.textContent = "(포인트: " + bonusPts + ")";
 };
+
+//----------재고 업데이트 및 품절메시지 표현 함수-----------
 function updateStockInfo() {
   var infoMsg = "";
   prodList.forEach(function (item) {
@@ -165,6 +176,8 @@ function updateStockInfo() {
   stockInfo.textContent = infoMsg;
 }
 main();
+
+//----------addBtn 이벤트 핸들러 연결 함수-----------
 addBtn.addEventListener("click", function () {
   var selItem = sel.value;
   var itemToAdd = prodList.find(function (p) {
@@ -208,6 +221,8 @@ addBtn.addEventListener("click", function () {
     lastSel = selItem;
   }
 });
+
+//----------장바구니 삭제 함수-----------
 cartDisp.addEventListener("click", function (event) {
   var tgt = event.target;
   if (
