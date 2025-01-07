@@ -22,9 +22,8 @@
  */
 
 const renderLoyaltyPointsElement = (loyaltyPoint) => {
-  let $loyaltyPoints = document.getElementById('loyalty-points');
   const $cartTotal = document.getElementById('cart-total');
-
+  let $loyaltyPoints = document.getElementById('loyalty-points');
   if (!$loyaltyPoints) {
     $loyaltyPoints = document.createElement('span');
     $loyaltyPoints.id = 'loyalty-points';
@@ -55,6 +54,7 @@ function renderCartTotal(cartItems) {
   let totalQuantity = 0;
   for (let i = 0; i < cartItems.length; i++) {
     let currentItem;
+
     for (let j = 0; j < PRODUCT_LIST.length; j++) {
       if (PRODUCT_LIST[j].id === cartItems[i].id) {
         currentItem = PRODUCT_LIST[j];
@@ -65,10 +65,7 @@ function renderCartTotal(cartItems) {
     const quantity = parseInt(
       cartItems[i].querySelector('span').textContent.split('x ')[1]
     );
-    const subtotal = currentItem.price * quantity;
     let discountRate = 0;
-    totalQuantity += quantity;
-    retailPrice += subtotal;
     if (quantity >= 10) {
       if (currentItem.id === 'p1') discountRate = 0.1;
       else if (currentItem.id === 'p2') discountRate = 0.15;
@@ -76,6 +73,10 @@ function renderCartTotal(cartItems) {
       else if (currentItem.id === 'p4') discountRate = 0.05;
       else if (currentItem.id === 'p5') discountRate = 0.25;
     }
+
+    const subtotal = currentItem.price * quantity;
+    totalQuantity += quantity;
+    retailPrice += subtotal;
     salePrice += subtotal * (1 - discountRate);
   }
 
@@ -93,14 +94,12 @@ function renderCartTotal(cartItems) {
     discountRate = discountAmount / retailPrice;
   }
 
+  const $cartTotal = document.getElementById('cart-total');
+  $cartTotal.textContent = '총액: ' + Math.round(salePrice) + '원';
   if (new Date().getDay() === 2) {
     salePrice *= 1 - 0.1;
     discountRate = Math.max(discountRate, 0.1);
   }
-
-  const $cartTotal = document.getElementById('cart-total');
-  $cartTotal.textContent = '총액: ' + Math.round(salePrice) + '원';
-
   if (discountRate > 0) {
     const span = document.createElement('span');
     span.className = 'text-green-500 ml-2';
@@ -114,7 +113,6 @@ function renderCartTotal(cartItems) {
 
 function renderProductSelectOptionElement() {
   const $productSelect = document.getElementById('product-select');
-
   $productSelect.innerHTML = '';
   PRODUCT_LIST.forEach((item) => {
     const $option = document.createElement('option');
