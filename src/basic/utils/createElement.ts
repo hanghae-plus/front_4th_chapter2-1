@@ -6,12 +6,18 @@ export const createElement = <T extends HTMLElement>(
 
   if (attributes) {
     Object.entries(attributes).forEach(([key, value]) => {
-      if (key === 'className') {
-        element.className = value as string;
-      } else if (key === 'textContent') {
-        element.textContent = value as string;
-      } else {
-        element.setAttribute(key, value as string);
+      switch (key) {
+        case 'className':
+          element.className = value as string;
+          break;
+        case 'textContent':
+          element.textContent = value as string;
+          break;
+        case 'innerHTML':
+          element.innerHTML = value as string;
+          break;
+        default:
+          element.setAttribute(key, value as string);
       }
     });
   }
