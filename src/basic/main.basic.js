@@ -1,3 +1,4 @@
+import { calculateCartItems } from './components/cart/calculateCartItems';
 import Header from './components/Header';
 import { getTotalBonusPoints } from './components/points/getTotalBonusPoints';
 import { renderBonusPoints } from './components/points/renderBonusPoints';
@@ -102,40 +103,8 @@ function main() {
 }
 
 export function calculateCart() {
-  let totalAmount = 0;
-  let itemCount = 0;
-  let preDiscountTotal = 0; // 할인 적용 전 총액
-
-  const cartItems = cartDisplay.children;
-
-  for (let i = 0; i < cartItems.length; i++) {
-    (function () {
-      let currentProduct;
-      for (let j = 0; j < products.length; j++) {
-        if (products[j].id === cartItems[i].id) {
-          currentProduct = products[j];
-          break;
-        }
-      }
-
-      const quantity = parseInt(
-        cartItems[i].querySelector('span').textContent.split('x ')[1],
-      );
-      const currentProductAmount = currentProduct.price * quantity;
-
-      let discountRate = 0;
-      itemCount += quantity;
-      preDiscountTotal += currentProductAmount;
-
-      if (
-        quantity >= CONSTANTS.QUANTITY_THRESHOLD &&
-        helper.getDiscountRate(currentProduct.id)
-      ) {
-        discountRate = helper.getDiscountRate(currentProduct.id);
-      }
-      totalAmount += currentProductAmount * (1 - discountRate);
-    })();
-  }
+  const { totalAmount, itemCount, preDiscountTotal } =
+    calculateCartItems(products);
 
   const { overallDiscountRate, discountedTotalAmount } =
     calculateOverallDiscount(totalAmount, preDiscountTotal, itemCount);
