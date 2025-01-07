@@ -1,12 +1,12 @@
 import js from '@eslint/js';
-import globals from 'globals';
-import react from 'eslint-plugin-react';
+import eslintConfigPrettier from 'eslint-config-prettier';
+import importPlugin from 'eslint-plugin-import';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
+import reactPlugin from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
+import globals from 'globals';
 import tseslint from 'typescript-eslint';
-import eslintConfigPrettier from 'eslint-config-prettier';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
-import importPlugin from 'eslint-plugin-import';
 
 export default tseslint.config(
   {
@@ -15,7 +15,7 @@ export default tseslint.config(
   {
     extends: [
       js.configs.recommended,
-      ...react.configs.recommended.rules,
+      reactPlugin.configs.flat.recommended,
       ...tseslint.configs.recommended,
     ],
     files: ['**/*.{js,jsx,ts,tsx}'],
@@ -32,7 +32,6 @@ export default tseslint.config(
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-      'prettier/prettier': 'error',
       //import
       'import/order': [
         'error',
@@ -42,7 +41,6 @@ export default tseslint.config(
             'internal',
             ['parent', 'sibling'],
             'index',
-            'style',
             'type',
             'object',
           ],
@@ -59,7 +57,7 @@ export default tseslint.config(
             },
             {
               pattern: '*.{css,scss,sass,less}',
-              group: 'style',
+              group: 'index', // 또는 다른 적절한 group
               position: 'after',
             },
           ],
