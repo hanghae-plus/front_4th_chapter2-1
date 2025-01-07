@@ -1,4 +1,5 @@
 import { renderCartProducts } from './components/CartProducts/CartProducts';
+import { renderCartTotal, renderDiscount } from './components/CartTotal/CartTotal';
 import { Header } from './components/Header/Header';
 import { products } from './data/product';
 import { calculateFinalAmount } from './services/calcProductDiscount';
@@ -55,7 +56,7 @@ function main() {
   $container.appendChild($wrap);
   $root.appendChild($container);
 
-  calculateCartTotalAndDiscount();
+  renderCartSummary();
   setTimeout(function () {
     setInterval(function () {
       const luckyItem = products[Math.floor(Math.random() * products.length)];
@@ -85,21 +86,15 @@ function main() {
   }, Math.random() * 20000);
 }
 
-function calculateCartTotalAndDiscount() {
+const renderCartSummary = () => {
   const { amount, discountRate } = calculateFinalAmount(Cart.items);
   const $cartTotal = $('#cart-total');
 
-  $cartTotal.textContent = '총액: ' + Math.round(amount) + '원';
-  if (discountRate > 0) {
-    const span = document.createElement('span');
-
-    span.className = 'text-green-500 ml-2';
-    span.textContent = '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
-    $cartTotal.appendChild(span);
-  }
+  renderCartTotal($cartTotal, amount);
+  renderDiscount($cartTotal, discountRate);
   renderProductStock();
   renderBonusPoint(amount);
-}
+};
 
 const renderBonusPoint = (totalAmount: number) => {
   bonusPoint = Math.floor(totalAmount / 1000);
@@ -142,7 +137,7 @@ $('#add-to-cart').addEventListener('click', () => {
   } else {
     alert('재고가 부족합니다.');
   }
-  calculateCartTotalAndDiscount();
+  renderCartSummary();
   lastSel = selectedItem;
 });
 
@@ -180,6 +175,6 @@ $('#cart-items').addEventListener('click', (event) => {
       selectedProduct.quantity += removedQuantity;
       $product.remove();
     }
-    calculateCartTotalAndDiscount();
+    renderCartSummary();
   }
 });
