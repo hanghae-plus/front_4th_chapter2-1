@@ -1,3 +1,5 @@
+import { Cart } from "./pages/Cart";
+
 var prodList, sel, addBtn, cartDisp, sum, stockInfo;
 var lastSel,
   bonusPts = 0,
@@ -41,15 +43,18 @@ function main() {
   let hTxt = document.createElement("h1");
   hTxt.className = "text-2xl font-bold mb-4";
   hTxt.textContent = "장바구니";
+  // cartHeader
 
   // 카트 Display ?
   cartDisp = document.createElement("div");
   cartDisp.id = "cart-items";
+  // cartItem
 
   // 합계 Div
   sum = document.createElement("div");
   sum.id = "cart-total";
   sum.className = "text-xl font-bold my-4";
+  // cartSummary
 
   // 선택 요소
   sel = document.createElement("select");
@@ -281,6 +286,7 @@ cartDisp.addEventListener("click", function (event) {
 // clean code
 const initializeApp = () => {
   const $rootElement = document.getElementById("app");
+  $rootElement.appendChild(Cart());
 };
 
 // initializeApp();
