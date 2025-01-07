@@ -1,7 +1,7 @@
 import { products } from './data/products';
-import { DISCOUNT_POLICY } from './policy/discount';
-import { STOCK_POLICY } from './policy/stock';
-import { TIMER_POLICY } from './policy/timer';
+import { DISCOUNT_POLICY } from './features/cart/policies/discount';
+import { STOCK_POLICY } from './features/cart/policies/stock';
+import { TIMER_POLICY } from './features/cart/policies/timer';
 
 let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
 
@@ -172,6 +172,7 @@ const renderStockStatus = () => {
 
   stockStatus.textContent = stockStatusMessage;
 };
+
 main();
 
 addToCartButton.addEventListener('click', () => {
