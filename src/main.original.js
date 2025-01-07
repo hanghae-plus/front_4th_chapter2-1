@@ -232,6 +232,7 @@ const CartManager = {
 
     return totals;
   },
+  
   /**
    * 장바구니 아이템의 수량을 업데이트
    * @param {HTMLElement} item - 장바구니 아이템 요소
@@ -243,21 +244,28 @@ const CartManager = {
     const currentQuantity = this.getItemQuantity(item);
     const newQuantity = currentQuantity + quantityChange;
 
-    // 검증 로직 분리
-    if (newQuantity <= 0) {
-      item.remove();
-      ProductManager.updateStock(product.id, currentQuantity);
-      return true;
-    }
+    try {
+      // 유효성 검사
+      if (newQuantity < 0) {
+        throw new Error("수량은 0보다 작을 수 없습니다.");
+      }
 
-    if (newQuantity <= product.stock + currentQuantity) {
+      if (newQuantity > product.stock + currentQuantity) {
+        throw new Error(`재고가 부족합니다. (현재 재고: ${product.stock}개)`);
+      }
+
       this.setItemQuantity(item, product, newQuantity);
       ProductManager.updateStock(product.id, -quantityChange);
-      return true;
-    }
 
-    alert("재고가 부족합니다.");
-    return false;
+      return { success: true };
+    } catch (error) {
+      alert(error.message);
+
+      return {
+        success: false,
+        error: error.message,
+      };
+    }
   },
 };
 
@@ -403,25 +411,38 @@ const UIManager = {
    */
 
   updateCartDisplay(discRate) {
-    const { totalPrice } = this.elements;
-    const { totalAmount } = CartManager.state;
+    try {
+      const { totalPrice } = this.elements;
 
-    // 텍스트 생성 로직 분리
-    const displayText = `총액: ${Math.round(totalAmount)}원`;
-    const discountText =
-      discRate > 0 ? `(${(discRate * 100).toFixed(1)}% 할인 적용)` : "";
+      if (!totalPrice) {
+        throw new Error("totalPrice 요소를 찾을 수 없습니다.");
+      }
 
-    // DOM 업데이트
-    totalPrice.textContent = displayText;
+      const amount = CartManager.state.totalAmount;
+      if (typeof amount !== "number") {
+        throw new Error("올바른 금액이 아닙니다.");
+      }
 
-    if (discountText) {
-      const span = this.createElement(
-        "span",
-        "",
-        "text-green-500 ml-2",
-        discountText
-      );
-      totalPrice.appendChild(span);
+      totalPrice.textContent = `총액: ${Math.round(amount)}원`;
+
+      if (discRate > 0) {
+        const discountText = `(${(discRate * 100).toFixed(1)}% 할인 적용)`;
+        const span = this.createElement(
+          "span",
+          "",
+          "text-green-500 ml-2",
+          discountText
+        );
+        totalPrice.appendChild(span);
+      }
+
+      return { success: true };
+    } catch (error) {
+      console.error("장바구니 표시 업데이트 실패:", error);
+      return {
+        success: false,
+        error: error.message,
+      };
     }
   },
 
