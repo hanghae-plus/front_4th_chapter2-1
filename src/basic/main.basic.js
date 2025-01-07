@@ -18,9 +18,15 @@ function MainPage() {
   `;
 }
 
-const render = (target) => {
+const renderContent = (target) => {
   return (page) => {
     target.innerHTML = page;
+  };
+};
+
+const appendContent = (target) => {
+  return (page) => {
+    target.innerHTML += page;
   };
 };
 
@@ -54,7 +60,7 @@ const lastSelEvent = () => {
 
 const main = () => {
   const root = document.querySelector("#app");
-  render(root)(MainPage());
+  renderContent(root)(MainPage());
 
   updateSelOpts();
   calcCart();
@@ -73,8 +79,6 @@ const main = () => {
 /**
  * 장바구니
  */
-let bonusPts = 0;
-let itemCnt = 0;
 const shoppingCart = [];
 let shoppingCartTotal = 0;
 
@@ -93,7 +97,7 @@ function Item(product) {
 
 const calcCart = () => {
   shoppingCartTotal = 0;
-  itemCnt = 0;
+  let itemCnt = 0;
   const cartItems = document.querySelector("#cart-items").children;
   const sum = document.querySelector("#cart-total");
   let subTot = 0;
@@ -107,7 +111,11 @@ const calcCart = () => {
     const itemTotalPrice = curItem.price * curQuantity;
     itemCnt += curQuantity;
     subTot += itemTotalPrice;
-    shoppingCartTotal += itemTotalPrice * (1 - curItem.discount);
+    let discount = 1;
+    if (curQuantity >= 10) {
+      discount = 1 - curItem.discount;
+    }
+    shoppingCartTotal += itemTotalPrice * discount;
   });
 
   if (itemCnt >= 30) {
@@ -141,12 +149,12 @@ const calcCart = () => {
 };
 
 const renderBonusPts = () => {
-  bonusPts = Math.floor(shoppingCartTotal / 1000);
-  const sum = document.querySelector("#cart-total");
+  const bonusPts = Math.floor(shoppingCartTotal / 1000);
+  const cartTotalElem = document.querySelector("#cart-total");
   let ptsTag = document.getElementById("loyalty-points");
   if (!ptsTag) {
-    sum.innerHTML += `<span id="loyalty-points" class="text-blue-500 ml-2"></span>`;
-    ptsTag = sum.querySelector("#loyalty-points");
+    cartTotalElem.innerHTML += `<span id="loyalty-points" class="text-blue-500 ml-2"></span>`;
+    ptsTag = cartTotalElem.querySelector("#loyalty-points");
   }
   ptsTag.innerHTML = `(포인트: ${bonusPts})`;
 };
@@ -170,7 +178,7 @@ const addToCartClickHandler = () => {
         alert("재고가 부족합니다.");
       }
     } else {
-      render(cartItems)(Item(itemToAdd));
+      appendContent(cartItems)(Item(itemToAdd));
       itemToAdd.quantity--;
     }
     calcCart();
@@ -250,20 +258,25 @@ function ItemOption(item) {
 const updateSelOpts = () => {
   const sel = document.querySelector("#product-select");
   const options = PRODUCTS.map((item) => ItemOption(item));
-  render(sel)(options);
+  renderContent(sel)(options);
+};
+
+const getLowStockProducts = () => {
+  return PRODUCTS.filter((prod) => prod.quantity < 5);
+};
+
+const makeLowStockMessage = (product) => {
+  return `${product.name}: ${
+    product.quantity > 0
+      ? "재고 부족 (" + product.quantity + "개 남음)"
+      : "품절"
+  }\n`;
 };
 
 const updateStockInfo = () => {
-  let infoMsg = "";
   const stockInfo = document.querySelector("#stock-status");
-  PRODUCTS.forEach((item) => {
-    if (item.quantity < 5) {
-      infoMsg += `${item.name}: ${
-        item.quantity > 0 ? "재고 부족 (" + item.quantity + "개 남음)" : "품절"
-      }\n`;
-    }
-  });
-  stockInfo.innerHTML = infoMsg;
+  const lowStockProducts = getLowStockProducts();
+  renderContent(stockInfo)(lowStockProducts.map(makeLowStockMessage).join(""));
 };
 
 main();
