@@ -46,12 +46,12 @@ function main() {
   stockInfo.className = 'text-sm text-gray-500 mt-2';
   section.appendChild(stockInfo);
 
-  const conatiner = document.createElement('div');
-  conatiner.className = 'bg-gray-100 p-8';
-  conatiner.appendChild(section);
+  const container = document.createElement('div');
+  container.className = 'bg-gray-100 p-8';
+  container.appendChild(section);
 
   const $root = document.getElementById('app');
-  $root.appendChild(conatiner);
+  $root.appendChild(container);
 
   updateProductPrice();
 
@@ -59,19 +59,19 @@ function main() {
 
   setTimeout(() => {
     setInterval(() => {
-      alertLuckyDiscount();
+      luckyDiscountAlert();
     }, 30000);
   }, Math.random() * 10000);
 
   setTimeout(() => {
     setInterval(() => {
-      alertRecommendedDiscount();
+      recommendDiscountAlert();
     }, 60000);
   }, Math.random() * 20000);
 }
 
 // 상품 목록 중 랜덤으로 하나를 선택하여 20% 할인
-function alertLuckyDiscount() {
+function luckyDiscountAlert() {
   const luckyItem = products[Math.floor(Math.random() * products.length)];
   if (Math.random() < 0.8 && luckyItem.quantity > 0) {
     luckyItem.price = Math.round(luckyItem.price * 0.3);
@@ -81,7 +81,7 @@ function alertLuckyDiscount() {
 }
 
 // 마지막 선택한 상품을 기준으로 추천 상품을 5% 할인
-function alertRecommendedDiscount() {
+function recommendDiscountAlert() {
   if (lastSelect) {
     const recommendedProduct = products.find(product => {
       return product.id !== lastSelect && product.quantity > 0;
@@ -116,34 +116,15 @@ function calcCart() {
   // 장바구니에 담긴 상품들의 총액 계산
   ({ cartTotal, itemCnt, originalTotal } = calcCartTotal({ cartTotal, itemCnt, originalTotal }));
 
+  let discountRate = (originalTotal - cartTotal) / originalTotal;
   // 30개 이상 구매시 대량 구매 할인 적용
-  const BULK_DISCOUNT_RATE = 0.25;
-  let discountRate = 0;
-  if (itemCnt >= 30) {
-    let bulkDiscount = cartTotal * BULK_DISCOUNT_RATE; // 대량 구매 할인 총액
-    let itemDiscount = originalTotal - cartTotal; // 아이템 할인 총액
-
-    if (bulkDiscount > itemDiscount) {
-      cartTotal = originalTotal * (1 - BULK_DISCOUNT_RATE);
-      discountRate = BULK_DISCOUNT_RATE;
-    } else {
-      discountRate = (originalTotal - cartTotal) / originalTotal;
-    }
-  } else {
-    discountRate = (originalTotal - cartTotal) / originalTotal;
-  }
+  ({ cartTotal, itemCnt, originalTotal, discountRate } = calcBulkDiscount({ cartTotal, itemCnt, originalTotal, discountRate }));
 
   // 화요일에는 10% 할인
   ({ cartTotal, discountRate } = calcTuesdayDiscount(cartTotal, discountRate));
 
   // 총액 및 할인 적용 표시
-  cartTotalDisplay.textContent = '총액: ' + Math.round(cartTotal) + '원';
-  if (discountRate > 0) {
-    const discountRateSpan = document.createElement('span');
-    discountRateSpan.className = 'text-green-500 ml-2';
-    discountRateSpan.textContent = '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
-    cartTotalDisplay.appendChild(discountRateSpan);
-  }
+  ({ cartTotal, discountRate } = renderCartTotal(cartTotal, discountRate));
 
   updateStockInfo();
   renderBonusPoints();
@@ -184,6 +165,34 @@ const calcCartTotal = ({ cartTotal, itemCnt, originalTotal }) => {
   });
 
   return { cartTotal, itemCnt, originalTotal };
+};
+
+const BULK_DISCOUNT_RATE = 0.25;
+const calcBulkDiscount = ({ cartTotal, itemCnt, originalTotal, discountRate }) => {
+  if (itemCnt >= 30) {
+    let bulkDiscount = cartTotal * BULK_DISCOUNT_RATE; // 대량 구매 할인 총액
+    let itemDiscount = originalTotal - cartTotal; // 아이템 할인 총액
+
+    // 대량 구매 할인 총액이 아이템 할인 총액보다 클 경우, 대량 구매 할인 적용
+    if (bulkDiscount > itemDiscount) {
+      cartTotal = originalTotal * (1 - BULK_DISCOUNT_RATE);
+      discountRate = BULK_DISCOUNT_RATE;
+    }
+  }
+
+  return { cartTotal, itemCnt, originalTotal, discountRate };
+};
+
+const renderCartTotal = (cartTotal, discountRate) => {
+  cartTotalDisplay.textContent = '총액: ' + Math.round(cartTotal) + '원';
+  if (discountRate > 0) {
+    const discountRateSpan = document.createElement('span');
+    discountRateSpan.className = 'text-green-500 ml-2';
+    discountRateSpan.textContent = '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
+    cartTotalDisplay.appendChild(discountRateSpan);
+  }
+
+  return { cartTotal, discountRate };
 };
 
 // 보너스 포인트 계산 및 표시
