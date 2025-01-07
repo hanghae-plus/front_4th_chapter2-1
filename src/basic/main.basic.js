@@ -14,7 +14,7 @@ function main() {
   const root = document.getElementById('app');
   const container = document.createElement('div');
   const wrapper = document.createElement('div');
-  const hTxt = document.createElement('h1');
+  const headerText = document.createElement('h1');
   cartItemContainer = document.createElement('div');
   cartTotal = document.createElement('div');
   productSelector = document.createElement('select');
@@ -27,15 +27,15 @@ function main() {
   stockStatus.id = 'stock-status';
   container.className = 'bg-gray-100 p-8';
   wrapper.className = 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  hTxt.className = 'text-2xl font-bold mb-4';
+  headerText.className = 'text-2xl font-bold mb-4';
   cartTotal.className = 'text-xl font-bold my-4';
   productSelector.className = 'border rounded p-2 mr-2';
   addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
   stockStatus.className = 'text-sm text-gray-500 mt-2';
-  hTxt.textContent = '장바구니';
+  headerText.textContent = '장바구니';
   addToCartButton.textContent = '추가';
   updateSelOpts();
-  wrapper.appendChild(hTxt);
+  wrapper.appendChild(headerText);
   wrapper.appendChild(cartItemContainer);
   wrapper.appendChild(cartTotal);
   wrapper.appendChild(productSelector);
