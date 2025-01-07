@@ -63,6 +63,13 @@ const calculateBulkDiscountRate = (
  *   @returns {number} discountRate - 적용된 최종 할인율 (대량구매 할인율과 요일별 할인율 중 큰 값)
  */
 export const calculateFinalAmount = (cartItems: Product[]) => {
+  if (cartItems.length === 0) {
+    return {
+      amount: 0,
+      discountRate: 0,
+    };
+  }
+
   const originalTotalPrice = calculateOriginalPrice(cartItems);
   const bulkDiscountRate = calculateBulkDiscountRate(
     calculateCartTotalQuantity(cartItems),
