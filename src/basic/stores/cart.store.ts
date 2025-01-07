@@ -3,6 +3,10 @@ import type { Product } from '../types/product.type';
 export const Cart = {
   items: [] as Product[],
 
+  getItem(productId: string) {
+    return this.items.find((item) => item.id === productId);
+  },
+
   addItem(product: Product, quantity: number = 1) {
     const existingItem = this.items.find((item) => item.id === product.id);
 
@@ -10,6 +14,19 @@ export const Cart = {
       existingItem.quantity += quantity;
     } else {
       this.items.push({ ...product, quantity });
+    }
+  },
+
+  decreaseItemQuantity(productId: string, quantity: number) {
+    const existingItem = this.items.find((item) => item.id === productId);
+
+    if (!existingItem) {
+      return;
+    }
+
+    existingItem.quantity -= quantity;
+    if (existingItem.quantity <= 0) {
+      this.removeItem(productId);
     }
   },
 
