@@ -26,25 +26,23 @@ function MainPage() {
   `;
 }
 
-function Item({ product }) {
+function Item(product) {
   return `
     <div id="${product.id}" class="flex justify-between items-center mb-2">
       <span>${product.name} - ${product.price}원 x 1</span>
       <div>
-        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>
-        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>
-        <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${itemToAdd.id}">삭제</button>
+        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="-1">-</button>
+        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="1">+</button>
+        <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${product.id}">삭제</button>
       </div>
     </div>
   `;
 }
 
-function ItemOption({ item }) {
-  return `
-    <option value="${item.id}" ${item.quantity === 0 ? "disabled" : ""}>
-      ${item.name + " - " + item.price + "원"}
-    </option>
-  `;
+function ItemOption(item) {
+  return `<option value="${item.id}" ${item.quantity === 0 ? "disabled" : ""}>${
+    item.name
+  } - ${item.price}원</option>`;
 }
 
 const render = (target) => {
@@ -215,37 +213,50 @@ document
 
 const cartItemsClickHandler = (event) => {
   const { classList, dataset } = event.target;
-  if (
-    classList.contains("quantity-change") ||
-    classList.contains("remove-item")
-  ) {
-    const { productId, change } = dataset;
-    const itemElem = document.getElementById(productId);
-    const prod = PRODUCTS.find((p) => {
-      return p.id === productId;
-    });
-    if (classList.contains("quantity-change")) {
-      const qtyChange = parseInt(change);
-      const [itemPrice, curQuantity] = itemElem
-        .querySelector("span")
-        .textContent.split("x ");
-      const newQty = parseInt(itemPrice) + qtyChange;
-      if (newQty > 0 && newQty <= prod.quantity + parseInt(curQuantity)) {
-        itemElem.querySelector("span").textContent = itemPrice + "x " + newQty;
-        prod.quantity -= qtyChange;
-      } else if (newQty <= 0) {
-        itemElem.remove();
-        prod.quantity -= qtyChange;
-      } else {
-        alert("재고가 부족합니다.");
-      }
-    } else if (classList.contains("remove-item")) {
-      const remQty = parseInt(curQuantity);
-      prod.quantity += remQty;
-      itemElem.remove();
-    }
-    calcCart();
+  if (classList.contains("quantity-change")) {
+    quantityChange(dataset);
+  } else if (classList.contains("remove-item")) {
+    removeItem(dataset);
   }
+  calcCart();
+};
+
+const getProdData = (productId) => {
+  const prod = PRODUCTS.find((p) => p.id === productId);
+  const itemElem = document.getElementById(productId);
+  const [itemPrice, curQuantity] = itemElem
+    .querySelector("span")
+    .textContent.split("x ");
+
+  return { prod, itemElem, itemPrice, curQuantity: parseInt(curQuantity) };
+};
+
+const quantityChange = ({ productId, change }) => {
+  const qtyChange = parseInt(change);
+  const { prod, itemElem, itemPrice, curQuantity } = getProdData(productId);
+  const newQty = curQuantity + qtyChange;
+  const totalQty = prod.quantity + curQuantity;
+
+  if (newQty > 0 && newQty <= totalQty) {
+    itemElem.querySelector("span").textContent = itemPrice + "x " + newQty;
+    prod.quantity -= qtyChange;
+    return;
+  }
+
+  if (newQty <= 0) {
+    itemElem.remove();
+    prod.quantity -= qtyChange;
+    return;
+  }
+
+  alert("재고가 부족합니다.");
+};
+
+const removeItem = ({ productId }) => {
+  const { prod, itemElem, curQuantity } = getProdData(productId);
+
+  prod.quantity += curQuantity;
+  itemElem.remove();
 };
 
 document
