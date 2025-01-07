@@ -1,55 +1,43 @@
 import {
-  ITEM_QUANTITY_DISCOUNT_RATES,
-  DAY_DISCOUNT_RATES,
-  BULK_DISCOUNT_RATES,
-  ITEM_QUANTITY_DISCOUNT_THRESHOLD,
-  BULK_DISCOUNT_THRESHOLD,
-} from '../constants/discount.constant';
+  getBulkDiscountRate,
+  getDayDiscountRate,
+  getItemQuantityDiscountRate,
+} from '../utils/discount.utils';
 
 import type { Product } from '../types/product.type';
 
-// 상품 갯수에 따른 할인율 계산
-const getItemQuantityDiscountRate = (productId: string, quantity: number): number => {
-  if (quantity >= ITEM_QUANTITY_DISCOUNT_THRESHOLD) {
-    return ITEM_QUANTITY_DISCOUNT_RATES[productId] || 0;
-  }
-
-  return 0;
-};
-
-export const getBulkDiscountRate = (cartTotalQuantity: number): number => {
-  if (cartTotalQuantity >= BULK_DISCOUNT_THRESHOLD) {
-    return BULK_DISCOUNT_RATES;
-  }
-
-  return 0;
-};
-
-export const calculateDayDiscountRate = (): number => {
-  const today = new Date().getDay();
-
-  return DAY_DISCOUNT_RATES[today];
-};
-
-const calculateItemSubtotal = (item: Product, applyDiscount = true): number => {
+const calculateProductSubtotal = (product: Product, applyDiscount = true): number => {
   if (!applyDiscount) {
-    return item.originalPrice * item.quantity;
+    return product.originalPrice * product.quantity;
   }
 
-  const discount = getItemQuantityDiscountRate(item.id, item.quantity);
+  const discount = getItemQuantityDiscountRate(product.id, product.quantity);
 
-  return item.originalPrice * item.quantity * (1 - discount);
+  return product.originalPrice * product.quantity * (1 - discount);
 };
 
-export const calculateItemPrice = (cartItems: Product[]): number => {
-  return cartItems.reduce((total, item) => total + calculateItemSubtotal(item), 0);
+/**
+ * 장바구니 개별 상품들의 할인 적용된 금액을 계산합니다.
+ *
+ * @param cartProducts - 장바구니에 담긴 상품 목록
+ * @returns {number} 개별상품의 할인 적용된 총 금액
+ */
+const calculateProductsPrice = (cartProducts: Product[]): number => {
+  return cartProducts.reduce((total, product) => total + calculateProductSubtotal(product), 0);
 };
 
-export const calculateOriginalPrice = (cartItems: Product[]): number => {
-  return cartItems.reduce((total, item) => total + calculateItemSubtotal(item, false), 0);
+const calculateOriginalPrice = (cartProducts: Product[]): number => {
+  return cartProducts.reduce(
+    (total, product) => total + calculateProductSubtotal(product, false),
+    0
+  );
 };
 
-export const calculateBulkDiscountRate = (
+const calculateCartTotalQuantity = (cartProducts: Product[]): number => {
+  return cartProducts.reduce((total, product) => total + product.quantity, 0);
+};
+
+const calculateBulkDiscountRate = (
   cartTotalQuantity: number,
   originalTotalPrice: number,
   totalAmount: number
@@ -66,18 +54,26 @@ export const calculateBulkDiscountRate = (
   return bulkDiscount > itemDiscount ? bulkDiscountRate : itemDiscount / originalTotalPrice;
 };
 
+/**
+ * 장바구니 상품들의 최종 결제 금액과 할인율을 계산합니다.
+ *
+ * @param cartItems - 장바구니에 담긴 상품 목록
+ * @returns {object} 최종 계산 결과
+ *   @returns {number} amount - 할인이 적용된 최종 결제 금액
+ *   @returns {number} discountRate - 적용된 최종 할인율 (대량구매 할인율과 요일별 할인율 중 큰 값)
+ */
 export const calculateFinalAmount = (cartItems: Product[]) => {
   const originalTotalPrice = calculateOriginalPrice(cartItems);
   const bulkDiscountRate = calculateBulkDiscountRate(
-    cartItems.reduce((total, item) => total + item.quantity, 0),
+    calculateCartTotalQuantity(cartItems),
     originalTotalPrice,
-    calculateItemPrice(cartItems)
+    calculateProductsPrice(cartItems)
   );
-  const dayDiscountRate = calculateDayDiscountRate();
+  const dayDiscountRate = getDayDiscountRate();
   const finalDiscountRate = Math.max(bulkDiscountRate, dayDiscountRate);
-  
+
   return {
     amount: originalTotalPrice * (1 - finalDiscountRate),
-    discountRate: finalDiscountRate
+    discountRate: finalDiscountRate,
   };
-}
+};
