@@ -19,6 +19,8 @@
 import { Cart } from './components/cart/Cart';
 import { ProductSelector } from './components/product-selector/ProductSelector';
 import { TotalPrice } from './components/total-price/TotalPrice';
+import { CartStore } from './store/cartStore';
+import { ProductStore } from './store/productStore';
 
 // INFO: Main
 function main() {
@@ -30,20 +32,26 @@ function main() {
   //   { id: 'p5', name: '상품5', val: 25000, q: 10 },
   // ];
 
-  const root = document.getElementById('app');
+  const render = () => {
+    const root = document.getElementById('app');
 
-  if (!root) return;
+    if (!root) return;
 
-  root.innerHTML = `
-  <div class="bg-gray-100 p-8">
-    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
-      ${Cart().render}
-      ${TotalPrice().render}
-      ${ProductSelector().render}
-      <div class="text-sm text-gray-500 mt-2">재고</div>
+    root.innerHTML = `
+    <div class="bg-gray-100 p-8">
+      <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
+        ${Cart().render}
+        ${TotalPrice().render}
+        ${ProductSelector().render}
+        <div class="text-sm text-gray-500 mt-2">재고</div>
+      </div>
     </div>
-  </div>
-  `;
+    `;
+  };
+
+  render();
+  CartStore.subscribe(() => render());
+  ProductStore.subscribe(() => render());
 
   // calcCart();
   // updateSelOpts();
