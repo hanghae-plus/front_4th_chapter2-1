@@ -10,7 +10,7 @@ const DOM_IDS = Object.freeze({
 
 const ALERT_MESSAGES = Object.freeze({
   OUT_OF_STOCK: "재고가 부족합니다.",
-  RANDOM_SALE: itemName => `번개세일! ${itemName}이(가) 20% 할인 중입니다!`,
+  SURPRISE_SALE: itemName => `번개세일! ${itemName}이(가) 20% 할인 중입니다!`,
   RECOMMENDED_SALE: itemName =>
     `${itemName}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`,
 });
@@ -21,7 +21,8 @@ const DISCOUNT_RATES = Object.freeze({
   FIFTEEN_PERCENT: 0.15,
   TWENTY_PERCENT: 0.2,
   TWENTY_FIVE_PERCENT: 0.25,
-  RANDOM_SALE: 0.3,
+  SURPRISE_SALE: 0.8,
+  RECOMMENDED_SALE: 0.95,
 });
 
 const STOCKS = Object.freeze({
@@ -77,48 +78,49 @@ const getDiscountRate = productID => {
   }
 };
 
+const handleCreateSaleInterval = (callback, interval, delay) => {
+  setTimeout(() => {
+    setInterval(callback, interval);
+  }, Math.random() * delay);
+};
+
+const handleSurpriseSale = () => {
+  const luckyItem = productList[Math.floor(Math.random() * productList.length)];
+
+  if (Math.random() < DISCOUNT_RATES.SURPRISE_SALE && luckyItem.remaining > 0) {
+    luckyItem.price = Math.round(
+      luckyItem.price * DISCOUNT_RATES.SURPRISE_SALE
+    );
+
+    alert(ALERT_MESSAGES.SURPRISE_SALE(luckyItem.name));
+
+    renderProductOptions();
+  }
+};
+
+const handleRecommendSale = () => {
+  if (lastSelectedProductID) {
+    const suggest = productList.find(
+      item => item.id !== lastSelectedProductID && item.remaining > 0
+    );
+
+    if (suggest) {
+      alert(ALERT_MESSAGES.RECOMMENDED_SALE(suggest.name));
+
+      suggest.price = Math.round(
+        suggest.price * DISCOUNT_RATES.RECOMMENDED_SALE
+      );
+
+      renderProductOptions();
+    }
+  }
+};
+
 const setUpSaleEvents = () => {
   // 임의의 시간마다 깜짝세일 20%
-  setTimeout(() => {
-    setInterval(() => {
-      const luckyItem =
-        productList[Math.floor(Math.random() * productList.length)];
-
-      if (
-        Math.random() < DISCOUNT_RATES.RANDOM_SALE &&
-        luckyItem.remaining > 0
-      ) {
-        luckyItem.price = Math.round(
-          luckyItem.price * (1 - DISCOUNT_RATES.TWENTY_PERCENT)
-        );
-
-        alert(ALERT_MESSAGES.RANDOM_SALE(luckyItem.name));
-
-        renderProductOptions();
-      }
-    }, 30000);
-  }, Math.random() * 10000);
-
+  handleCreateSaleInterval(handleSurpriseSale, 30000, 10000);
   // 추천세일 5%
-  setTimeout(() => {
-    setInterval(() => {
-      if (lastSelectedProductID) {
-        const suggest = productList.find(
-          item => item.id !== lastSelectedProductID && item.remaining > 0
-        );
-
-        if (suggest) {
-          alert(ALERT_MESSAGES.RECOMMENDED_SALE(suggest.name));
-
-          suggest.price = Math.round(
-            suggest.price * (1 - DISCOUNT_RATES.FIVE_PERCENT)
-          );
-
-          renderProductOptions();
-        }
-      }
-    }, 60000);
-  }, Math.random() * 20000);
+  handleCreateSaleInterval(handleRecommendSale, 60000, 20000);
 };
 
 // 적립 포인트
@@ -342,7 +344,7 @@ const handleClickCart = event => {
   const clickedBtn = event.target; // 수량 변경 클릭한 버튼
   if (!clickedBtn) return;
 
-  const { productId, change } = clickedBtn.dataset; // 클릭한 버튼의 ID (왜냐면 상품명-버튼 한 row라서)
+  const { productId, change } = clickedBtn.dataset || {}; // 클릭한 버튼의 ID (왜냐면 상품명-버튼 한 row라서)
 
   const product = productList.find(product => product.id === productId); // productList에서 해당 아이템 찾기
 
