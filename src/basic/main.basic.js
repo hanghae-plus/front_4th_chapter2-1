@@ -277,10 +277,9 @@ cartContainer.addEventListener('click', function (event) {
 
   // 수량 변경 또는 삭제 버튼일 경우
   if (target.classList.contains('quantity-change') || target.classList.contains('remove-item')) {
-    const $selectedProduct = document.getElementById(productId);
-
     // 선택한 상품 찾기
     const productId = target.dataset.productId;
+    const $selectedProduct = document.getElementById(productId);
     const selectedProduct = products.find(product => {
       return product.id === productId;
     });
