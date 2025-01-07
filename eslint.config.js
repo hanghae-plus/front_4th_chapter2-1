@@ -1,6 +1,5 @@
 import eslint from '@eslint/js';
 import eslintPluginImport from 'eslint-plugin-import';
-import perfectionist from 'eslint-plugin-perfectionist';
 import prettier from 'eslint-plugin-prettier';
 import promise from 'eslint-plugin-promise';
 import security from 'eslint-plugin-security';
@@ -24,7 +23,6 @@ export default [
     },
     plugins: {
       import: eslintPluginImport,
-      perfectionist,
       prettier,
       promise,
       security,
@@ -36,6 +34,9 @@ export default [
       curly: ['warn', 'all'],
       eqeqeq: 'error',
       'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-multiple-empty-lines': ['warn', { max: 1 }],
+      'no-unused-vars': 'warn',
+      'prefer-const': 'warn',
       'no-implicit-coercion': 'error',
       'no-redeclare': 'warn',
       'no-shadow': 'off',
@@ -47,16 +48,6 @@ export default [
       'import/order': ['off'],
       'import/prefer-default-export': 'off',
 
-      // perfectionist 규칙
-      'perfectionist/sort-objects': [
-        'error',
-        {
-          order: 'asc',
-          type: 'natural',
-        },
-      ],
-
-      'prefer-const': 'warn',
       // promise 관련 추가 규칙
       'promise/always-return': 'error',
 
