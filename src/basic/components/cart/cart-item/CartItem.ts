@@ -9,7 +9,7 @@ interface CartItemProps {
 }
 
 export const CartItem = (props: CartItemProps) => {
-  const { id, name, val, q } = props;
+  const { id, name, val } = props;
 
   const { actions: productActions } = ProductStore;
   const { actions: cartActions } = CartStore;
