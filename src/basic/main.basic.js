@@ -8,11 +8,9 @@ var lastSel,
 function main() {
   var root = document.getElementById("app");
 
-  // container
   let cont = document.createElement("div");
   cont.className = "bg-gray-100 p-8";
 
-  // wrapper
   var wrap = document.createElement("div");
   wrap.className =
     "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
@@ -43,7 +41,6 @@ function main() {
 
   updateSelOpts();
 
-  // wapper 안에 태그를 위치시킨다
   wrap.appendChild(hTxt);
   wrap.appendChild(cartDisp);
   wrap.appendChild(sum);
@@ -55,11 +52,11 @@ function main() {
 
   calcCart();
 
-  // 행운의 할인 이벤트
+  // 번개세일 할인 이벤트
   setTimeout(function () {
     setInterval(function () {
       var luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
-      if (Math.random() < 0.3 && luckyItem.q > 0) {
+      if (Math.random() < 0.3 && 0 < luckyItem.q) {
         luckyItem.val = Math.round(luckyItem.val * 0.8);
         alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
         updateSelOpts();
@@ -67,11 +64,12 @@ function main() {
     }, 30000);
   }, Math.random() * 10000);
 
+  // 추천상품 할인 이베트
   setTimeout(function () {
     setInterval(function () {
       if (lastSel) {
         var suggest = prodList.find(function (item) {
-          return item.id !== lastSel && item.q > 0;
+          return item.id !== lastSel && 0 < item.q;
         });
         if (suggest) {
           alert(
@@ -101,7 +99,7 @@ function updateSelOpts() {
   });
 }
 
-// 장바구니
+// 장바구니 계산
 function calcCart() {
   totalAmt = 0;
   itemCnt = 0;
