@@ -209,6 +209,7 @@ const CartManager = {
   calculateItemTotals() {
     const cartItems = Array.from(UIManager.elements.cartDisplay.children);
 
+    // 계산 로직을 순수 함수처럼..
     const totals = cartItems.reduce(
       (acc, item) => {
         const { id, price } = ProductManager.findProduct(item.id);
@@ -225,13 +226,12 @@ const CartManager = {
       { subTotal: 0, totalAmount: 0, itemCount: 0 }
     );
 
-    // state 업데이트
-    const { totalAmount, itemCount } = totals;
-    Object.assign(this.state, { totalAmount, itemCount });
+    this.state.totalAmount = totals.totalAmount;
+    this.state.itemCount = totals.itemCount;
+    this.state.bonusPoints = Math.floor(totals.totalAmount / 1000);
 
     return totals;
   },
-
   /**
    * 장바구니 아이템의 수량을 업데이트
    * @param {HTMLElement} item - 장바구니 아이템 요소
@@ -243,9 +243,10 @@ const CartManager = {
     const currentQuantity = this.getItemQuantity(item);
     const newQuantity = currentQuantity + quantityChange;
 
+    // 검증 로직 분리
     if (newQuantity <= 0) {
       item.remove();
-      ProductManager.updateStock(product.id, -quantityChange);
+      ProductManager.updateStock(product.id, currentQuantity);
       return true;
     }
 
@@ -400,18 +401,25 @@ const UIManager = {
    * 장바구니 표시를 업데이트
    * @param {number} discRate - 적용된 할인율
    */
+
   updateCartDisplay(discRate) {
     const { totalPrice } = this.elements;
-    totalPrice.textContent = `총액: ${Math.round(
-      CartManager.state.totalAmount
-    )}원`;
+    const { totalAmount } = CartManager.state;
 
-    if (discRate > 0) {
+    // 텍스트 생성 로직 분리
+    const displayText = `총액: ${Math.round(totalAmount)}원`;
+    const discountText =
+      discRate > 0 ? `(${(discRate * 100).toFixed(1)}% 할인 적용)` : "";
+
+    // DOM 업데이트
+    totalPrice.textContent = displayText;
+
+    if (discountText) {
       const span = this.createElement(
         "span",
         "",
         "text-green-500 ml-2",
-        `(${(discRate * 100).toFixed(1)}% 할인 적용)`
+        discountText
       );
       totalPrice.appendChild(span);
     }
@@ -422,17 +430,20 @@ const UIManager = {
    */
   updateStockStatus() {
     const LOW_STOCK_THRESHOLD = 5;
-    let infoMsg = "";
 
-    ProductManager.list.forEach((item) => {
-      if (item.stock < LOW_STOCK_THRESHOLD) {
-        infoMsg += `${item.name}: ${
-          item.stock > 0 ? `재고 부족 (${item.stock}개 남음)` : "품절"
-        }\n`;
-      }
-    });
+    // 상태 텍스트 생성 로직 분리
+    const stockInfo = ProductManager.list
+      .filter((item) => item.stock < LOW_STOCK_THRESHOLD)
+      .map(
+        (item) =>
+          `${item.name}: ${
+            item.stock > 0 ? `재고 부족 (${item.stock}개 남음)` : "품절"
+          }`
+      )
+      .join("\n");
 
-    this.elements.stockStatus.textContent = infoMsg;
+    // DOM 업데이트
+    this.elements.stockStatus.textContent = stockInfo;
   },
 
   /**
@@ -554,19 +565,25 @@ const EventHandler = {
     if (product && product.stock > 0) {
       const existingItem = document.getElementById(product.id);
 
-      if (existingItem) {
-        CartManager.updateItemQuantity(existingItem, product, 1);
-      } else {
-        UIManager.elements.cartDisplay.insertAdjacentHTML(
-          "beforeend",
-          CartManager.createCartItemHTML(product)
-        );
-        ProductManager.updateStock(product.id, -1);
-      }
+      const success = existingItem
+        ? CartManager.updateItemQuantity(existingItem, product, 1)
+        : this.addNewCartItem(product);
 
-      this.processCartChanges();
-      CartManager.state.lastSelectedProduct = productId;
+      if (success) {
+        this.processCartChanges();
+        CartManager.state.lastSelectedProduct = productId;
+      }
     }
+  },
+
+  // 새로운 아이템 추가 로직 분리
+  addNewCartItem(product) {
+    UIManager.elements.cartDisplay.insertAdjacentHTML(
+      "beforeend",
+      CartManager.createCartItemHTML(product)
+    );
+    ProductManager.updateStock(product.id, -1);
+    return true;
   },
 
   /**
