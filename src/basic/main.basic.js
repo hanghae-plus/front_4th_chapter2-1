@@ -1,10 +1,13 @@
+import { DISCOUNTS, BULK_DISCOUNT, SPETIAL_DISCOUNT } from "./constants/cart";
+import { WEEKDAY } from "./constants/common";
+
 let productList,
   selectedProduct,
   addToCartButton,
   cartDisplay,
   totalAmountDisplay,
   stockInfoDisplay;
-  
+
 let lastSelectedProduct,
   bonusPoints = 0,
   totalAmount = 0,
@@ -73,7 +76,7 @@ function main() {
         productList[Math.floor(Math.random() * productList.length)];
 
       if (Math.random() < 0.3 && luckyItem.quantity > 0) {
-        luckyItem.value = Math.round(luckyItem.value * 0.8);
+        luckyItem.value = Math.round(luckyItem.value * SPETIAL_DISCOUNT.LUCKY);
         alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
         updateProductSelectOptions();
       }
@@ -92,7 +95,9 @@ function main() {
           alert(
             `${suggestedItem.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`,
           );
-          suggestedItem.value = Math.round(suggestedItem.value * 0.95);
+          suggestedItem.value = Math.round(
+            suggestedItem.value * SPETIAL_DISCOUNT.SUGGESTED,
+          );
           updateProductSelectOptions();
         }
       }
@@ -146,11 +151,11 @@ function calculateCart() {
 
       // 상품별 수량 할인 적용
       if (quantity >= 10) {
-        if (currentItem.id === "p1") discount = 0.1;
-        else if (currentItem.id === "p2") discount = 0.15;
-        else if (currentItem.id === "p3") discount = 0.2;
-        else if (currentItem.id === "p4") discount = 0.05;
-        else if (currentItem.id === "p5") discount = 0.25;
+        if (currentItem.id === "p1") discount = DISCOUNTS.RATE_10;
+        else if (currentItem.id === "p2") discount = DISCOUNTS.RATE_15;
+        else if (currentItem.id === "p3") discount = DISCOUNTS.RATE_20;
+        else if (currentItem.id === "p4") discount = DISCOUNTS.RATE_5;
+        else if (currentItem.id === "p5") discount = DISCOUNTS.RATE_25;
       }
 
       totalAmount += itemTotal * (1 - discount);
@@ -159,13 +164,13 @@ function calculateCart() {
 
   // 대량 구매 할인 적용
   let discountRate = 0;
-  if (itemCount >= 30) {
-    const bulkDiscount = totalAmount * 0.25;
+  if (itemCount >= BULK_DISCOUNT.THRESHOLD) {
+    const bulkDiscount = totalAmount * BULK_DISCOUNT.RATE;
     const itemDiscount = subTotal - totalAmount;
 
     if (bulkDiscount > itemDiscount) {
-      totalAmount = subTotal * (1 - 0.25);
-      discountRate = 0.25;
+      totalAmount = subTotal * (1 - BULK_DISCOUNT.RATE);
+      discountRate = BULK_DISCOUNT.RATE;
     } else {
       discountRate = (subTotal - totalAmount) / subTotal;
     }
@@ -174,9 +179,9 @@ function calculateCart() {
   }
 
   // 화요일에는 추가 10% 할인 적용
-  if (new Date().getDay() === 2) {
-    totalAmount *= 1 - 0.1;
-    discountRate = Math.max(discountRate, 0.1);
+  if (new Date().getDay() === WEEKDAY.TUESDAY) {
+    totalAmount *= 1 - DISCOUNTS.RATE_10;
+    discountRate = Math.max(discountRate, DISCOUNTS.RATE_10);
   }
 
   // 총액 표시
