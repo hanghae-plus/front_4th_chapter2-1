@@ -25,7 +25,8 @@ const renderLoyaltyPointsElement = (loyaltyPoint) => {
   $loyaltyPoints.textContent = '(포인트: ' + loyaltyPoint + ')';
 };
 
-function updateStockInfo() {
+function updateStockStatusElement() {
+  const $stockStatus = document.getElementById('stock-status');
   let infoMsg = '';
   PRODUCT_LIST.forEach(function (item) {
     if (item.q < 5) {
@@ -36,7 +37,7 @@ function updateStockInfo() {
         '\n';
     }
   });
-  $stockInfo.textContent = infoMsg;
+  $stockStatus.textContent = infoMsg;
 }
 
 function calcCart(cartItems) {
@@ -44,30 +45,28 @@ function calcCart(cartItems) {
   let itemCnt = 0;
   let subTot = 0;
   for (let i = 0; i < cartItems.length; i++) {
-    (function () {
-      let curItem;
-      for (let j = 0; j < PRODUCT_LIST.length; j++) {
-        if (PRODUCT_LIST[j].id === cartItems[i].id) {
-          curItem = PRODUCT_LIST[j];
-          break;
-        }
+    let curItem;
+    for (let j = 0; j < PRODUCT_LIST.length; j++) {
+      if (PRODUCT_LIST[j].id === cartItems[i].id) {
+        curItem = PRODUCT_LIST[j];
+        break;
       }
-      let q = parseInt(
-        cartItems[i].querySelector('span').textContent.split('x ')[1]
-      );
-      let itemTot = curItem.val * q;
-      let disc = 0;
-      itemCnt += q;
-      subTot += itemTot;
-      if (q >= 10) {
-        if (curItem.id === 'p1') disc = 0.1;
-        else if (curItem.id === 'p2') disc = 0.15;
-        else if (curItem.id === 'p3') disc = 0.2;
-        else if (curItem.id === 'p4') disc = 0.05;
-        else if (curItem.id === 'p5') disc = 0.25;
-      }
-      totalAmount += itemTot * (1 - disc);
-    })();
+    }
+    let q = parseInt(
+      cartItems[i].querySelector('span').textContent.split('x ')[1]
+    );
+    let itemTot = curItem.val * q;
+    let disc = 0;
+    itemCnt += q;
+    subTot += itemTot;
+    if (q >= 10) {
+      if (curItem.id === 'p1') disc = 0.1;
+      else if (curItem.id === 'p2') disc = 0.15;
+      else if (curItem.id === 'p3') disc = 0.2;
+      else if (curItem.id === 'p4') disc = 0.05;
+      else if (curItem.id === 'p5') disc = 0.25;
+    }
+    totalAmount += itemTot * (1 - disc);
   }
   let discRate = 0;
   if (itemCnt >= 30) {
@@ -94,8 +93,6 @@ function calcCart(cartItems) {
     $sum.appendChild(span);
   }
 
-  updateStockInfo();
-
   let loyaltyPoint = totalAmount > 0 ? Math.floor(totalAmount / 1000) : 0;
   renderLoyaltyPointsElement(loyaltyPoint);
 }
@@ -119,9 +116,9 @@ const PRODUCT_LIST = [
   { id: 'p5', name: '상품5', val: 25000, q: 10 },
 ];
 let $sum;
-let $stockInfo;
+let $stockStatus;
 let $sel;
-function main() {
+export default function main() {
   let lastSel;
 
   let $hTxt = document.createElement('h1');
@@ -173,6 +170,7 @@ function main() {
         itemElem.remove();
       }
       calcCart($cartDisp.children);
+      updateStockStatusElement();
     }
   });
 
@@ -229,13 +227,14 @@ function main() {
         itemToAdd.q--;
       }
       calcCart($cartDisp.children);
+      updateStockStatusElement();
       lastSel = selItem;
     }
   });
 
-  $stockInfo = document.createElement('div');
-  $stockInfo.id = 'stock-status';
-  $stockInfo.className = 'text-sm text-gray-500 mt-2';
+  $stockStatus = document.createElement('div');
+  $stockStatus.id = 'stock-status';
+  $stockStatus.className = 'text-sm text-gray-500 mt-2';
 
   let $wrap = document.createElement('div');
   $wrap.className =
@@ -245,7 +244,7 @@ function main() {
   $wrap.appendChild($sum);
   $wrap.appendChild($sel);
   $wrap.appendChild($addBtn);
-  $wrap.appendChild($stockInfo);
+  $wrap.appendChild($stockStatus);
 
   let $cont = document.createElement('div');
   $cont.className = 'bg-gray-100 p-8';
@@ -255,7 +254,7 @@ function main() {
   $root.appendChild($cont);
 
   calcCart($cartDisp.children);
-
+  updateStockStatusElement();
   setTimeout(function () {
     setInterval(function () {
       let luckyItem =
@@ -285,4 +284,5 @@ function main() {
     }, 60000);
   }, Math.random() * 20000);
 }
+
 main();
