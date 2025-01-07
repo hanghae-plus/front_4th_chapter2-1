@@ -1,5 +1,7 @@
 import Cart from './components/cart/Cart';
 import CartAddButton from './components/cartAddButton/CartAddButton';
+import CartItem from './components/cartItem/CartItem';
+import { updateCartItemQuantity } from './components/cartItem/updateCartItemQuantity';
 import CartTotal from './components/cartTotal/CartTotal';
 import { renderCalculateCart } from './components/cartTotal/renderCalculateCart';
 import Container from './components/Container';
@@ -95,8 +97,7 @@ addToCartButton.addEventListener('click', function () {
 
       if (newQuantity <= productToAdd.quantity) {
         // 재고가 충분한 경우 수량 업데이트
-        productElement.querySelector('span').textContent =
-          `${productToAdd.name} - ${productToAdd.price}원 x ${newQuantity}`;
+        updateCartItemQuantity(productElement, productToAdd, newQuantity);
         productStore.updateProductQuantity(productToAdd.id, -1);
       } else {
         // 재고가 부족한 경우 알림 표시
@@ -104,18 +105,7 @@ addToCartButton.addEventListener('click', function () {
       }
     } else {
       // 장바구니에 새로운 상품 추가
-      const newProduct = document.createElement('div');
-      newProduct.id = productToAdd.id;
-      newProduct.className = 'flex justify-between items-center mb-2';
-      newProduct.innerHTML = `
-        <span>${productToAdd.name} - ${productToAdd.price}원 x 1</span>
-        <div>
-          <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${productToAdd.id}" data-change="-1">-</button>
-          <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${productToAdd.id}" data-change="1">+</button>
-          <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${productToAdd.id}">삭제</button>
-        </div>
-      `;
-
+      const newProduct = CartItem(productToAdd);
       const cart = document.getElementById('cart-items');
       cart.appendChild(newProduct);
       productStore.updateProductQuantity(productToAdd.id, -1);
