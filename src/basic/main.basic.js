@@ -170,7 +170,7 @@ const renderProductOptions = selects => {
     productOptions.textContent = `${product.name} - ${product.price}원`;
     productOptions.disabled = product.remaining === 0;
 
-    selects.appendChild(productOptions);
+    selects?.appendChild(productOptions);
   });
 };
 
