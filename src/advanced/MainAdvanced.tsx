@@ -1,3 +1,5 @@
+import ProductOptions from "./components/ProductOptions";
+import StockStatus from "./components/StockStatus";
 import { DOM_IDS } from "./constants";
 
 function MainAdvanced() {
@@ -10,7 +12,7 @@ function MainAdvanced() {
           sum
         </div>
         <select id={DOM_IDS.PRODUCT_SELECT} className="mr-2 rounded border p-2">
-          select
+          <ProductOptions />
         </select>
         <button
           id={DOM_IDS.ADD_TO_CART_BTN}
@@ -19,7 +21,7 @@ function MainAdvanced() {
           추가
         </button>
         <div id={DOM_IDS.STOCK_STATUS} className="mt-2 text-sm text-gray-500">
-          stockInfo
+          <StockStatus />
         </div>
       </div>
     </div>
