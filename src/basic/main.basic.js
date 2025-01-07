@@ -88,7 +88,7 @@ function calcCart() {
   itemCount = 0;
   const cartItems = cartItemContainer.children;
   let subTotal = 0;
-  for (var i = 0; i < cartItems.length; i++) {
+  for (let i = 0; i < cartItems.length; i++) {
     (function () {
       let curItem;
       for (let j = 0; j < products.length; j++) {
