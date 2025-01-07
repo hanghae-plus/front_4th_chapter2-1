@@ -1,4 +1,9 @@
 import { productList } from './features/product';
+import {
+  findProductById,
+  luckyEvent,
+  suggestEvent,
+} from './features/product/actions';
 import { renderProductOptionsView } from './features/product/components/ProductOptionsView';
 
 var SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
@@ -43,29 +48,12 @@ function main() {
   calculateCartItems();
   setTimeout(function () {
     setInterval(function () {
-      var luckyItem =
-        productList[Math.floor(Math.random() * productList.length)];
-      if (Math.random() < 0.3 && luckyItem.quantity > 0) {
-        luckyItem.price = Math.round(luckyItem.price * 0.8);
-        alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
-        renderProductOptionsView(SelectView, productList);
-      }
+      luckyEvent(SelectView, productList);
     }, 30000);
   }, Math.random() * 10000);
   setTimeout(function () {
     setInterval(function () {
-      if (lastSelectedItemValue) {
-        var suggest = productList.find(function (item) {
-          return item.id !== lastSelectedItemValue && item.quantity > 0;
-        });
-        if (suggest) {
-          alert(
-            suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!',
-          );
-          suggest.price = Math.round(suggest.price * 0.95);
-          renderProductOptionsView(SelectView, productList);
-        }
-      }
+      suggestEvent(lastSelectedItemValue, productList, SelectView);
     }, 60000);
   }, Math.random() * 20000);
 }
@@ -158,9 +146,7 @@ function updateStockInfo() {
 main();
 AddToCartButton.addEventListener('click', function () {
   var selectedItemId = SelectView.value;
-  var itemToAdd = productList.find(function (p) {
-    return p.id === selectedItemId;
-  });
+  const itemToAdd = findProductById(selectedItemId, productList);
   if (itemToAdd && itemToAdd.quantity > 0) {
     var item = document.getElementById(itemToAdd.id);
     if (item) {
@@ -193,7 +179,7 @@ AddToCartButton.addEventListener('click', function () {
         itemToAdd.id +
         '">삭제</button></div>';
       CartItemsView.appendChild(newItem);
-      itemToAdd.q--;
+      itemToAdd.price--;
     }
     calculateCartItems();
     lastSelectedItemValue = selectedItemId;
@@ -207,9 +193,7 @@ CartItemsView.addEventListener('click', function (event) {
   ) {
     var productId = targetElement.dataset.productId;
     var itemElement = document.getElementById(productId);
-    var currentProduct = productList.find(function (p) {
-      return p.id === productId;
-    });
+    const currentProduct = findProductById(productId, productList);
     if (targetElement.classList.contains('quantity-change')) {
       var quantityChangeAmount = parseInt(targetElement.dataset.change);
       var newQty =
