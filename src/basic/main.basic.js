@@ -1,4 +1,5 @@
 import { calculateCartItems } from './components/cart/calculateCartItems';
+import CartTotal from './components/cartTotal/CartTotal';
 import Header from './components/Header';
 import { getTotalBonusPoints } from './components/points/getTotalBonusPoints';
 import { renderBonusPoints } from './components/points/renderBonusPoints';
@@ -12,7 +13,6 @@ let products,
   productSelector,
   addToCartButton,
   cartDisplay,
-  totalDisplay,
   stockInfo,
   lastSelectedItem;
 
@@ -35,9 +35,7 @@ function main() {
   cartDisplay.id = 'cart-items';
   contentWrapper.appendChild(cartDisplay);
 
-  totalDisplay = document.createElement('div');
-  totalDisplay.id = 'cart-total';
-  totalDisplay.className = 'text-xl font-bold my-4';
+  const totalDisplay = CartTotal();
   contentWrapper.appendChild(totalDisplay);
 
   productSelector = document.createElement('select');
@@ -110,6 +108,7 @@ export function calculateCart() {
     calculateOverallDiscount(totalAmount, preDiscountTotal, itemCount);
 
   const roundedAmount = Math.round(discountedTotalAmount);
+  const totalDisplay = document.getElementById('cart-total');
   totalDisplay.textContent = helper.getTotalAmountMessage(roundedAmount);
 
   if (overallDiscountRate > 0) {
