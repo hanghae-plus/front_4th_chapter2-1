@@ -1,0 +1,84 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:prettier/recommended",
+    "@feature-sliced"
+  ],
+  "ignorePatterns": ["**/dist", "src/main.original.js", "src/setupTests.js"],
+  "overrides": [
+    // TypeScript 파일 설정
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parser": "@typescript-eslint/parser",
+      "parserOptions": {
+        "ecmaFeatures": {
+          "jsx": true
+        },
+        "ecmaVersion": "latest",
+        "sourceType": "module",
+        "project": "./tsconfig.json"
+      },
+      "plugins": ["@typescript-eslint", "import", "boundaries"],
+      "extends": ["plugin:@typescript-eslint/recommended"]
+    },
+    // JavaScript 파일 설정
+    {
+      "files": ["*.js", "*.jsx"],
+      "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+      },
+      "plugins": ["import", "boundaries"]
+    }
+  ],
+  "settings": {
+    "boundaries/elements": [
+      {
+        "type": "app",
+        "pattern": ["@basic/app/**", "src/basic/app/**"],
+        "mode": "file"
+      },
+      {
+        "type": "processes",
+        "pattern": ["@basic/processes/**", "src/basic/processes/**"],
+        "mode": "file"
+      },
+      {
+        "type": "pages",
+        "pattern": ["@basic/pages/**", "src/basic/pages/**"],
+        "mode": "file"
+      },
+      {
+        "type": "widgets",
+        "pattern": ["@basic/widgets/**", "src/basic/widgets/**"],
+        "mode": "file"
+      },
+      {
+        "type": "features",
+        "pattern": ["@basic/features/**", "src/basic/features/**"],
+        "mode": "file"
+      },
+      {
+        "type": "entities",
+        "pattern": ["@basic/entities/**", "src/basic/entities/**"],
+        "mode": "file"
+      },
+      {
+        "type": "shared",
+        "pattern": ["@basic/shared/**", "src/basic/shared/**"],
+        "mode": "file"
+      }
+    ],
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true
+      }
+    }
+  }
+}
