@@ -40,13 +40,13 @@ const BULK_PURCHASE_DISCOUNT_RATE = 0.25;
  */
 const ProductManager = {
   /** @type {Array.<{id: string, name: string, price: number, stock: number}>} */
-  list: [],
+  availableProducts: [],
 
   /**
    * 상품 목록 초기화
    */
   initialize() {
-    this.list = [
+    this.availableProducts = [
       { id: "p1", name: "상품1", price: 10000, stock: 50 },
       { id: "p2", name: "상품2", price: 20000, stock: 30 },
       { id: "p3", name: "상품3", price: 30000, stock: 20 },
@@ -61,7 +61,7 @@ const ProductManager = {
    * @returns {Object|undefined} 찾은 상품 객체 또는 undefined
    */
   findProduct(id) {
-    return this.list.find((p) => p.id === id);
+    return this.availableProducts.find((p) => p.id === id);
   },
 
   /**
@@ -69,11 +69,16 @@ const ProductManager = {
    * @param {string} id - 상품 ID
    * @param {number} quantity - 변경할 수량 (양수: 증가, 음수: 감소)
    */
-  updateStock(id, quantity) {
-    const product = this.findProduct(id);
+  updateStock(productId, quantityChange) {
+    const product = this.findProduct(productId);
     if (product) {
-      product.stock += quantity;
+      const newStockLevel = product.stock + quantityChange;
+      if (newStockLevel >= 0) {
+        product.stock = newStockLevel;
+        return true;
+      }
     }
+    return false;
   },
 };
 
@@ -147,7 +152,7 @@ const CartManager = {
    * @property {number} totalAmount - 총 금액
    * @property {number} itemCount - 총 상품 개수
    */
-  state: {
+  cartState: {
     lastSelectedProduct: null,
     bonusPoints: 0,
     totalAmount: 0,
@@ -226,13 +231,13 @@ const CartManager = {
       { subTotal: 0, totalAmount: 0, itemCount: 0 }
     );
 
-    this.state.totalAmount = totals.totalAmount;
-    this.state.itemCount = totals.itemCount;
-    this.state.bonusPoints = Math.floor(totals.totalAmount / 1000);
+    this.cartState.totalAmount = totals.totalAmount;
+    this.cartState.itemCount = totals.itemCount;
+    this.cartState.bonusPoints = Math.floor(totals.totalAmount / 1000);
 
     return totals;
   },
-  
+
   /**
    * 장바구니 아이템의 수량을 업데이트
    * @param {HTMLElement} item - 장바구니 아이템 요소
@@ -392,15 +397,17 @@ const UIManager = {
     const { productSelect } = this.elements;
     productSelect.innerHTML = "";
 
-    const options = ProductManager.list.map(({ id, name, price, stock }) => {
-      const option = this.createElement("option");
-      Object.assign(option, {
-        value: id,
-        textContent: `${name} - ${price}원`,
-        disabled: stock === 0,
-      });
-      return option;
-    });
+    const options = ProductManager.availableProducts.map(
+      ({ id, name, price, stock }) => {
+        const option = this.createElement("option");
+        Object.assign(option, {
+          value: id,
+          textContent: `${name} - ${price}원`,
+          disabled: stock === 0,
+        });
+        return option;
+      }
+    );
 
     productSelect.append(...options);
   },
@@ -418,7 +425,7 @@ const UIManager = {
         throw new Error("totalPrice 요소를 찾을 수 없습니다.");
       }
 
-      const amount = CartManager.state.totalAmount;
+      const amount = CartManager.cartState.totalAmount;
       if (typeof amount !== "number") {
         throw new Error("올바른 금액이 아닙니다.");
       }
@@ -453,7 +460,7 @@ const UIManager = {
     const LOW_STOCK_THRESHOLD = 5;
 
     // 상태 텍스트 생성 로직 분리
-    const stockInfo = ProductManager.list
+    const stockInfo = ProductManager.availableProducts
       .filter((item) => item.stock < LOW_STOCK_THRESHOLD)
       .map(
         (item) =>
@@ -471,8 +478,8 @@ const UIManager = {
    * 보너스 포인트 정보를 렌더링
    */
   renderBonusPoints() {
-    CartManager.state.bonusPoints = Math.floor(
-      CartManager.state.totalAmount / 1000
+    CartManager.cartState.bonusPoints = Math.floor(
+      CartManager.cartState.totalAmount / 1000
     );
     let pointsTag = document.getElementById("loyalty-points");
 
@@ -485,7 +492,7 @@ const UIManager = {
       this.elements.totalPrice.appendChild(pointsTag);
     }
 
-    pointsTag.textContent = `(포인트: ${CartManager.state.bonusPoints})`;
+    pointsTag.textContent = `(포인트: ${CartManager.cartState.bonusPoints})`;
   },
 };
 
@@ -502,8 +509,8 @@ const PromotionManager = {
     setTimeout(() => {
       setInterval(() => {
         const luckyItem =
-          ProductManager.list[
-            Math.floor(Math.random() * ProductManager.list.length)
+          ProductManager.availableProducts[
+            Math.floor(Math.random() * ProductManager.availableProducts.length)
           ];
 
         if (
@@ -527,10 +534,10 @@ const PromotionManager = {
   setupRecommendation() {
     setTimeout(() => {
       setInterval(() => {
-        if (CartManager.state.lastSelectedProduct) {
-          const suggest = ProductManager.list.find(
+        if (CartManager.cartState.lastSelectedProduct) {
+          const suggest = ProductManager.availableProducts.find(
             (item) =>
-              item.id !== CartManager.state.lastSelectedProduct &&
+              item.id !== CartManager.cartState.lastSelectedProduct &&
               item.stock > 0
           );
 
@@ -592,7 +599,7 @@ const EventHandler = {
 
       if (success) {
         this.processCartChanges();
-        CartManager.state.lastSelectedProduct = productId;
+        CartManager.cartState.lastSelectedProduct = productId;
       }
     }
   },
@@ -647,8 +654,8 @@ const EventHandler = {
     const totals = CartManager.calculateItemTotals();
     const discRate = DiscountManager.calculateDiscounts(
       totals.subTotal,
-      CartManager.state.totalAmount,
-      CartManager.state.itemCount
+      CartManager.cartState.totalAmount,
+      CartManager.cartState.itemCount
     );
 
     UIManager.updateCartDisplay(discRate);
