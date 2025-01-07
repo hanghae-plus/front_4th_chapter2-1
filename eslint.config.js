@@ -57,7 +57,7 @@ export default tseslint.config(
             },
             {
               pattern: '*.{css,scss,sass,less}',
-              group: 'index', // 또는 다른 적절한 group
+              group: 'index',
               position: 'after',
             },
           ],
@@ -122,9 +122,12 @@ export default tseslint.config(
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
-          project: './tsconfig.json',
+          project: ['./tsconfig.app.json'], // 여기를 수정
         },
-        node: true,
+        node: {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          project: ['./tsconfig.app.json'], // 여기도 추가
+        },
       },
     },
   },

@@ -1,5 +1,7 @@
+import Cart from '@pages/Cart';
+
 function main() {
-  console.log('Hello World');
+  Cart();
 }
 
 main();
