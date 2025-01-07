@@ -17,14 +17,12 @@ function main() {
 
   // HTML 생성
   const $root = document.getElementById('app');
-
   $root.innerHTML = CartTemplate();
-
-  // Select Html 설정
   updateSelectOptions();
 
   calculateCart();
 
+  // setTimeout 함수
   setTimeout(function () {
     setInterval(function () {
       const luckyItem = productList[Math.floor(Math.random() * productList.length)];
@@ -35,7 +33,6 @@ function main() {
       }
     }, 30000);
   }, Math.random() * 10000);
-
   setTimeout(function () {
     setInterval(function () {
       if (lastSelectedItem) {
@@ -50,8 +47,10 @@ function main() {
       }
     }, 60000);
   }, Math.random() * 20000);
+  // ======================================================= //
 }
 
+// Select DOM에 Option 업데이트
 function updateSelectOptions() {
   const $select = document.getElementById('product-select');
 
@@ -65,6 +64,7 @@ function updateSelectOptions() {
   });
 }
 
+// ProductList 기반으로 계산 및 DOM 업데이트
 function calculateCart() {
   const $itemsInCart = document.getElementById('cart-items');
   const $totalPrice = document.getElementById('cart-total');
@@ -106,6 +106,7 @@ function calculateCart() {
     })();
   }
 
+  // 할인 계산
   let discountRate = 0;
   if (itemCount >= 30) {
     const bulkDisc = totalPrice * 0.25;
@@ -136,26 +137,13 @@ function calculateCart() {
     $totalPrice.appendChild(span);
   }
 
-  updateStockInfo();
+  // DOM 업데이트
+  renderStockInfo();
   renderBonusPoints();
 }
 
-const renderBonusPoints = () => {
-  const $totalPrice = document.getElementById('cart-total');
-
-  bonusPoints = Math.floor(totalPrice / 1000);
-  let $pointTag = document.getElementById('loyalty-points');
-  if (!$pointTag) {
-    // Html 생성 및 추가
-    $pointTag = document.createElement('span');
-    $pointTag.id = 'loyalty-points';
-    $pointTag.className = 'text-blue-500 ml-2';
-    $totalPrice.appendChild($pointTag);
-  }
-  $pointTag.textContent = '(포인트: ' + bonusPoints + ')';
-};
-
-function updateStockInfo() {
+// calculateCart함수에 따라 DOM 업데이트
+function renderStockInfo() {
   const $stockInfo = document.getElementById('stock-status');
 
   let stockMessage = '';
@@ -170,7 +158,23 @@ function updateStockInfo() {
   });
   $stockInfo.textContent = stockMessage;
 }
+function renderBonusPoints() {
+  const $totalPrice = document.getElementById('cart-total');
 
+  bonusPoints = Math.floor(totalPrice / 1000);
+  let $pointTag = document.getElementById('loyalty-points');
+  if (!$pointTag) {
+    // Html 생성 및 추가
+    $pointTag = document.createElement('span');
+    $pointTag.id = 'loyalty-points';
+    $pointTag.className = 'text-blue-500 ml-2';
+    $totalPrice.appendChild($pointTag);
+  }
+  $pointTag.textContent = '(포인트: ' + bonusPoints + ')';
+}
+// ======================================================= //
+
+// main 실행 후 이벤트 리스너 등록
 main();
 
 // Event Listener
@@ -224,7 +228,6 @@ $addButton.addEventListener('click', function () {
     lastSelectedItem = selectedItem;
   }
 });
-
 const $itemsInCart = document.getElementById('cart-items');
 $itemsInCart.addEventListener('click', function (event) {
   const target = event.target;
@@ -264,3 +267,4 @@ $itemsInCart.addEventListener('click', function (event) {
     calculateCart();
   }
 });
+// ======================================================= //
