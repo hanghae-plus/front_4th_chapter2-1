@@ -98,10 +98,10 @@ function calcCart() {
         }
       }
       const quantity = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
-      const itemTot = curItem.price * quantity;
+      const itemAmount = curItem.price * quantity;
       let discountRate = 0;
       itemCount += quantity;
-      subTotal += itemTot;
+      subTotal += itemAmount;
       if (quantity >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
         if (curItem.id === 'p1') {
           discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p1;
@@ -115,7 +115,7 @@ function calcCart() {
           discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p5;
         }
       }
-      amount += itemTot * (1 - discountRate);
+      amount += itemAmount * (1 - discountRate);
     })();
   }
   let totalDiscountRate = 0;
