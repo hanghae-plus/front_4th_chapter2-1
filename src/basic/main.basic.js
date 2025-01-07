@@ -3,7 +3,7 @@ import { DISCOUNT_POLICY } from './policy/discount';
 import { STOCK_POLICY } from './policy/stock';
 import { TIMER_POLICY } from './policy/timer';
 
-let productSelector, addToCartButton, cartItemContainer, sum, stockInfo;
+let productSelector, addToCartButton, cartItemContainer, cartTotal, stockInfo;
 let lastSel,
   bonusPts = 0,
   totalAmt = 0,
@@ -15,19 +15,19 @@ function main() {
   const wrap = document.createElement('div');
   const hTxt = document.createElement('h1');
   cartItemContainer = document.createElement('div');
-  sum = document.createElement('div');
+  cartTotal = document.createElement('div');
   productSelector = document.createElement('select');
   addToCartButton = document.createElement('button');
   stockInfo = document.createElement('div');
   cartItemContainer.id = 'cart-items';
-  sum.id = 'cart-total';
+  cartTotal.id = 'cart-total';
   productSelector.id = 'product-select';
   addToCartButton.id = 'add-to-cart';
   stockInfo.id = 'stock-status';
   cont.className = 'bg-gray-100 p-8';
   wrap.className = 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
   hTxt.className = 'text-2xl font-bold mb-4';
-  sum.className = 'text-xl font-bold my-4';
+  cartTotal.className = 'text-xl font-bold my-4';
   productSelector.className = 'border rounded p-2 mr-2';
   addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
   stockInfo.className = 'text-sm text-gray-500 mt-2';
@@ -36,7 +36,7 @@ function main() {
   updateSelOpts();
   wrap.appendChild(hTxt);
   wrap.appendChild(cartItemContainer);
-  wrap.appendChild(sum);
+  wrap.appendChild(cartTotal);
   wrap.appendChild(productSelector);
   wrap.appendChild(addToCartButton);
   wrap.appendChild(stockInfo);
@@ -134,12 +134,12 @@ function calcCart() {
     totalAmt *= 1 - DISCOUNT_POLICY.WEEKLY_DISCOUNT.tuesday;
     discRate = Math.max(discRate, DISCOUNT_POLICY.WEEKLY_DISCOUNT.tuesday);
   }
-  sum.textContent = '총액: ' + Math.round(totalAmt) + '원';
+  cartTotal.textContent = '총액: ' + Math.round(totalAmt) + '원';
   if (discRate > 0) {
     const span = document.createElement('span');
     span.className = 'text-green-500 ml-2';
     span.textContent = '(' + (discRate * 100).toFixed(1) + '% 할인 적용)';
-    sum.appendChild(span);
+    cartTotal.appendChild(span);
   }
   updateStockInfo();
   renderBonusPts();
@@ -152,7 +152,7 @@ const renderBonusPts = () => {
     ptsTag = document.createElement('span');
     ptsTag.id = 'loyalty-points';
     ptsTag.className = 'text-blue-500 ml-2';
-    sum.appendChild(ptsTag);
+    cartTotal.appendChild(ptsTag);
   }
   ptsTag.textContent = '(포인트: ' + bonusPts + ')';
 };
