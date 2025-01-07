@@ -11,13 +11,20 @@ export const cartStore = {
   getTotalAmt: () => totalAmt,
   getItemCnt: () => itemCnt,
 
+  getCartState: () => ({
+    lastSel,
+    bonusPts,
+    totalAmt,
+    itemCnt,
+  }),
+
   // setters
   setLastSel: (newLastSel) => {
     lastSel = newLastSel;
   },
   setCartState: ({ newBonusPts, newTotalAmt, newItemCnt }) => {
-    bonusPts = newBonusPts;
-    totalAmt = newTotalAmt;
-    itemCnt = newItemCnt;
+    bonusPts = newBonusPts ?? bonusPts;
+    totalAmt = newTotalAmt ?? totalAmt;
+    itemCnt = newItemCnt ?? itemCnt;
   },
 };
