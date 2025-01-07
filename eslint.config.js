@@ -1,20 +1,35 @@
 import globals from "globals";
-import pluginJs from "@eslint/js";
-import tseslint from "typescript-eslint";
-import pluginReact from "eslint-plugin-react";
+import jsPlugin from "@eslint/js";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
+import reactPlugin from "eslint-plugin-react";
 
-/** @type {import('eslint').Linter.Config[]} */
+/** @type {import('eslint').Linter.Config} */
 export default [
-  { files: ["**/*.{js,ts,jsx,tsx}"] },
-  { languageOptions: { globals: globals.browser } },
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  pluginReact.configs.flat.recommended,
   {
-    extends: ["plugin:import/recommended", "plugin:react/recommended"],
-    plugins: ["prettier"],
+    files: ["**/*.{js,ts,jsx,tsx}"],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+        ecmaFeatures: { jsx: true },
+      },
+      globals: globals.browser,
+    },
+    plugins: {
+      prettier: require("eslint-plugin-prettier"),
+      react: reactPlugin,
+    },
     rules: {
+      ...jsPlugin.configs.recommended.rules,
+      ...tsPlugin.configs.recommended.rules,
+      ...reactPlugin.configs.recommended.rules,
       "no-console": "error",
+      "no-unused-vars": "error",
+      "no-var": "error",
+      "prefer-const": "error",
+      "no-multiple-empty-lines": ["warn", { max: 1 }],
       "prettier/prettier": [
         "error",
         {
