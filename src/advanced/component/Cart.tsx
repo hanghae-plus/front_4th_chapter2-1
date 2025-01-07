@@ -41,4 +41,4 @@ const Cart: React.FC<CartProps> = ({ cartItemList }) => {
   );
 };
 
-export default Cart;
+export default React.memo(Cart);

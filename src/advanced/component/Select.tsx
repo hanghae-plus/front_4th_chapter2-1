@@ -19,4 +19,4 @@ const Select: React.FC<SelectProps> = ({ productList }) => {
   );
 };
 
-export default Select;
+export default React.memo(Select);

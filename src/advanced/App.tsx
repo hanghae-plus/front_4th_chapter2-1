@@ -1,17 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ID_BY_COMPONENT } from './const';
 
-import {
-  setAdditionalDiscAlert,
-  setLuckyDiscAlert,
-  getDiscPriceAndRate,
-} from './discountService';
+import { setAdditionalDiscAlert, setLuckyDiscAlert } from './discountService';
 
 import { handleClickAddBtn, handleClickCart } from './eventHandlers';
 
 import { updateBonusPts, updateDiscInfo, updateStockInfo } from './updaters';
 import { Product } from './type';
-import { Cart, Select } from './component';
+import { Cart, Select, StockInfo, Sum } from './component';
 
 export const App = () => {
   const productList: Product[] = [
@@ -22,42 +18,23 @@ export const App = () => {
     { id: 'p5', name: '상품5', val: 25000, qty: 10 },
   ];
 
-  const cartItemList: Product[] = [];
+  const [cartItemList, setCartItemList] = useState<Product[]>([]);
 
-  let lastSel;
+  const lastSel = useRef<Product | null>(null);
 
   useEffect(() => {
-    updateCartData();
-
     setLuckyDiscAlert(productList);
-    setAdditionalDiscAlert(productList, lastSel);
-
-    function updateCartData() {
-      const cart = document.querySelector(`#${ID_BY_COMPONENT.CART_ID}`);
-
-      const { priceWithDisc, discRate } = getDiscPriceAndRate(
-        cart,
-        productList,
-      );
-      updateDiscInfo(priceWithDisc, discRate);
-      updateBonusPts(priceWithDisc);
-      updateStockInfo(productList);
-    }
+    setAdditionalDiscAlert(productList, lastSel.current);
 
     const addBtn = document.querySelector(`#${ID_BY_COMPONENT.ADD_BTN_ID}`);
     addBtn?.addEventListener('click', () =>
       handleClickAddBtn(productList, (selItem) => {
-        updateCartData();
-        lastSel = selItem;
+        lastSel.current = selItem;
       }),
     );
 
     const cart = document.querySelector(`#${ID_BY_COMPONENT.CART_ID}`);
-    cart?.addEventListener('click', (e) =>
-      handleClickCart(e, productList, () => {
-        updateCartData();
-      }),
-    );
+    cart?.addEventListener('click', (e) => handleClickCart(e, productList));
   }, []);
 
   return (
@@ -65,7 +42,7 @@ export const App = () => {
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <h1 className="text-2xl font-bold mb-4">장바구니</h1>
         <Cart cartItemList={cartItemList} />
-        <div id={ID_BY_COMPONENT.SUM_ID} className="text-xl font-bold my-4" />
+        <Sum productList={productList} cartItemList={cartItemList} />
         <Select productList={productList} />
         <button
           id={ID_BY_COMPONENT.ADD_BTN_ID}
@@ -73,10 +50,7 @@ export const App = () => {
         >
           추가
         </button>
-        <div
-          id={ID_BY_COMPONENT.STOCK_INFO_ID}
-          className="text-sm text-gray-500 mt-2"
-        ></div>
+        <StockInfo productList={productList} />
       </div>
     </div>
   );

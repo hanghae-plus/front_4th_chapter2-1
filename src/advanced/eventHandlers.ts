@@ -50,7 +50,7 @@ export const handleClickAddBtn = (productList, updater) => {
   updater(selItem);
 };
 
-export const handleClickCart = (event, productList, updater) => {
+export const handleClickCart = (event, productList) => {
   const tgt = event.target;
   if (
     !tgt.classList.contains('quantity-change') &&
@@ -67,7 +67,6 @@ export const handleClickCart = (event, productList, updater) => {
   } else if (tgt.classList.contains('remove-item')) {
     handleClickRemoveItem(itemElem, prod);
   }
-  updater();
 };
 
 const handleClickQtyChange = (itemElem, prod, tgt) => {
