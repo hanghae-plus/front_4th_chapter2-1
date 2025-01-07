@@ -1,0 +1,7 @@
+const addToCart = () => {
+
+};
+
+const removeCartItem = () => {
+
+};

@@ -1,7 +1,6 @@
 import { PRODUCT_LIST } from './data/productData';
-import { generateText } from './utils/generateText';
+import { eventDiscountLucky, eventDiscountSuggest } from './components/discount';
 
-let addBtn, $cartList, $cartTotal, stockInfo;
 var lastSel,
   bonusPts = 0,
   totalAmt = 0,
@@ -10,8 +9,8 @@ function main() {
   renderCartUi();
   updateProductOptions();
   calcCart();
-  eventSaleLucky();
-  eventSaleSuggest();
+  eventDiscountLucky();
+  eventDiscountSuggest(lastSel);
 }
 
 function renderCartUi() {
@@ -38,10 +37,8 @@ function renderCartUi() {
   $productSelect.className = 'border rounded p-2 mr-2';
   $addCartBtn.className = 'bg-blue-500 text-white px-4 py-2 rounded';
   $stockStatus.className = 'text-sm text-gray-500 mt-2';
-  // $title.textContent = '장바구니';
-  // $addCartBtn.textContent = '추가';
-  generateText($title, '장바구니');
-  generateText($addCartBtn, '추가');
+  $title.textContent = '장바구니';
+  $addCartBtn.textContent = '추가';
 
   $wrap.appendChild($title);
   $wrap.appendChild($cartList);
@@ -51,41 +48,6 @@ function renderCartUi() {
   $wrap.appendChild($stockStatus);
   $container.appendChild($wrap);
   $root.appendChild($container);
-}
-
-// 번개세일 alert
-function eventSaleLucky() {
-  setTimeout(function () {
-    setInterval(function () {
-      var luckyItem =
-        PRODUCT_LIST[Math.floor(Math.random() * PRODUCT_LIST.length)];
-      if (Math.random() < 0.3 && luckyItem.q > 0) {
-        luckyItem.val = Math.round(luckyItem.val * 0.8);
-        alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
-        updateProductOptions();
-      }
-    }, 30000);
-  }, Math.random() * 10000);
-}
-
-// 추천세일 alert
-function eventSaleSuggest() {
-  setTimeout(function () {
-    setInterval(function () {
-      if (lastSel) {
-        var suggest = PRODUCT_LIST.find(function (item) {
-          return item.id !== lastSel && item.q > 0;
-        });
-        if (suggest) {
-          alert(
-            suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!'
-          );
-          suggest.val = Math.round(suggest.val * 0.95);
-          updateProductOptions();
-        }
-      }
-    }, 60000);
-  }, Math.random() * 20000);
 }
 
 function updateProductOptions() {
