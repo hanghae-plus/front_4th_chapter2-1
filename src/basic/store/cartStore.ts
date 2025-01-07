@@ -12,12 +12,14 @@ interface Observer {
 interface State {
   // userInfo: UserInfoType | null;
   cartList: Product[] | null;
+  totalPrice: number;
 }
 
 interface Actions {
   getCartList: () => Product[] | null;
+  getCartItem: (id: string) => Product | undefined;
   addCartItem: (item: Product) => void;
-  removeCartItem: () => void;
+  removeCartItem: (id: string) => void;
 }
 
 export const CartStore = (function () {
@@ -35,6 +37,9 @@ export const CartStore = (function () {
     getCartList: () => {
       return state.cartList;
     },
+    getCartItem: (id: string) => {
+      return state.cartList?.find((item) => item.id === id);
+    },
     addCartItem: (item: Product) => {
       const newCartList = state.cartList ? state.cartList.concat(item) : [item];
 
@@ -43,7 +48,10 @@ export const CartStore = (function () {
       // 아이템 추가 로직
       notifyObservers();
     },
-    removeCartItem: () => {
+    removeCartItem: (id: string) => {
+      if (!state.cartList) return;
+
+      state.cartList = state.cartList.filter((item) => item.id !== id);
       // 아이템 제거 로직
       notifyObservers();
     },

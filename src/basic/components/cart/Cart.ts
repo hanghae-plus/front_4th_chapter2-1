@@ -1,13 +1,18 @@
+import { CartItem } from './cart-item/CartItem';
+import { CartStore } from '../../store/cartStore';
+import { addEventListener } from '../../utils/eventUtil';
+
 export const Cart = () => {
-  const root = document.getElementById('app');
+  const { actions } = CartStore;
 
-  // 타입 에러 처리를 위한 임시 유효성
-  if (!root) return;
+  const cartList = actions.getCartList();
 
-  const render = `
+  return `
       <div>
           <h1 class="text-2xl font-bold mb-4">장바구니</h1>
-          <div id="cart-items"></div>
+          <div id="cart-items">
+          ${cartList?.map((item) => CartItem(item))}
+          </div>
       </div>
       `;
 
@@ -75,47 +80,4 @@ export const Cart = () => {
     updateStockInfo();
     renderBonusPts();
   }
-
-  // INFO: 카트 제거 버튼
-  root.addEventListener('click', function (event) {
-    // cart-items로 클릭인지 처리
-
-    const tgt = event.target;
-
-    // 타입 에러 처리를 위한 임시 유효성
-    if (!tgt) return;
-
-    if (tgt.classList.contains('quantity-change') || tgt.classList.contains('remove-item')) {
-      const prodId = tgt.dataset.productId;
-      const itemElem = document.getElementById(prodId);
-
-      // 타입 에러 처리를 위한 임시 유효성
-      if (!itemElem) return;
-
-      const prod = prodList.find(function (p) {
-        return p.id === prodId;
-      });
-
-      if (tgt.classList.contains('quantity-change')) {
-        const qtyChange = parseInt(tgt.dataset.change);
-        const newQty = parseInt(itemElem.querySelector('span').textContent.split('x ')[1]) + qtyChange;
-
-        if (newQty > 0 && newQty <= prod.q + parseInt(itemElem.querySelector('span').textContent.split('x ')[1])) {
-          itemElem.querySelector('span').textContent =
-            itemElem.querySelector('span').textContent.split('x ')[0] + 'x ' + newQty;
-          prod.q -= qtyChange;
-        } else if (newQty <= 0) {
-          itemElem.remove();
-          prod.q -= qtyChange;
-        } else {
-          alert('재고가 부족합니다.');
-        }
-      } else if (tgt.classList.contains('remove-item')) {
-        const remQty = parseInt(itemElem.querySelector('span').textContent.split('x ')[1]);
-        prod.q += remQty;
-        itemElem.remove();
-      }
-      calcCart();
-    }
-  });
 };

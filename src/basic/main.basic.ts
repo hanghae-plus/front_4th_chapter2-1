@@ -16,9 +16,9 @@
  *
  */
 
-var sel, addBtn, cartDisp, sum, stockInfo;
+let sel, addBtn, cartDisp, sum, stockInfo;
 
-var lastSel,
+let lastSel,
   bonusPts = 0,
   totalAmt = 0,
   itemCnt = 0;
@@ -33,10 +33,10 @@ function main() {
   //   { id: 'p5', name: '상품5', val: 25000, q: 10 },
   // ];
 
-  var root = document.getElementById('app');
-  let cont = document.createElement('div');
-  var wrap = document.createElement('div');
-  let hTxt = document.createElement('h1');
+  const root = document.getElementById('app');
+  const cont = document.createElement('div');
+  const wrap = document.createElement('div');
+  const hTxt = document.createElement('h1');
 
   cartDisp = document.createElement('div');
   sum = document.createElement('div');
@@ -73,7 +73,7 @@ function main() {
 
   setTimeout(function () {
     setInterval(function () {
-      var luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
+      const luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
       if (Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val = Math.round(luckyItem.val * 0.8);
         alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
@@ -85,7 +85,7 @@ function main() {
   setTimeout(function () {
     setInterval(function () {
       if (lastSel) {
-        var suggest = prodList.find(function (item) {
+        const suggest = prodList.find(function (item) {
           return item.id !== lastSel && item.q > 0;
         });
         if (suggest) {
@@ -171,7 +171,7 @@ function main() {
 // INFO: 보너스 포인트 함수
 const renderBonusPts = () => {
   bonusPts = Math.floor(totalAmt / 1000);
-  var ptsTag = document.getElementById('loyalty-points');
+  let ptsTag = document.getElementById('loyalty-points');
   if (!ptsTag) {
     ptsTag = document.createElement('span');
     ptsTag.id = 'loyalty-points';
@@ -183,7 +183,7 @@ const renderBonusPts = () => {
 
 // INFO: 재고 알림 함수
 function updateStockInfo() {
-  var infoMsg = '';
+  let infoMsg = '';
   prodList.forEach(function (item) {
     if (item.q < 5) {
       infoMsg += item.name + ': ' + (item.q > 0 ? '재고 부족 (' + item.q + '개 남음)' : '품절') + '\n';
