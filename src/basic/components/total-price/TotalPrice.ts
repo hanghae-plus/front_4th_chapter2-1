@@ -6,7 +6,7 @@ export const TotalPrice = () => {
   const isShowDiscount = discRate > 0;
 
   const render = `
-  <div class="text-xl font-bold my-4">
+  <div id="cart-total" class="text-xl font-bold my-4">
   총액: ${Math.round(totalAmt)} 원
   ${
     isShowDiscount &&

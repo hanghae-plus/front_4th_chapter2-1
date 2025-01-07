@@ -32,8 +32,17 @@ export const CartStore = createStore<CartState, CartActions>(
       return state.cartList?.find((item) => item.id === id);
     },
     addCartItem: (item: Product) => {
-      const newCartList = state.cartList ? state.cartList.concat(item) : [item];
-      state.cartList = newCartList;
+      if (state.cartList) {
+        const existingItem = state.cartList.find((cartItem) => cartItem.id === item.id);
+        if (existingItem) {
+          existingItem.q += 1;
+        } else {
+          state.cartList.push({ ...item, q: 1 });
+        }
+      } else {
+        state.cartList = [item];
+      }
+
       state.totalPrice = (state.cartList || []).reduce((sum, item) => sum + item.val * item.q, 0);
       notify();
     },
