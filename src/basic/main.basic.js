@@ -81,25 +81,26 @@ addToCartButton.addEventListener('click', function () {
 
   const productStore = ProductStore.getInstance();
   const products = productStore.getState().products;
-  const productToAdd = products.find(function (p) {
-    return p.id === selectedItem;
-  });
+  const productToAdd = productStore.findProduct(selectedItem);
 
   if (productToAdd && productToAdd.quantity > 0) {
-    const product = document.getElementById(productToAdd.id);
+    const productElement = document.getElementById(productToAdd.id);
 
-    if (product) {
+    if (productElement) {
       const newQuantity =
-        parseInt(product.querySelector('span').textContent.split('x ')[1]) + 1;
+        parseInt(
+          productElement.querySelector('span').textContent.split('x ')[1],
+        ) + 1;
 
       if (newQuantity <= productToAdd.quantity) {
-        product.querySelector('span').textContent =
+        productElement.querySelector('span').textContent =
           productToAdd.name +
           ' - ' +
           productToAdd.price +
           '원 x ' +
           newQuantity;
-        productToAdd.quantity--;
+
+        productStore.updateProductQuantity(productToAdd.id, -1);
       } else {
         alert(CONSTANTS.OUT_OF_STOCK_MESSAGE);
       }
@@ -125,7 +126,7 @@ addToCartButton.addEventListener('click', function () {
 
       const cart = document.getElementById('cart-items');
       cart.appendChild(newProduct);
-      productToAdd.quantity--;
+      productStore.updateProductQuantity(productToAdd.id, -1);
     }
 
     renderCalculateCart(products);
@@ -170,10 +171,10 @@ cart.addEventListener('click', function (event) {
           cartProductElement.querySelector('span').textContent.split('x ')[0] +
           'x ' +
           newQuantity;
-        selectedProduct.quantity -= quantityChange;
+        productStore.updateProductQuantity(selectedProduct.id, -quantityChange);
       } else if (newQuantity <= 0) {
         cartProductElement.remove();
-        selectedProduct.quantity -= quantityChange;
+        productStore.updateProductQuantity(selectedProduct.id, -quantityChange);
       } else {
         alert(CONSTANTS.OUT_OF_STOCK_MESSAGE);
       }
@@ -181,7 +182,7 @@ cart.addEventListener('click', function (event) {
       const removedQuantity = parseInt(
         cartProductElement.querySelector('span').textContent.split('x ')[1],
       );
-      selectedProduct.quantity += removedQuantity;
+      productStore.updateProductQuantity(selectedProduct.id, removedQuantity);
       cartProductElement.remove();
     }
 

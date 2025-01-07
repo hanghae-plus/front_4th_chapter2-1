@@ -1,4 +1,5 @@
 import { Store } from '.';
+import { deepClone } from '../utils/deepClone';
 
 /**
  * 상품 정보를 관리하는 스토어
@@ -22,7 +23,7 @@ export class ProductStore extends Store {
    */
   getState() {
     return {
-      products: [...this.state.products],
+      products: deepClone(this.state.products),
     };
   }
 
@@ -34,5 +35,24 @@ export class ProductStore extends Store {
       ProductStore.instance = new ProductStore();
     }
     return ProductStore.instance;
+  }
+
+  /**
+   * 상품 수량 업데이트
+   */
+  updateProductQuantity(productId, quantityChange) {
+    const product = this.state.products.find(p => p.id === productId);
+    if (product) {
+      product.quantity += quantityChange;
+      this.notify(this.getState());
+    }
+    return this.getState();
+  }
+
+  /**
+   * 상품 찾기
+   */
+  findProduct(productId) {
+    return this.state.products.find(p => p.id === productId);
   }
 }
