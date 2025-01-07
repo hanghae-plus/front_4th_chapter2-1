@@ -10,3 +10,7 @@ export const createElement = (
   if (id) elem.id = id;
   return elem;
 };
+
+export const appendChildren = (parent, children) => {
+  children.forEach((child) => parent.appendChild(child));
+};
