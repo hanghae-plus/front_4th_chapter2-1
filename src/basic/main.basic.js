@@ -7,7 +7,7 @@ let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
 
 let lastSelectedProduct,
   loyaltyPoints = 0,
-  totalAmt = 0,
+  amount = 0,
   itemCnt = 0;
 
 function main() {
@@ -84,7 +84,7 @@ function updateSelOpts() {
 }
 
 function calcCart() {
-  totalAmt = 0;
+  amount = 0;
   itemCnt = 0;
   const cartItems = cartItemContainer.children;
   let subTot = 0;
@@ -115,27 +115,27 @@ function calcCart() {
           disc = DISCOUNT_POLICY.PRODUCT_DISCOUNTS.p5;
         }
       }
-      totalAmt += itemTot * (1 - disc);
+      amount += itemTot * (1 - disc);
     })();
   }
   let discRate = 0;
   if (itemCnt >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
-    const bulkDisc = totalAmt * DISCOUNT_POLICY.BULK_DISCOUNT;
-    const itemDisc = subTot - totalAmt;
+    const bulkDisc = amount * DISCOUNT_POLICY.BULK_DISCOUNT;
+    const itemDisc = subTot - amount;
     if (bulkDisc > itemDisc) {
-      totalAmt = subTot * (1 - DISCOUNT_POLICY.BULK_DISCOUNT);
+      amount = subTot * (1 - DISCOUNT_POLICY.BULK_DISCOUNT);
       discRate = DISCOUNT_POLICY.BULK_DISCOUNT;
     } else {
-      discRate = (subTot - totalAmt) / subTot;
+      discRate = (subTot - amount) / subTot;
     }
   } else {
-    discRate = (subTot - totalAmt) / subTot;
+    discRate = (subTot - amount) / subTot;
   }
   if (new Date().getDay() === 2) {
-    totalAmt *= 1 - DISCOUNT_POLICY.WEEKLY_DISCOUNT.tuesday;
+    amount *= 1 - DISCOUNT_POLICY.WEEKLY_DISCOUNT.tuesday;
     discRate = Math.max(discRate, DISCOUNT_POLICY.WEEKLY_DISCOUNT.tuesday);
   }
-  cartTotal.textContent = '총액: ' + Math.round(totalAmt) + '원';
+  cartTotal.textContent = '총액: ' + Math.round(amount) + '원';
   if (discRate > 0) {
     const span = document.createElement('span');
     span.className = 'text-green-500 ml-2';
@@ -147,7 +147,7 @@ function calcCart() {
 }
 
 const renderBonusPts = () => {
-  loyaltyPoints = Math.floor(totalAmt / 1000);
+  loyaltyPoints = Math.floor(amount / 1000);
   let ptsTag = document.getElementById('loyalty-points');
   if (!ptsTag) {
     ptsTag = document.createElement('span');
