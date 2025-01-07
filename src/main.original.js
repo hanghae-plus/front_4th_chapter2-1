@@ -203,60 +203,57 @@ function updateProductOptions() {
 
 // 아이템 총액 계산
 function calculateItemTotals() {
-  totalAmount = 0;
-  itemCount = 0;
-  var cartItems = cartDisplay.children;
-  var subTot = 0;
+  const cartItems = Array.from(cartDisplay.children);
 
-  // 아이템 별 계산 로직
-  for (var i = 0; i < cartItems.length; i++) {
-    var curItem = productList.find((p) => p.id === cartItems[i].id);
-    var quantity = parseInt(
-      cartItems[i].querySelector("span").textContent.split("x ")[1]
-    );
-    var itemTot = curItem.price * quantity;
-    var discount = 0;
+  const totals = cartItems.reduce(
+    (acc, item) => {
+      const product = productList.find((p) => p.id === item.id);
+      const quantity = getItemQuantity(item);
+      const itemTotal = product.price * quantity;
+      const discount = quantity >= 10 ? PRODUCT_DISCOUNTS[product.id] || 0 : 0;
 
-    itemCount += quantity;
-    subTot += itemTot;
+      return {
+        subTotal: acc.subTotal + itemTotal,
+        totalAmount: acc.totalAmount + itemTotal * (1 - discount),
+        itemCount: acc.itemCount + quantity,
+      };
+    },
+    { subTotal: 0, totalAmount: 0, itemCount: 0 }
+  );
 
-    // 할인 적용
-    if (quantity >= 10) {
-      discount = PRODUCT_DISCOUNTS[curItem.id] || 0;
-    }
+  totalAmount = totals.totalAmount;
+  itemCount = totals.itemCount;
 
-    totalAmount += itemTot * (1 - discount);
-  }
-
-  return { subTot };
+  return { subTot: totals.subTotal };
 }
 
-// 할인 계산
+// 할인 계산 -> 할인 로직 분리
 function calculateDiscounts(subTot) {
-  let discRate = 0;
-
-  // 30개 이상 구매 시 25% 할인
-  if (itemCount >= BULK_PURCHASE_THRESHOLD) {
-    var bulkDisc = totalAmount * BULK_PURCHASE_DISCOUNT_RATE;
-    var itemDisc = subTot - totalAmount;
-
-    if (bulkDisc > itemDisc) {
-      totalAmount = subTot * (1 - 0.25);
-      discRate = 0.25;
-    } else {
-      discRate = (subTot - totalAmount) / subTot;
-    }
-  } else {
-    discRate = (subTot - totalAmount) / subTot;
-  }
-
-  // 화요일 10% 할인
-  if (new Date().getDay() === 2) {
-    totalAmount *= 0.9;
-    discRate = Math.max(discRate, 0.1);
-  }
-
+  let discRate = calculateBaseDiscount(subTot);
+  discRate = applyBulkPurchaseDiscount(subTot, discRate);
+  discRate = applyWeekdayDiscount(discRate);
   return discRate;
+}
+
+function calculateBaseDiscount(subTot) {
+  return (subTot - totalAmount) / subTot;
+}
+
+function applyBulkPurchaseDiscount(subTot, currentRate) {
+  if (itemCount >= BULK_PURCHASE_THRESHOLD) {
+    const bulkDiscount = BULK_PURCHASE_DISCOUNT_RATE;
+    const currentDiscount = currentRate;
+    return Math.max(bulkDiscount, currentDiscount);
+  }
+  return currentRate;
+}
+
+function applyWeekdayDiscount(currentRate) {
+  if (new Date().getDay() === 2) {
+    // 화요일
+    return Math.max(currentRate, 0.1);
+  }
+  return currentRate;
 }
 
 // 총액 표시
