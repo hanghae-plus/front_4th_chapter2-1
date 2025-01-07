@@ -213,15 +213,15 @@ addToCartButton.addEventListener('click', function () {
 });
 
 cartItemContainer.addEventListener('click', function (event) {
-  const tgt = event.target;
-  if (tgt.classList.contains('quantity-change') || tgt.classList.contains('remove-item')) {
-    const prodId = tgt.dataset.productId;
+  const eventTarget = event.target;
+  if (eventTarget.classList.contains('quantity-change') || eventTarget.classList.contains('remove-item')) {
+    const prodId = eventTarget.dataset.productId;
     const itemElem = document.getElementById(prodId);
     const prod = products.find(function (p) {
       return p.id === prodId;
     });
-    if (tgt.classList.contains('quantity-change')) {
-      const qtyChange = parseInt(tgt.dataset.change);
+    if (eventTarget.classList.contains('quantity-change')) {
+      const qtyChange = parseInt(eventTarget.dataset.change);
       const newQty = parseInt(itemElem.querySelector('span').textContent.split('x ')[1]) + qtyChange;
       if (newQty > 0 && newQty <= prod.quantity + parseInt(itemElem.querySelector('span').textContent.split('x ')[1])) {
         itemElem.querySelector('span').textContent =
@@ -233,7 +233,7 @@ cartItemContainer.addEventListener('click', function (event) {
       } else {
         alert('재고가 부족합니다.');
       }
-    } else if (tgt.classList.contains('remove-item')) {
+    } else if (eventTarget.classList.contains('remove-item')) {
       const remQty = parseInt(itemElem.querySelector('span').textContent.split('x ')[1]);
       prod.quantity += remQty;
       itemElem.remove();
