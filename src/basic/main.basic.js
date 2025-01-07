@@ -3,7 +3,7 @@ import { DISCOUNT_POLICY } from './policy/discount';
 import { STOCK_POLICY } from './policy/stock';
 import { TIMER_POLICY } from './policy/timer';
 
-let sel, addToCartButton, cartDisp, sum, stockInfo;
+let productSelector, addToCartButton, cartDisp, sum, stockInfo;
 let lastSel,
   bonusPts = 0,
   totalAmt = 0,
@@ -16,19 +16,19 @@ function main() {
   const hTxt = document.createElement('h1');
   cartDisp = document.createElement('div');
   sum = document.createElement('div');
-  sel = document.createElement('select');
+  productSelector = document.createElement('select');
   addToCartButton = document.createElement('button');
   stockInfo = document.createElement('div');
   cartDisp.id = 'cart-items';
   sum.id = 'cart-total';
-  sel.id = 'product-select';
+  productSelector.id = 'product-select';
   addToCartButton.id = 'add-to-cart';
   stockInfo.id = 'stock-status';
   cont.className = 'bg-gray-100 p-8';
   wrap.className = 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
   hTxt.className = 'text-2xl font-bold mb-4';
   sum.className = 'text-xl font-bold my-4';
-  sel.className = 'border rounded p-2 mr-2';
+  productSelector.className = 'border rounded p-2 mr-2';
   addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
   stockInfo.className = 'text-sm text-gray-500 mt-2';
   hTxt.textContent = '장바구니';
@@ -37,7 +37,7 @@ function main() {
   wrap.appendChild(hTxt);
   wrap.appendChild(cartDisp);
   wrap.appendChild(sum);
-  wrap.appendChild(sel);
+  wrap.appendChild(productSelector);
   wrap.appendChild(addToCartButton);
   wrap.appendChild(stockInfo);
   cont.appendChild(wrap);
@@ -70,7 +70,7 @@ function main() {
 }
 
 function updateSelOpts() {
-  sel.innerHTML = '';
+  productSelector.innerHTML = '';
   products.forEach(function (item) {
     const opt = document.createElement('option');
     opt.value = item.id;
@@ -78,7 +78,7 @@ function updateSelOpts() {
     if (item.quantity === 0) {
       opt.disabled = true;
     }
-    sel.appendChild(opt);
+    productSelector.appendChild(opt);
   });
 }
 
@@ -170,7 +170,7 @@ function updateStockInfo() {
 main();
 
 addToCartButton.addEventListener('click', function () {
-  const selItem = sel.value;
+  const selItem = productSelector.value;
   const itemToAdd = products.find(function (p) {
     return p.id === selItem;
   });
