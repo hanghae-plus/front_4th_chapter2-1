@@ -97,12 +97,12 @@ function calcCart() {
           break;
         }
       }
-      const q = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
-      const itemTot = curItem.price * q;
+      const quantity = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
+      const itemTot = curItem.price * quantity;
       let discountRate = 0;
-      itemCount += q;
+      itemCount += quantity;
       subTotal += itemTot;
-      if (q >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
+      if (quantity >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
         if (curItem.id === 'p1') {
           discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p1;
         } else if (curItem.id === 'p2') {
