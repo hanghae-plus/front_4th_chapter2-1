@@ -1,5 +1,6 @@
 import { products } from './data/products';
 import { DISCOUNT_POLICY } from './policy/discount';
+import { STOCK_POLICY } from './policy/stock';
 import { TIMER_POLICY } from './policy/timer';
 
 let sel, addBtn, cartDisp, sum, stockInfo;
@@ -159,7 +160,7 @@ const renderBonusPts = () => {
 function updateStockInfo() {
   let infoMsg = '';
   products.forEach(function (item) {
-    if (item.quantity < 5) {
+    if (item.quantity < STOCK_POLICY.STOCK_THRESHOLD) {
       infoMsg += item.name + ': ' + (item.quantity > 0 ? '재고 부족 (' + item.quantity + '개 남음)' : '품절') + '\n';
     }
   });
