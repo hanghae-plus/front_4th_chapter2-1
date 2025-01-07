@@ -90,28 +90,28 @@ function calcCart() {
   let subTotal = 0;
   for (let i = 0; i < cartItems.length; i++) {
     (function () {
-      let curItem;
+      let currentProduct;
       for (let j = 0; j < products.length; j++) {
         if (products[j].id === cartItems[i].id) {
-          curItem = products[j];
+          currentProduct = products[j];
           break;
         }
       }
       const quantity = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
-      const itemAmount = curItem.price * quantity;
+      const itemAmount = currentProduct.price * quantity;
       let discountRate = 0;
       itemCount += quantity;
       subTotal += itemAmount;
       if (quantity >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
-        if (curItem.id === 'p1') {
+        if (currentProduct.id === 'p1') {
           discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p1;
-        } else if (curItem.id === 'p2') {
+        } else if (currentProduct.id === 'p2') {
           discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p2;
-        } else if (curItem.id === 'p3') {
+        } else if (currentProduct.id === 'p3') {
           discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p3;
-        } else if (curItem.id === 'p4') {
+        } else if (currentProduct.id === 'p4') {
           discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p4;
-        } else if (curItem.id === 'p5') {
+        } else if (currentProduct.id === 'p5') {
           discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p5;
         }
       }
