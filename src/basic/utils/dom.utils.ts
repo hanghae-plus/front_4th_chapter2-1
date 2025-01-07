@@ -4,8 +4,11 @@
  * @param {HTMLElement|Document} [context=document] - 탐색 범위 (기본값: document)
  * @returns {HTMLElement | null} - 선택된 첫 번째 요소 (없으면 null)
  */
-export const $ = (selector: string, context: HTMLElement | Document = document) => {
-  return context.querySelector(selector);
+export const $ = <T extends HTMLElement>(
+  selector: string,
+  context: HTMLElement | Document = document
+) => {
+  return context.querySelector(selector) as T;
 };
 
 /**
