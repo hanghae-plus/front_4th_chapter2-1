@@ -1,21 +1,11 @@
-var productList,
-  SelectView,
-  AddToCartButton,
-  CartItemsView,
-  TotalCostView,
-  StockInfoView;
+import { productList } from './features/product';
+
+var SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
 var lastSelectedItemValue,
   bonusPoints = 0,
   totalAmount = 0,
   itemCount = 0;
 function main() {
-  productList = [
-    { id: 'p1', name: '상품1', val: 10000, q: 50 },
-    { id: 'p2', name: '상품2', val: 20000, q: 30 },
-    { id: 'p3', name: '상품3', val: 30000, q: 20 },
-    { id: 'p4', name: '상품4', val: 15000, q: 0 },
-    { id: 'p5', name: '상품5', val: 25000, q: 10 },
-  ];
   var Root = document.getElementById('app');
   let Container = document.createElement('div');
   var Wrapper = document.createElement('div');
