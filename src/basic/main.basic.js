@@ -1,16 +1,17 @@
+import Cart from './components/cart/Cart';
+import CartAddButton from './components/cartAddButton/CartAddButton';
 import CartTotal from './components/cartTotal/CartTotal';
 import { renderCalculateCart } from './components/cartTotal/renderCalculateCart';
+import Container from './components/Container';
+import ContentWrapper from './components/ContentWrapper';
 import Header from './components/Header';
 import { updateSelectOptions } from './components/productSelect/updateSelectOptions';
+import ProductSelector from './components/productSelector/ProductSelector';
+import StockStatus from './components/stockStatus/StockStatus';
 import { CONSTANTS } from './constants';
 import { helper } from './utils/helper';
 
-let products,
-  productSelector,
-  addToCartButton,
-  cartDisplay,
-  stockInfo,
-  lastSelectedItem;
+let products, lastSelectedItem;
 
 function main() {
   products = [
@@ -21,37 +22,16 @@ function main() {
     { id: 'p5', name: '상품5', price: 25_000, quantity: 10 },
   ];
 
-  const contentWrapper = document.createElement('div');
-  contentWrapper.className =
-    'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  const header = Header({ title: '장바구니' });
-  contentWrapper.appendChild(header);
+  const contentWrapper = ContentWrapper();
 
-  cartDisplay = document.createElement('div');
-  cartDisplay.id = 'cart-items';
-  contentWrapper.appendChild(cartDisplay);
+  contentWrapper.appendChild(Header({ title: '장바구니' }));
+  contentWrapper.appendChild(Cart());
+  contentWrapper.appendChild(CartTotal());
+  contentWrapper.appendChild(ProductSelector());
+  contentWrapper.appendChild(CartAddButton());
+  contentWrapper.appendChild(StockStatus());
 
-  const totalDisplay = CartTotal();
-  contentWrapper.appendChild(totalDisplay);
-
-  productSelector = document.createElement('select');
-  productSelector.id = 'product-select';
-  productSelector.className = 'border rounded p-2 mr-2';
-  contentWrapper.appendChild(productSelector);
-
-  addToCartButton = document.createElement('button');
-  addToCartButton.id = 'add-to-cart';
-  addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  addToCartButton.textContent = '추가';
-  contentWrapper.appendChild(addToCartButton);
-
-  stockInfo = document.createElement('div');
-  stockInfo.id = 'stock-status';
-  stockInfo.className = 'text-sm text-gray-500 mt-2';
-  contentWrapper.appendChild(stockInfo);
-
-  const containerDiv = document.createElement('div');
-  containerDiv.className = 'bg-gray-100 p-8';
+  const containerDiv = Container();
   containerDiv.appendChild(contentWrapper);
 
   const root = document.getElementById('app');
@@ -98,7 +78,9 @@ function main() {
 
 main();
 
+const addToCartButton = document.getElementById('add-to-cart');
 addToCartButton.addEventListener('click', function () {
+  const productSelector = document.getElementById('product-select');
   const selectedItem = productSelector.value;
   const productToAdd = products.find(function (p) {
     return p.id === selectedItem;
@@ -142,7 +124,8 @@ addToCartButton.addEventListener('click', function () {
         productToAdd.id +
         '">삭제</button></div>';
 
-      cartDisplay.appendChild(newProduct);
+      const cart = document.getElementById('cart-items');
+      cart.appendChild(newProduct);
       productToAdd.quantity--;
     }
 
@@ -151,7 +134,8 @@ addToCartButton.addEventListener('click', function () {
   }
 });
 
-cartDisplay.addEventListener('click', function (event) {
+const cart = document.getElementById('cart-items');
+cart.addEventListener('click', function (event) {
   const targetElement = event.target;
   if (
     targetElement.classList.contains('quantity-change') ||

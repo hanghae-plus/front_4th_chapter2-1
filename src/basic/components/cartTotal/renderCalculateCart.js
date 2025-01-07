@@ -3,7 +3,7 @@ import { helper } from '../../utils/helper';
 import { calculateCartItems } from '../cart/calculateCartItems';
 import { getTotalBonusPoints } from '../points/getTotalBonusPoints';
 import { renderBonusPoints } from '../points/renderBonusPoints';
-import { updateStockInfoMessage } from '../stock/updateStockInfoMessage';
+import { updateStockInfoMessage } from '../stockStatus/updateStockInfoMessage';
 import { renderDiscountedAmount } from './renderDiscountedAmount';
 
 /**
