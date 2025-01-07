@@ -10,8 +10,9 @@ const DOM_IDS = Object.freeze({
 
 const ALERT_MESSAGES = Object.freeze({
   OUT_OF_STOCK: "재고가 부족합니다.",
-  RANDOM_SALE: (itemName) => `번개세일! ${itemName}이(가) 20% 할인 중입니다!`,
-  RECOMMENDED_SALE: (itemName) => `${itemName}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`,
+  RANDOM_SALE: itemName => `번개세일! ${itemName}이(가) 20% 할인 중입니다!`,
+  RECOMMENDED_SALE: itemName =>
+    `${itemName}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`,
 });
 
 const DISCOUNT_RATES = Object.freeze({
@@ -48,7 +49,7 @@ const productList = [
 ];
 
 // 현재 상품 수량 추출
-const extractQuantity = (element) => {
+const extractQuantity = element => {
   const textContent = element.textContent;
   const quantity = textContent.split("x ")[1];
 
@@ -56,7 +57,7 @@ const extractQuantity = (element) => {
 };
 
 // 10개 이상 구매시 할인율
-const getDiscountRate = (productID) => {
+const getDiscountRate = productID => {
   switch (productID) {
     // 상품1: 10% 할인
     case "p1":
@@ -80,10 +81,16 @@ const setUpSaleEvents = () => {
   // 임의의 시간마다 깜짝세일 20%
   setTimeout(() => {
     setInterval(() => {
-      const luckyItem = productList[Math.floor(Math.random() * productList.length)];
+      const luckyItem =
+        productList[Math.floor(Math.random() * productList.length)];
 
-      if (Math.random() < DISCOUNT_RATES.RANDOM_SALE && luckyItem.remaining > 0) {
-        luckyItem.price = Math.round(luckyItem.price * (1 - DISCOUNT_RATES.TWENTY_PERCENT));
+      if (
+        Math.random() < DISCOUNT_RATES.RANDOM_SALE &&
+        luckyItem.remaining > 0
+      ) {
+        luckyItem.price = Math.round(
+          luckyItem.price * (1 - DISCOUNT_RATES.TWENTY_PERCENT)
+        );
 
         alert(ALERT_MESSAGES.RANDOM_SALE(luckyItem.name));
 
@@ -96,12 +103,16 @@ const setUpSaleEvents = () => {
   setTimeout(() => {
     setInterval(() => {
       if (lastSelectedProductID) {
-        const suggest = productList.find((item) => item.id !== lastSelectedProductID && item.remaining > 0);
+        const suggest = productList.find(
+          item => item.id !== lastSelectedProductID && item.remaining > 0
+        );
 
         if (suggest) {
           alert(ALERT_MESSAGES.RECOMMENDED_SALE(suggest.name));
 
-          suggest.price = Math.round(suggest.price * (1 - DISCOUNT_RATES.FIVE_PERCENT));
+          suggest.price = Math.round(
+            suggest.price * (1 - DISCOUNT_RATES.FIVE_PERCENT)
+          );
 
           renderProductOptions();
         }
@@ -111,7 +122,7 @@ const setUpSaleEvents = () => {
 };
 
 // 적립 포인트
-const updateLoyaltyPoints = (finalPrice) => {
+const updateLoyaltyPoints = finalPrice => {
   let pointStatus = document.getElementById(DOM_IDS.LOYALTY_POINTS);
 
   const point = Math.floor(finalPrice / 1000);
@@ -128,7 +139,7 @@ const updateLoyaltyPoints = (finalPrice) => {
   pointStatus.textContent = `(포인트: ${point})`;
 };
 
-const setStockMessage = (product) => {
+const setStockMessage = product => {
   if (product.remaining <= STOCKS.OUT_OF_STOCK) {
     return `${product.name}: 품절`;
   } else if (product.remaining < STOCKS.LOW_STOCK_THRESHOLD) {
@@ -144,13 +155,13 @@ const updateStockStatus = () => {
 
   stockStatus.textContent = productList
     .map(setStockMessage)
-    .filter((msg) => msg !== "")
+    .filter(msg => msg !== "")
     .join("\n");
 };
 
 // 콤보박스
-const renderProductOptions = (selects) => {
-  productList.forEach((product) => {
+const renderProductOptions = selects => {
+  productList.forEach(product => {
     const productOptions = document.createElement("option");
 
     productOptions.value = product.id;
@@ -169,7 +180,9 @@ const renderCartMessage = (finalPrice, discountRate) => {
     const discountSpan = document.createElement("span");
 
     discountSpan.className = "text-green-500 ml-2";
-    discountSpan.textContent = `(${(discountRate * 100).toFixed(1)}% 할인 적용)`;
+    discountSpan.textContent = `(${(discountRate * 100).toFixed(
+      1
+    )}% 할인 적용)`;
 
     totalDiv.appendChild(discountSpan);
   }
@@ -218,7 +231,9 @@ const calculateCart = () => {
   const cartItems = cartDiv.children;
 
   for (let i = 0; i < cartItems.length; i++) {
-    const targetItem = productList.find((product) => product.id === cartItems[i].id);
+    const targetItem = productList.find(
+      product => product.id === cartItems[i].id
+    );
     const currentQuantity = extractQuantity(cartItems[i].querySelector("span"));
     const currentPrice = targetItem.price * currentQuantity;
 
@@ -289,7 +304,7 @@ const updateCartQuantity = (itemDiv, quantityChange, product) => {
 const handleAddToCart = () => {
   const selectedItem = document.getElementById(DOM_IDS.PRODUCT_SELECT);
   const selectedID = selectedItem.value;
-  const itemToAdd = productList.find((product) => product.id === selectedID);
+  const itemToAdd = productList.find(product => product.id === selectedID);
 
   if (itemToAdd.remaining > 0) {
     const inCartItem = document.getElementById(itemToAdd.id);
@@ -323,13 +338,13 @@ const handleAddToCart = () => {
 };
 
 // 클릭 이벤트
-const handleClickCart = (event) => {
+const handleClickCart = event => {
   const clickedBtn = event.target; // 수량 변경 클릭한 버튼
   if (!clickedBtn) return;
 
   const { productId, change } = clickedBtn.dataset; // 클릭한 버튼의 ID (왜냐면 상품명-버튼 한 row라서)
 
-  const product = productList.find((product) => product.id === productId); // productList에서 해당 아이템 찾기
+  const product = productList.find(product => product.id === productId); // productList에서 해당 아이템 찾기
 
   const itemDiv = document.getElementById(productId); // (id로 element조회)
   const quantitySpan = itemDiv.querySelector("span");
@@ -355,7 +370,8 @@ function main() {
   containerDiv.className = "bg-gray-100 p-8";
 
   const wrapDiv = document.createElement("div");
-  wrapDiv.className = "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
+  wrapDiv.className =
+    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
 
   const cartH1 = document.createElement("h1");
   cartH1.className = "text-2xl font-bold mb-4";
@@ -406,6 +422,10 @@ function main() {
 // 초기화 및 이벤트 리스너 등록
 main();
 
-document.getElementById(DOM_IDS.ADD_TO_CART_BTN).addEventListener("click", handleAddToCart);
+document
+  .getElementById(DOM_IDS.ADD_TO_CART_BTN)
+  .addEventListener("click", handleAddToCart);
 
-document.getElementById(DOM_IDS.CART_ITEMS).addEventListener("click", handleClickCart);
+document
+  .getElementById(DOM_IDS.CART_ITEMS)
+  .addEventListener("click", handleClickCart);
