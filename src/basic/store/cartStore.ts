@@ -84,6 +84,7 @@ function calcCart(cartList: CartState['cartList']) {
   let subTot = 0;
 
   // cartCount만큼 반복문
+
   for (const cartItem of cartList) {
     const matchedItem = getMatchedProductInCart(cartItem, productList);
 
@@ -93,28 +94,19 @@ function calcCart(cartList: CartState['cartList']) {
     const matchedItemQuantity = matchedItem.q;
 
     // 현재 아이템으로 선택된 아이템의 재고 총액
-    const matchedItemTotal = matchedItem.val * matchedItemQuantity;
+    const matchedItemTotalAmount = matchedItem.val * matchedItemQuantity;
 
-    // disc가 뭔지 모르겠지만 변수
-    let disc = 0;
+    // 매칭된 아이템의 할인율
+    const discountRate = getDiscountRateByMatchedItem(matchedItemQuantity, matchedItem.id);
 
     // 재고를 itemCount에 더한다
     itemCnt += matchedItemQuantity;
 
     // 현재 아이템의 총액을 subTotal에 더한다.
-    subTot += matchedItemTotal;
-
-    // 아이템 갯수별 할인 적용률을 처리하는 로직
-    if (matchedItemQuantity >= 10) {
-      if (matchedItem.id === 'p1') disc = 0.1;
-      else if (matchedItem.id === 'p2') disc = 0.15;
-      else if (matchedItem.id === 'p3') disc = 0.2;
-      else if (matchedItem.id === 'p4') disc = 0.05;
-      else if (matchedItem.id === 'p5') disc = 0.25;
-    }
+    subTot += matchedItemTotalAmount;
 
     // 총액에 현재 아이템의 총액에 할인율을 계산한 값을 할당
-    totalAmt += matchedItemTotal * (1 - disc);
+    totalAmt += matchedItemTotalAmount * (1 - discountRate);
 
     // 반복문 마지막 줄
   }
@@ -178,7 +170,24 @@ function calcCart(cartList: CartState['cartList']) {
 function getMatchedProductInCart(cartItem: Product, productList: Product[]) {
   // 아이템 객체 (스토어에서 처리하기 때문에 children으로 빼오지 않아도 된다 state에서 빼오면 됨)
 
-  const matchedProduct = productList.find((product) => product.id === cartItem.id);
+  return productList.find((product) => product.id === cartItem.id);
+}
 
-  return matchedProduct;
+function getDiscountRateByMatchedItem(quantity: number, id: Product['id']) {
+  const discountRate = 0;
+
+  const discountRates = {
+    p1: 0.1,
+    p2: 0.15,
+    p3: 0.2,
+    p4: 0.05,
+    p5: 0.25,
+  };
+
+  // 아이템 갯수별 할인 적용률을 처리하는 로직
+  if (quantity >= 10) {
+    discountRates[id];
+  }
+
+  return discountRate;
 }
