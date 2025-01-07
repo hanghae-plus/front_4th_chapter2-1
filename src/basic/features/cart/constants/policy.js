@@ -17,3 +17,12 @@ export const DISCOUNT_POLICY = {
     tuesday: 0.1, // NOTE: 매주 화요일 10% 할인
   },
 };
+
+export const STOCK_POLICY = {
+  STOCK_THRESHOLD: 5, // NOTE: 재고 부족 임계치
+};
+
+export const TIMER_POLICY = {
+  LIGHTNING_SALE_INTERVAL: 30000, // NOTE: 번개세일 주기 (30초)
+  PRODUCT_RECOMMENDATION_INTERVAL: 60000, // NOTE: 추천상품 주기 (60초)
+};
