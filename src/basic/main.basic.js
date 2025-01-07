@@ -3,7 +3,7 @@ import { DISCOUNT_POLICY } from './policy/discount';
 import { STOCK_POLICY } from './policy/stock';
 import { TIMER_POLICY } from './policy/timer';
 
-let productSelector, addToCartButton, cartItemContainer, cartTotal, stockInfo;
+let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
 let lastSel,
   bonusPts = 0,
   totalAmt = 0,
@@ -18,19 +18,19 @@ function main() {
   cartTotal = document.createElement('div');
   productSelector = document.createElement('select');
   addToCartButton = document.createElement('button');
-  stockInfo = document.createElement('div');
+  stockStatus = document.createElement('div');
   cartItemContainer.id = 'cart-items';
   cartTotal.id = 'cart-total';
   productSelector.id = 'product-select';
   addToCartButton.id = 'add-to-cart';
-  stockInfo.id = 'stock-status';
+  stockStatus.id = 'stock-status';
   cont.className = 'bg-gray-100 p-8';
   wrap.className = 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
   hTxt.className = 'text-2xl font-bold mb-4';
   cartTotal.className = 'text-xl font-bold my-4';
   productSelector.className = 'border rounded p-2 mr-2';
   addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  stockInfo.className = 'text-sm text-gray-500 mt-2';
+  stockStatus.className = 'text-sm text-gray-500 mt-2';
   hTxt.textContent = '장바구니';
   addToCartButton.textContent = '추가';
   updateSelOpts();
@@ -39,7 +39,7 @@ function main() {
   wrap.appendChild(cartTotal);
   wrap.appendChild(productSelector);
   wrap.appendChild(addToCartButton);
-  wrap.appendChild(stockInfo);
+  wrap.appendChild(stockStatus);
   cont.appendChild(wrap);
   root.appendChild(cont);
   calcCart();
@@ -164,7 +164,7 @@ function updateStockInfo() {
       infoMsg += item.name + ': ' + (item.quantity > 0 ? '재고 부족 (' + item.quantity + '개 남음)' : '품절') + '\n';
     }
   });
-  stockInfo.textContent = infoMsg;
+  stockStatus.textContent = infoMsg;
 }
 
 main();
