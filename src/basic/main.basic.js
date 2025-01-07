@@ -256,14 +256,12 @@ function ItemOption(item) {
 }
 
 const updateSelOpts = () => {
-  const sel = document.querySelector("#product-select");
-  const options = PRODUCTS.map((item) => ItemOption(item));
-  renderContent(sel)(options);
+  renderContent(document.querySelector("#product-select"))(
+    PRODUCTS.map(ItemOption)
+  );
 };
 
-const getLowStockProducts = () => {
-  return PRODUCTS.filter((prod) => prod.quantity < 5);
-};
+const isLowStock = (product) => product.quantity < 5;
 
 const makeLowStockMessage = (product) => {
   return `${product.name}: ${
@@ -274,9 +272,9 @@ const makeLowStockMessage = (product) => {
 };
 
 const updateStockInfo = () => {
-  const stockInfo = document.querySelector("#stock-status");
-  const lowStockProducts = getLowStockProducts();
-  renderContent(stockInfo)(lowStockProducts.map(makeLowStockMessage).join(""));
+  renderContent(document.querySelector("#stock-status"))(
+    PRODUCTS.filter(isLowStock).map(makeLowStockMessage).join("")
+  );
 };
 
 main();
