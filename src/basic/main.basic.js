@@ -142,7 +142,7 @@ const calcCart = () => {
     span.textContent = '(' + (totalDiscountRate * 100).toFixed(1) + '% 할인 적용)';
     cartTotal.appendChild(span);
   }
-  updateStockInfo();
+  renderStockStatus();
   renderBonusPts();
 };
 
@@ -158,16 +158,17 @@ const renderBonusPts = () => {
   ptsTag.textContent = '(포인트: ' + loyaltyPoints + ')';
 };
 
-const updateStockInfo = () => {
-  let infoMsg = '';
+const renderStockStatus = () => {
+  let stockStatusMessage = '';
+
   products.forEach((item) => {
     if (item.quantity < STOCK_POLICY.STOCK_THRESHOLD) {
-      infoMsg += item.name + ': ' + (item.quantity > 0 ? '재고 부족 (' + item.quantity + '개 남음)' : '품절') + '\n';
+      stockStatusMessage += `${item.name}: ${item.quantity > 0 ? `재고 부족 (${item.quantity}개 남음)` : '품절'}\n`;
     }
   });
-  stockStatus.textContent = infoMsg;
-};
 
+  stockStatus.textContent = stockStatusMessage;
+};
 main();
 
 addToCartButton.addEventListener('click', () => {
