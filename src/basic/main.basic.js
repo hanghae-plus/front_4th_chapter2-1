@@ -21,18 +21,6 @@
  * - 파일 이동, 변경
  */
 
-const renderLoyaltyPointsElement = (loyaltyPoint) => {
-  const $cartTotal = document.getElementById('cart-total');
-  let $loyaltyPoints = document.getElementById('loyalty-points');
-  if (!$loyaltyPoints) {
-    $loyaltyPoints = document.createElement('span');
-    $loyaltyPoints.id = 'loyalty-points';
-    $loyaltyPoints.className = 'text-blue-500 ml-2';
-    $cartTotal.appendChild($loyaltyPoints);
-  }
-  $loyaltyPoints.textContent = '(포인트: ' + loyaltyPoint + ')';
-};
-
 function renderStockStatusElement() {
   const $stockStatus = document.getElementById('stock-status');
   let infoMsg = '';
@@ -103,7 +91,14 @@ function renderCartTotal(cartItems) {
   }
 
   const loyaltyPoint = salePrice > 0 ? Math.floor(salePrice / 1000) : 0;
-  renderLoyaltyPointsElement(loyaltyPoint);
+  let $loyaltyPoints = document.getElementById('loyalty-points');
+  if (!$loyaltyPoints) {
+    $loyaltyPoints = document.createElement('span');
+    $loyaltyPoints.id = 'loyalty-points';
+    $loyaltyPoints.className = 'text-blue-500 ml-2';
+    $cartTotal.appendChild($loyaltyPoints);
+  }
+  $loyaltyPoints.textContent = '(포인트: ' + loyaltyPoint + ')';
 }
 
 function renderProductSelectOptionElement() {
