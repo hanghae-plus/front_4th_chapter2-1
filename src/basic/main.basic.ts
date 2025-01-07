@@ -1,4 +1,5 @@
 import { addToCart } from './features/cart/actions/addToCart';
+import { renderBonusPoints } from './features/cart/components/BonusPointsVIew';
 import { productList } from './features/product';
 import {
   findProductById,
@@ -9,7 +10,6 @@ import { renderProductOptionsView } from './features/product/components/ProductO
 
 var SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
 var lastSelectedItemValue,
-  bonusPoints = 0,
   totalAmount = 0,
   itemCount = 0;
 function main() {
@@ -116,19 +116,8 @@ function calculateCartItems() {
     TotalCostView.appendChild(DiscountText);
   }
   updateStockInfo();
-  renderBonusPoints();
+  renderBonusPoints(totalAmount, TotalCostView);
 }
-const renderBonusPoints = () => {
-  bonusPoints = Math.floor(totalAmount / 1000);
-  var PointsTag = document.getElementById('loyalty-points');
-  if (!PointsTag) {
-    PointsTag = document.createElement('span');
-    PointsTag.id = 'loyalty-points';
-    PointsTag.className = 'text-blue-500 ml-2';
-    TotalCostView.appendChild(PointsTag);
-  }
-  PointsTag.textContent = '(포인트: ' + bonusPoints + ')';
-};
 function updateStockInfo() {
   var message = '';
   productList.forEach(function (item) {
