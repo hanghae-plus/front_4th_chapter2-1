@@ -47,12 +47,12 @@ function main() {
   setTimeout(function () {
     setInterval(function () {
       const luckyItem = products[Math.floor(Math.random() * products.length)];
-      if (Math.random() < DISCOUNT_POLICY.LIGHTNING_SALE_PROBABILITY && luckyItem.quantity > 0) {
-        luckyItem.price = Math.round(luckyItem.price * (1 - DISCOUNT_POLICY.LIGHTNING_SALE));
+      if (Math.random() < DISCOUNT_POLICY.LIGHTNING_SALE_RATE_PROBABILITY && luckyItem.quantity > 0) {
+        luckyItem.price = Math.round(luckyItem.price * (1 - DISCOUNT_POLICY.LIGHTNING_SALE_RATE));
         alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
         updateSelOpts();
       }
-    }, TIMER_POLICY.LIGHTNING_SALE_INTERVAL);
+    }, TIMER_POLICY.LIGHTNING_SALE_RATE_INTERVAL);
   }, Math.random() * 10000);
   setTimeout(function () {
     setInterval(function () {
@@ -62,7 +62,7 @@ function main() {
         });
         if (suggest) {
           alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
-          suggest.price = Math.round(suggest.price * (1 - DISCOUNT_POLICY.RECOMMENDATION_DISCOUNT));
+          suggest.price = Math.round(suggest.price * (1 - DISCOUNT_POLICY.RECOMMENDATION_DISCOUNT_RATE));
           updateSelOpts();
         }
       }
@@ -99,47 +99,47 @@ function calcCart() {
       }
       const q = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
       const itemTot = curItem.price * q;
-      let disc = 0;
+      let discountRate = 0;
       itemCount += q;
       subTotal += itemTot;
       if (q >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
         if (curItem.id === 'p1') {
-          disc = DISCOUNT_POLICY.PRODUCT_DISCOUNTS.p1;
+          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p1;
         } else if (curItem.id === 'p2') {
-          disc = DISCOUNT_POLICY.PRODUCT_DISCOUNTS.p2;
+          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p2;
         } else if (curItem.id === 'p3') {
-          disc = DISCOUNT_POLICY.PRODUCT_DISCOUNTS.p3;
+          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p3;
         } else if (curItem.id === 'p4') {
-          disc = DISCOUNT_POLICY.PRODUCT_DISCOUNTS.p4;
+          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p4;
         } else if (curItem.id === 'p5') {
-          disc = DISCOUNT_POLICY.PRODUCT_DISCOUNTS.p5;
+          discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p5;
         }
       }
-      amount += itemTot * (1 - disc);
+      amount += itemTot * (1 - discountRate);
     })();
   }
-  let discRate = 0;
+  let totalDiscountRate = 0;
   if (itemCount >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
-    const bulkDisc = amount * DISCOUNT_POLICY.BULK_DISCOUNT;
-    const itemDisc = subTotal - amount;
-    if (bulkDisc > itemDisc) {
-      amount = subTotal * (1 - DISCOUNT_POLICY.BULK_DISCOUNT);
-      discRate = DISCOUNT_POLICY.BULK_DISCOUNT;
+    const bulkDiscount = amount * DISCOUNT_POLICY.BULK_DISCOUNT_RATE;
+    const itemDiscount = subTotal - amount;
+    if (bulkDiscount > itemDiscount) {
+      amount = subTotal * (1 - DISCOUNT_POLICY.BULK_DISCOUNT_RATE);
+      totalDiscountRate = DISCOUNT_POLICY.BULK_DISCOUNT_RATE;
     } else {
-      discRate = (subTotal - amount) / subTotal;
+      totalDiscountRate = (subTotal - amount) / subTotal;
     }
   } else {
-    discRate = (subTotal - amount) / subTotal;
+    totalDiscountRate = (subTotal - amount) / subTotal;
   }
   if (new Date().getDay() === 2) {
-    amount *= 1 - DISCOUNT_POLICY.WEEKLY_DISCOUNT.tuesday;
-    discRate = Math.max(discRate, DISCOUNT_POLICY.WEEKLY_DISCOUNT.tuesday);
+    amount *= 1 - DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday;
+    totalDiscountRate = Math.max(totalDiscountRate, DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday);
   }
   cartTotal.textContent = '총액: ' + Math.round(amount) + '원';
-  if (discRate > 0) {
+  if (totalDiscountRate > 0) {
     const span = document.createElement('span');
     span.className = 'text-green-500 ml-2';
-    span.textContent = '(' + (discRate * 100).toFixed(1) + '% 할인 적용)';
+    span.textContent = '(' + (totalDiscountRate * 100).toFixed(1) + '% 할인 적용)';
     cartTotal.appendChild(span);
   }
   updateStockInfo();
