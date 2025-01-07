@@ -1,99 +1,11 @@
-/**
- * 공통 로직
- */
-let lastSel = 0;
-
-function MainPage() {
-  return `
-    <div id="cont" class="bg-gray-100 p-8">
-      <div id="wrap class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
-        <h1 class="text-2xl font-bold mb-4">장바구니</h1>
-        <div id="cart-items"></div>
-        <div id="cart-total" class="text-xl font-bold my-4"></div>
-        <select id="product-select" class="text-xl font-bold my-4"></select>
-        <button id="add-to-cart" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
-        <div id="stock-status" class="text-sm text-gray-500 mt-2"></div>
-      </div>
-    </div>
-  `;
-}
-
-const renderContent = (target) => {
-  return (page) => {
-    target.innerHTML = page;
-  };
-};
-
-const appendContent = (target) => {
-  return (page) => {
-    target.innerHTML += page;
-  };
-};
-
-const alertEvent = (callback, intervalMs, delayMs) => {
-  setTimeout(() => {
-    setInterval(callback, intervalMs);
-  }, Math.random() * delayMs);
-};
-
-const saleEvent = () => {
-  const luckyItem = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
-  if (Math.random() < 0.3 && luckyItem.quantity > 0) {
-    luckyItem.price = Math.round(luckyItem.price * 0.8);
-    alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
-    updateSelOpts();
-  }
-};
-
-const lastSelEvent = () => {
-  if (lastSel) {
-    const suggest = PRODUCTS.find((item) => {
-      return item.id !== lastSel && item.quantity > 0;
-    });
-    if (suggest) {
-      alert(suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!");
-      suggest.price = Math.round(suggest.price * 0.95);
-      updateSelOpts();
-    }
-  }
-};
-
-const main = () => {
-  const root = document.querySelector("#app");
-  renderContent(root)(MainPage());
-
-  updateSelOpts();
-  calcCart();
-
-  alertEvent(saleEvent, 30000, Math.random() * 10000);
-  alertEvent(lastSelEvent, 60000, Math.random() * 20000);
-
-  document
-    .querySelector("#add-to-cart")
-    .addEventListener("click", addToCartClickHandler);
-  document
-    .querySelector("#cart-items")
-    .addEventListener("click", cartItemsClickHandler);
-};
+import { CartItem, ItemOption } from "./components";
+import MainPage from "./pages/MainPage";
 
 /**
  * 장바구니
  */
 const shoppingCart = [];
 let shoppingCartTotal = 0;
-
-function Item(product) {
-  return `
-    <div id="${product.id}" class="flex justify-between items-center mb-2">
-      <span>${product.name} - ${product.price}원 x 1</span>
-      <div>
-        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="-1">-</button>
-        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="1">+</button>
-        <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${product.id}">삭제</button>
-      </div>
-    </div>
-  `;
-}
 
 const calcCart = () => {
   shoppingCartTotal = 0;
@@ -144,7 +56,7 @@ const calcCart = () => {
     ).toFixed(1)}% 할인 적용)</span>`;
   }
 
-  updateStockInfo();
+  updateStockStatus();
   renderBonusPts();
 };
 
@@ -153,10 +65,12 @@ const renderBonusPts = () => {
   const cartTotalElem = document.querySelector("#cart-total");
   let ptsTag = document.getElementById("loyalty-points");
   if (!ptsTag) {
-    cartTotalElem.innerHTML += `<span id="loyalty-points" class="text-blue-500 ml-2"></span>`;
+    appendContent(cartTotalElem)(
+      `<span id="loyalty-points" class="text-blue-500 ml-2"></span>`
+    );
     ptsTag = cartTotalElem.querySelector("#loyalty-points");
   }
-  ptsTag.innerHTML = `(포인트: ${bonusPts})`;
+  renderContent(ptsTag)(`(포인트: ${bonusPts})`);
 };
 
 const addToCartClickHandler = () => {
@@ -178,7 +92,7 @@ const addToCartClickHandler = () => {
         alert("재고가 부족합니다.");
       }
     } else {
-      appendContent(cartItems)(Item(itemToAdd));
+      appendContent(cartItems)(CartItem(itemToAdd));
       itemToAdd.quantity--;
     }
     calcCart();
@@ -249,18 +163,6 @@ const PRODUCTS = [
   { id: "p5", name: "상품5", price: 25000, quantity: 10, discount: 0.25 },
 ];
 
-function ItemOption(item) {
-  return `<option value="${item.id}" ${item.quantity === 0 ? "disabled" : ""}>${
-    item.name
-  } - ${item.price}원</option>`;
-}
-
-const updateSelOpts = () => {
-  renderContent(document.querySelector("#product-select"))(
-    PRODUCTS.map(ItemOption)
-  );
-};
-
 const isLowStock = (product) => product.quantity < 5;
 
 const makeLowStockMessage = (product) => {
@@ -271,10 +173,79 @@ const makeLowStockMessage = (product) => {
   }\n`;
 };
 
-const updateStockInfo = () => {
+const updateSelOpts = () => {
+  renderContent(document.querySelector("#product-select"))(
+    PRODUCTS.map(ItemOption)
+  );
+};
+
+const updateStockStatus = () => {
   renderContent(document.querySelector("#stock-status"))(
     PRODUCTS.filter(isLowStock).map(makeLowStockMessage).join("")
   );
+};
+
+/**
+ * 공통 로직
+ */
+let lastSel = 0;
+
+const renderContent = (target) => {
+  return (page) => {
+    target.innerHTML = page;
+  };
+};
+
+const appendContent = (target) => {
+  return (page) => {
+    target.innerHTML += page;
+  };
+};
+
+const alertEvent = (callback, intervalMs, delayMs) => {
+  setTimeout(() => {
+    setInterval(callback, intervalMs);
+  }, Math.random() * delayMs);
+};
+
+const saleEvent = () => {
+  const luckyItem = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
+  if (Math.random() < 0.3 && luckyItem.quantity > 0) {
+    luckyItem.price = Math.round(luckyItem.price * 0.8);
+    alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
+    updateSelOpts();
+  }
+};
+
+const lastSelEvent = () => {
+  if (lastSel) {
+    const suggest = PRODUCTS.find((item) => {
+      return item.id !== lastSel && item.quantity > 0;
+    });
+    if (suggest) {
+      alert(suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!");
+      suggest.price = Math.round(suggest.price * 0.95);
+      updateSelOpts();
+    }
+  }
+};
+
+const main = () => {
+  const root = document.querySelector("#app");
+  renderContent(root)(MainPage());
+
+  updateSelOpts();
+  calcCart();
+
+  alertEvent(saleEvent, 30000, Math.random() * 10000);
+  alertEvent(lastSelEvent, 60000, Math.random() * 20000);
+
+  document
+    .querySelector("#add-to-cart")
+    .addEventListener("click", addToCartClickHandler);
+  document
+    .querySelector("#cart-items")
+    .addEventListener("click", cartItemsClickHandler);
 };
 
 main();
