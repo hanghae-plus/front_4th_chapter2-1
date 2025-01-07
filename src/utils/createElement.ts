@@ -2,7 +2,7 @@ interface ElementAttributes {
   id?: string;
   className?: string;
   textContent?: string;
-  class?: string;
+  [key: string]: string | boolean | undefined;
 }
 
 export const createElement = <K extends keyof HTMLElementTagNameMap>(
@@ -13,7 +13,7 @@ export const createElement = <K extends keyof HTMLElementTagNameMap>(
   const element = document.createElement(elementName);
 
   Object.entries(attributes).forEach(([key, value]) => {
-    element.setAttribute(key, value);
+    if (typeof value === 'string') element.setAttribute(key, value);
   });
 
   if (!Array.isArray(children)) {

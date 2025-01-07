@@ -1,5 +1,6 @@
 import { cartStore } from '@/stores/cartStore';
 
+import ProductSelect from '@components/ProductSelect';
 import { createElement } from '@utils/createElement';
 
 const Cart = () => {
@@ -52,6 +53,8 @@ const Cart = () => {
   subContainer.append(header, cartItems, cartTotal, productSelect, addToCartButton, stockStatus);
   container.appendChild(subContainer);
   root!.appendChild(container);
+
+  ProductSelect();
 
   addToCartButton.addEventListener('click', () => {
     const selectedId = productSelect.value;
