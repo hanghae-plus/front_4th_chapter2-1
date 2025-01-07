@@ -87,7 +87,7 @@ function calcCart() {
   amount = 0;
   itemCount = 0;
   const cartItems = cartItemContainer.children;
-  let subTot = 0;
+  let subTotal = 0;
   for (var i = 0; i < cartItems.length; i++) {
     (function () {
       let curItem;
@@ -101,7 +101,7 @@ function calcCart() {
       const itemTot = curItem.price * q;
       let disc = 0;
       itemCount += q;
-      subTot += itemTot;
+      subTotal += itemTot;
       if (q >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
         if (curItem.id === 'p1') {
           disc = DISCOUNT_POLICY.PRODUCT_DISCOUNTS.p1;
@@ -121,15 +121,15 @@ function calcCart() {
   let discRate = 0;
   if (itemCount >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
     const bulkDisc = amount * DISCOUNT_POLICY.BULK_DISCOUNT;
-    const itemDisc = subTot - amount;
+    const itemDisc = subTotal - amount;
     if (bulkDisc > itemDisc) {
-      amount = subTot * (1 - DISCOUNT_POLICY.BULK_DISCOUNT);
+      amount = subTotal * (1 - DISCOUNT_POLICY.BULK_DISCOUNT);
       discRate = DISCOUNT_POLICY.BULK_DISCOUNT;
     } else {
-      discRate = (subTot - amount) / subTot;
+      discRate = (subTotal - amount) / subTotal;
     }
   } else {
-    discRate = (subTot - amount) / subTot;
+    discRate = (subTotal - amount) / subTotal;
   }
   if (new Date().getDay() === 2) {
     amount *= 1 - DISCOUNT_POLICY.WEEKLY_DISCOUNT.tuesday;
