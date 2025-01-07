@@ -2,6 +2,7 @@ import { products } from './data/products';
 import { DISCOUNT_POLICY } from './features/cart/policies/discount';
 import { STOCK_POLICY } from './features/cart/policies/stock';
 import { TIMER_POLICY } from './features/cart/policies/timer';
+import { applyDiscount } from './features/cart/utils/applyDiscount';
 
 let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
 
@@ -115,15 +116,18 @@ const calcCart = () => {
           discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES.p5;
         }
       }
-      amount += itemAmount * (1 - discountRate);
+      amount += applyDiscount({ amount: itemAmount, discountRate });
     })();
   }
   let totalDiscountRate = 0;
   if (itemCount >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
-    const bulkDiscount = amount * DISCOUNT_POLICY.BULK_DISCOUNT_RATE;
+    const bulkDiscount = applyDiscount({
+      amount: subTotal,
+      discountRate: DISCOUNT_POLICY.BULK_DISCOUNT_RATE,
+    });
     const itemDiscount = subTotal - amount;
     if (bulkDiscount > itemDiscount) {
-      amount = subTotal * (1 - DISCOUNT_POLICY.BULK_DISCOUNT_RATE);
+      amount = bulkDiscount;
       totalDiscountRate = DISCOUNT_POLICY.BULK_DISCOUNT_RATE;
     } else {
       totalDiscountRate = (subTotal - amount) / subTotal;
@@ -132,7 +136,10 @@ const calcCart = () => {
     totalDiscountRate = (subTotal - amount) / subTotal;
   }
   if (new Date().getDay() === 2) {
-    amount *= 1 - DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday;
+    amount = applyDiscount({
+      amount,
+      discountRate: DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday,
+    });
     totalDiscountRate = Math.max(totalDiscountRate, DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday);
   }
   cartTotal.textContent = '총액: ' + Math.round(amount) + '원';
