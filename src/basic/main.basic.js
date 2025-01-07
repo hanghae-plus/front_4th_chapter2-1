@@ -8,7 +8,7 @@ let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
 let lastSelectedProduct,
   loyaltyPoints = 0,
   amount = 0,
-  itemCnt = 0;
+  itemCount = 0;
 
 function main() {
   const root = document.getElementById('app');
@@ -85,7 +85,7 @@ function updateSelOpts() {
 
 function calcCart() {
   amount = 0;
-  itemCnt = 0;
+  itemCount = 0;
   const cartItems = cartItemContainer.children;
   let subTot = 0;
   for (var i = 0; i < cartItems.length; i++) {
@@ -100,7 +100,7 @@ function calcCart() {
       const q = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
       const itemTot = curItem.price * q;
       let disc = 0;
-      itemCnt += q;
+      itemCount += q;
       subTot += itemTot;
       if (q >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
         if (curItem.id === 'p1') {
@@ -119,7 +119,7 @@ function calcCart() {
     })();
   }
   let discRate = 0;
-  if (itemCnt >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
+  if (itemCount >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
     const bulkDisc = amount * DISCOUNT_POLICY.BULK_DISCOUNT;
     const itemDisc = subTot - amount;
     if (bulkDisc > itemDisc) {
