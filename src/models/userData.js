@@ -7,6 +7,4 @@ const productList = [
     {id: 'p5', name: '상품5', val: 25000, q: 10 }
 ];
 
-export {
-    productList
-}
+export { productList }
