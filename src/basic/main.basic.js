@@ -4,7 +4,8 @@ import { STOCK_POLICY } from './policy/stock';
 import { TIMER_POLICY } from './policy/timer';
 
 let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
-let lastSel,
+
+let lastSelectedProduct,
   bonusPts = 0,
   totalAmt = 0,
   itemCnt = 0;
@@ -55,9 +56,9 @@ function main() {
   }, Math.random() * 10000);
   setTimeout(function () {
     setInterval(function () {
-      if (lastSel) {
+      if (lastSelectedProduct) {
         const suggest = products.find(function (item) {
-          return item.id !== lastSel && item.quantity > 0;
+          return item.id !== lastSelectedProduct && item.quantity > 0;
         });
         if (suggest) {
           alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
@@ -207,7 +208,7 @@ addToCartButton.addEventListener('click', function () {
       itemToAdd.quantity--;
     }
     calcCart();
-    lastSel = selItem;
+    lastSelectedProduct = selItem;
   }
 });
 
