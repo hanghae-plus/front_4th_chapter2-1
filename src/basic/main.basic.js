@@ -6,7 +6,7 @@ import { TIMER_POLICY } from './policy/timer';
 let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
 
 let lastSelectedProduct,
-  bonusPts = 0,
+  loyaltyPoints = 0,
   totalAmt = 0,
   itemCnt = 0;
 
@@ -147,7 +147,7 @@ function calcCart() {
 }
 
 const renderBonusPts = () => {
-  bonusPts = Math.floor(totalAmt / 1000);
+  loyaltyPoints = Math.floor(totalAmt / 1000);
   let ptsTag = document.getElementById('loyalty-points');
   if (!ptsTag) {
     ptsTag = document.createElement('span');
@@ -155,7 +155,7 @@ const renderBonusPts = () => {
     ptsTag.className = 'text-blue-500 ml-2';
     cartTotal.appendChild(ptsTag);
   }
-  ptsTag.textContent = '(포인트: ' + bonusPts + ')';
+  ptsTag.textContent = '(포인트: ' + loyaltyPoints + ')';
 };
 
 function updateStockInfo() {
