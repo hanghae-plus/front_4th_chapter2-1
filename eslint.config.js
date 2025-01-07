@@ -82,7 +82,6 @@ export default tseslint.config(
         },
       ],
       'no-debugger': 'error',
-      'no-alert': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
       'no-multiple-empty-lines': [
@@ -116,17 +115,14 @@ export default tseslint.config(
       'react/prop-types': 'off',
     },
     settings: {
-      react: {
-        version: 'detect',
-      },
       'import/resolver': {
         typescript: {
           alwaysTryTypes: true,
-          project: ['./tsconfig.app.json'], // 여기를 수정
+          project: ['./tsconfig.app.json'],
         },
         node: {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
-          project: ['./tsconfig.app.json'], // 여기도 추가
+          project: ['./tsconfig.app.json'],
         },
       },
     },

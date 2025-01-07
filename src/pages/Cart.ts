@@ -1,3 +1,5 @@
+import { cartStore } from '@/stores/cartStore';
+
 import { createElement } from '@utils/createElement';
 
 const Cart = () => {
@@ -50,6 +52,53 @@ const Cart = () => {
   subContainer.append(header, cartItems, cartTotal, productSelect, addToCartButton, stockStatus);
   container.appendChild(subContainer);
   root!.appendChild(container);
+
+  addToCartButton.addEventListener('click', () => {
+    const selectedId = productSelect.value;
+    const productList = cartStore.get('productList');
+    const itemToAdd = productList.find((p) => p.id === selectedId);
+
+    if (itemToAdd && itemToAdd.volume > 0) {
+      const item = document.getElementById(itemToAdd.id);
+
+      if (item) {
+        const span = item.querySelector('span');
+
+        if (!span?.textContent) return;
+
+        const newQty = parseInt(span.textContent.split('x ')[1]) + 1;
+
+        if (newQty <= itemToAdd.volume) {
+          item.querySelector('span')!.textContent =
+            `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQty}`;
+
+          cartStore.set(
+            'productList',
+            productList.map((p) => (p.id === selectedId ? { ...p, volume: p.volume - 1 } : p))
+          );
+        } else {
+          alert('재고가 부족합니다.');
+        }
+      } else {
+        const newItem = document.createElement('div');
+
+        newItem.id = itemToAdd.id;
+        newItem.className = 'flex justify-between items-center mb-2';
+        newItem.innerHTML =
+          `<span>${itemToAdd.name} - ${itemToAdd.price}원 x 1</span><div>` +
+          `<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>` +
+          `<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>` +
+          `<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${itemToAdd.id}">삭제</button></div>`;
+        cartItems.appendChild(newItem);
+
+        cartStore.set(
+          'productList',
+          productList.map((p) => (p.id === selectedId ? { ...p, volume: p.volume - 1 } : p))
+        );
+      }
+      cartStore.set('lastSaleItem', selectedId);
+    }
+  });
 };
 
 export default Cart;
