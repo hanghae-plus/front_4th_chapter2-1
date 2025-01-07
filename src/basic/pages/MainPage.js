@@ -1,4 +1,4 @@
-export function MainPage() {
+export default function MainPage() {
   return `
       <div id="cont" class="bg-gray-100 p-8">
         <div id="wrap class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">

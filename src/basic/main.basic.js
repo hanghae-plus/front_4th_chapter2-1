@@ -1,5 +1,6 @@
 import { CartItem, ItemOption } from "./components";
 import MainPage from "./pages/MainPage";
+import { renderToElement, appendToElement } from "./utils";
 
 /**
  * 장바구니
@@ -57,20 +58,21 @@ const calcCart = () => {
   }
 
   updateStockStatus();
-  renderBonusPts();
+  renderPoints();
 };
 
-const renderBonusPts = () => {
+const renderPoints = () => {
   const bonusPts = Math.floor(shoppingCartTotal / 1000);
   const cartTotalElem = document.querySelector("#cart-total");
   let ptsTag = document.getElementById("loyalty-points");
   if (!ptsTag) {
-    appendContent(cartTotalElem)(
+    appendToElement(
+      "#cart-total",
       `<span id="loyalty-points" class="text-blue-500 ml-2"></span>`
     );
     ptsTag = cartTotalElem.querySelector("#loyalty-points");
   }
-  renderContent(ptsTag)(`(포인트: ${bonusPts})`);
+  renderToElement("#loyalty-points", `(포인트: ${bonusPts})`);
 };
 
 const addToCartClickHandler = () => {
@@ -92,7 +94,7 @@ const addToCartClickHandler = () => {
         alert("재고가 부족합니다.");
       }
     } else {
-      appendContent(cartItems)(CartItem(itemToAdd));
+      appendToElement("#cart-items", CartItem(itemToAdd));
       itemToAdd.quantity--;
     }
     calcCart();
@@ -174,13 +176,12 @@ const makeLowStockMessage = (product) => {
 };
 
 const updateSelOpts = () => {
-  renderContent(document.querySelector("#product-select"))(
-    PRODUCTS.map(ItemOption)
-  );
+  renderToElement("#product-select", PRODUCTS.map(ItemOption).join(""));
 };
 
 const updateStockStatus = () => {
-  renderContent(document.querySelector("#stock-status"))(
+  renderToElement(
+    "#stock-status",
     PRODUCTS.filter(isLowStock).map(makeLowStockMessage).join("")
   );
 };
@@ -189,18 +190,6 @@ const updateStockStatus = () => {
  * 공통 로직
  */
 let lastSel = 0;
-
-const renderContent = (target) => {
-  return (page) => {
-    target.innerHTML = page;
-  };
-};
-
-const appendContent = (target) => {
-  return (page) => {
-    target.innerHTML += page;
-  };
-};
 
 const alertEvent = (callback, intervalMs, delayMs) => {
   setTimeout(() => {
@@ -231,8 +220,7 @@ const lastSelEvent = () => {
 };
 
 const main = () => {
-  const root = document.querySelector("#app");
-  renderContent(root)(MainPage());
+  renderToElement("#app", MainPage());
 
   updateSelOpts();
   calcCart();
