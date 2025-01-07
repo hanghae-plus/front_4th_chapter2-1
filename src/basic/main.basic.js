@@ -9,19 +9,12 @@ import { updateSelectOptions } from './components/productSelect/updateSelectOpti
 import ProductSelector from './components/productSelector/ProductSelector';
 import StockStatus from './components/stockStatus/StockStatus';
 import { CONSTANTS } from './constants';
+import { ProductStore } from './store/productStore';
 import { helper } from './utils/helper';
 
-let products, lastSelectedItem;
+let lastSelectedItem;
 
 function main() {
-  products = [
-    { id: 'p1', name: '상품1', price: 10_000, quantity: 50 },
-    { id: 'p2', name: '상품2', price: 20_000, quantity: 30 },
-    { id: 'p3', name: '상품3', price: 30_000, quantity: 20 },
-    { id: 'p4', name: '상품4', price: 15_000, quantity: 0 },
-    { id: 'p5', name: '상품5', price: 25_000, quantity: 10 },
-  ];
-
   const contentWrapper = ContentWrapper();
 
   contentWrapper.appendChild(Header({ title: '장바구니' }));
@@ -36,6 +29,9 @@ function main() {
 
   const root = document.getElementById('app');
   root.appendChild(containerDiv);
+
+  const productStore = ProductStore.getInstance();
+  const products = productStore.getState().products;
 
   updateSelectOptions(products);
   renderCalculateCart(products);
@@ -82,6 +78,9 @@ const addToCartButton = document.getElementById('add-to-cart');
 addToCartButton.addEventListener('click', function () {
   const productSelector = document.getElementById('product-select');
   const selectedItem = productSelector.value;
+
+  const productStore = ProductStore.getInstance();
+  const products = productStore.getState().products;
   const productToAdd = products.find(function (p) {
     return p.id === selectedItem;
   });
@@ -143,6 +142,9 @@ cart.addEventListener('click', function (event) {
   ) {
     const productId = targetElement.dataset.productId;
     const cartProductElement = document.getElementById(productId);
+
+    const productStore = ProductStore.getInstance();
+    const products = productStore.getState().products;
     const selectedProduct = products.find(function (product) {
       return product.id === productId;
     });
