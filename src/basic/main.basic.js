@@ -21,6 +21,7 @@
  * - 파일 이동, 변경
  */
 
+import { renderStockStatus } from './renders/stockStatus';
 import { PRODUCT_LIST } from './store/productList';
 
 function renderCartTotal({ cartItems }) {
@@ -147,8 +148,8 @@ export default function main() {
         product.stock += cartItem.quantity;
         CART_ITEMS = CART_ITEMS.filter((item) => item.id !== productId);
       }
-      renderCartTotal(CART_ITEMS);
-      renderStockStatusElement();
+      renderCartTotal({ cartItems: CART_ITEMS });
+      renderStockStatus({ productList: PRODUCT_LIST });
     }
   });
 
@@ -216,8 +217,8 @@ export default function main() {
         $cartItems.appendChild($newCartItem);
         selectedProduct.stock--;
       }
-      renderCartTotal(CART_ITEMS);
-      renderStockStatusElement();
+      renderCartTotal({ cartItems: CART_ITEMS });
+      renderStockStatus({ productList: PRODUCT_LIST });
       lastSelectedProductId = selectedProductId;
     }
   });
@@ -244,8 +245,8 @@ export default function main() {
   $root.appendChild($container);
 
   renderProductSelectOptionElement();
-  renderCartTotal(CART_ITEMS);
-  renderStockStatusElement();
+  renderCartTotal({ cartItems: CART_ITEMS });
+  renderStockStatus({ productList: PRODUCT_LIST });
   setTimeout(function () {
     setInterval(function () {
       const luckyItem =
