@@ -1,4 +1,7 @@
 import renderBonusPoints from './features/bonus-points/ui.js';
+import { isOutOfStock, isOutOfStockRange } from './entities/stock/model.js';
+import { updateStockInformation } from './features/stock-status/ui.js';
+import { STOCK } from './shared/lib/stock/config.js';
 
 let products,
   selectProductElement,
@@ -10,11 +13,6 @@ let selectedProductId;
 
 const hasClass = (element, className) => element.classList.contains(className);
 const getProduct = (productList, id) => productList.find((p) => p.id === id);
-
-const STOCK = Object.freeze({
-  LOW: 5,
-  EMPTY: 0,
-});
 
 const DISCOUNT = Object.freeze({
   NONE: 0,
@@ -40,20 +38,6 @@ const SUGGEST_EVENT = Object.freeze({
   TIMEOUT_DELAY: 20000,
   INTERVAL_DELAY: 60000,
 });
-
-const isLowStock = (item) => item.quantity < STOCK.LOW;
-const isOutOfStock = (item) => item.quantity <= STOCK.EMPTY;
-const isOutOfStockRange = (newQty, qty) =>
-  newQty <= STOCK.EMPTY || newQty > qty;
-
-const getStockStatusMessage = (item) =>
-  isOutOfStock(item) ? '품절' : `재고 부족 (${item.quantity}개 남음)`;
-
-const formatItemStockDisplay = (item) =>
-  `${item.name}: ${getStockStatusMessage(item)}\n`;
-
-const updateStockInfo = (prodList) =>
-  prodList.filter(isLowStock).map(formatItemStockDisplay).join('');
 
 const getOptionsMessage = (product) => `${product.name} - ${product.price}원`;
 const updateSelectedOptions = (parentElement, prodList) => {
@@ -166,7 +150,7 @@ function calculateCart() {
     appendChild(totalCartAmountElement, span);
   }
 
-  stockStatusElement.textContent = updateStockInfo(products);
+  stockStatusElement.textContent = updateStockInformation(products);
   renderBonusPoints(totalAmount, totalCartAmountElement);
 }
 
