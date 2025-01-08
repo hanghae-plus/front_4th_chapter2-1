@@ -28,7 +28,7 @@ function main() {
 
 // 상품 목록
 const productList = [
-  { id: 'p1', name: '상품1', value: 10000, stock: 50 },
+  { id: 'p1', name: '상품1', value: 10000, stock: 10 },
   { id: 'p2', name: '상품2', value: 20000, stock: 30 },
   { id: 'p3', name: '상품3', value: 30000, stock: 20 },
   { id: 'p4', name: '상품4', value: 15000, stock: 0 },
@@ -52,8 +52,72 @@ function updateSelectOptions() {
   })
 }
 
+/**
+ * 장바구니 추가 이벤트 핸들러
+ */
 function handleAddToCart() {
-  console.log('click')
+  // 상품 선택 select 요소
+  const $productSelect = document.getElementById('product-select')
+
+  // 선택한 상품 정보
+  const selectedProduct = [...productList].find(
+    (product) => product.id === $productSelect.value,
+  )
+
+  // 현재 장바구니에 담긴 수량 확인
+  const cartItem = document.getElementById(selectedProduct.id)
+  const currentQuantity = cartItem
+    ? parseInt(cartItem.querySelector('span').textContent.split('x ')[1])
+    : 0
+
+  // 사용 가능한 총 수량 체크 (현재 재고 + 장바구니 수량)
+  const availableQuantity = selectedProduct?.stock + currentQuantity
+
+  if (selectedProduct && availableQuantity > 0) {
+    const cartItem = document.getElementById(selectedProduct.id)
+
+    if (cartItem) {
+      // 현재 선택 상품 수량 + 1
+      const [_, quantity] = cartItem
+        .querySelector('span')
+        .textContent.split('x ')
+      const currentQuantity = parseInt(quantity)
+      const newQuantity = currentQuantity + 1
+
+      // 상품 수량이 재고보다 작거나 같은 경우 수량 업데이트
+      if (newQuantity <= selectedProduct.stock + currentQuantity) {
+        cartItem.querySelector('span').textContent =
+          `${selectedProduct.name} - ${selectedProduct.value}원 x ${newQuantity}`
+        selectedProduct.stock--
+      } else {
+        // 재고가 부족한 경우 알림
+        alert('재고가 부족합니다.')
+      }
+    } else {
+      // 장바구니에 상품이 없는 경우 새로운 장바구니 아이템 생성
+      const newItem = document.createElement('div')
+      const cartItems = document.getElementById('cart-items')
+      newItem.id = selectedProduct.id
+      newItem.className = 'flex justify-between items-center mb-2'
+      newItem.innerHTML = `
+        <span>
+          ${selectedProduct.name} - ${selectedProduct.value}원 x 1
+        </span>
+        <div>
+          <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${selectedProduct.id}" data-change="-1">
+            -
+          </button>
+          <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${selectedProduct.id}" data-change="1">
+            +
+          </button>
+          <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${selectedProduct.id}">
+            삭제
+          </button>
+        </div>`
+      cartItems.appendChild(newItem)
+      selectedProduct.stock -= 1
+    }
+  }
 }
 
 /**
