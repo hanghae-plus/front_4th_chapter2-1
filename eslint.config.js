@@ -1,5 +1,5 @@
 import eslint from '@eslint/js';
-import eslintPluginImport from 'eslint-plugin-import';
+import * as eslintPluginImport from 'eslint-plugin-import';
 import prettier from 'eslint-plugin-prettier';
 import promise from 'eslint-plugin-promise';
 import security from 'eslint-plugin-security';
