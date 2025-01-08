@@ -1,7 +1,7 @@
 import { CartItem } from '../components/Cart.js';
 import { productData } from '../data/data.js';
+import { calculateDiscounts } from './discountLogic.js';
 
-//함수 모음
 //상품 목록 업데이트
 export const updateSelectedOptions = (selectedOptions) => {
   //stock-status 업데이트
@@ -16,65 +16,12 @@ export const updateSelectedOptions = (selectedOptions) => {
   });
 };
 
-// 할인율 계산
-const calculateDiscounts = (items) => {
-  const result = {
-    totalAmount: 0,
-    originalTotal: 0,
-    itemCount: 0,
-    discountRate: 0
-  };
-
-  // 개별 상품 계산
-  items.forEach(({ item, selectedQuantity }) => {
-    const productTotal = item.price * selectedQuantity;
-
-    result.itemCount += selectedQuantity;
-    result.originalTotal += productTotal;
-
-    // 수량 할인 계산
-    let discount = 0;
-    if (selectedQuantity >= 10) {
-      const discountRates = {
-        p1: 0.1,
-        p2: 0.15,
-        p3: 0.2,
-        p4: 0.05,
-        p5: 0.25
-      };
-      discount = discountRates[item.id] || 0;
-    }
-    result.totalAmount += productTotal * (1 - discount);
-    result.discountRate = discount;
-  });
-
-  // 대량 구매 할인 적용
-  if (result.itemCount >= 30) {
-    const bulkDiscount = result.originalTotal * 0.25;
-    const itemDiscount = result.originalTotal - result.totalAmount;
-
-    if (bulkDiscount > itemDiscount) {
-      result.totalAmount = result.originalTotal * 0.75;
-      result.discountRate = 0.25;
-    } else {
-      result.discountRate =
-        (result.originalTotal - result.totalAmount) / result.originalTotal;
-    }
-  }
-
-  // 화요일 할인 적용
-  if (new Date().getDay() === 2) {
-    result.totalAmount *= 0.9;
-    result.discountRate = Math.max(result.discountRate, 0.1);
-  }
-
-  return result;
-};
-
 // UI 렌더링과 연동되는 부분
 export const calculateCart = () => {
   const cartItems = document.getElementById('cart-items');
-  const totalSum = document.getElementById('cart-total');
+  const totalSum = document.querySelector('#cart-total span');
+  const pointDisplay = document.getElementById('loyalty-points');
+
   // DOM에서 필요한 데이터 추출
   const items = Array.from(cartItems.children)
     .map((cartItem) => {
@@ -93,6 +40,9 @@ export const calculateCart = () => {
 
   // UI 업데이트
   totalSum.textContent = `총액: ${Math.round(result.totalAmount)}원`;
+  pointDisplay.textContent = `(포인트: ${Math.floor(
+    result.totalAmount * 0.001
+  )})`;
 
   if (result.discountRate > 0) {
     const discountSpan = document.createElement('span');
@@ -100,23 +50,8 @@ export const calculateCart = () => {
     discountSpan.textContent = `(${(result.discountRate * 100).toFixed(
       1
     )}% 할인 적용)`;
-    totalSum.appendChild(discountSpan);
+    totalSum.parentElement.appendChild(discountSpan);
   }
-
-  renderBonusPoints(totalSum, result.totalAmount);
-};
-
-//포인트 계산 렌더링
-export const renderBonusPoints = (sum, totalAmount) => {
-  const bonusPoints = Math.floor(totalAmount / 1000);
-  let loyaltyPoints = document.getElementById('loyalty-points');
-  if (!loyaltyPoints) {
-    loyaltyPoints = document.createElement('span');
-    loyaltyPoints.id = 'loyalty-points';
-    loyaltyPoints.className = 'text-blue-500 ml-2';
-    sum.appendChild(loyaltyPoints);
-  }
-  loyaltyPoints.textContent = '(포인트: ' + bonusPoints + ')';
 };
 
 //재고 상태 업데이트
@@ -137,11 +72,12 @@ export const updateStockInfo = (stockInfo) => {
 };
 
 //상품 추가 기능
-export const addToCart = (cartItems, selectedOptions) => {
-  const selectedItem = selectedOptions.value;
-  const itemToAdd = productData.find((p) => p.id === selectedItem);
-
+export const addToCart = () => {
   try {
+    const cartItems = document.getElementById('cart-items');
+    const selectedItem = document.getElementById('product-select').value;
+    const itemToAdd = productData.find((p) => p.id === selectedItem);
+
     if (itemToAdd && itemToAdd.quantity > 0) {
       let existingItem = document.getElementById(itemToAdd.id);
 
@@ -167,7 +103,6 @@ export const addToCart = (cartItems, selectedOptions) => {
       }
       return true;
     }
-
     return false;
   } finally {
     calculateCart();
@@ -258,6 +193,7 @@ export const initializeCartEvents = (cartItems, sum) => {
         handleCartItemDelete(productId);
       }
     }
+    calculateCart();
   });
 };
 
@@ -271,7 +207,7 @@ export const updateCartItemQuantity = (itemId, isIncrease) => {
   const product = productData.find((p) => p.id === itemId);
   if (!product) return;
 
-  // 재고 관� 체크
+  // 재고 관련 체크
   if (isIncrease) {
     if (product.quantity <= 0) {
       alert('재고가 부족합니다.');

@@ -3,7 +3,7 @@ import {
   addToCart,
   handleCartItemDelete,
   updateCartItemQuantity
-} from '../logic/logic.js';
+} from '../logic/cartLogic.js';
 
 export const CartHeader = () => {
   return createElement('h1', {
@@ -13,19 +13,35 @@ export const CartHeader = () => {
 };
 
 export const CartItems = () => {
-  const cartItems = createElement('div', {
+  return createElement('div', {
     id: 'cart-items'
   });
+};
 
-  return cartItems;
+export const DisplayPoint = () => {
+  return createElement('span', {
+    id: 'loyalty-points',
+    className: 'text-blue-500 ml-2',
+    textContent: '(포인트: 0)'
+  });
 };
 
 export const CartTotal = () => {
-  return createElement('div', {
+  const container = createElement('div', {
     id: 'cart-total',
-    className: 'text-xl font-bold my-4',
-    textContent: '총액: 0원(포인트: 0)'
+    className: 'text-xl font-bold my-4'
   });
+
+  const totalText = createElement('span', {
+    textContent: '총액: 0원'
+  });
+  const pointDisplay = DisplayPoint();
+
+  console.log('111', pointDisplay);
+
+  container.append(totalText, pointDisplay);
+  console.log('222', container);
+  return container;
 };
 
 export const QuantityButton = (itemId, isIncrease, label) => {
@@ -75,10 +91,6 @@ export const AddToCartButton = () => {
     id: 'add-to-cart',
     className: 'bg-blue-500 text-white px-4 py-2 rounded',
     textContent: '추가',
-    onclick: () => {
-      const selectedOptions = document.getElementById('product-select');
-      const cartItems = document.getElementById('cart-items');
-      addToCart(cartItems, selectedOptions);
-    }
+    onclick: () => addToCart()
   });
 };
