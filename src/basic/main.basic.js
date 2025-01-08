@@ -1,4 +1,10 @@
-import { CartItem, ItemOption, Points } from "./components";
+import {
+  CartItem,
+  CartTotalPrice,
+  DiscountRate,
+  ItemOption,
+  Points,
+} from "./components";
 import MainPage from "./pages/MainPage";
 import {
   renderToElement,
@@ -18,7 +24,7 @@ const calcCart = () => {
   shoppingCartTotal = 0;
   let itemCnt = 0;
   let subTot = 0;
-  let discRate = 0;
+  let discountRate = 0;
 
   [...document.querySelector("#cart-items").children].forEach((item) => {
     const curItem = PRODUCTS.find((prod) => prod.id === item.id);
@@ -40,28 +46,23 @@ const calcCart = () => {
     const itemDisc = subTot - shoppingCartTotal;
     if (bulkDisc > itemDisc) {
       shoppingCartTotal = subTot * (1 - 0.25);
-      discRate = 0.25;
+      discountRate = 0.25;
     } else {
-      discRate = (subTot - shoppingCartTotal) / subTot;
+      discountRate = (subTot - shoppingCartTotal) / subTot;
     }
   } else {
-    discRate = (subTot - shoppingCartTotal) / subTot;
+    discountRate = (subTot - shoppingCartTotal) / subTot;
   }
 
   if (new Date().getDay() === 2) {
     shoppingCartTotal *= 1 - 0.1;
-    discRate = Math.max(discRate, 0.1);
+    discountRate = Math.max(discountRate, 0.1);
   }
 
-  renderToElement("#cart-total", `총액: ${Math.round(shoppingCartTotal)}원`);
+  renderToElement("#cart-total", CartTotalPrice(shoppingCartTotal));
 
-  if (discRate > 0) {
-    appendToElement(
-      "#cart-total",
-      `<span class="text-green-500 ml-2">(${(discRate * 100).toFixed(
-        1
-      )}% 할인 적용)</span>`
-    );
+  if (discountRate > 0) {
+    appendToElement("#cart-total", DiscountRate(discountRate));
   }
 
   updateStockStatus();
@@ -75,7 +76,6 @@ const renderPoints = () => {
 
 const addToCartClickHandler = () => {
   const sel = document.querySelector("#product-select");
-  const cartItems = document.querySelector("#cart-items");
   const selItem = sel.value;
   const itemToAdd = PRODUCTS.find((p) => p.id === selItem);
 
