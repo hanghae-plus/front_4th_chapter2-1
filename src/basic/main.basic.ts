@@ -7,10 +7,10 @@ function main() {
   const $root = document.getElementById("app") as HTMLDivElement;
 
   if (!$root.firstChild) {
-    $root.innerHTML = CartPage().trim();
+    $root.innerHTML = CartPage();
   } else {
     const $template = document.createElement("template");
-    $template.innerHTML = CartPage().trim();
+    $template.innerHTML = CartPage();
     updateElement(
       $root,
       $root.firstChild as HTMLElement,
