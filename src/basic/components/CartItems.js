@@ -1,11 +1,8 @@
-import { createCartItemElement } from './cartItem';
-import { renderCartTotal } from './cartTotal';
-import { renderStockStatus } from './stockStatus';
+import { createCartItemElement } from '../renders/cartItem';
+import { renderCartTotal } from '../renders/cartTotal';
+import { renderStockStatus } from '../renders/stockStatus';
 
-export const createCartItemsElement = ({ cartItems, productList }) => {
-  const $cartItems = document.createElement('div');
-  $cartItems.id = 'cart-items';
-
+export const CartItems = ({ cartItems, productList }) => {
   document.getElementById('app').addEventListener('click', (event) => {
     const $targetElement = event.target;
     if (
@@ -60,14 +57,20 @@ export const createCartItemsElement = ({ cartItems, productList }) => {
     }
   });
 
-  return $cartItems;
+  return `
+    <div id="cart-items">${[...cartItems]
+      .map((cartItem) => {
+        return createCartItemElement({ cartItem }).outerHTML;
+      })
+      .join('')}</div>
+  `;
 };
 
-export const renderCartItems = ({ cartItems }) => {
+const renderCartItems = ({ cartItems }) => {
   const $cartItems = document.getElementById('cart-items');
   $cartItems.innerHTML = '';
 
-  cartItems.forEach((cartItem) => {
+  [...cartItems].forEach((cartItem) => {
     const $cartItem = createCartItemElement({ cartItem });
     $cartItems.appendChild($cartItem);
   });

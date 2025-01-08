@@ -1,6 +1,6 @@
+import { CartItems } from './CartItems';
 import { Header } from './Header';
 import { createAddButtonElement } from '../renders/addButton';
-import { createCartItemsElement } from '../renders/cartItems';
 import { createCartTotalElement } from '../renders/cartTotal';
 import { createProductSelectElement } from '../renders/productSelect';
 import { createStockStatusElement } from '../renders/stockStatus';
@@ -19,12 +19,7 @@ export const Wrap = () => {
   return `
     <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
       ${Header()}
-      ${
-        createCartItemsElement({
-          cartItems: CART_ITEMS,
-          productList: PRODUCT_LIST,
-        }).outerHTML
-      }
+      ${CartItems({ cartItems: CART_ITEMS, productList: PRODUCT_LIST })}
       ${createCartTotalElement().outerHTML}
       ${createProductSelectElement().outerHTML}
       ${
