@@ -7,10 +7,16 @@ import {
   CartItem,
 } from "../components/Cart";
 import { cartStore, productStore } from "../store";
+import { combineStyles } from "../utils";
 
 export const Cart = () => {
+  // Q. return 될 때 리터럴, DOM 노드를 반환 어느 것을 선택해야할까 ?
+  // 이론상 리터럷 방식은 XSS에 취약하고, 파싱같은이유로 DOM 조작보다 느린것으로 알고 있는데
+  // 어떤것을 선택해야할지 질문이 필요할 것 같다.
+
   const $cartContainer = document.createElement("div");
-  $cartContainer.className = "bg-gray-100 p-8";
+  const cartContainerStyles = combineStyles("bg-gray-100 p-8");
+  $cartContainer.className = cartContainerStyles;
 
   const $cartWrapper = document.createElement("div");
   $cartWrapper.className =
