@@ -1,3 +1,6 @@
+import { getDiscountRate } from './shared/actions/getDiscountRate';
+import { DISCOUNT_RATE } from './shared/constant/discountRate';
+
 let productList,
   SelectView,
   AddToCartButton,
@@ -110,11 +113,8 @@ function calculateCartItems() {
       itemCount += q;
       subTotalPrice += itemTotalPrice;
       if (q >= 10) {
-        if (currentItem.id === 'p1') discountRate = 0.1;
-        else if (currentItem.id === 'p2') discountRate = 0.15;
-        else if (currentItem.id === 'p3') discountRate = 0.2;
-        else if (currentItem.id === 'p4') discountRate = 0.05;
-        else if (currentItem.id === 'p5') discountRate = 0.25;
+        if (DISCOUNT_RATE[currentItem.id])
+          discountRate = getDiscountRate(currentItem.id);
       }
       totalAmount += itemTotalPrice * (1 - discountRate);
     })();
