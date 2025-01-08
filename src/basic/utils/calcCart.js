@@ -1,6 +1,3 @@
-import Point from '../components/Point';
-import StockInfo from '../components/StockInfo';
-import Total from '../components/Total';
 import { state } from '../store/globalStore';
 
 const BULK_AMOUNT = 30;
@@ -12,21 +9,17 @@ function calcCart() {
   let totalAmt = 0;
   let itemCnt = 0;
 
-  const cartDisp = document.getElementById('cart-items');
+  const cartList = state.get('cartList');
 
   let totalAmtBeforeDisc = 0;
   let discRate = 0;
 
-  const cartItems = Array.from(cartDisp.children);
-
-  cartItems.forEach((cartItem) => {
+  cartList.forEach((cartItem) => {
     const currentItem = findProductById(cartItem.id);
     if (!currentItem) return;
 
-    const quantity = parseInt(
-      cartItem.querySelector('span').textContent.split('x ')[1],
-      10
-    );
+    const quantity = cartItem.volume;
+
     const itemTotal = currentItem.price * quantity;
     const discountRate = getDiscountRate(currentItem.id, quantity);
 
@@ -35,15 +28,17 @@ function calcCart() {
     totalAmtBeforeDisc += itemTotal;
   });
 
-  discRate = applyBulkDiscount(totalAmt, itemCnt, totalAmtBeforeDisc, discRate);
+  ({ totalAmt, discRate } = applyBulkDiscount(
+    totalAmt,
+    itemCnt,
+    totalAmtBeforeDisc,
+    discRate
+  ));
   ({ totalAmt, discRate } = applySpecialdayDiscount(totalAmt, discRate));
 
   state.set('totalAmt', totalAmt);
   state.set('itemCnt', itemCnt);
-
-  Total(totalAmt, discRate);
-  StockInfo();
-  Point();
+  state.set('discountRate', discRate);
 }
 
 const findProductById = (productId) => {
@@ -67,7 +62,7 @@ const getDiscountRate = (productId, quantity) => {
 };
 
 const applyBulkDiscount = (totalAmt, itemCnt, totalAmtBeforeDisc, discRate) => {
-  if (totalAmtBeforeDisc === 0) return 0;
+  if (totalAmtBeforeDisc === 0) return { totalAmt, discRate };
 
   const calDefaultDiscRate = () =>
     (totalAmtBeforeDisc - totalAmt) / totalAmtBeforeDisc;
@@ -78,11 +73,15 @@ const applyBulkDiscount = (totalAmt, itemCnt, totalAmtBeforeDisc, discRate) => {
 
     if (bulkDiscountAmount > currentDiscountAmount) {
       totalAmt = totalAmtBeforeDisc * (1 - BULK_DISCOUNT_RATE);
-      return BULK_DISCOUNT_RATE;
+      discRate = BULK_DISCOUNT_RATE;
+    } else {
+      discRate = calDefaultDiscRate();
     }
+  } else {
+    discRate = calDefaultDiscRate();
   }
 
-  return calDefaultDiscRate();
+  return { totalAmt, discRate };
 };
 
 const applySpecialdayDiscount = (totalAmt, discRate) => {
