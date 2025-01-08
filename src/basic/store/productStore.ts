@@ -8,11 +8,12 @@ export interface Product {
 }
 
 interface State {
-  productList: Product[] | null;
+  productList: Product[];
 }
 
 interface Actions {
-  getProductList: () => Product[] | null;
+  getProductList: () => Product[];
+  getProductItem: (id: string) => Product | undefined;
   decreaseQ: (id: string) => void;
   increaseQ: (id: string) => void;
 }
@@ -30,6 +31,9 @@ export const ProductStore = createStore<State, Actions>(
   (state, notify) => ({
     getProductList: () => {
       return state.productList;
+    },
+    getProductItem: (id: string) => {
+      return state.productList.find((item) => item.id === id);
     },
     decreaseQ: (id: string) => {
       const newProductList = state.productList?.map((item) => (item.id === id ? { ...item, q: item.q - 1 } : item));

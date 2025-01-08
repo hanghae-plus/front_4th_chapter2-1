@@ -14,7 +14,7 @@ export const ProductSelector = () => {
   addEventListener('click', function (event: MouseEvent) {
     // addBtn 클릭인지 확인해야함
 
-    if (!(event.target instanceof HTMLButtonElement) || event.target.id !== 'add-cart') return;
+    if (!(event.target instanceof HTMLButtonElement) || event.target.id !== 'add-to-cart') return;
 
     const select = document.getElementById('product-select') as HTMLSelectElement;
 
