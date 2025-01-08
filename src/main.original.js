@@ -1,5 +1,5 @@
 /**
- * 상수 정의 - 보존
+ * 상수 정의
  */
 const PRODUCT_DISCOUNTS = {
   p1: 0.1,
@@ -9,7 +9,6 @@ const PRODUCT_DISCOUNTS = {
   p5: 0.25,
 };
 
-// 기존 상수들 유지
 const BULK_PURCHASE_THRESHOLD = 30;
 const BULK_PURCHASE_DISCOUNT_RATE = 0.25;
 const PROMOTION_CONFIG = {
@@ -72,8 +71,14 @@ const DiscountManager = {
       : currentRate;
   },
 
+  getCurrentDay() {
+    return new Date().getDay();
+  },
+
   applyWeekdayDiscount(currentRate) {
-    return new Date().getDay() === 2 ? Math.max(0.1, currentRate) : currentRate;
+    return this.getCurrentDay() === 2
+      ? Math.max(0.1, currentRate)
+      : currentRate;
   },
 
   calculateTotalDiscount(subTotal, totalAmount, itemCount) {
@@ -109,7 +114,7 @@ const CartManager = {
         }
 
         // 화요일 할인 (10%)
-        if (new Date().getDay() === 2) {
+        if (DiscountManager.getCurrentDay() === 2) {
           discount = Math.max(discount, 0.1);
         }
 
@@ -126,8 +131,7 @@ const CartManager = {
     );
 
     this.state.itemCount = result.itemCount;
-    // 할인 전 금액의 1%를 포인트로 적립
-    this.state.bonusPoints = Math.floor(result.subTotal / 100);
+    this.state.bonusPoints = Math.floor(result.subTotal / 1000);
 
     return result;
   },
@@ -146,6 +150,9 @@ const DOMManager = {
     loyaltyPoints: null,
     stockStatus: null,
   },
+
+  // 재고 상태 캐시 추가
+  _stockCache: new Map(),
 
   initialize() {
     // 기본 HTML 구조 생성
@@ -177,27 +184,68 @@ const DOMManager = {
     };
   },
 
+  // 상품 선택 목록 업데이트 최적화
   updateProductSelect() {
     const select = this.elements.productSelect;
-    select.innerHTML = ProductManager.availableProducts
-      .map(
-        (product) =>
-          `<option value="${product.id}"${
-            product.stock <= 0 ? " disabled" : ""
-          }>${product.name} - ${product.price}원</option>`
-      )
-      .join("");
+    if (!select) return;
+
+    const fragment = document.createDocumentFragment();
+
+    ProductManager.availableProducts.forEach((product) => {
+      const option = document.createElement("option");
+      option.value = product.id;
+      option.textContent = `${product.name} - ${product.price}원`;
+      option.disabled = product.stock <= 0;
+      fragment.appendChild(option);
+    });
+
+    // 기존 옵션을 한 번에 교체
+    select.innerHTML = "";
+    select.appendChild(fragment);
   },
 
+  // 전체 재고 상태 표시 최적화
   updateStockDisplay() {
-    this.elements.stockStatus.innerHTML = ProductManager.availableProducts
-      .map(
-        (product) =>
-          `${product.name}: ${
-            product.stock > 0 ? `${product.stock}개` : "품절"
-          }`
-      )
-      .join("<br>");
+    const fragment = document.createDocumentFragment();
+    const stockContainer = this.elements.stockStatus;
+
+    ProductManager.availableProducts.forEach((product) => {
+      const stockText = product.stock > 0 ? `${product.stock}개` : "품절";
+      const div = document.createElement("div");
+      div.setAttribute("data-product-id", product.id);
+      div.textContent = `${product.name}: ${stockText}`;
+      fragment.appendChild(div);
+
+      // 캐시 업데이트
+      this._stockCache.set(product.id, product.stock);
+    });
+
+    // 기존 내용을 한 번에 교체
+    stockContainer.innerHTML = "";
+    stockContainer.appendChild(fragment);
+  },
+
+  // 개별 상품 재고 업데이트
+  updateProductStock(productId) {
+    const product = ProductManager.findProduct(productId);
+    if (!product) return;
+
+    // 캐시된 재고 상태와 비교해서 없으면 스킵하도록
+    const cachedStock = this._stockCache.get(productId);
+    if (cachedStock === product.stock) return; 
+
+    const stockElement = this.elements.stockStatus.querySelector(
+      `[data-product-id="${productId}"]`
+    );
+
+    if (stockElement) {
+      const stockText = product.stock > 0 ? `${product.stock}개` : "품절";
+      if (stockElement.lastStockText !== stockText) {
+        stockElement.textContent = `${product.name}: ${stockText}`;
+        stockElement.lastStockText = stockText;
+        this._stockCache.set(productId, product.stock);
+      }
+    }
   },
 
   createCartItem(product, quantity = 1) {
@@ -243,7 +291,7 @@ const EventHandler = {
           DOMManager.createCartItem(product)
         );
         this.updateDisplays();
-        CartManager.state.lastSelectedProduct = productId; // 마지막 선택 상품 업데이트
+        CartManager.state.lastSelectedProduct = productId;
       }
     }
   },
@@ -253,10 +301,10 @@ const EventHandler = {
     if (target.classList.contains("quantity-change")) {
       const item = target.closest(".cart-item");
       const change = parseInt(target.dataset.change);
-      EventHandler.handleQuantityChange(item, change);
+      this.handleQuantityChange(item, change);
     } else if (target.classList.contains("remove-item")) {
       const item = target.closest(".cart-item");
-      EventHandler.handleRemoveItem(item);
+      this.handleRemoveItem(item);
     }
   },
 
@@ -304,11 +352,7 @@ const EventHandler = {
     );
 
     const totals = CartManager.calculateTotals(cartItems);
-    const points = Math.floor(totals.totalAmount / 1000); // 0.1% 포인트 계산
-
-    console.log("totals.totalAmount", totals.totalAmount);
-    console.log("totals.totalAmount?", Math.round(totals.totalAmount));
-    console.log(points);
+    const points = Math.floor(totals.totalAmount / 1000);
 
     let displayText = `총액: ${Math.round(totals.totalAmount)}원`;
     if (totals.discount > 0) {
@@ -318,7 +362,7 @@ const EventHandler = {
 
     DOMManager.elements.cartTotal.textContent = displayText;
     DOMManager.elements.loyaltyPoints.textContent = `(포인트: ${points})`;
-    DOMManager.updateStockDisplay();
+    DOMManager.updateProductStock(CartManager.state.lastSelectedProduct);
   },
 };
 
@@ -331,6 +375,7 @@ const PromotionManager = {
     this.setupRecommendation();
   },
 
+  // 번개세일 프로모션
   setupFlashSale() {
     const config = PROMOTION_CONFIG.FLASH_SALE;
     setTimeout(() => {
@@ -350,6 +395,7 @@ const PromotionManager = {
     }, config.INITIAL_DELAY);
   },
 
+  // 추천 프로모션
   setupRecommendation() {
     const config = PROMOTION_CONFIG.RECOMMENDATION;
     setTimeout(() => {
@@ -374,10 +420,8 @@ const PromotionManager = {
 
 // 애플리케이션 초기화
 function main() {
-  // 먼저 ProductManager 초기화
   ProductManager.initialize();
 
-  // DOM이 모두 로드된 후 실행
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       DOMManager.initialize();
