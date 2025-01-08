@@ -1,11 +1,8 @@
-import renderBonusPoints from './features/bonus-points/ui.js';
 import { isOutOfStock, isOutOfStockRange } from './entities/stock/model.js';
-import { updateStockInformation } from './features/stock-status/ui.js';
 import { STOCK } from './shared/lib/stock/config.js';
 import { updateSelectedOptions } from './features/product-select/ui.js';
-import { CRITERIA, DISCOUNT } from './entities/discount/config.js';
-import { isTuesday } from './shared/lib/date/index.js';
-import { getDiscount } from './entities/discount/model.js';
+import { DISCOUNT } from './entities/discount/config.js';
+import { renderCart } from './features/cart-total/ui.js';
 
 let products,
   selectProductElement,
@@ -18,20 +15,6 @@ let selectedProductId;
 const hasClass = (element, className) => element.classList.contains(className);
 const getProduct = (productList, id) => productList.find((p) => p.id === id);
 
-const DISCOUNT = Object.freeze({
-  NONE: 0,
-  FIVE_PERCENT: 0.05,
-  TEN_PERCENT: 0.1,
-  FIFTEEN_PERCENT: 0.15,
-  TWENTY_PERCENT: 0.2,
-  QUARTER: 0.25,
-});
-
-const CRITERIA = Object.freeze({
-  DISCOUNT: 10,
-  BULK: 30,
-});
-
 const ENABLE_EVENT_THRESHOLD = Object.freeze(0.3);
 const LUCKY_EVENT = Object.freeze({
   TIMEOUT_DELAY: 10000,
@@ -41,93 +24,6 @@ const SUGGEST_EVENT = Object.freeze({
   TIMEOUT_DELAY: 20000,
   INTERVAL_DELAY: 60000,
 });
-
-const discountRateMessage = (discountRate) =>
-  `(${(discountRate * 100).toFixed(1)}% 할인 적용)`;
-const totalPriceMessage = (totalAmount) => `총액: ${Math.round(totalAmount)}원`;
-
-const getDiscountRate = (itemCount, totalAmount, subTotal) => {
-  let discountRate = 0;
-  if (itemCount >= CRITERIA.BULK) {
-    const bulkDiscount = totalAmount * DISCOUNT.QUARTER;
-    const productDiscount = subTotal - totalAmount;
-
-    if (bulkDiscount > productDiscount) {
-      discountRate = DISCOUNT.QUARTER;
-    } else {
-      discountRate = (subTotal - totalAmount) / subTotal;
-    }
-  } else {
-    discountRate = (subTotal - totalAmount) / subTotal;
-  }
-
-  if (isTuesday()) {
-    discountRate = Math.max(discountRate, DISCOUNT.TEN_PERCENT);
-  }
-  return discountRate;
-};
-
-const getTotalAmount = (itemCount, totalAmount, subTotal) => {
-  let amount = totalAmount;
-  if (itemCount >= CRITERIA.BULK) {
-    const bulkDiscount = totalAmount * DISCOUNT.QUARTER;
-    const productDiscount = subTotal - totalAmount;
-
-    if (bulkDiscount > productDiscount) {
-      amount = subTotal * (1 - DISCOUNT.QUARTER);
-    }
-  }
-  if (isTuesday()) {
-    amount *= 1 - DISCOUNT.TEN_PERCENT;
-  }
-  return amount;
-};
-
-const calculateProductValues = (product, cartItem) => {
-  const [, quantityStr] = cartItem
-    .querySelector('span')
-    .textContent.split('x ');
-  const quantity = parseInt(quantityStr);
-  const productAmount = product.price * quantity;
-  const discount = getDiscount(product.id, quantity >= CRITERIA.DISCOUNT);
-
-  return { quantity, productAmount, discount };
-};
-
-function calculateCart() {
-  const cartItems = cartElement.children;
-
-  let totalAmount = 0;
-  let itemCount = 0;
-  let subTotal = 0;
-
-  for (let i = 0; i < cartItems.length; i++) {
-    const product = getProduct(products, cartItems[i].id);
-    const { quantity, productAmount, discount } = calculateProductValues(
-      product,
-      cartItems[i]
-    );
-    itemCount += quantity;
-    subTotal += productAmount;
-    totalAmount += productAmount * (1 - discount);
-  }
-
-  const discountRate = getDiscountRate(itemCount, totalAmount, subTotal);
-  totalAmount = getTotalAmount(itemCount, totalAmount, subTotal);
-
-  totalCartAmountElement.textContent = totalPriceMessage(totalAmount);
-
-  if (discountRate > DISCOUNT.NONE) {
-    const span = document.createElement('span');
-    span.className = 'text-green-500 ml-2';
-    span.textContent = discountRateMessage(discountRate);
-
-    appendChild(totalCartAmountElement, span);
-  }
-
-  stockStatusElement.textContent = updateStockInformation(products);
-  renderBonusPoints(totalAmount, totalCartAmountElement);
-}
 
 const appendChild = (parentElement, ...children) => {
   children.forEach((child) => parentElement.appendChild(child));
@@ -225,7 +121,12 @@ function main() {
   appendChild(container, wrapper);
   appendChild(root, container);
 
-  calculateCart();
+  renderCart({
+    cartItems: cartElement.children,
+    products,
+    totalCartAmountElement,
+    stockStatusElement,
+  });
 
   randomEventHoc({
     callback: luckyItemEvent(selectProductElement, products),
@@ -279,7 +180,12 @@ addCartButton.addEventListener('click', function () {
       cartElement.appendChild(element);
       product.quantity--;
     }
-    calculateCart();
+    renderCart({
+      cartItems: cartElement.children,
+      products,
+      totalCartAmountElement,
+      stockStatusElement,
+    });
     selectedProductId = selectedProductValue;
   }
 });
@@ -329,7 +235,12 @@ const handleCartEvent = (event, products) => {
     );
     productElement.remove();
   }
-  calculateCart();
+  renderCart({
+    cartItems: cartElement.children,
+    products,
+    totalCartAmountElement,
+    stockStatusElement,
+  });
 };
 
 cartElement.addEventListener('click', (e) => handleCartEvent(e, products));

@@ -1,6 +1,6 @@
 import { DISCOUNT } from './config.js';
 
-export const getDiscount = (id, condition) => {
+export const getProductDiscount = (productId, condition) => {
   if (!condition) {
     return DISCOUNT.NONE;
   }
@@ -13,5 +13,5 @@ export const getDiscount = (id, condition) => {
     p5: DISCOUNT.QUARTER,
   };
 
-  return discountRate[id] ?? DISCOUNT.NONE;
+  return discountRate[productId] ?? DISCOUNT.NONE;
 };
