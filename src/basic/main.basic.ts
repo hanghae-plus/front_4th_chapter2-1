@@ -3,8 +3,6 @@ import { cartStore } from "./features/cart";
 import { CartPage } from "./pages/cart-page";
 import { setupEventListeners, updateElement } from "./shared/lib";
 
-const products = productStore.getState().products;
-
 function main() {
   const $root = document.getElementById("app") as HTMLDivElement;
 
@@ -26,8 +24,9 @@ function main() {
 cartStore.subscribe(main);
 productStore.subscribe(main);
 
-setTimeout(function () {
-  setInterval(function () {
+setTimeout(() => {
+  setInterval(() => {
+    const { products } = productStore.getState();
     const luckyItem = products[Math.floor(Math.random() * products.length)];
     if (Math.random() < 0.3 && luckyItem.q > 0) {
       luckyItem.val = Math.round(luckyItem.val * 0.8);
@@ -36,8 +35,8 @@ setTimeout(function () {
   }, 30000);
 }, Math.random() * 10000);
 
-setTimeout(function () {
-  setInterval(function () {
+setTimeout(() => {
+  setInterval(() => {
     const $productSelect = document.getElementById(
       "product-select"
     ) as HTMLSelectElement;
@@ -45,6 +44,8 @@ setTimeout(function () {
     const selectedProductId = $productSelect.value;
 
     if (selectedProductId) {
+      const { products } = productStore.getState();
+
       const suggest = products.find(function (item) {
         return item.id !== selectedProductId && item.q > 0;
       });
