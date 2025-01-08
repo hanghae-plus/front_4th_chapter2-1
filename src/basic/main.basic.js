@@ -91,7 +91,7 @@ const handleAddtoCart = () => {
 
 // 장바구니 컨트롤 이벤트 리스너
 const handleCartControll = (cartItems) => {
-  cartItems.addEventListener('click', function (event) {
+  cartItems.addEventListener('click', event => {
     const tgt = event.target;
   
     // 관련 버튼이 아니면 early return
