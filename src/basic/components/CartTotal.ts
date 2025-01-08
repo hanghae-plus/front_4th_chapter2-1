@@ -1,4 +1,4 @@
-import { createElement } from '../../utils/createElement';
+import { createElement } from '../utils/createElement';
 
 export const renderCartTotal = ($cartTotal: HTMLElement, totalAmount: number) => {
   $cartTotal.textContent = `총액: ${totalAmount}원`;

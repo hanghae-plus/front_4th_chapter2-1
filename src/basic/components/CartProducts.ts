@@ -1,6 +1,6 @@
-import { createElement } from '../../utils/createElement';
+import { createElement } from '../utils/createElement';
 
-import type { Product } from '../../types/product.type';
+import type { Product } from '../types/product.type';
 
 const createCartItemDOM = (item: Product) => {
   return createElement('div', {
