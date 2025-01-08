@@ -8,6 +8,8 @@ import { ProductSelect } from "./components/ProductSelect";
 import { StockStatus } from "./components/StockStatus";
 import { Wrap } from "./components/Wrap";
 import { PRODUCTS } from "./constant/products";
+import { startCommercialSale } from "./domain/commercial-sale";
+import { startLuckySale } from "./domain/lucky-sale";
 
 // 유저가 셀렉트에서 아이템을 선택해 추가한다 -> 총액을 표시한다. 상품수를 표시한다. 포인트를 표시한다.
 // 유저가 +,-, 삭제 버튼을 누른다. -> 총액을 표시한다. 상품 수를 표시한다. 포인트를 표시한다.
@@ -27,6 +29,17 @@ let lastSelectedProduct,
 const cartItems = []; // 나중에 현재 장바구니에 담은 아이템의 정보를 담을 배열
 
 function main() {
+  // 필요한 ui 만들기
+  render();
+
+  calculateCart();
+
+  startLuckySale(PRODUCTS, updateProductOption);
+
+  startCommercialSale(PRODUCTS, lastSelectedProduct, updateProductOption);
+}
+
+function render() {
   const root = document.getElementById("app");
 
   const content = Content();
@@ -50,37 +63,6 @@ function main() {
   content.appendChild(wrap);
 
   root.appendChild(content);
-
-  calculateCart();
-
-  // 랜덤 번개 세일
-  setTimeout(() => {
-    setInterval(() => {
-      const luckyItem = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
-      if (Math.random() < 0.3 && luckyItem.quantity > 0) {
-        luckyItem.value = Math.round(luckyItem.value * 0.8);
-        alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
-        updateProductOption();
-      }
-    }, 30000);
-  }, Math.random() * 10000);
-
-  // 랜덤 할인 광고
-  setTimeout(() => {
-    setInterval(() => {
-      if (lastSelectedProduct) {
-        // 가장 최근에 구매한 아이템 광고
-        const suggest = PRODUCTS.find((item) => {
-          return item.id !== lastSelectedProduct && item.quantity > 0;
-        });
-        if (suggest) {
-          alert(suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!");
-          suggest.value = Math.round(suggest.value * 0.95);
-          updateProductOption();
-        }
-      }
-    }, 60000);
-  }, Math.random() * 20000);
 }
 
 function updateProductOption() {
@@ -92,6 +74,7 @@ function updateProductOption() {
   });
 }
 
+// 총액 + 할인율 계산해서 표시하는 함수
 function calculateCart() {
   totalAmount = 0;
   itemCount = 0;
