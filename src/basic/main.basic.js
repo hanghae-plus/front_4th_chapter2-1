@@ -86,7 +86,7 @@ function main() {
   }, Math.random() * 20000);
 }
 
-function renderProductSelectOptions() {
+const renderProductSelectOptions = () => {
   ElementProductSelect.innerHTML = '';
 
   productList.forEach(function (item) {
@@ -99,7 +99,7 @@ function renderProductSelectOptions() {
   });
 }
 
-function calcCart() {
+const calcCart = () => {
   totalAmount = 0;
   totalCount = 0;
   const cartItems = ElementCartItems.children;
@@ -185,7 +185,7 @@ const renderLoyaltyPoints = () => {
   ElementLoyaltyPoints.textContent = '(포인트: ' + loyaltyPoints + ')';
 };
 
-function renderStockInfo() {
+const renderStockInfo = () => {
   let infoMsg = '';
 
   productList.forEach(function (item) {
