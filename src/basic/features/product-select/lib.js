@@ -1,4 +1,4 @@
-import { isOutOfStock } from '../../entities/stock/model.js';
+import { isOutOfStock } from '../../entities/stock/lib.js';
 import { formatProductOption } from '../../entities/product/lib.js';
 
 export const prepareProductOptions = (products) => {

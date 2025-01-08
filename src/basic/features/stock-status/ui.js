@@ -1,5 +1,5 @@
 import { getStockStatusMessage } from './lib.js';
-import { isLowStock } from '../../entities/stock/model.js';
+import { isLowStock } from '../../entities/stock/lib.js';
 
 const formatItemStockDisplay = (item) =>
   `${item.name}: ${getStockStatusMessage(item)}\n`;

@@ -1,4 +1,4 @@
-import { isOutOfStock, isOutOfStockRange } from './entities/stock/model.js';
+import { isOutOfStock, isOutOfStockRange } from './entities/stock/lib.js';
 import { STOCK } from './shared/lib/stock/config.js';
 import { updateSelectedOptions } from './features/product-select/ui.js';
 import { DISCOUNT } from './entities/discount/config.js';
