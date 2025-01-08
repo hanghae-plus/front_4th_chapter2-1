@@ -22,7 +22,7 @@
  */
 
 import { createCartItemElement } from './renders/cartItem';
-import { createCartItemsElement } from './renders/cartItems';
+import { createCartItemsElement, renderCartItems } from './renders/cartItems';
 import { createCartTotalElement, renderCartTotal } from './renders/cartTotal';
 import { createContainerElement } from './renders/container';
 import { createHeaderElement } from './renders/header';
@@ -65,32 +65,33 @@ export default function main() {
           newQuantity > 0 &&
           newQuantity <= product.stock + cartItem.quantity
         ) {
+          // renderCartItems({ cartItems: CART_ITEMS });를 사용하면 추가되면서 버튼이 새로 생성되면서, 테스트케이스가 실패함.
           $cartItem.querySelector('span').textContent =
             `${product.name} - ${product.price}원 x ${newQuantity}`;
 
           cartItem.quantity = newQuantity;
           product.stock -= orderUnit;
         } else if (newQuantity <= 0) {
-          $cartItem.remove();
-
           CART_ITEMS.forEach((item) => {
             if (item.id === productId) {
               CART_ITEMS.delete(item);
             }
           });
+          renderCartItems({ cartItems: CART_ITEMS });
+
           product.stock -= orderUnit;
         } else {
           alert('재고가 부족합니다.');
         }
       } else if ($targetElement.classList.contains('remove-item')) {
-        $cartItem.remove();
-
         product.stock += cartItem.quantity;
         CART_ITEMS.forEach((item) => {
           if (item.id === productId) {
             CART_ITEMS.delete(item);
           }
         });
+
+        renderCartItems({ cartItems: CART_ITEMS });
       }
       renderCartTotal({ cartItems: CART_ITEMS });
       renderStockStatus({ productList: PRODUCT_LIST });
@@ -117,15 +118,9 @@ export default function main() {
         });
 
         cartItem.quantity += 1;
+        selectedProduct.stock--;
 
-        if (cartItem.quantity <= selectedProduct.stock) {
-          $cartItem.querySelector('span').textContent =
-            `${selectedProduct.name} - ${selectedProduct.price}원 x ${cartItem.quantity}`;
-
-          selectedProduct.stock--;
-        } else {
-          alert('재고가 부족합니다.');
-        }
+        renderCartItems({ cartItems: CART_ITEMS });
       } else {
         const newCartItem = {
           id: selectedProduct.id,
@@ -142,6 +137,8 @@ export default function main() {
       renderCartTotal({ cartItems: CART_ITEMS });
       renderStockStatus({ productList: PRODUCT_LIST });
       lastSelectedProductId = selectedProductId;
+    } else {
+      alert('재고가 부족합니다.');
     }
   });
 
