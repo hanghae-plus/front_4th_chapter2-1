@@ -16,11 +16,11 @@ const ElementTotalPrice = document.createElement('div');
 const ElementStockStatus = document.createElement('div');
 
 function main() {
+  calcCart();
+
   renderCart();
 
   renderProductSelectOptions();
-
-  calcCart();
 
   alertLuckySale();
 
@@ -136,9 +136,10 @@ const renderStockInfo = () => {
 
 const calcCart = () => {
   totalAmount = 0;
-  let totalCount = 0;
   const cartItems = ElementCartItems.children;
+  let totalCount = 0;
   let subTot = 0;
+  let discountRate = 0;
 
   for (let i = 0; i < cartItems.length; i++) {
     (function () {
@@ -170,8 +171,6 @@ const calcCart = () => {
       totalAmount += itemTot * (1 - discount);
     })();
   }
-
-  let discountRate = 0;
 
   if (totalCount >= 30) {
     const bulkDiscount = totalAmount * 0.25;
