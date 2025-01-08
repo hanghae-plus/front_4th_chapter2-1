@@ -1,6 +1,7 @@
 import { products } from './data/products';
 import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './features/cart/constants/policy';
 import { applyDiscount } from './features/cart/utils/discount';
+import ProductStore from './stores/product.store';
 
 const ELEMENT_IDS = {
   STOCK_STATUS: 'stock-status',
@@ -16,10 +17,7 @@ const getProductSelectElement = () => document.getElementById(ELEMENT_IDS.PRODUC
 const getCartTotalElement = () => document.getElementById(ELEMENT_IDS.CART_TOTAL);
 const getCartItemsElement = () => document.getElementById(ELEMENT_IDS.CART_ITEMS);
 
-let lastSelectedProduct,
-  points = 0,
-  amount = 0,
-  itemCount = 0;
+const store = ProductStore.createInstance();
 
 const main = (callbackFn) => {
   const root = document.getElementById('app');
@@ -55,8 +53,8 @@ const updateProductList = () => {
 };
 
 const calcCart = () => {
-  amount = 0;
-  itemCount = 0;
+  store.setAmount(0);
+  store.setItemCount(0);
   const cartItems = getCartItemsElement().children;
   let subTotal = 0;
   for (let i = 0; i < cartItems.length; i++) {
@@ -71,38 +69,40 @@ const calcCart = () => {
       const quantity = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
       const itemAmount = currentProduct.price * quantity;
       let discountRate = 0;
-      itemCount += quantity;
+      store.setItemCount(store.getItemCount() + quantity);
       subTotal += itemAmount;
       if (quantity >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
         discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES[currentProduct.id] || 0;
       }
-      amount += applyDiscount({ amount: itemAmount, discountRate });
+      store.setAmount(store.getAmount() + applyDiscount({ amount: itemAmount, discountRate }));
     })();
   }
   let totalDiscountRate = 0;
-  if (itemCount >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
+  if (store.getItemCount() >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
     const bulkDiscount = applyDiscount({
       amount: subTotal,
       discountRate: DISCOUNT_POLICY.BULK_DISCOUNT_RATE,
     });
-    const itemDiscount = subTotal - amount;
+    const itemDiscount = subTotal - store.getAmount();
     if (bulkDiscount > itemDiscount) {
-      amount = bulkDiscount;
+      store.setAmount(bulkDiscount);
       totalDiscountRate = DISCOUNT_POLICY.BULK_DISCOUNT_RATE;
     } else {
-      totalDiscountRate = (subTotal - amount) / subTotal;
+      totalDiscountRate = (subTotal - store.getAmount()) / subTotal;
     }
   } else {
-    totalDiscountRate = (subTotal - amount) / subTotal;
+    totalDiscountRate = (subTotal - store.getAmount()) / subTotal;
   }
   if (new Date().getDay() === 2) {
-    amount = applyDiscount({
-      amount,
-      discountRate: DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday,
-    });
+    store.setAmount(
+      applyDiscount({
+        amount: store.getAmount(),
+        discountRate: DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday,
+      }),
+    );
     totalDiscountRate = Math.max(totalDiscountRate, DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday);
   }
-  getCartTotalElement().textContent = '총액: ' + Math.round(amount) + '원';
+  getCartTotalElement().textContent = '총액: ' + Math.round(store.getAmount()) + '원';
   if (totalDiscountRate > 0) {
     const span = document.createElement('span');
     span.className = 'text-green-500 ml-2';
@@ -114,7 +114,7 @@ const calcCart = () => {
 };
 
 const renderPoints = () => {
-  points = Math.floor(amount / 1000);
+  store.setPoints(Math.floor(store.getAmount() / 1000));
 
   let pointsElement = document.getElementById('points');
 
@@ -125,7 +125,7 @@ const renderPoints = () => {
     getCartTotalElement().appendChild(pointsElement);
   }
 
-  pointsElement.textContent = `(포인트: ${points})`;
+  pointsElement.textContent = `(포인트: ${store.getPoints()})`;
 };
 
 const renderStockStatus = () => {
@@ -153,8 +153,8 @@ main(() => {
   }, Math.random() * 10000);
   setTimeout(() => {
     setInterval(() => {
-      if (lastSelectedProduct) {
-        const suggest = products.find((item) => item.id !== lastSelectedProduct && item.quantity > 0);
+      if (store.getLastSelectedProduct()) {
+        const suggest = products.find((item) => item.id !== store.getLastSelectedProduct() && item.quantity > 0);
         if (suggest) {
           alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
           suggest.price = Math.round(suggest.price * (1 - DISCOUNT_POLICY.RECOMMENDATION_DISCOUNT_RATE));
@@ -200,7 +200,7 @@ main(() => {
         itemToAdd.quantity--;
       }
       calcCart();
-      lastSelectedProduct = selItem;
+      store.setLastSelectedProduct(selItem);
     }
   });
 
