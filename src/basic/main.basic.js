@@ -18,6 +18,7 @@ const getProductSelectElement = () => document.getElementById(ELEMENT_IDS.PRODUC
 const getCartTotalElement = () => document.getElementById(ELEMENT_IDS.CART_TOTAL);
 const getCartItemsElement = () => document.getElementById(ELEMENT_IDS.CART_ITEMS);
 const getPointElement = () => document.getElementById(ELEMENT_IDS.POINT);
+const getProductItemElement = (id) => document.getElementById(id);
 
 const store = ProductStore.createInstance();
 
@@ -172,42 +173,61 @@ main(() => {
   }, Math.random() * 20000);
 
   getAddCartButtonElement().addEventListener('click', () => {
-    const selItem = getProductSelectElement().value;
-    const itemToAdd = products.find((p) => p.id === selItem);
-    if (itemToAdd && itemToAdd.quantity > 0) {
-      const item = document.getElementById(itemToAdd.id);
-      if (item) {
-        const newQty = parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
-        if (newQty <= itemToAdd.quantity) {
-          item.querySelector('span').textContent = itemToAdd.name + ' - ' + itemToAdd.price + '원 x ' + newQty;
-          itemToAdd.quantity--;
+    const selectedProductId = getProductSelectElement().value;
+
+    const selectedProduct = products.find(({ id }) => id === selectedProductId);
+    if (selectedProduct?.quantity > 0) {
+      const productItemElement = getProductItemElement(selectedProduct.id);
+
+      if (productItemElement) {
+        const updatedCartItem = productItemElement.querySelector('span');
+
+        const updatedCartItemQuantity = parseInt(updatedCartItem.textContent.split('x ')[1]) + 1;
+
+        if (updatedCartItemQuantity <= selectedProduct.quantity) {
+          updatedCartItem.textContent = `${selectedProduct.name} - ${selectedProduct.price}원 x ${updatedCartItemQuantity}`;
+
+          selectedProduct.quantity--;
         } else {
           alert('재고가 부족합니다.');
         }
       } else {
-        const newItem = document.createElement('div');
-        newItem.id = itemToAdd.id;
-        newItem.className = 'flex justify-between items-center mb-2';
-        newItem.innerHTML =
-          '<span>' +
-          itemToAdd.name +
-          ' - ' +
-          itemToAdd.price +
-          '원 x 1</span><div>' +
-          '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-          itemToAdd.id +
-          '" data-change="-1">-</button>' +
-          '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-          itemToAdd.id +
-          '" data-change="1">+</button>' +
-          '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' +
-          itemToAdd.id +
-          '">삭제</button></div>';
-        getCartItemsElement().appendChild(newItem);
-        itemToAdd.quantity--;
+        getCartItemsElement().insertAdjacentHTML(
+          'beforeend',
+          /* html */ `
+          <div id="${selectedProduct.id}" class="flex justify-between items-center mb-2">
+            <span>${selectedProduct.name} - ${selectedProduct.price}원 x 1</span>
+            <div>
+              <button 
+                class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+                data-product-id="${selectedProduct.id}" 
+                data-change="-1"
+              >
+              -
+              </button>
+              
+              <button 
+                class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+                data-product-id="${selectedProduct.id}" 
+                data-change="1"
+              >
+              +
+              </button>
+
+              <button 
+                class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
+                data-product-id="${selectedProduct.id}"
+              >
+              삭제
+              </button>
+            </div>
+          </div>
+        `,
+        );
+        selectedProduct.quantity--;
       }
       calcCart();
-      store.setLastSelectedProduct(selItem);
+      store.setLastSelectedProduct(selectedProductId);
     }
   });
 
