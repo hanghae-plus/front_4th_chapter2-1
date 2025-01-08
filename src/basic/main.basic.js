@@ -24,7 +24,7 @@ let shoppingCartTotal = 0;
 const calcCart = () => {
   shoppingCartTotal = 0;
   let itemCnt = 0;
-  let subTot = 0;
+  let originTotalPrice = 0;
   let discountRate = 0;
 
   [...document.querySelector("#cart-items").children].forEach((item) => {
@@ -34,7 +34,7 @@ const calcCart = () => {
     );
     const itemTotalPrice = curItem.price * curQuantity;
     itemCnt += curQuantity;
-    subTot += itemTotalPrice;
+    originTotalPrice += itemTotalPrice;
     let discount = 1;
     if (curQuantity >= 10) {
       discount = 1 - curItem.discount;
@@ -43,16 +43,16 @@ const calcCart = () => {
   });
 
   if (itemCnt >= 30) {
-    const bulkDisc = shoppingCartTotal * 0.25;
-    const itemDisc = subTot - shoppingCartTotal;
+    const bulkDisc = originTotalPrice * 0.25;
+    const itemDisc = originTotalPrice - shoppingCartTotal;
     if (bulkDisc > itemDisc) {
-      shoppingCartTotal = subTot * (1 - 0.25);
+      shoppingCartTotal = originTotalPrice * (1 - 0.25);
       discountRate = 0.25;
     } else {
-      discountRate = (subTot - shoppingCartTotal) / subTot;
+      discountRate = (originTotalPrice - shoppingCartTotal) / originTotalPrice;
     }
   } else {
-    discountRate = (subTot - shoppingCartTotal) / subTot;
+    discountRate = (originTotalPrice - shoppingCartTotal) / originTotalPrice;
   }
 
   if (new Date().getDay() === 2) {
