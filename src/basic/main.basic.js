@@ -29,10 +29,10 @@ const main = (callbackFn) => {
       <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <h1 class="text-2xl font-bold mb-4">장바구니</h1>
         <div id="${ELEMENT_IDS.CART_ITEMS}"></div>
-        <div id="${ELEMENT_IDS.CART_TOTAL}"></div>
-        <div id="${ELEMENT_IDS.STOCK_STATUS}" class="text-sm text-gray-500 mt-2"></div>
-        <button id="${ELEMENT_IDS.ADD_TO_CART}" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
+        <div id="${ELEMENT_IDS.CART_TOTAL}" class="text-xl font-bold my-4"></div>
         <select id="${ELEMENT_IDS.PRODUCT_SELECT}" class="border rounded p-2 mr-2" ></select>
+        <button id="${ELEMENT_IDS.ADD_TO_CART}" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
+        <div id="${ELEMENT_IDS.STOCK_STATUS}" class="text-sm text-gray-500 mt-2"></div>
       </div>
     </div>
   `;
@@ -139,10 +139,7 @@ const renderPoints = () => {
 const renderStockStatus = () => {
   getStockStatusElement().innerHTML = products
     .filter((item) => item.quantity < STOCK_POLICY.STOCK_THRESHOLD)
-    .map(({ name, quantity }) => {
-      const message = `${name}: ${quantity > 0 ? `재고 부족 (${quantity}개 남음)` : '품절'}`;
-      return /* html */ `<div class="stock-status-item">${message}</div>`;
-    })
+    .map(({ name, quantity }) => `${name}: ${quantity > 0 ? `재고 부족 (${quantity}개 남음)` : '품절'}`)
     .join('');
 };
 
