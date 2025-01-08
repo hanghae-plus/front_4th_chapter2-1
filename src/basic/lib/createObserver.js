@@ -1,5 +1,4 @@
 // @ts-check
-import { debounce } from './debounce';
 
 /**
  * @callback Listener
