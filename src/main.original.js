@@ -51,3 +51,28 @@ function updateSelectOptions() {
     $productSelect.appendChild(option)
   })
 }
+
+function handleAddToCart() {
+  console.log('click')
+}
+
+/**
+ * 이벤트 관리 함수
+ */
+function EventManager() {
+  const $addToCart = document.getElementById('add-to-cart')
+
+  $addToCart.addEventListener('click', handleAddToCart)
+}
+
+/**
+ * 초기화 함수
+ */
+function init() {
+  const $root = document.getElementById('app')
+  $root.innerHTML = main()
+  updateSelectOptions()
+  EventManager()
+}
+
+init()
