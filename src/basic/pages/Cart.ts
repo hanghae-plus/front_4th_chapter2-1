@@ -1,10 +1,10 @@
-import { cartStore } from '@/stores/cartStore';
 
-import BonusPoint from '@components/BonusPoint';
-import CartTotal from '@components/CartTotal';
-import ProductSelect from '@components/ProductSelect';
-import Stock from '@components/Stock';
-import { createElement } from '@utils/createElement';
+import BonusPoint from '@//components/BonusPoint';
+import CartTotal from '@/components/CartTotal';
+import ProductSelect from '@/components/ProductSelect';
+import Stock from '@/components/Stock';
+import { cartStore } from '@/stores/cartStore';
+import { createElement } from '@/utils/createElement';
 
 const Cart = () => {
   const root = document.getElementById('app');

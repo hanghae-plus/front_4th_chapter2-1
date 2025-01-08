@@ -1,6 +1,5 @@
 import { Cart } from '@/types/types';
-
-import { createState } from '@utils/createStore';
+import { createState } from '@/utils/createStore';
 
 export const cartStore = createState<Cart>({
   lastSaleItem: null,

@@ -1,6 +1,5 @@
 import { cartStore } from '@/stores/cartStore';
-
-import { createElement } from '@utils/createElement';
+import { createElement } from '@/utils/createElement';
 
 const BonusPoint = () => {
   let bonusPoint = document.getElementById('bonus-point');
