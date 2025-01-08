@@ -1,5 +1,4 @@
-import { getDiscountRate } from './shared/actions/getDiscountRate';
-import { DISCOUNT_RATE } from './shared/constant/discountRate';
+import { getTotalPriceBeforeSpecialOffer } from './features/cart/actions/getTotalPriceBeforeSpecialOffer';
 
 let productList,
   SelectView,
@@ -94,31 +93,11 @@ function updateSelectedOptions() {
 function calculateCartItems() {
   totalAmount = 0;
   itemCount = 0;
-  const cartItems = CartItemsView.children;
-  let subTotalPrice = 0;
-  for (let i = 0; i < cartItems.length; i++) {
-    (function () {
-      let currentItem;
-      for (let j = 0; j < productList.length; j++) {
-        if (productList[j].id === cartItems[i].id) {
-          currentItem = productList[j];
-          break;
-        }
-      }
-      const q = parseInt(
-        cartItems[i].querySelector('span').textContent.split('x ')[1],
-      );
-      const itemTotalPrice = currentItem.val * q;
-      let discountRate = 0;
-      itemCount += q;
-      subTotalPrice += itemTotalPrice;
-      if (q >= 10) {
-        if (DISCOUNT_RATE[currentItem.id])
-          discountRate = getDiscountRate(currentItem.id);
-      }
-      totalAmount += itemTotalPrice * (1 - discountRate);
-    })();
-  }
+  const cartItems = CartItemsView.children as unknown as HTMLDivElement[];
+  const { subTotalPrice, totalItemCount, totalPrice } =
+    getTotalPriceBeforeSpecialOffer(cartItems, productList, itemCount);
+  totalAmount = totalPrice;
+  itemCount = totalItemCount;
   let discountRate = 0;
   if (itemCount >= 30) {
     const bulkDiscount = totalAmount * 0.25;
