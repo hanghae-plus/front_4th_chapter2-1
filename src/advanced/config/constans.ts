@@ -7,6 +7,13 @@ export const CONSTANTS = {
   SALE_DISCOUNT: 0.2, // 번개 세일 할인 비율
   SUGGEST_DISCOUNT: 0.05, // 추천 상품 할인 비율
   LOW_STOCK_THRESHOLD: 5, // 재고 부족 기준
+  DISCOUNT_RATES: {
+    p1: 0.1,
+    p2: 0.15,
+    p3: 0.2,
+    p4: 0.05,
+    p5: 0.25,
+  },
 };
 
 export const initialProductList = [
@@ -16,3 +23,10 @@ export const initialProductList = [
   {id: 'p4', name: '상품4', price: 15000, quantity: 0 },
   {id: 'p5', name: '상품5', price: 25000, quantity: 10 }
 ];
+
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
