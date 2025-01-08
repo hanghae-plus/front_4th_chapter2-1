@@ -7,17 +7,25 @@ const querySelector = (selector) => {
   return document.querySelector(selector);
 };
 
-const renderContent = (element, content) => {
+const renderContent = (content) => (element) => {
   element.innerHTML = content;
   return element;
 };
 
-const appendContent = (element, content) => {
+const appendContent = (content) => (element) => {
   element.innerHTML += content;
   return element;
 };
 
+const delay = (ms) => (callback) => setTimeout(callback, ms);
+
+const repeat = (ms) => (callback) => () => setInterval(callback, ms);
+
 export const renderToElement = (selector, content) =>
-  pipe(querySelector, (element) => renderContent(element, content))(selector);
+  pipe(querySelector, renderContent(content))(selector);
+
 export const appendToElement = (selector, content) =>
-  pipe(querySelector, (element) => appendContent(element, content))(selector);
+  pipe(querySelector, appendContent(content))(selector);
+
+export const scheduleInterval = (callback, intervalMs, delayMs) =>
+  pipe(repeat(intervalMs), delay(delayMs))(callback);

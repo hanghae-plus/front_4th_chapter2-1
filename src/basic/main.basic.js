@@ -1,6 +1,12 @@
-import { CartItem, ItemOption } from "./components";
+import { CartItem, ItemOption, Points } from "./components";
 import MainPage from "./pages/MainPage";
-import { renderToElement, appendToElement } from "./utils";
+import {
+  renderToElement,
+  appendToElement,
+  scheduleInterval,
+  isLowStock,
+  makeLowStockMessage,
+} from "./utils";
 
 /**
  * 장바구니
@@ -11,12 +17,10 @@ let shoppingCartTotal = 0;
 const calcCart = () => {
   shoppingCartTotal = 0;
   let itemCnt = 0;
-  const cartItems = document.querySelector("#cart-items").children;
-  const sum = document.querySelector("#cart-total");
   let subTot = 0;
   let discRate = 0;
 
-  [...cartItems].forEach((item) => {
+  [...document.querySelector("#cart-items").children].forEach((item) => {
     const curItem = PRODUCTS.find((prod) => prod.id === item.id);
     const curQuantity = parseInt(
       item.querySelector("span").textContent.split("x ")[1]
@@ -49,12 +53,15 @@ const calcCart = () => {
     discRate = Math.max(discRate, 0.1);
   }
 
-  sum.innerHTML = `총액: ${Math.round(shoppingCartTotal)}원`;
+  renderToElement("#cart-total", `총액: ${Math.round(shoppingCartTotal)}원`);
 
   if (discRate > 0) {
-    sum.innerHTML += `<span class="text-green-500 ml-2">(${(
-      discRate * 100
-    ).toFixed(1)}% 할인 적용)</span>`;
+    appendToElement(
+      "#cart-total",
+      `<span class="text-green-500 ml-2">(${(discRate * 100).toFixed(
+        1
+      )}% 할인 적용)</span>`
+    );
   }
 
   updateStockStatus();
@@ -63,16 +70,7 @@ const calcCart = () => {
 
 const renderPoints = () => {
   const bonusPts = Math.floor(shoppingCartTotal / 1000);
-  const cartTotalElem = document.querySelector("#cart-total");
-  let ptsTag = document.getElementById("loyalty-points");
-  if (!ptsTag) {
-    appendToElement(
-      "#cart-total",
-      `<span id="loyalty-points" class="text-blue-500 ml-2"></span>`
-    );
-    ptsTag = cartTotalElem.querySelector("#loyalty-points");
-  }
-  renderToElement("#loyalty-points", `(포인트: ${bonusPts})`);
+  appendToElement("#cart-total", Points(bonusPts));
 };
 
 const addToCartClickHandler = () => {
@@ -165,16 +163,6 @@ const PRODUCTS = [
   { id: "p5", name: "상품5", price: 25000, quantity: 10, discount: 0.25 },
 ];
 
-const isLowStock = (product) => product.quantity < 5;
-
-const makeLowStockMessage = (product) => {
-  return `${product.name}: ${
-    product.quantity > 0
-      ? "재고 부족 (" + product.quantity + "개 남음)"
-      : "품절"
-  }\n`;
-};
-
 const updateSelOpts = () => {
   renderToElement("#product-select", PRODUCTS.map(ItemOption).join(""));
 };
@@ -191,12 +179,6 @@ const updateStockStatus = () => {
  */
 let lastSel = 0;
 
-const alertEvent = (callback, intervalMs, delayMs) => {
-  setTimeout(() => {
-    setInterval(callback, intervalMs);
-  }, Math.random() * delayMs);
-};
-
 const saleEvent = () => {
   const luckyItem = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
   if (Math.random() < 0.3 && luckyItem.quantity > 0) {
@@ -208,9 +190,9 @@ const saleEvent = () => {
 
 const lastSelEvent = () => {
   if (lastSel) {
-    const suggest = PRODUCTS.find((item) => {
-      return item.id !== lastSel && item.quantity > 0;
-    });
+    const suggest = PRODUCTS.find(
+      (item) => item.id !== lastSel && item.quantity > 0
+    );
     if (suggest) {
       alert(suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!");
       suggest.price = Math.round(suggest.price * 0.95);
@@ -225,8 +207,8 @@ const main = () => {
   updateSelOpts();
   calcCart();
 
-  alertEvent(saleEvent, 30000, Math.random() * 10000);
-  alertEvent(lastSelEvent, 60000, Math.random() * 20000);
+  scheduleInterval(saleEvent, 30000, 10000);
+  scheduleInterval(lastSelEvent, 60000, 20000);
 
   document
     .querySelector("#add-to-cart")
