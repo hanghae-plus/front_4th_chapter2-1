@@ -205,12 +205,70 @@ function handleAddToCart() {
 }
 
 /**
+ * 장바구니 수량 변경 이벤트 핸들러
+ */
+function handleQuantityChange(event) {
+  // 수량 변경 버튼 또는 삭제 버튼 클릭 시
+  if (
+    event.target.classList.contains('quantity-change') ||
+    event.target.classList.contains('remove-item')
+  ) {
+    // 클릭한 버튼의 상품 ID와 수량 변경 값 추출
+    const productId = event.target.dataset.productId
+
+    const selectedProduct = productList.find(
+      (product) => product.id === productId,
+    )
+    if (event.target.classList.contains('quantity-change')) {
+      const change = parseInt(event.target.dataset.change)
+
+      // 현재 장바구니 아이템 찾기
+      const cartItem = document.getElementById(productId)
+
+      // 현재 상품 수량 추출
+      const currentQuantity = parseInt(
+        cartItem.querySelector('span').textContent.split('x ')[1],
+      )
+
+      // 새로운 수량 계산
+      const newQuantity = currentQuantity + change
+
+      // 새로운 수량이 유효한 범위 내에 있는지 확인
+      if (
+        newQuantity > 0 &&
+        newQuantity <= selectedProduct.stock + currentQuantity
+      ) {
+        cartItem.querySelector('span').textContent =
+          `${selectedProduct.name} - ${selectedProduct.value}원 x ${newQuantity}`
+        selectedProduct.stock--
+      } else if (newQuantity <= 0) {
+        cartItem.remove()
+        selectedProduct.stock += currentQuantity
+      } else {
+        alert('재고가 부족합니다.')
+      }
+    } else if (event.target.classList.contains('remove-item')) {
+      // 삭제 버튼 클릭 시
+      const cartItem = document.getElementById(productId)
+      const currentQuantity = parseInt(
+        cartItem.querySelector('span').textContent.split('x ')[1],
+      )
+      selectedProduct.stock += currentQuantity
+      cartItem.remove()
+    }
+  }
+  calculateCartTotal()
+}
+
+/**
  * 이벤트 관리 함수
  */
 function EventManager() {
   const $addToCart = document.getElementById('add-to-cart')
+  const $cartItems = document.getElementById('cart-items')
 
   $addToCart.addEventListener('click', handleAddToCart)
+  $cartItems.addEventListener('click', handleQuantityChange)
 }
 
 /**
