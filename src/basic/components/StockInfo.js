@@ -1,35 +1,32 @@
 import { state } from '../store/globalStore';
 
 function StockInfo() {
-  const updateStockInfoUI = () => {
-    const prodList = state.get('prodList');
-    const lowStockItems = getLowStockItems(prodList);
-
-    const stockInfoContent = generateStockInfoContent(lowStockItems);
-    const stockInfoElement = document.getElementById('stock-status');
-
-    if (stockInfoElement) {
-      stockInfoElement.textContent = stockInfoContent;
-    }
-  };
+  const container = document.createElement('div');
 
   const getLowStockItems = (prodList) => {
     return prodList.filter((item) => item.volume < 5);
   };
 
-  const generateStockInfoContent = (lowStockItems) => {
-    return lowStockItems
-      .map((item) =>
-        item.volume > 0
-          ? `${item.name}: 재고 부족 (${item.volume}개 남음)`
-          : `${item.name}: 품절`
-      )
-      .join('\n');
+  const render = () => {
+    const prodList = state.get('prodList');
+    const lowStockItems = getLowStockItems(prodList);
+
+    container.innerHTML = `
+      <div id="stock-status" class="text-sm text-gray-500 mt-2" >${lowStockItems
+        .map((item) =>
+          item.volume > 0
+            ? `${item.name}: 재고 부족 (${item.volume}개 남음)`
+            : `${item.name}: 품절`
+        )
+        .join('\n')}</div>
+    `;
   };
 
-  state.subscribe('prodList', updateStockInfoUI);
+  state.subscribe('prodList', render);
 
-  updateStockInfoUI();
+  render();
+
+  return container;
 }
 
 export default StockInfo;

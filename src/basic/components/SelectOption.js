@@ -1,37 +1,34 @@
+import { handleAddToCart } from '../events/CartEventHandler';
 import { state } from '../store/globalStore';
 
 function SelectOption() {
-  const prodSelect = document.getElementById('product-select');
-  if (!prodSelect) return;
+  const container = document.createElement('div');
 
-  const prodList = state.get('prodList');
+  const render = () => {
+    const prodList = state.get('prodList');
 
-  state.subscribe('prodList', updateSelectUI);
-  updateSelectUI(prodSelect, prodList);
+    const selectedId = document.querySelector('#product-select')?.value || '';
+
+    container.innerHTML = `
+    <select id="product-select" class="border rounded p-2 mr-2">
+    ${prodList.map((it) => {
+      return `<option value="${it.id}" ${it.volume === 0 ? 'disabled' : ''} ${
+        it.id === selectedId ? 'selected' : ''
+      }>${it.name} - ${it.price}원</option>`;
+    })}
+    </select>
+    <button id="add-to-cart" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
+    `;
+
+    const addBtn = container.querySelector('#add-to-cart');
+    addBtn.addEventListener('click', handleAddToCart);
+  };
+
+  render();
+
+  state.subscribe('prodList', render);
+
+  return container;
 }
-
-const updateSelectUI = (prodSelect, prodList) => {
-  clearSelectOptions(prodSelect);
-  prodList.forEach((product) => {
-    const selectOptionTag = createSelectOption(product);
-    prodSelect.appendChild(selectOptionTag);
-  });
-};
-
-const createSelectOption = (product) => {
-  const selectOptionTag = document.createElement('option');
-  selectOptionTag.value = product.id;
-  selectOptionTag.textContent = `${product.name} - ${product.price}원`;
-
-  if (product.volume === 0) {
-    selectOptionTag.disabled = true;
-  }
-
-  return selectOptionTag;
-};
-
-const clearSelectOptions = (selectElement) => {
-  selectElement.innerHTML = '';
-};
 
 export default SelectOption;
