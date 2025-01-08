@@ -1,4 +1,4 @@
-import { Cart } from "./widgets";
+import { CartPage } from "./pages/cart-page";
 
 interface Product {
   id: string;
@@ -22,11 +22,8 @@ function main() {
     { id: "p5", name: "상품5", val: 25000, q: 10 }
   ];
   const $root = document.getElementById("app") as HTMLDivElement;
-  const $container = document.createElement("div");
-  $container.className = "bg-gray-100 p-8";
-  $container.innerHTML = Cart();
+  $root.innerHTML = CartPage();
   updateSelOpts();
-  $root.appendChild($container);
   calcCart();
   setTimeout(function () {
     setInterval(function () {
