@@ -2,9 +2,15 @@ import { products } from './data/products';
 import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './features/cart/constants/policy';
 import { applyDiscount } from './features/cart/utils/discount';
 
-let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
+let productSelector, cartItemContainer, cartTotal;
 
-const getStockStatus = () => document.getElementById('stock-status');
+const ELEMENT_IDS = {
+  STOCK_STATUS: 'stock-status',
+  ADD_TO_CART: 'add-to-cart',
+};
+
+const getStockStatusElement = () => document.getElementById(ELEMENT_IDS.STOCK_STATUS);
+const getAddCartButtonElement = () => document.getElementById(ELEMENT_IDS.ADD_TO_CART);
 
 let lastSelectedProduct,
   points = 0,
@@ -19,29 +25,30 @@ const main = () => {
   cartItemContainer = document.createElement('div');
   cartTotal = document.createElement('div');
   productSelector = document.createElement('select');
-  addToCartButton = document.createElement('button');
-  stockStatus = document.createElement('div');
+
   cartItemContainer.id = 'cart-items';
   cartTotal.id = 'cart-total';
   productSelector.id = 'product-select';
-  addToCartButton.id = 'add-to-cart';
-  stockStatus.id = 'stock-status';
+
   container.className = 'bg-gray-100 p-8';
   wrapper.className = 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
   headerText.className = 'text-2xl font-bold mb-4';
   cartTotal.className = 'text-xl font-bold my-4';
   productSelector.className = 'border rounded p-2 mr-2';
-  addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  stockStatus.className = 'text-sm text-gray-500 mt-2';
+
   headerText.textContent = '장바구니';
-  addToCartButton.textContent = '추가';
   updateProductList();
   wrapper.appendChild(headerText);
   wrapper.appendChild(cartItemContainer);
   wrapper.appendChild(cartTotal);
   wrapper.appendChild(productSelector);
-  wrapper.appendChild(addToCartButton);
-  wrapper.appendChild(stockStatus);
+
+  wrapper.insertAdjacentHTML(
+    'beforeend',
+    /* html */ `<button id="${ELEMENT_IDS.ADD_TO_CART}" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>`,
+  );
+  wrapper.insertAdjacentHTML('beforeend', /* html */ `<div id="stock-status" class="text-sm text-gray-500 mt-2" />`);
+
   container.appendChild(wrapper);
   root.appendChild(container);
   calcCart();
@@ -159,7 +166,7 @@ const renderPoints = () => {
 };
 
 const renderStockStatus = () => {
-  getStockStatus().innerHTML = products
+  getStockStatusElement().innerHTML = products
     .filter((item) => item.quantity < STOCK_POLICY.STOCK_THRESHOLD)
     .map(({ name, quantity }) => {
       const message = `${name}: ${quantity > 0 ? `재고 부족 (${quantity}개 남음)` : '품절'}`;
@@ -170,7 +177,7 @@ const renderStockStatus = () => {
 
 main();
 
-addToCartButton.addEventListener('click', () => {
+getAddCartButtonElement().addEventListener('click', () => {
   const selItem = productSelector.value;
   const itemToAdd = products.find((p) => p.id === selItem);
   if (itemToAdd && itemToAdd.quantity > 0) {
