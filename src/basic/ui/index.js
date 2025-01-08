@@ -1,4 +1,4 @@
-export default function createLayout() {
+export function createLayout() {
 	let $container = document.createElement('div');
 	$container.className = 'bg-gray-100 p-8';
 
@@ -40,3 +40,5 @@ export default function createLayout() {
 
 	return { $container, $title, $cartDisp, $sum, $sel, $stockInfo, $addButton };
 }
+
+export function createOption() {}
