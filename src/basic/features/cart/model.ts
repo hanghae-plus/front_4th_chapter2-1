@@ -9,13 +9,14 @@ interface CartStore {
   removeToCart: (productId: string) => void;
   deleteToCart: (productId: string) => void;
 }
+
 export const cartStore = createStore<CartStore>((set, get) => ({
   cart: [],
   addToCart: (product: Product) => {
     const { cart } = get();
     const { updateProductQuantity } = productStore.getState();
     const foundProduct = cart.find((cartItem) => cartItem.id === product.id);
-    if (product.q === 0) {
+    if (product.quantity === 0) {
       return alert("재고가 부족합니다.");
     }
 
@@ -24,14 +25,14 @@ export const cartStore = createStore<CartStore>((set, get) => ({
         ...prev,
         cart: prev.cart.map((cartItem) =>
           cartItem.id === product.id
-            ? { ...cartItem, q: cartItem.q + 1 }
+            ? { ...cartItem, quantity: cartItem.quantity + 1 }
             : cartItem
         )
       }));
     } else {
       set((prev) => ({
         ...prev,
-        cart: [...prev.cart, { ...product, q: 1 }]
+        cart: [...prev.cart, { ...product, quantity: 1 }]
       }));
     }
     updateProductQuantity(product.id, -1);
@@ -44,7 +45,7 @@ export const cartStore = createStore<CartStore>((set, get) => ({
 
     if (!foundProduct) return;
 
-    if (foundProduct.q <= 1) {
+    if (foundProduct.quantity <= 1) {
       set((prev) => ({
         ...prev,
         cart: prev.cart.filter((cartItem) => cartItem.id !== productId)
@@ -54,7 +55,7 @@ export const cartStore = createStore<CartStore>((set, get) => ({
         ...prev,
         cart: prev.cart.map((cartItem) =>
           cartItem.id === productId
-            ? { ...cartItem, q: cartItem.q - 1 }
+            ? { ...cartItem, quantity: cartItem.quantity - 1 }
             : cartItem
         )
       }));
@@ -71,6 +72,6 @@ export const cartStore = createStore<CartStore>((set, get) => ({
       ...prev,
       cart: prev.cart.filter((cartItem) => cartItem.id !== productId)
     }));
-    updateProductQuantity(productId, foundProduct?.q || 0);
+    updateProductQuantity(productId, foundProduct?.quantity || 0);
   }
 }));

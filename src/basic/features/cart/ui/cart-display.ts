@@ -43,7 +43,10 @@ export function CartDisplay() {
               id="${cartItem.id}"
               class="flex justify-between items-center mb-2"
             >
-              <span>${cartItem.name} - ${cartItem.val}원 x ${cartItem.q}</span>
+              <span
+                >${cartItem.name} - ${cartItem.cost}원 x
+                ${cartItem.quantity}</span
+              >
               <div>
                 <button
                   id="quantity-minus"

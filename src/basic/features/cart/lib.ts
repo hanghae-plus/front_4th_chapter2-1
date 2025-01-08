@@ -9,23 +9,23 @@ import {
 import { Cart } from "./model";
 
 export const calcCartItemTotalQuantities = (cart: Cart) => {
-  const totalQuantities = cart.reduce((acc, item) => acc + item.q, 0);
+  const totalQuantities = cart.reduce((acc, item) => acc + item.quantity, 0);
   return totalQuantities;
 };
 
 export const calcTotalCost = (cart: Cart) => {
   const totalCost = cart.reduce((acc, item) => {
-    return acc + item.q * item.val;
+    return acc + item.quantity * item.cost;
   }, 0);
   return totalCost;
 };
 
 export const calcDiscountedCost = (cart: Cart) => {
   const discountedCost = cart.reduce((acc, item) => {
-    if (item.q >= INDIVIDUAL_DISCOUNT_THRESHOLD) {
-      return acc + item.q * item.val * (1 - DISCOUNT[item.id]);
+    if (item.quantity >= INDIVIDUAL_DISCOUNT_THRESHOLD) {
+      return acc + item.quantity * item.cost * (1 - DISCOUNT[item.id]);
     }
-    return acc + item.q * item.val;
+    return acc + item.quantity * item.cost;
   }, 0);
 
   // 특별할인 날에 추가 할인

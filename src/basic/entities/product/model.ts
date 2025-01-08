@@ -3,8 +3,8 @@ import { createStore } from "@basic/shared/lib";
 export interface Product {
   id: string;
   name: string;
-  val: number;
-  q: number;
+  cost: number;
+  quantity: number;
 }
 
 interface ProductStore {
@@ -13,11 +13,11 @@ interface ProductStore {
 }
 
 const products: Product[] = [
-  { id: "p1", name: "상품1", val: 10000, q: 50 },
-  { id: "p2", name: "상품2", val: 20000, q: 30 },
-  { id: "p3", name: "상품3", val: 30000, q: 20 },
-  { id: "p4", name: "상품4", val: 15000, q: 0 },
-  { id: "p5", name: "상품5", val: 25000, q: 10 }
+  { id: "p1", name: "상품1", cost: 10000, quantity: 50 },
+  { id: "p2", name: "상품2", cost: 20000, quantity: 30 },
+  { id: "p3", name: "상품3", cost: 30000, quantity: 20 },
+  { id: "p4", name: "상품4", cost: 15000, quantity: 0 },
+  { id: "p5", name: "상품5", cost: 25000, quantity: 10 }
 ];
 
 export const productStore = createStore<ProductStore>((set, get) => ({
@@ -28,7 +28,7 @@ export const productStore = createStore<ProductStore>((set, get) => ({
 
     if (!product) return;
 
-    if (product.q + delta < 0) {
+    if (product.quantity + delta < 0) {
       return;
     }
 
@@ -36,7 +36,7 @@ export const productStore = createStore<ProductStore>((set, get) => ({
       ...prev,
       products: prev.products.map((product) =>
         product.id === productId
-          ? { ...product, q: product.q + delta }
+          ? { ...product, quantity: product.quantity + delta }
           : product
       )
     }));

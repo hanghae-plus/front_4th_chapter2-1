@@ -8,11 +8,12 @@ export function ProductSelect() {
     <select id="product-select" class="border rounded p-2 mr-2">
       ${products
         .map(
-          (product) => `
-            <option 
+          (product) => ` <option
               value="${product.id}"
-              ${product.q === 0 ? "disabled" : ""} 
-            >${product.name} - ${product.val}원</option>`
+              ${product.quantity === 0 ? "disabled" : ""}
+            >
+              ${product.name} - ${product.cost}원
+            </option>`
         )
         .join("")}
     </select>
