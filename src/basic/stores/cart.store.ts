@@ -2,6 +2,7 @@ import type { Product } from '../types/product.type';
 
 export const Cart = {
   items: [] as Product[],
+  lastSelectedId: null as string | null,
 
   getItem(productId: string) {
     return this.items.find((item) => item.id === productId);
@@ -15,6 +16,8 @@ export const Cart = {
     } else {
       this.items.push({ ...product, quantity });
     }
+
+    this.lastSelectedId = product.id;
   },
 
   decreaseItemQuantity(productId: string, quantity: number) {

@@ -1,6 +1,7 @@
-import { createElement } from './createElement';
+import { createElement } from '../../utils/createElement';
+import { $ } from '../../utils/dom.utils';
 
-import type { Product } from '../types/product.type';
+import type { Product } from '../../types/product.type';
 
 function createSelectOptions(products: Product[]): HTMLOptionElement[] {
   return products.map((product) => {
@@ -14,11 +15,13 @@ function createSelectOptions(products: Product[]): HTMLOptionElement[] {
   });
 }
 
-export function updateSelectOptions($select: HTMLSelectElement, products: Product[]) {
-  $select.innerHTML = '';
+export function renderSelectOptions(products: Product[]) {
+  const $ProductSelect = $<HTMLSelectElement>('#product-select');
+
+  $ProductSelect.innerHTML = '';
   const productOptions = createSelectOptions(products);
 
   productOptions.forEach((option) => {
-    $select.appendChild(option);
+    $ProductSelect.appendChild(option);
   });
 }
