@@ -32,7 +32,6 @@ export default function main() {
   const $root = document.getElementById('app');
   $root.innerHTML = Container();
 
-  renderProductSelectOptionElement({ productList: PRODUCT_LIST });
   renderStockStatus({ productList: PRODUCT_LIST });
 
   setTimeout(function () {

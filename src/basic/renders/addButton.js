@@ -11,6 +11,7 @@ export const createAddButtonElement = ({ cartItems, productList }) => {
 
   document.getElementById('app').addEventListener('click', (e) => {
     if (e.target.id === 'add-to-cart') {
+      // selected value props로 받기
       const selectedProductId = document.getElementById('product-select').value;
       const selectedProduct = productList.find((product) => {
         return product.id === selectedProductId;

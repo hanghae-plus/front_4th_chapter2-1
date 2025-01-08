@@ -1,8 +1,8 @@
 import { CartItems } from './CartItems';
 import { CartTotal } from './CartTotal';
 import { Header } from './Header';
+import { ProductSelect } from './ProductSelect';
 import { createAddButtonElement } from '../renders/addButton';
-import { createProductSelectElement } from '../renders/productSelect';
 import { createStockStatusElement } from '../renders/stockStatus';
 
 export const Wrap = () => {
@@ -21,7 +21,7 @@ export const Wrap = () => {
       ${Header()}
       ${CartItems({ cartItems: CART_ITEMS, productList: PRODUCT_LIST })}
       ${CartTotal({ cartItems: CART_ITEMS })}
-      ${createProductSelectElement().outerHTML}
+      ${ProductSelect({ productList: PRODUCT_LIST })}
       ${
         createAddButtonElement({
           cartItems: CART_ITEMS,
