@@ -3,7 +3,7 @@ import {
   startLightningSale,
   startRecommendProduct
 } from './logic/promotionLogic.js';
-import { updateSelectedOptions } from './logic/stockLogic.js';
+import { initSelectableData } from './logic/stockLogic.js';
 
 function main() {
   const root = document.getElementById('app');
@@ -11,7 +11,7 @@ function main() {
 
   const selectedOptions = document.getElementById('product-select');
 
-  updateSelectedOptions(selectedOptions);
+  initSelectableData(selectedOptions);
   startLightningSale(selectedOptions);
   startRecommendProduct(selectedOptions);
 }

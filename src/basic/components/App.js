@@ -1,7 +1,7 @@
 import { createElement } from '../core/createElement.js';
-import { AddToCartButton, CartHeader, CartItems, CartTotal } from './Cart.js';
+import { AddToCartButton, CartTitle, CartItems } from './Cart.js';
 import { ProductSelector, StockStatus } from './Product.js';
-
+import { PaymentInfo } from './Payment.js';
 const App = () => {
   const container = createElement('div', {
     className: 'bg-gray-100 p-8'
@@ -13,12 +13,12 @@ const App = () => {
   });
 
   const initialComponents = [
-    CartHeader(),
+    CartTitle(),
     ProductSelector(),
     AddToCartButton(),
     StockStatus(),
     CartItems(),
-    CartTotal()
+    PaymentInfo()
   ];
 
   initialComponents.forEach((component) => wrapper.appendChild(component));
