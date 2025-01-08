@@ -2,6 +2,7 @@ import renderBonusPoints from './features/bonus-points/ui.js';
 import { isOutOfStock, isOutOfStockRange } from './entities/stock/model.js';
 import { updateStockInformation } from './features/stock-status/ui.js';
 import { STOCK } from './shared/lib/stock/config.js';
+import { updateSelectedOptions } from './features/product-select/ui.js';
 
 let products,
   selectProductElement,
@@ -38,18 +39,6 @@ const SUGGEST_EVENT = Object.freeze({
   TIMEOUT_DELAY: 20000,
   INTERVAL_DELAY: 60000,
 });
-
-const getOptionsMessage = (product) => `${product.name} - ${product.price}원`;
-const updateSelectedOptions = (parentElement, prodList) => {
-  parentElement.innerHTML = '';
-  prodList.forEach((product) => {
-    const option = document.createElement('option');
-    option.value = product.id;
-    option.textContent = getOptionsMessage(product);
-    option.disabled = isOutOfStock(product);
-    parentElement.appendChild(option);
-  });
-};
 
 const isTuesday = () => new Date().getDay() === TUESDAY_NUMBER;
 const discountRateMessage = (discountRate) =>
