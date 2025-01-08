@@ -1,25 +1,35 @@
-let prodList, sel, addBtn, cartDisp, sum, stockInfo;
-let lastSel,
-  bonusPts = 0,
-  totalAmt = 0,
-  itemCnt = 0;
-function main() {
-  prodList = [
+let appState = {
+  prodList: [
     { id: "p1", name: "상품1", val: 10000, q: 50 },
     { id: "p2", name: "상품2", val: 20000, q: 30 },
     { id: "p3", name: "상품3", val: 30000, q: 20 },
     { id: "p4", name: "상품4", val: 15000, q: 0 },
     { id: "p5", name: "상품5", val: 25000, q: 10 },
-  ];
-  let root = document.getElementById("app");
+  ],
+  lastSel: null,
+  bonusPts: 0,
+  totalAmt: 0,
+  itemCnt: 0,
+};
+
+function initGlobalElements() {
+  return {
+    root: document.getElementById("app"),
+    cartDisp: document.createElement("div"),
+    sum: document.createElement("div"),
+    sel: document.createElement("select"),
+    addBtn: document.createElement("button"),
+    stockInfo: document.createElement("div"),
+  };
+}
+
+function main() {
   let cont = document.createElement("div");
   let wrap = document.createElement("div");
   let hTxt = document.createElement("h1");
-  cartDisp = document.createElement("div");
-  sum = document.createElement("div");
-  sel = document.createElement("select");
-  addBtn = document.createElement("button");
-  stockInfo = document.createElement("div");
+
+  const { root, cartDisp, sum, sel, addBtn, stockInfo } = initGlobalElements();
+
   cartDisp.id = "cart-items";
   sum.id = "cart-total";
   sel.id = "product-select";
@@ -47,7 +57,10 @@ function main() {
   calcCart();
   setTimeout(function () {
     setInterval(function () {
-      let luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
+      let luckyItem =
+        appState.appState.prodList[
+          Math.floor(Math.random() * appState.appState.prodList.length)
+        ];
       if (Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val = Math.round(luckyItem.val * 0.8);
         alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
@@ -57,9 +70,9 @@ function main() {
   }, Math.random() * 10000);
   setTimeout(function () {
     setInterval(function () {
-      if (lastSel) {
-        let suggest = prodList.find(function (item) {
-          return item.id !== lastSel && item.q > 0;
+      if (appState.lastSel) {
+        let suggest = appState.appState.prodList.find(function (item) {
+          return item.id !== appState.lastSel && item.q > 0;
         });
         if (suggest) {
           alert(
@@ -74,7 +87,7 @@ function main() {
 }
 function updateSelOpts() {
   sel.innerHTML = "";
-  prodList.forEach(function (item) {
+  appState.appState.prodList.forEach(function (item) {
     let opt = document.createElement("option");
     opt.value = item.id;
     opt.textContent = item.name + " - " + item.val + "원";
@@ -83,16 +96,16 @@ function updateSelOpts() {
   });
 }
 function calcCart() {
-  totalAmt = 0;
-  itemCnt = 0;
+  appState.totalAmt = 0;
+  appState.totalAmt = 0;
   let cartItems = cartDisp.children;
   let subTot = 0;
   for (let i = 0; i < cartItems.length; i++) {
     (function () {
       let curItem;
-      for (let j = 0; j < prodList.length; j++) {
-        if (prodList[j].id === cartItems[i].id) {
-          curItem = prodList[j];
+      for (let j = 0; j < appState.appState.prodList.length; j++) {
+        if (appState.prodList[j].id === cartItems[i].id) {
+          curItem = appState.prodList[j];
           break;
         }
       }
@@ -101,7 +114,7 @@ function calcCart() {
       );
       let itemTot = curItem.val * q;
       let disc = 0;
-      itemCnt += q;
+      appState.totalAmt += q;
       subTot += itemTot;
       if (q >= 10) {
         if (curItem.id === "p1") disc = 0.1;
@@ -110,27 +123,27 @@ function calcCart() {
         else if (curItem.id === "p4") disc = 0.05;
         else if (curItem.id === "p5") disc = 0.25;
       }
-      totalAmt += itemTot * (1 - disc);
+      appState.totalAmt += itemTot * (1 - disc);
     })();
   }
   let discRate = 0;
-  if (itemCnt >= 30) {
-    let bulkDisc = totalAmt * 0.25;
-    let itemDisc = subTot - totalAmt;
+  if (appState.totalAmt >= 30) {
+    let bulkDisc = appState.totalAmt * 0.25;
+    let itemDisc = subTot - appState.totalAmt;
     if (bulkDisc > itemDisc) {
-      totalAmt = subTot * (1 - 0.25);
+      appState.totalAmt = subTot * (1 - 0.25);
       discRate = 0.25;
     } else {
-      discRate = (subTot - totalAmt) / subTot;
+      discRate = (subTot - appState.totalAmt) / subTot;
     }
   } else {
-    discRate = (subTot - totalAmt) / subTot;
+    discRate = (subTot - appState.totalAmt) / subTot;
   }
   if (new Date().getDay() === 2) {
-    totalAmt *= 1 - 0.1;
+    appState.totalAmt *= 1 - 0.1;
     discRate = Math.max(discRate, 0.1);
   }
-  sum.textContent = "총액: " + Math.round(totalAmt) + "원";
+  sum.textContent = "총액: " + Math.round(appState.totalAmt) + "원";
   if (discRate > 0) {
     let span = document.createElement("span");
     span.className = "text-green-500 ml-2";
@@ -141,7 +154,7 @@ function calcCart() {
   renderBonusPts();
 }
 const renderBonusPts = () => {
-  bonusPts = Math.floor(totalAmt / 1000);
+  appState.bonusPts = Math.floor(appState.totalAmt / 1000);
   let ptsTag = document.getElementById("loyalty-points");
   if (!ptsTag) {
     ptsTag = document.createElement("span");
@@ -149,11 +162,11 @@ const renderBonusPts = () => {
     ptsTag.className = "text-blue-500 ml-2";
     sum.appendChild(ptsTag);
   }
-  ptsTag.textContent = "(포인트: " + bonusPts + ")";
+  ptsTag.textContent = "(포인트: " + appState.bonusPts + ")";
 };
 function updateStockInfo() {
   let infoMsg = "";
-  prodList.forEach(function (item) {
+  appState.prodList.forEach(function (item) {
     if (item.q < 5) {
       infoMsg +=
         item.name +
@@ -167,7 +180,7 @@ function updateStockInfo() {
 main();
 addBtn.addEventListener("click", function () {
   let selItem = sel.value;
-  let itemToAdd = prodList.find(function (p) {
+  let itemToAdd = appState.prodList.find(function (p) {
     return p.id === selItem;
   });
   if (itemToAdd && itemToAdd.q > 0) {
@@ -205,7 +218,7 @@ addBtn.addEventListener("click", function () {
       itemToAdd.q--;
     }
     calcCart();
-    lastSel = selItem;
+    appState.lastSel = selItem;
   }
 });
 cartDisp.addEventListener("click", function (event) {
@@ -216,7 +229,7 @@ cartDisp.addEventListener("click", function (event) {
   ) {
     let prodId = tgt.dataset.productId;
     let itemElem = document.getElementById(prodId);
-    let prod = prodList.find(function (p) {
+    let prod = appState.prodList.find(function (p) {
       return p.id === prodId;
     });
     if (tgt.classList.contains("quantity-change")) {
