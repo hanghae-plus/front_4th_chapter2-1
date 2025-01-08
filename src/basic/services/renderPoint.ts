@@ -1,4 +1,4 @@
-import { createElement } from '../utils/createElement';
+import { createElement as h } from '../utils/createElement';
 import { $ } from '../utils/dom.utils';
 
 export const renderBonusPoint = (totalAmount: number) => {
@@ -12,7 +12,7 @@ export const renderBonusPoint = (totalAmount: number) => {
     return;
   }
 
-  const newPointTag = createElement('span', {
+  const newPointTag = h('span', {
     id: 'loyalty-points',
     className: 'text-blue-500 ml-2',
     textContent: pointText,

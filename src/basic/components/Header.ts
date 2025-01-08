@@ -1,7 +1,7 @@
-import { createElement } from '../utils/createElement';
+import { createElement as h } from '../utils/createElement';
 
 export const Header = () => {
-  return createElement('h1', {
+  return h('h1', {
     className: 'text-2xl font-bold mb-4',
     textContent: '장바구니',
   });

@@ -1,9 +1,7 @@
-import { renderCartProducts } from './components/CartProducts';
-import { renderCartTotal, renderDiscount } from './components/CartTotal';
 import { Main } from './components/Main';
-import { renderBonusPoint } from './components/Point';
 import { products } from './data/product';
-import { calculateFinalAmount } from './services/calcProductDiscount';
+import { renderCartProducts } from './services/renderCartProducts';
+import { renderCartSummary } from './services/renderCartSummary';
 import { Cart } from './stores/cart.store';
 import { $ } from './utils/dom.utils';
 import { updateSelectOptions } from './utils/select.utils';
@@ -47,29 +45,6 @@ function main() {
     }, 60000);
   }, Math.random() * 20000);
 }
-
-const renderCartSummary = () => {
-  const { amount, discountRate } = calculateFinalAmount(Cart.items);
-  const $cartTotal = $('#cart-total');
-
-  renderCartTotal($cartTotal, amount);
-  renderDiscount($cartTotal, discountRate);
-  renderProductStock();
-  renderBonusPoint(amount);
-};
-
-const renderProductStock = () => {
-  let stockStatusMessage = '';
-
-  products.forEach((item) => {
-    if (item.quantity < 5) {
-      stockStatusMessage += `${item.name}: ${
-        item.quantity > 0 ? `재고 부족 (${item.quantity}개 남음)` : '품절'
-      }\n`;
-    }
-  });
-  $('#stock-status').textContent = stockStatusMessage;
-};
 
 main();
 
