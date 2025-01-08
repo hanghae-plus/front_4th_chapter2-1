@@ -21,7 +21,7 @@
  * - 파일 이동, 변경
  */
 
-import { createCartItemElement } from './renders/cartItem';
+import { createAddButtonElement } from './renders/addButton';
 import { createCartItemsElement, renderCartItems } from './renders/cartItems';
 import { createCartTotalElement, renderCartTotal } from './renders/cartTotal';
 import { createContainerElement } from './renders/container';
@@ -38,61 +38,20 @@ import { createWrapElement } from './renders/warp';
 import { CART_ITEMS } from './store/cartItems';
 import { PRODUCT_LIST } from './store/productList';
 
+export const lastSelectedProduct = { id: null };
+
 export default function main() {
-  let lastSelectedProductId;
-
   const $header = createHeaderElement();
-
   const $cartItems = createCartItemsElement({
     cartItems: CART_ITEMS,
     productList: PRODUCT_LIST,
   });
-
   const $cartTotal = createCartTotalElement();
-
   const $productSelect = createProductSelectElement();
-
-  const $addButton = document.createElement('button');
-  $addButton.id = 'add-to-cart';
-  $addButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  $addButton.textContent = '추가';
-  $addButton.addEventListener('click', () => {
-    const selectedProductId = $productSelect.value;
-    const selectedProduct = PRODUCT_LIST.find((product) => {
-      return product.id === selectedProductId;
-    });
-    if (selectedProduct && selectedProduct.stock > 0) {
-      const $cartItem = document.getElementById(selectedProduct.id);
-      if ($cartItem) {
-        const cartItem = [...CART_ITEMS].find((item) => {
-          return item.id === selectedProduct.id;
-        });
-
-        cartItem.quantity += 1;
-        selectedProduct.stock--;
-
-        renderCartItems({ cartItems: CART_ITEMS });
-      } else {
-        const newCartItem = {
-          id: selectedProduct.id,
-          name: selectedProduct.name,
-          price: selectedProduct.price,
-          quantity: 1,
-        };
-        CART_ITEMS.add(newCartItem);
-
-        const $newCartItem = createCartItemElement({ cartItem: newCartItem });
-        $cartItems.appendChild($newCartItem);
-        selectedProduct.stock--;
-      }
-      renderCartTotal({ cartItems: CART_ITEMS });
-      renderStockStatus({ productList: PRODUCT_LIST });
-      lastSelectedProductId = selectedProductId;
-    } else {
-      alert('재고가 부족합니다.');
-    }
+  const $addButton = createAddButtonElement({
+    cartItems: CART_ITEMS,
+    productList: PRODUCT_LIST,
   });
-
   const $stockStatus = createStockStatusElement();
 
   const $wrap = createWrapElement();
@@ -127,9 +86,9 @@ export default function main() {
 
   setTimeout(function () {
     setInterval(function () {
-      if (lastSelectedProductId) {
+      if (lastSelectedProduct.id) {
         let suggest = PRODUCT_LIST.find(function (item) {
-          return item.id !== lastSelectedProductId && item.stock > 0;
+          return item.id !== lastSelectedProduct.id && item.stock > 0;
         });
         if (suggest) {
           alert(
