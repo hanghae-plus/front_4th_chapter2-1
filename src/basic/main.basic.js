@@ -43,62 +43,13 @@ export default function main() {
 
   const $header = createHeaderElement();
 
-  const $cartItems = createCartItemsElement();
-  $cartItems.addEventListener('click', (event) => {
-    const $targetElement = event.target;
-    if (
-      $targetElement.classList.contains('quantity-change') ||
-      $targetElement.classList.contains('remove-item')
-    ) {
-      const productId = $targetElement.dataset.productId;
-      const $cartItem = document.getElementById(productId);
-      const cartItem = [...CART_ITEMS].find((item) => {
-        return item.id === productId;
-      });
-      const product = PRODUCT_LIST.find((product) => {
-        return product.id === productId;
-      });
-      if ($targetElement.classList.contains('quantity-change')) {
-        const orderUnit = parseInt($targetElement.dataset.change);
-        const newQuantity = cartItem.quantity + orderUnit;
-        if (
-          newQuantity > 0 &&
-          newQuantity <= product.stock + cartItem.quantity
-        ) {
-          // renderCartItems({ cartItems: CART_ITEMS });를 사용하면 추가되면서 버튼이 새로 생성되면서, 테스트케이스가 실패함.
-          $cartItem.querySelector('span').textContent =
-            `${product.name} - ${product.price}원 x ${newQuantity}`;
-
-          cartItem.quantity = newQuantity;
-          product.stock -= orderUnit;
-        } else if (newQuantity <= 0) {
-          CART_ITEMS.forEach((item) => {
-            if (item.id === productId) {
-              CART_ITEMS.delete(item);
-            }
-          });
-          renderCartItems({ cartItems: CART_ITEMS });
-
-          product.stock -= orderUnit;
-        } else {
-          alert('재고가 부족합니다.');
-        }
-      } else if ($targetElement.classList.contains('remove-item')) {
-        product.stock += cartItem.quantity;
-        CART_ITEMS.forEach((item) => {
-          if (item.id === productId) {
-            CART_ITEMS.delete(item);
-          }
-        });
-
-        renderCartItems({ cartItems: CART_ITEMS });
-      }
-      renderCartTotal({ cartItems: CART_ITEMS });
-      renderStockStatus({ productList: PRODUCT_LIST });
-    }
+  const $cartItems = createCartItemsElement({
+    cartItems: CART_ITEMS,
+    productList: PRODUCT_LIST,
   });
 
   const $cartTotal = createCartTotalElement();
+
   const $productSelect = createProductSelectElement();
 
   const $addButton = document.createElement('button');
