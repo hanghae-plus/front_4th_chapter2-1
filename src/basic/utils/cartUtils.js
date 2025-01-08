@@ -46,18 +46,11 @@ const calcOriginTotalPrice = () => {
 };
 
 const calcDiscountRate = (itemCnt, originTotalPrice) => {
-  if (itemCnt >= 30) {
-    const bulkDiscPrice = originTotalPrice * 0.25;
-    const normalDiscPrice = originTotalPrice - cartTotalPrice;
-    if (bulkDiscPrice > normalDiscPrice) {
-      cartTotalPrice = originTotalPrice * (1 - 0.25);
-      return 0.25;
-    } else {
-      return (originTotalPrice - cartTotalPrice) / originTotalPrice;
-    }
-  } else {
-    return (originTotalPrice - cartTotalPrice) / originTotalPrice;
-  }
+  const bulkDiscPrice = originTotalPrice * 0.25;
+  const normalDiscPrice = originTotalPrice - cartTotalPrice;
+  const originDiscountRate = (originTotalPrice - cartTotalPrice) / originTotalPrice;
+
+  return itemCnt >= 30 && bulkDiscPrice > normalDiscPrice ? 0.25 : originDiscountRate;
 };
 
 export const calcCart = () => {
