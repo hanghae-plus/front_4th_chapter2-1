@@ -1,4 +1,4 @@
-import { Product } from '../../shared/entity/model/Product';
+import { Product } from '../../../shared/entity/model/Product';
 
 const getStockInfo = (productList: Product[]) => {
   let message = '';
