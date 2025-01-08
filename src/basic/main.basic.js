@@ -1,6 +1,7 @@
 import { products } from './data/products';
 import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './features/cart/constants/policy';
 import { applyDiscount } from './features/cart/utils/discount';
+import CartStore from './stores/cart.store';
 import ProductStore from './stores/product.store';
 
 const ELEMENT_IDS = {
@@ -20,8 +21,6 @@ const getCartItemsElement = () => document.getElementById(ELEMENT_IDS.CART_ITEMS
 const getPointElement = () => document.getElementById(ELEMENT_IDS.POINT);
 const getProductItemElement = (id) => document.getElementById(id);
 
-const productStore = ProductStore.createInstance();
-
 const main = (callbackFn) => {
   const root = document.getElementById('app');
   root.innerHTML = /* html */ `
@@ -36,6 +35,9 @@ const main = (callbackFn) => {
       </div>
     </div>
   `;
+
+  window.productStore = ProductStore.createInstance();
+  window.cartStore = CartStore.createInstance();
 
   callbackFn();
 };
@@ -57,68 +59,74 @@ const updateProductList = () => {
 };
 
 const calcCart = () => {
-  productStore.setAmount(0);
-  productStore.setItemCount(0);
-  const cartItems = getCartItemsElement().children;
-  let subTotal = 0;
-  for (let i = 0; i < cartItems.length; i++) {
-    (() => {
-      let currentProduct;
-      for (let j = 0; j < products.length; j++) {
-        if (products[j].id === cartItems[i].id) {
-          currentProduct = products[j];
-          break;
-        }
-      }
-      const quantity = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
-      const itemAmount = currentProduct.price * quantity;
-      let discountRate = 0;
-      productStore.setItemCount(productStore.getItemCount() + quantity);
-      subTotal += itemAmount;
-      if (quantity >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
-        discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES[currentProduct.id] || 0;
-      }
-      productStore.setAmount(productStore.getAmount() + applyDiscount({ amount: itemAmount, discountRate }));
-    })();
-  }
+  const cartItems = cartStore.getCartItems();
+  const subTotal = cartStore.getAmount();
+  let finalAmount = subTotal;
   let totalDiscountRate = 0;
-  if (productStore.getItemCount() >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
+
+  // 각 상품별 할인 계산
+  finalAmount = cartItems.reduce((total, item) => {
+    const itemAmount = item.price * item.quantity;
+    let discountRate = 0;
+
+    if (item.quantity >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
+      discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES[item.id] || 0;
+    }
+
+    return total + applyDiscount({ amount: itemAmount, discountRate });
+  }, 0);
+
+  const totalItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
+
+  // 대량 구매 할인 계산
+  if (totalItemCount >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
     const bulkDiscount = applyDiscount({
       amount: subTotal,
       discountRate: DISCOUNT_POLICY.BULK_DISCOUNT_RATE,
     });
-    const itemDiscount = subTotal - productStore.getAmount();
+
+    const itemDiscount = subTotal - finalAmount;
     if (bulkDiscount > itemDiscount) {
-      productStore.setAmount(bulkDiscount);
+      finalAmount = bulkDiscount;
       totalDiscountRate = DISCOUNT_POLICY.BULK_DISCOUNT_RATE;
     } else {
-      totalDiscountRate = (subTotal - productStore.getAmount()) / subTotal;
+      totalDiscountRate = (subTotal - finalAmount) / subTotal;
     }
   } else {
-    totalDiscountRate = (subTotal - productStore.getAmount()) / subTotal;
+    totalDiscountRate = (subTotal - finalAmount) / subTotal;
   }
+
+  // 화요일 할인 계산
   if (new Date().getDay() === 2) {
-    productStore.setAmount(
-      applyDiscount({
-        amount: productStore.getAmount(),
-        discountRate: DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday,
-      }),
-    );
+    finalAmount = applyDiscount({
+      amount: finalAmount,
+      discountRate: DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday,
+    });
     totalDiscountRate = Math.max(totalDiscountRate, DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday);
   }
 
-  getCartTotalElement().textContent = '총액: ' + Math.round(productStore.getAmount()) + '원';
+  // store 상태 업데이트
+  productStore.setAmount(finalAmount);
+  productStore.setItemCount(totalItemCount);
 
-  if (totalDiscountRate > 0) {
-    getCartTotalElement().insertAdjacentHTML(
-      'beforeend',
-      /* html */ `
-      <span class="text-green-500 ml-2">(${(totalDiscountRate * 100).toFixed(1)}% 할인 적용)</span>
-    `,
-    );
-  }
+  // UI 업데이트
+  renderCartTotal(finalAmount, totalDiscountRate);
   renderStockStatus();
   renderPoints();
+};
+
+const renderCartTotal = (amount, discountRate) => {
+  const cartTotal = getCartTotalElement();
+  cartTotal.textContent = `총액: ${Math.round(amount)}원`;
+
+  if (discountRate > 0) {
+    cartTotal.insertAdjacentHTML(
+      'beforeend',
+      /* html */ `
+      <span class="text-green-500 ml-2">(${(discountRate * 100).toFixed(1)}% 할인 적용)</span>
+      `,
+    );
+  }
 };
 
 const renderPoints = () => {
@@ -173,6 +181,8 @@ main(() => {
     const selectedProductId = getProductSelectElement().value;
 
     const selectedProductModel = products.find(({ id }) => id === selectedProductId);
+    cartStore.addCartItem(selectedProductModel);
+    const cartItem = cartStore.getCartItem(selectedProductId);
 
     if (!selectedProductModel.isSoldOut) {
       const productItemElement = getProductItemElement(selectedProductModel.id);
@@ -180,10 +190,8 @@ main(() => {
       if (productItemElement) {
         const updatedCartItem = productItemElement.querySelector('span');
 
-        const updatedCartItemQuantity = parseInt(updatedCartItem.textContent.split('x ')[1]) + 1;
-
-        if (updatedCartItemQuantity <= selectedProductModel.quantity) {
-          updatedCartItem.textContent = `${selectedProductModel.name} - ${selectedProductModel.price}원 x ${updatedCartItemQuantity}`;
+        if (cartItem.getQuantity() <= selectedProductModel.quantity) {
+          updatedCartItem.textContent = `${selectedProductModel.name} - ${selectedProductModel.price}원 x ${cartItem.getQuantity()}`;
 
           selectedProductModel.decreaseQuantity(1);
         } else {
@@ -194,7 +202,7 @@ main(() => {
           'beforeend',
           /* html */ `
           <div id="${selectedProductModel.id}" class="flex justify-between items-center mb-2">
-            <span>${selectedProductModel.name} - ${selectedProductModel.price}원 x 1</span>
+            <span>${selectedProductModel.name} - ${selectedProductModel.price}원 x ${cartItem.getQuantity()}</span>
             <div>
               <button 
                 class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 

@@ -41,6 +41,13 @@ class ProductStore {
   setLastSelectedProduct(value) {
     this.lastSelectedProduct = value;
   }
+
+  destroyInstance() {
+    this.points = 0;
+    this.amount = 0;
+    this.itemCount = 0;
+    this.lastSelectedProduct = null;
+  }
 }
 
 export default ProductStore;
