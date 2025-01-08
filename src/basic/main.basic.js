@@ -1,22 +1,21 @@
-let productList,
-  ElementProductSelect,
-  ElementAddCartBtn,
-  ElementCartItems,
-  ElementTotalPrice,
-  ElementStockStatus;
 let lastAddCartProductId,
-  loyaltyPoints = 0,
-  totalAmount = 0,
-  totalCount = 0;
+  totalAmount = 0;
+
+const productList = [
+  { id: 'p1', name: '상품1', price: 10000, stock: 50 },
+  { id: 'p2', name: '상품2', price: 20000, stock: 30 },
+  { id: 'p3', name: '상품3', price: 30000, stock: 20 },
+  { id: 'p4', name: '상품4', price: 15000, stock: 0 },
+  { id: 'p5', name: '상품5', price: 25000, stock: 10 },
+];
+
+const ElementProductSelect = document.createElement('select');
+const ElementAddCartBtn = document.createElement('button');
+const ElementCartItems = document.createElement('div');
+const ElementTotalPrice = document.createElement('div');
+const ElementStockStatus = document.createElement('div');
 
 function main() {
-  productList = [
-    { id: 'p1', name: '상품1', price: 10000, stock: 50 },
-    { id: 'p2', name: '상품2', price: 20000, stock: 30 },
-    { id: 'p3', name: '상품3', price: 30000, stock: 20 },
-    { id: 'p4', name: '상품4', price: 15000, stock: 0 },
-    { id: 'p5', name: '상품5', price: 25000, stock: 10 },
-  ];
   renderCart();
 
   renderProductSelectOptions();
@@ -59,12 +58,6 @@ const renderCart = () => {
   const wrap = document.createElement('div');
   const hTxt = document.createElement('h1');
 
-  ElementCartItems = document.createElement('div');
-  ElementTotalPrice = document.createElement('div');
-  ElementProductSelect = document.createElement('select');
-  ElementAddCartBtn = document.createElement('button');
-  ElementStockStatus = document.createElement('div');
-
   cont.className = 'bg-gray-100 p-8';
   wrap.className =
     'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
@@ -105,7 +98,7 @@ const renderProductSelectOptions = () => {
 };
 
 const renderLoyaltyPoints = () => {
-  loyaltyPoints = Math.floor(totalAmount / 1000);
+  const loyaltyPoints = Math.floor(totalAmount / 1000);
   let ElementLoyaltyPoints = document.getElementById('loyalty-points');
 
   if (!ElementLoyaltyPoints) {
@@ -136,7 +129,7 @@ const renderStockInfo = () => {
 
 const calcCart = () => {
   totalAmount = 0;
-  totalCount = 0;
+  let totalCount = 0;
   const cartItems = ElementCartItems.children;
   let subTot = 0;
 
