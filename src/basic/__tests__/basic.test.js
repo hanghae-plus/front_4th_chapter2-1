@@ -100,7 +100,7 @@ describe('basic test', () => {
     it('포인트가 올바르게 계산되는지 확인', () => {
       sel.value = 'p2';
       addBtn.click();
-      expect(document.getElementById('points').textContent).toContain('(포인트: 128)');
+      expect(document.getElementById('point').textContent).toContain('(포인트: 128)');
     });
 
     it('번개세일 기능이 정상적으로 동작하는지 확인', () => {

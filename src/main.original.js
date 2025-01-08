@@ -145,10 +145,10 @@ function calcCart() {
 }
 const renderBonusPts = () => {
   bonusPts = Math.floor(totalAmt / 1000);
-  let ptsTag = document.getElementById('points');
+  let ptsTag = document.getElementById('point');
   if (!ptsTag) {
     ptsTag = document.createElement('span');
-    ptsTag.id = 'points';
+    ptsTag.id = 'point';
     ptsTag.className = 'text-blue-500 ml-2';
     sum.appendChild(ptsTag);
   }

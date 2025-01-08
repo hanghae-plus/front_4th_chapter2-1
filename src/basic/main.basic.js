@@ -9,6 +9,7 @@ const ELEMENT_IDS = {
   PRODUCT_SELECT: 'product-select',
   CART_TOTAL: 'cart-total',
   CART_ITEMS: 'cart-items',
+  POINT: 'point',
 };
 
 const getStockStatusElement = () => document.getElementById(ELEMENT_IDS.STOCK_STATUS);
@@ -16,6 +17,7 @@ const getAddCartButtonElement = () => document.getElementById(ELEMENT_IDS.ADD_TO
 const getProductSelectElement = () => document.getElementById(ELEMENT_IDS.PRODUCT_SELECT);
 const getCartTotalElement = () => document.getElementById(ELEMENT_IDS.CART_TOTAL);
 const getCartItemsElement = () => document.getElementById(ELEMENT_IDS.CART_ITEMS);
+const getPointElement = () => document.getElementById(ELEMENT_IDS.POINT);
 
 const store = ProductStore.createInstance();
 
@@ -37,18 +39,19 @@ const main = (callbackFn) => {
   callbackFn();
 };
 
-const updateProductList = () => {
+const clearProductSelectElementChildren = () => {
   getProductSelectElement().innerHTML = '';
-  products.forEach((item) => {
-    const option = document.createElement('option');
-    option.value = item.id;
-    option.textContent = item.name + ' - ' + item.price + '원';
+};
 
-    if (item.quantity === 0) {
-      option.disabled = true;
-    }
-
-    getProductSelectElement().appendChild(option);
+const updateProductList = () => {
+  clearProductSelectElementChildren();
+  products.forEach(({ id, name, price, quantity }) => {
+    getProductSelectElement().insertAdjacentHTML(
+      'beforeend',
+      /* html */ `
+      <option value="${id}" ${quantity === 0 ? 'disabled' : null}>${`${name} - ${price}원`}</option>
+    `,
+    );
   });
 };
 
@@ -102,12 +105,16 @@ const calcCart = () => {
     );
     totalDiscountRate = Math.max(totalDiscountRate, DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday);
   }
+
   getCartTotalElement().textContent = '총액: ' + Math.round(store.getAmount()) + '원';
+
   if (totalDiscountRate > 0) {
-    const span = document.createElement('span');
-    span.className = 'text-green-500 ml-2';
-    span.textContent = '(' + (totalDiscountRate * 100).toFixed(1) + '% 할인 적용)';
-    getCartTotalElement().appendChild(span);
+    getCartTotalElement().insertAdjacentHTML(
+      'beforeend',
+      /* html */ `
+      <span class="text-green-500 ml-2">(${(totalDiscountRate * 100).toFixed(1)}% 할인 적용)</span>
+    `,
+    );
   }
   renderStockStatus();
   renderPoints();
@@ -116,16 +123,16 @@ const calcCart = () => {
 const renderPoints = () => {
   store.setPoints(Math.floor(store.getAmount() / 1000));
 
-  let pointsElement = document.getElementById('points');
-
-  if (!pointsElement) {
-    pointsElement = document.createElement('span');
-    pointsElement.id = 'points';
-    pointsElement.className = 'text-blue-500 ml-2';
-    getCartTotalElement().appendChild(pointsElement);
+  if (!getPointElement()) {
+    getCartTotalElement().insertAdjacentHTML(
+      'beforeend',
+      /* html */ `
+      <span id="${ELEMENT_IDS.POINT}" class="text-blue-500 ml-2"></span>
+    `.trim(),
+    );
   }
 
-  pointsElement.textContent = `(포인트: ${store.getPoints()})`;
+  getPointElement().textContent = `(포인트: ${store.getPoints()})`;
 };
 
 const renderStockStatus = () => {
