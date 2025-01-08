@@ -12,8 +12,8 @@ import { DISCOUNT_RATE } from './shared/constant/discountRate';
 
 var SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
 var lastSelectedItemValue,
-  totalAmount = 0,
-  itemCount = 0;
+  totalAmount = 0;
+let totalItemCount = 0;
 function main() {
   var Root = document.getElementById('app');
   let Container = document.createElement('div');
@@ -63,7 +63,7 @@ function main() {
 
 function calculateCartItems() {
   totalAmount = 0;
-  itemCount = 0;
+  totalItemCount = 0;
   var cartItems = CartItemsView.children;
   var subTotalPrice = 0;
   for (var i = 0; i < cartItems.length; i++) {
@@ -72,14 +72,14 @@ function calculateCartItems() {
         (product) => product.id === cartItems[i].id,
       );
       if (!currentItem) return;
-      var q = parseInt(
+      const currentQuantity = parseInt(
         cartItems[i].querySelector('span').textContent.split('x ')[1],
       );
       var itemTotalPrice = currentItem.val * q;
       var discountRate = 0;
-      itemCount += q;
+      totalItemCount += currentQuantity;
       subTotalPrice += itemTotalPrice;
-      if (q >= 10) {
+      if (currentQuantity >= 10) {
         if (DISCOUNT_RATE[currentItem.id])
           discountRate = getDiscountRate(currentItem.id);
       }
@@ -87,7 +87,7 @@ function calculateCartItems() {
     })();
   }
   let discountRate = 0;
-  if (itemCount >= 30) {
+  if (totalItemCount >= 30) {
     var bulkDiscount = totalAmount * 0.25;
     var itemDiscount = subTotalPrice - totalAmount;
     if (bulkDiscount > itemDiscount) {
