@@ -1,9 +1,9 @@
-
-import BonusPoint from '@/components/BonusPoint';
 import CartTotal from '@/components/CartTotal';
 import Stock from '@/components/Stock';
 import { cartStore } from '@/stores/cartStore';
 import { DISCOUNT_RATES } from '@/types/constant';
+
+import BonusPoint from '@components/Point';
 
 export const calcCart = () => {
   let totalAmount = 0;

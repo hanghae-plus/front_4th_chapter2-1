@@ -3,7 +3,7 @@ import { createState } from '@/utils/createStore';
 
 export const cartStore = createState<Cart>({
   lastSaleItem: null,
-  bonusPoint: 0,
+  point: 0,
   totalAmount: 0,
   itemCount: 0,
   productList: [

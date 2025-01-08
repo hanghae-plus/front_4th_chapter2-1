@@ -1,10 +1,12 @@
-
-import BonusPoint from '@//components/BonusPoint';
 import CartTotal from '@/components/CartTotal';
 import ProductSelect from '@/components/ProductSelect';
 import Stock from '@/components/Stock';
 import { cartStore } from '@/stores/cartStore';
 import { createElement } from '@/utils/createElement';
+
+import AddToCartButton from '@components/AddToCartButton';
+import CartItems from '@components/CartItems';
+import Point from '@components/Point';
 
 const Cart = () => {
   const root = document.getElementById('app');
@@ -25,9 +27,7 @@ const Cart = () => {
     '장바구니'
   );
 
-  const cartItems = createElement('div', {
-    id: 'cart-items',
-  });
+  const cartItems = CartItems();
 
   const cartTotal = createElement('div', {
     id: 'cart-total',
@@ -39,14 +39,7 @@ const Cart = () => {
     class: 'border rounded p-2 mr-2',
   });
 
-  const addToCartButton = createElement(
-    'button',
-    {
-      id: 'add-to-cart',
-      class: 'bg-blue-500 text-white px-4 py-2 rounded',
-    },
-    '추가'
-  );
+  const addToCartButton = AddToCartButton();
 
   const stockStatus = createElement('div', {
     id: 'stock-status',
@@ -57,57 +50,52 @@ const Cart = () => {
   container.appendChild(subContainer);
   root!.appendChild(container);
 
-  ProductSelect();
-  BonusPoint();
-  Stock();
   CartTotal({ totalAmount: 0, discountRate: 0 });
+  ProductSelect();
+  Point();
+  Stock();
 
-  addToCartButton.addEventListener('click', () => {
-    const selectedId = productSelect.value;
-    const productList = cartStore.get('productList');
-    const itemToAdd = productList.find((p) => p.id === selectedId);
+  setTimeout(() => {
+    setInterval(() => {
+      const productList = cartStore.get('productList');
+      const randomProduct = productList[Math.floor(Math.random() * productList.length)];
 
-    if (itemToAdd && itemToAdd.stock > 0) {
-      const item = document.getElementById(itemToAdd.id);
+      if (Math.random() < 0.3 && randomProduct.stock > 0) {
+        cartStore.set(
+          'productList',
+          productList.map((p) =>
+            p.id === randomProduct.id ? { ...p, price: Math.round(p.price * 0.8) } : p
+          )
+        );
 
-      if (item) {
-        const span = item.querySelector('span');
+        alert(`번개세일! ${randomProduct.name}이(가) 20% 할인 중입니다!`);
+      }
+    }, 30000);
+  }, Math.random() * 10000);
 
-        if (!span?.textContent) return;
+  setTimeout(() => {
+    setInterval(() => {
+      const lastSaleItem = cartStore.get('lastSaleItem');
+      const productList = cartStore.get('productList');
 
-        const newQty = parseInt(span.textContent.split('x ')[1]) + 1;
+      if (lastSaleItem) {
+        const suggestedProduct = productList.find(
+          (item) => item.id !== lastSaleItem && item.stock > 0
+        );
 
-        if (newQty <= itemToAdd.stock) {
-          item.querySelector('span')!.textContent =
-            `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQty}`;
+        if (suggestedProduct) {
+          alert(`${suggestedProduct.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
 
           cartStore.set(
             'productList',
-            productList.map((p) => (p.id === selectedId ? { ...p, stock: p.stock - 1 } : p))
+            productList.map((p) =>
+              p.id === suggestedProduct.id ? { ...p, price: Math.round(p.price * 0.95) } : p
+            )
           );
-        } else {
-          alert('재고가 부족합니다.');
         }
-      } else {
-        const newItem = document.createElement('div');
-
-        newItem.id = itemToAdd.id;
-        newItem.className = 'flex justify-between items-center mb-2';
-        newItem.innerHTML =
-          `<span>${itemToAdd.name} - ${itemToAdd.price}원 x 1</span><div>` +
-          `<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>` +
-          `<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>` +
-          `<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${itemToAdd.id}">삭제</button></div>`;
-        cartItems.appendChild(newItem);
-
-        cartStore.set(
-          'productList',
-          productList.map((p) => (p.id === selectedId ? { ...p, volume: p.stock - 1 } : p))
-        );
       }
-      cartStore.set('lastSaleItem', selectedId);
-    }
-  });
+    }, 60000);
+  }, Math.random() * 10000);
 };
 
 export default Cart;
