@@ -70,3 +70,10 @@ export const renderCartTotal = ({ cartItems }) => {
   }
   $loyaltyPoints.textContent = '(포인트: ' + loyaltyPoint + ')';
 };
+
+export const createCartTotalElement = () => {
+  const $cartTotal = document.createElement('div');
+  $cartTotal.id = 'cart-total';
+  $cartTotal.className = 'text-xl font-bold my-4';
+  return $cartTotal;
+};

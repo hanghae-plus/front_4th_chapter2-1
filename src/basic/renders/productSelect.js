@@ -10,3 +10,10 @@ export const renderProductSelectOptionElement = ({ productList }) => {
     $productSelect.appendChild($option);
   });
 };
+
+export const createProductSelectElement = () => {
+  const $productSelect = document.createElement('select');
+  $productSelect.id = 'product-select';
+  $productSelect.className = 'border rounded p-2 mr-2';
+  return $productSelect;
+};

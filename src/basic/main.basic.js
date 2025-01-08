@@ -21,10 +21,20 @@
  * - 파일 이동, 변경
  */
 
-import { renderCartTotal } from './renders/cartTotal';
+import { createCartItemElement } from './renders/cartItem';
+import { createCartItemsElement } from './renders/cartItems';
+import { createCartTotalElement, renderCartTotal } from './renders/cartTotal';
+import { createContainerElement } from './renders/container';
 import { createHeaderElement } from './renders/header';
-import { renderProductSelectOptionElement } from './renders/productSelect';
-import { renderStockStatus } from './renders/stockStatus';
+import {
+  createProductSelectElement,
+  renderProductSelectOptionElement,
+} from './renders/productSelect';
+import {
+  createStockStatusElement,
+  renderStockStatus,
+} from './renders/stockStatus';
+import { createWrapElement } from './renders/warp';
 import { CART_ITEMS } from './store/cartItems';
 import { PRODUCT_LIST } from './store/productList';
 
@@ -33,8 +43,7 @@ export default function main() {
 
   const $header = createHeaderElement();
 
-  const $cartItems = document.createElement('div');
-  $cartItems.id = 'cart-items';
+  const $cartItems = createCartItemsElement();
   $cartItems.addEventListener('click', (event) => {
     const $targetElement = event.target;
     if (
@@ -88,13 +97,8 @@ export default function main() {
     }
   });
 
-  const $cartTotal = document.createElement('div');
-  $cartTotal.id = 'cart-total';
-  $cartTotal.className = 'text-xl font-bold my-4';
-
-  const $productSelect = document.createElement('select');
-  $productSelect.id = 'product-select';
-  $productSelect.className = 'border rounded p-2 mr-2';
+  const $cartTotal = createCartTotalElement();
+  const $productSelect = createProductSelectElement();
 
   const $addButton = document.createElement('button');
   $addButton.id = 'add-to-cart';
@@ -131,24 +135,7 @@ export default function main() {
         };
         CART_ITEMS.add(newCartItem);
 
-        const $newCartItem = document.createElement('div');
-        $newCartItem.id = selectedProduct.id;
-        $newCartItem.className = 'flex justify-between items-center mb-2';
-        $newCartItem.innerHTML =
-          '<span>' +
-          selectedProduct.name +
-          ' - ' +
-          selectedProduct.price +
-          '원 x 1</span><div>' +
-          '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-          selectedProduct.id +
-          '" data-change="-1">-</button>' +
-          '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-          selectedProduct.id +
-          '" data-change="1">+</button>' +
-          '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' +
-          selectedProduct.id +
-          '">삭제</button></div>';
+        const $newCartItem = createCartItemElement({ cartItem: newCartItem });
         $cartItems.appendChild($newCartItem);
         selectedProduct.stock--;
       }
@@ -158,13 +145,9 @@ export default function main() {
     }
   });
 
-  const $stockStatus = document.createElement('div');
-  $stockStatus.id = 'stock-status';
-  $stockStatus.className = 'text-sm text-gray-500 mt-2';
+  const $stockStatus = createStockStatusElement();
 
-  const $wrap = document.createElement('div');
-  $wrap.className =
-    'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
+  const $wrap = createWrapElement();
   $wrap.appendChild($header);
   $wrap.appendChild($cartItems);
   $wrap.appendChild($cartTotal);
@@ -172,8 +155,7 @@ export default function main() {
   $wrap.appendChild($addButton);
   $wrap.appendChild($stockStatus);
 
-  const $container = document.createElement('div');
-  $container.className = 'bg-gray-100 p-8';
+  const $container = createContainerElement();
   $container.appendChild($wrap);
 
   const $root = document.getElementById('app');
