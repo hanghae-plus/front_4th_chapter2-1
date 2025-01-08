@@ -13,7 +13,7 @@ let appState = {
 };
 
 function initGlobalElements() {
-  return {
+  const elements = {
     root: document.getElementById("app"),
     cartDisp: document.createElement("div"),
     sum: document.createElement("div"),
@@ -21,6 +21,25 @@ function initGlobalElements() {
     addBtn: document.createElement("button"),
     stockInfo: document.createElement("div"),
   };
+
+  elements.cartDisp.id = "cart-items";
+  elements.sum.id = "cart-total";
+  elements.sel.id = "product-select";
+  elements.addBtn.id = "add-to-cart";
+  elements.stockInfo.id = "stock-status";
+
+
+  elements.cont.className = "bg-gray-100 p-8";
+  elements.wrap.className =
+    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
+  elements.hTxt.className = "text-2xl font-bold mb-4";
+  elements.sum.className = "text-xl font-bold my-4";
+  elements.sel.className = "border rounded p-2 mr-2";
+  elements.addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded";
+  elements.stockInfo.className = "text-sm text-gray-500 mt-2";
+  elements.hTxt.textContent = "장바구니";
+  elements.addBtn.textContent = "추가";
+
 }
 
 function main() {
@@ -30,21 +49,7 @@ function main() {
 
   const { root, cartDisp, sum, sel, addBtn, stockInfo } = initGlobalElements();
 
-  cartDisp.id = "cart-items";
-  sum.id = "cart-total";
-  sel.id = "product-select";
-  addBtn.id = "add-to-cart";
-  stockInfo.id = "stock-status";
-  cont.className = "bg-gray-100 p-8";
-  wrap.className =
-    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
-  hTxt.className = "text-2xl font-bold mb-4";
-  sum.className = "text-xl font-bold my-4";
-  sel.className = "border rounded p-2 mr-2";
-  addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded";
-  stockInfo.className = "text-sm text-gray-500 mt-2";
-  hTxt.textContent = "장바구니";
-  addBtn.textContent = "추가";
+
   updateSelOpts();
   wrap.appendChild(hTxt);
   wrap.appendChild(cartDisp);
@@ -59,7 +64,7 @@ function main() {
     setInterval(function () {
       let luckyItem =
         appState.appState.prodList[
-          Math.floor(Math.random() * appState.appState.prodList.length)
+        Math.floor(Math.random() * appState.appState.prodList.length)
         ];
       if (Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val = Math.round(luckyItem.val * 0.8);
@@ -240,8 +245,8 @@ cartDisp.addEventListener("click", function (event) {
       if (
         newQty > 0 &&
         newQty <=
-          prod.q +
-            parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
+        prod.q +
+        parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
       ) {
         itemElem.querySelector("span").textContent =
           itemElem.querySelector("span").textContent.split("x ")[0] +
@@ -264,3 +269,10 @@ cartDisp.addEventListener("click", function (event) {
     calcCart();
   }
 });
+
+
+/// 껍데기만 create로 만들고 나머지는 innerhtml로 만들기 -> react랑 닮게 만들기
+// var 호이스팅
+
+//object freeze -> element id로 선언
+//amount , quantity
