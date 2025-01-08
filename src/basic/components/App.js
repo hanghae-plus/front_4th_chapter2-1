@@ -1,6 +1,6 @@
 import { createElement } from '../core/createElement.js';
-import { CartHeader, CartItems, CartTotal } from './Cart.js';
-import { AddToCartButton, ProductSelector, StockStatus } from './Product.js';
+import { AddToCartButton, CartHeader, CartItems, CartTotal } from './Cart.js';
+import { ProductSelector, StockStatus } from './Product.js';
 
 const App = () => {
   const container = createElement('div', {
