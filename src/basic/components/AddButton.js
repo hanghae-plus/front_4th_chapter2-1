@@ -1,14 +1,9 @@
-import { renderCartItems } from '../components/CartItems';
-import { renderCartTotal } from '../components/CartTotal';
+import { renderCartItems } from './CartItems';
+import { renderCartTotal } from './CartTotal';
 import { lastSelectedProduct } from '../main.basic';
-import { renderStockStatus } from './stockStatus';
+import { renderStockStatus } from '../renders/stockStatus';
 
-export const createAddButtonElement = ({ cartItems, productList }) => {
-  const $addButton = document.createElement('button');
-  $addButton.id = 'add-to-cart';
-  $addButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  $addButton.textContent = '추가';
-
+export const AddButton = ({ cartItems, productList }) => {
   document.getElementById('app').addEventListener('click', (e) => {
     if (e.target.id === 'add-to-cart') {
       // selected value props로 받기
@@ -48,5 +43,5 @@ export const createAddButtonElement = ({ cartItems, productList }) => {
     }
   });
 
-  return $addButton;
+  return `<button id="add-to-cart" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>`;
 };

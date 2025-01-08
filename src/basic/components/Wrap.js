@@ -1,10 +1,9 @@
+import { AddButton } from './AddButton';
 import { CartItems } from './CartItems';
 import { CartTotal } from './CartTotal';
 import { Header } from './Header';
 import { ProductSelect } from './ProductSelect';
-import { createAddButtonElement } from '../renders/addButton';
 import { createStockStatusElement } from '../renders/stockStatus';
-
 export const Wrap = () => {
   const PRODUCT_LIST = [
     { id: 'p1', name: '상품1', price: 10000, stock: 50 },
@@ -22,12 +21,7 @@ export const Wrap = () => {
       ${CartItems({ cartItems: CART_ITEMS, productList: PRODUCT_LIST })}
       ${CartTotal({ cartItems: CART_ITEMS })}
       ${ProductSelect({ productList: PRODUCT_LIST })}
-      ${
-        createAddButtonElement({
-          cartItems: CART_ITEMS,
-          productList: PRODUCT_LIST,
-        }).outerHTML
-      }
+      ${AddButton({ cartItems: CART_ITEMS, productList: PRODUCT_LIST })}
       ${createStockStatusElement().outerHTML}
     </div>
   `;
