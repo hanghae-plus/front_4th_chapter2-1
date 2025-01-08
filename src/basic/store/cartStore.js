@@ -1,30 +1,14 @@
-// 장바구니 관련 상태 관리
-let lastSel = null;
-let bonusPts = 0;
-let totalAmt = 0;
-let itemCnt = 0;
+import { createStore } from "./createStore";
 
-export const cartStore = {
-  // getters
-  getLastSel: () => lastSel,
-  getBonusPts: () => bonusPts,
-  getTotalAmt: () => totalAmt,
-  getItemCnt: () => itemCnt,
-
-  getCartState: () => ({
-    lastSel,
-    bonusPts,
-    totalAmt,
-    itemCnt,
-  }),
-
-  // setters
-  setLastSel: (newLastSel) => {
-    lastSel = newLastSel;
-  },
-  setCartState: ({ newBonusPts, newTotalAmt, newItemCnt }) => {
-    bonusPts = newBonusPts ?? bonusPts;
-    totalAmt = newTotalAmt ?? totalAmt;
-    itemCnt = newItemCnt ?? itemCnt;
-  },
-};
+export const cartStore = (() => {
+  const initialState = {
+    items: [], // 장바구니 아이템 목록
+    totalAmount: 0, // 총 금액
+    itemCount: 0, // 총 상품 개수
+    lastSelected: null, // 마지막 선택 상품
+    bonusPoints: 0, // 적립 포인트
+    discountRate: 0, // 할인율
+    subtotal: 0, // 할인 전 금액
+  };
+  return createStore(initialState);
+})();
