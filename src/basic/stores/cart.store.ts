@@ -20,7 +20,7 @@ export const Cart = {
     this.lastSelectedId = product.id;
   },
 
-  decreaseItemQuantity(productId: string, quantity: number) {
+  decreaseQuantity(productId: string, quantity: number) {
     const existingItem = this.items.find((item) => item.id === productId);
 
     if (!existingItem) {

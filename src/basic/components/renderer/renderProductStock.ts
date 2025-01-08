@@ -1,8 +1,9 @@
-import { products } from '../../data/product';
 import { getStockStatus } from '../../services/getStockStatus';
 import { $ } from '../../utils/dom.utils';
 
-export const renderProductStock = () => {
+import type { Product } from '../../types/product.type';
+
+export const renderProductStock = (products: Product[]) => {
   const stockStatus = getStockStatus(products);
   const stockStatusMessage = stockStatus.map((item) => `${item.name}: ${item.status}`).join('\n');
 

@@ -1,11 +1,11 @@
 import { Main } from './components/Main';
-import { renderCartProducts } from './components/renderer/renderCartProducts';
 import { renderCartSummary } from './components/renderer/renderCartSummary';
 import { renderSelectOptions } from './components/renderer/renderer';
-import { products } from './data/product';
+import { addToCart, changeQuantity, removeFromCart } from './services/cartService';
 import { startFlashSale } from './services/startFlashSale';
 import { startSuggestionSale } from './services/startSuggestionSale';
 import { Cart } from './stores/cart.store';
+import { Products } from './stores/product.store';
 import { $ } from './utils/dom.utils';
 
 function main() {
@@ -13,11 +13,11 @@ function main() {
 
   $root.appendChild(Main());
 
-  renderSelectOptions(products);
+  renderSelectOptions(Products.items);
   renderCartSummary();
 
-  startFlashSale(products);
-  startSuggestionSale(products, () => Cart.lastSelectedId);
+  startFlashSale(Products.items);
+  startSuggestionSale(Products.items, () => Cart.lastSelectedId);
 }
 
 main();
@@ -25,16 +25,8 @@ main();
 $('#add-to-cart').addEventListener('click', () => {
   const $select = $<HTMLSelectElement>('#product-select');
   const selectedItem = $select.value;
-  const itemToAdd = products.find((item) => item.id === selectedItem);
-  const $cartProductList = $('#cart-items');
 
-  if (itemToAdd && itemToAdd.quantity > 0) {
-    Cart.addItem(itemToAdd);
-    itemToAdd.quantity--;
-    renderCartProducts($cartProductList, Cart.items);
-  } else {
-    alert('재고가 부족합니다');
-  }
+  addToCart(selectedItem, 1);
   renderCartSummary();
 });
 
@@ -46,27 +38,13 @@ $('#cart-items').addEventListener('click', (event) => {
   }
 
   const productId = target.dataset.productId;
-  const selectedProduct = products.find((product) => product.id === productId);
-  const $cartProductList = $('#cart-items');
 
   if (target.classList.contains('quantity-change')) {
-    const quantityDelta = parseInt(target.dataset.change);
+    const quantityDelta = parseInt(target.dataset.change) as 1 | -1;
 
-    if (quantityDelta === 1 && selectedProduct.quantity > 0) {
-      Cart.addItem(selectedProduct, quantityDelta);
-      selectedProduct.quantity -= quantityDelta;
-    } else if (quantityDelta === -1) {
-      Cart.decreaseItemQuantity(productId, 1);
-      selectedProduct.quantity -= quantityDelta;
-    } else {
-      alert('재고가 부족합니다');
-    }
+    changeQuantity(productId, quantityDelta);
   } else if (target.classList.contains('remove-item')) {
-    const removedQuantity = Cart.getItem(productId)?.quantity;
-
-    selectedProduct.quantity += removedQuantity;
-    Cart.removeItem(productId);
+    removeFromCart(productId);
   }
-  renderCartProducts($cartProductList, Cart.items);
   renderCartSummary();
 });

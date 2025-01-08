@@ -4,6 +4,7 @@ import { renderBonusPoint } from './renderPoint';
 import { renderProductStock } from './renderProductStock';
 import { calculateFinalAmount } from '../../services/calcProductDiscount';
 import { Cart } from '../../stores/cart.store';
+import { Products } from '../../stores/product.store';
 import { $ } from '../../utils/dom.utils';
 
 export const renderCartSummary = () => {
@@ -12,6 +13,6 @@ export const renderCartSummary = () => {
 
   renderCartTotalText($cartTotal, amount);
   renderDiscount($cartTotal, discountRate);
-  renderProductStock();
+  renderProductStock(Products.items);
   renderBonusPoint(amount);
 };
