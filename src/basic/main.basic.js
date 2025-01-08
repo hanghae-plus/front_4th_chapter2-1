@@ -1,8 +1,9 @@
-import { isOutOfStock, isOutOfStockRange } from './entities/stock/lib.js';
+import { isOutOfStock } from './entities/stock/lib.js';
 import { STOCK } from './shared/lib/stock/config.js';
 import { updateSelectedOptions } from './features/product-select/ui.js';
 import { DISCOUNT } from './entities/discount/config.js';
 import { renderCart } from './features/cart-total/ui.js';
+import { updateProductQuantity } from './features/cart-item/ui.js';
 
 let products,
   selectProductElement,
@@ -15,16 +16,6 @@ let selectedProductId;
 const hasClass = (element, className) => element.classList.contains(className);
 const getProduct = (productList, id) => productList.find((p) => p.id === id);
 
-const ENABLE_EVENT_THRESHOLD = Object.freeze(0.3);
-const LUCKY_EVENT = Object.freeze({
-  TIMEOUT_DELAY: 10000,
-  INTERVAL_DELAY: 30000,
-});
-const SUGGEST_EVENT = Object.freeze({
-  TIMEOUT_DELAY: 20000,
-  INTERVAL_DELAY: 60000,
-});
-
 const appendChild = (parentElement, ...children) => {
   children.forEach((child) => parentElement.appendChild(child));
 };
@@ -36,7 +27,11 @@ const randomEventHoc = ({ callback, timeoutDelay, intervalDelay }) => {
     }, intervalDelay);
   }, timeoutDelay);
 };
-
+const ENABLE_EVENT_THRESHOLD = Object.freeze(0.3);
+const LUCKY_EVENT = Object.freeze({
+  TIMEOUT_DELAY: 10000,
+  INTERVAL_DELAY: 30000,
+});
 const luckyItemEvent = (selectProductElement, products) => () => {
   const luckyItem = products[Math.floor(Math.random() * products.length)];
   if (
@@ -50,6 +45,11 @@ const luckyItemEvent = (selectProductElement, products) => () => {
     updateSelectedOptions(selectProductElement, products);
   }
 };
+
+const SUGGEST_EVENT = Object.freeze({
+  TIMEOUT_DELAY: 20000,
+  INTERVAL_DELAY: 60000,
+});
 
 const suggestItemEvent =
   (selectProductElement, products, selectedProductId) => () => {
@@ -189,26 +189,6 @@ addCartButton.addEventListener('click', function () {
     selectedProductId = selectedProductValue;
   }
 });
-
-const updateProductQuantity = ({ productElement, product, newQuantity }) => {
-  const [productLabel, quantityStr] = productElement
-    .querySelector('span')
-    .textContent.split('x ');
-  const totalQuantity = parseInt(quantityStr) + newQuantity;
-
-  if (
-    !isOutOfStockRange(totalQuantity, product.quantity + parseInt(quantityStr))
-  ) {
-    productElement.querySelector('span').textContent =
-      `${productLabel}x ${totalQuantity}`;
-    product.quantity -= newQuantity;
-  } else if (isOutOfStock(totalQuantity)) {
-    productElement.remove();
-    product.quantity -= newQuantity;
-  } else {
-    alert('재고가 부족합니다.');
-  }
-};
 
 const handleCartEvent = (event, products) => {
   const target = event.target;
