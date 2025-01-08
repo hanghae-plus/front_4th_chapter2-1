@@ -312,9 +312,7 @@ cartContainer.addEventListener('click', function (event) {
   // 수량 변경 버튼일 경우
   if (target.classList.contains('quantity-change')) {
     const quantityChange = parseInt(target.dataset.change);
-    console.log('quantityChange : ', quantityChange);
     const updatedQuantity = getCurrentQuantity($selectedProduct) + quantityChange;
-    console.log('updatedQuantity : ', updatedQuantity);
     updatedProductQuantity(quantityChange, updatedQuantity, $selectedProduct, selectedProduct);
   }
 
