@@ -64,6 +64,7 @@ export function calculateCart() {
 
   const cartItems = Array.from(state.cartDisplay.children); // 장바구니 항목 가져오기
   let subTotal = 0;
+  let quantityDiscount = false; // 개별상품 대량 구매 할인 적용여부 추적
 
   cartItems.forEach((item) => {
     const productId = item.id;
@@ -76,6 +77,7 @@ export function calculateCart() {
     // 대량 구매 할인 조건
     if (quantity >= 10) {
       discountRate = getQuantityDiscount(product.id);
+      quantityDiscount = true; // 할인 적용 추적
     }
 
     state.totalItems += quantity; // 총 아이템 수 누적
@@ -89,17 +91,20 @@ export function calculateCart() {
   // 대량 구매 할인 적용
   if (state.totalItems >= 30) {
     const bulkDiscount = subTotal * state.constants.BULK_DISCOUNT_RATE; // 대량 구매 할인 계산
-    state.otalAmount -= bulkDiscount; // 총액에서 할인 차감
+    state.totalAmount -= bulkDiscount; // 총액에서 할인 차감
     bulkDiscountApplied = true;
   }
-
+  
   // 화요일 할인 적용
-  if (new Date().getDay() === state.constants.DISCOUNT_DAY) {
+  const currentDate = new Date(); // 시스템 날짜 혹은 테스트 날짜 자동 반영
+  const currentDay = currentDate.getDay(); // 현재 요일
+
+  if (currentDay === state.constants.DISCOUNT_DAY) {
     state.totalAmount *= (1 - state.constants.DAY_DISCOUNT_RATE);
     dayDiscountApplied = true;
   }
 
   state.bonusPoints = Math.floor(state.totalAmount / state.constants.BONUS_POINT_DIVISOR); // 포인트 계산
-  displayTotal(dayDiscountApplied, bulkDiscountApplied); // 결과 표시
+  displayTotal(dayDiscountApplied || quantityDiscount, bulkDiscountApplied); // 화요일이나 개별상품 대량 구매 할인 적용 결과 표시
   updateStockInfo(); // 재고 정보 업데이트
 }
