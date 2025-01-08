@@ -2,8 +2,8 @@ import { updateSelectOptions } from '../components/productSelect/updateSelectOpt
 import { helper } from './helper';
 import { startPromotion } from './startPromotion';
 
-const LIGHTNING_SALE_INTERVAL = 30_000; // 30초마다 번개세일
-const LIGHTNING_SALE_DELAY = 10_000; // 번개세일 초기 지연
+export const LIGHTNING_SALE_INTERVAL = 30_000; // 30초마다 번개세일
+export const LIGHTNING_SALE_DELAY = 10_000; // 번개세일 초기 지연
 /**
  * 번개 세일 시작
  * @description 전달받은 제품 목록에서 랜덤으로 선택된 제품에 번개 세일 적용

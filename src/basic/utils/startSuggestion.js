@@ -2,8 +2,8 @@ import { updateSelectOptions } from '../components/productSelect/updateSelectOpt
 import { helper } from './helper';
 import { startPromotion } from './startPromotion';
 
-const SUGGESTION_INTERVAL = 60_000; // 60초마다 추천 알림
-const SUGGESTION_DELAY = 20_000; // 추천 알림 초기 지연
+export const SUGGESTION_INTERVAL = 60_000; // 60초마다 추천 알림
+export const SUGGESTION_DELAY = 20_000; // 추천 알림 초기 지연
 /**
  * 추천 프로모션 시작
  * @description 전달받은 제품 목록에서 추천 프로모션 시작

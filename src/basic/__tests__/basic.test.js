@@ -7,6 +7,17 @@ import {
   it,
   vi,
 } from 'vitest';
+import { helper } from '../utils/helper.js';
+import {
+  LIGHTNING_SALE_DELAY,
+  LIGHTNING_SALE_INTERVAL,
+  startLightningSale,
+} from '../utils/startLighteningSale.js';
+import {
+  startSuggestion,
+  SUGGESTION_DELAY,
+  SUGGESTION_INTERVAL,
+} from '../utils/startSuggestion.js';
 
 describe('basic test', () => {
   describe.each([
@@ -29,6 +40,7 @@ describe('basic test', () => {
     });
 
     beforeEach(() => {
+      vi.useFakeTimers();
       const mockDate = new Date('2024-10-14'); // 월요일
       vi.setSystemTime(mockDate);
       vi.spyOn(window, 'alert').mockImplementation(() => {});
@@ -121,11 +133,45 @@ describe('basic test', () => {
     });
 
     it('번개세일 기능이 정상적으로 동작하는지 확인', () => {
-      // 일부러 랜덤이 가득한 기능을 넣어서 테스트 하기를 어렵게 만들었습니다. 이런 코드는 어떻게 하면 좋을지 한번 고민해보세요!
+      const products = [
+        { id: 'p1', name: '상품1', price: 10000, quantity: 10 },
+        { id: 'p2', name: '상품2', price: 20000, quantity: 5 },
+        { id: 'p3', name: '상품3', price: 30000, quantity: 0 },
+      ];
+      vi.spyOn(Math, 'random').mockReturnValue(0.1);
+      vi.spyOn(helper, 'getLightningSaleMessage').mockReturnValue(
+        '번개세일 적용!',
+      );
+
+      startLightningSale(products);
+      vi.advanceTimersByTime(LIGHTNING_SALE_DELAY + LIGHTNING_SALE_INTERVAL);
+
+      expect(products[0].price).toBe(8_000);
+      expect(window.alert).toHaveBeenCalledWith('번개세일 적용!');
+
+      Math.random.mockRestore();
+      helper.getLightningSaleMessage.mockRestore();
     });
 
     it('추천 상품 알림이 표시되는지 확인', () => {
-      // 일부러 랜덤이 가득한 기능을 넣어서 테스트 하기를 어렵게 만들었습니다. 이런 코드는 어떻게 하면 좋을지 한번 고민해보세요!
+      const products = [
+        { id: 'p1', name: '상품1', price: 10000, quantity: 10 },
+        { id: 'p2', name: '상품2', price: 20000, quantity: 5 },
+        { id: 'p3', name: '상품3', price: 30000, quantity: 0 },
+      ];
+      vi.spyOn(Math, 'random').mockReturnValue(0.1);
+      vi.spyOn(helper, 'getSuggestionMessage').mockReturnValue(
+        '추천 상품 알림!',
+      );
+
+      startSuggestion(products, 'p1');
+      vi.advanceTimersByTime(SUGGESTION_DELAY + SUGGESTION_INTERVAL);
+
+      expect(products[1].price).toBe(19000); // 20000 * 0.95
+      expect(window.alert).toHaveBeenCalledWith('추천 상품 알림!');
+
+      Math.random.mockRestore();
+      helper.getSuggestionMessage.mockRestore();
     });
 
     it('화요일 할인이 적용되는지 확인', () => {
