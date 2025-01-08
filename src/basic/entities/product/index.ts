@@ -1,1 +1,1 @@
-export { ProductSelect } from "./ui";
+export { ProductSelect, ProductStatus } from "./ui";

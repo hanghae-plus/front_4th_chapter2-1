@@ -1,4 +1,4 @@
-import { ProductSelect } from "./entities/product";
+import { ProductSelect, ProductStatus } from "./entities/product";
 import { AddToCartButton, CartDisplay, CartTotal } from "./features/cart";
 import { Heading } from "./shared/ui";
 
@@ -10,7 +10,6 @@ interface Product {
 }
 
 let products: Product[];
-let $stockStatus: HTMLDivElement;
 let lastSelectedItem: string;
 let bonusPoints = 0;
 let totalAmount = 0;
@@ -38,13 +37,10 @@ function main() {
     ${CartTotal()}
     ${ProductSelect()}
     ${AddToCartButton()}
+    ${ProductStatus()}
   `;
 
-  $stockStatus = document.createElement("div");
-  $stockStatus.id = "stock-status";
-  $stockStatus.className = "text-sm text-gray-500 mt-2";
   updateSelOpts();
-  $wrapper.appendChild($stockStatus);
   $container.appendChild($wrapper);
   $root.appendChild($container);
   calcCart();
@@ -173,6 +169,10 @@ const renderBonusPts = () => {
   ptsTag.textContent = "(포인트: " + bonusPoints + ")";
 };
 function updateStockInfo() {
+  const $stockStatus = document.getElementById("stock-status");
+
+  if (!$stockStatus) return;
+
   let infoMsg = "";
   products.forEach(function (item) {
     if (item.q < 5) {
