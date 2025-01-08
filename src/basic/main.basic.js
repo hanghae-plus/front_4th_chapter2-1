@@ -1,4 +1,4 @@
-let lastSel, // 장바구니에서 마지막으로 선택한 상품 ID
+let lastSelectedProductId, // 장바구니에서 마지막으로 선택한 상품 ID
   bonusPts = 0, // 포인트
   totalAmt = 0, // 총액
   itemCnt = 0; //상품 수량을 저장하는 변수
@@ -74,9 +74,9 @@ function main() {
   // 상품 추천 이벤트 : 60초 간격으로 추천 상품 제안
   setTimeout(function () {
     setInterval(function () {
-      if (lastSel) {
+      if (lastSelectedProductId) {
         let suggest = productList.find(function (item) {
-          return item.id !== lastSel && item.q > 0;
+          return item.id !== lastSelectedProductId && item.q > 0;
         });
         if (suggest) {
           alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
@@ -236,6 +236,7 @@ addBtn.addEventListener('click', function () {
 
     calcCart();
     lastSel = selItem;
+    lastSelectedProductId = selItem;
   }
 });
 
