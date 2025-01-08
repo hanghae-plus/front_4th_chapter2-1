@@ -28,8 +28,17 @@ export const App = () => {
   const lastSelId = useRef<string | null>(null);
 
   useEffect(() => {
-    setLuckyDiscAlert(productList);
-    setAdditionalDiscAlert(productList, lastSelId.current);
+    setLuckyDiscAlert(
+      productList,
+      randomDiscRateByProduct,
+      setRandomDiscRateByProduct,
+    );
+    setAdditionalDiscAlert(
+      productList,
+      lastSelId.current,
+      randomDiscRateByProduct,
+      setRandomDiscRateByProduct,
+    );
   }, []);
 
   return (
@@ -40,6 +49,7 @@ export const App = () => {
           productList={productList}
           cartItemList={cartItemList}
           setCartItemList={setCartItemList}
+          randomDiscRateByProduct={randomDiscRateByProduct}
         />
         <Sum
           productList={productList}

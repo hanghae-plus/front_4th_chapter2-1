@@ -6,12 +6,14 @@ interface CartProps {
   productList: Product[];
   cartItemList: CartItem[];
   setCartItemList: (prev: CartItem[]) => void;
+  randomDiscRateByProduct: Record<string, number>;
 }
 
 const Cart: React.FC<CartProps> = ({
   productList,
   cartItemList,
   setCartItemList,
+  randomDiscRateByProduct,
 }) => {
   const handleClickQtyChangeBtn = useCallback(
     (id: string, qtyChange: number) => {
@@ -76,7 +78,8 @@ const Cart: React.FC<CartProps> = ({
               className="flex justify-between items-center mb-2"
             >
               <span>
-                {product.name} - {product.val}
+                {product.name} -&nbsp;
+                {product.val * (1 - randomDiscRateByProduct[item.id])}
                 {CURRENCY} x {item.qty}
               </span>
               <div>

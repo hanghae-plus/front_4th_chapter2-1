@@ -37,9 +37,6 @@ const AddBtn: React.FC<AddBtnProps> = ({
       // 선택된 아이템의 재고가 없는 경우
       if (product.qty <= newQty) return alert('재고가 없습니다.');
 
-      console.log('existing!');
-      console.log(existingItem);
-
       const newList = existingItem
         ? // 선택된 아이템이 이미 장바구니에 추가된 경우
           cartItemList.map((item) =>
