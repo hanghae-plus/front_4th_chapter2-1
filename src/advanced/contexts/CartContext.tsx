@@ -10,7 +10,7 @@ interface CartState {
 
 type CartAction =
   | { type: "ADD_ITEM"; product: CartItem }
-  | { type: "CHANGE_QUANTITY"; id: string; quantity: number }
+  | { type: "CHANGE_QUANTITY"; id: string; change: number }
   | { type: "REMOVE_ITEM"; id: string };
 
 const cartReducer = (state: CartState, action: CartAction): CartState => {
@@ -58,11 +58,17 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
       const itemToChange = state.items.find((item) => item.id === action.id);
       if (!itemToChange) return state;
 
-      const quantityChange = action.quantity - itemToChange.quantity;
-
-      if (quantityChange > 0 && itemToChange.remaining < quantityChange) {
+      if (action.change > 0 && itemToChange.remaining < action.change) {
         alert("재고가 부족합니다.");
         return state;
+      }
+
+      // 장바구니 잔여 수량 1에서 1감소 시 장바구니에서 삭제
+      if (itemToChange.quantity === 1 && action.change === -1) {
+        return {
+          ...state,
+          items: state.items.filter((item) => item.id !== action.id),
+        };
       }
 
       return {
@@ -71,8 +77,8 @@ const cartReducer = (state: CartState, action: CartAction): CartState => {
           item.id === action.id
             ? {
                 ...item,
-                quantity: action.quantity,
-                remaining: item.remaining - quantityChange,
+                quantity: item.quantity + action.change,
+                remaining: item.remaining - action.change,
               }
             : item
         ),
@@ -103,8 +109,8 @@ export const useCart = () => {
       },
     });
 
-  const changeQuantity = (id: string, quantity: number) =>
-    dispatch({ type: "CHANGE_QUANTITY", id, quantity });
+  const changeQuantity = (id: string, change: number) =>
+    dispatch({ type: "CHANGE_QUANTITY", id, change });
 
   const removeItem = (id: string) => dispatch({ type: "REMOVE_ITEM", id });
 
