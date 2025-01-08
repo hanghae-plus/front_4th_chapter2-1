@@ -1,6 +1,6 @@
 import { renderCartItems } from '../components/CartItems';
+import { renderCartTotal } from '../components/CartTotal';
 import { lastSelectedProduct } from '../main.basic';
-import { renderCartTotal } from './cartTotal';
 import { renderStockStatus } from './stockStatus';
 
 export const createAddButtonElement = ({ cartItems, productList }) => {

@@ -1,5 +1,5 @@
 import { CartItem } from './CartItem';
-import { renderCartTotal } from '../renders/cartTotal';
+import { renderCartTotal } from './CartTotal';
 import { renderStockStatus } from '../renders/stockStatus';
 
 export const CartItems = ({ cartItems, productList }) => {

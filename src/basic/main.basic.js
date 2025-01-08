@@ -22,10 +22,8 @@
  */
 
 import { Container } from './components/Container';
-import { renderCartTotal } from './renders/cartTotal';
-import { renderProductSelectOptionElement } from './renders/productSelect';
+import { renderProductSelectOptionElement } from './components/ProductSelect';
 import { renderStockStatus } from './renders/stockStatus';
-import { CART_ITEMS } from './store/cartItems';
 import { PRODUCT_LIST } from './store/productList';
 
 export const lastSelectedProduct = { id: null };
@@ -35,7 +33,6 @@ export default function main() {
   $root.innerHTML = Container();
 
   renderProductSelectOptionElement({ productList: PRODUCT_LIST });
-  renderCartTotal({ cartItems: CART_ITEMS });
   renderStockStatus({ productList: PRODUCT_LIST });
 
   setTimeout(function () {
