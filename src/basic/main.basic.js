@@ -25,17 +25,13 @@ import { renderCartTotal } from './renders/cartTotal';
 import { createContainerElement } from './renders/container';
 import { renderProductSelectOptionElement } from './renders/productSelect';
 import { renderStockStatus } from './renders/stockStatus';
-import { createWrapElement } from './renders/warp';
 import { CART_ITEMS } from './store/cartItems';
 import { PRODUCT_LIST } from './store/productList';
 
 export const lastSelectedProduct = { id: null };
 
 export default function main() {
-  const $wrap = createWrapElement();
-
   const $container = createContainerElement();
-  $container.appendChild($wrap);
 
   const $root = document.getElementById('app');
   $root.appendChild($container);
