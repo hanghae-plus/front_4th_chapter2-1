@@ -10,6 +10,11 @@ const App = () => {
   const [lastPickProduct, setLastPickProduct] = useState(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const [bonusPoints, setBonusPoints] = useState(0);
+  const [discountStatus, setDiscountStatus] = useState({
+    dayDiscountApplied: false,
+    bulkDiscountApplied: false,
+    quantityDiscount: false
+  });
 
   const addToCart = (productId) => {
     const product = products.find(p => p.id === productId);
@@ -88,6 +93,8 @@ const App = () => {
       let subTotal = 0;
       let totalItems = 0;
       let quantityDiscount = false;
+      let dayDiscountApplied = false;
+      let bulkDiscountApplied = false;
 
       Object.entries(cartItems).forEach(([id, item]) => {
         const itemTotal = item.price * item.quantity;
@@ -104,18 +111,23 @@ const App = () => {
 
       if (totalItems >= 30) {
         subTotal *= (1 - CONSTANTS.BULK_DISCOUNT_RATE);
+        bulkDiscountApplied = true;
       }
 
       const currentDay = new Date().getDay();
       if (currentDay === CONSTANTS.DISCOUNT_DAY) {
         subTotal *= (1 - CONSTANTS.DAY_DISCOUNT_RATE);
+        dayDiscountApplied = true;
       }
 
       setTotalAmount(Math.round(subTotal));
       setBonusPoints(Math.floor(subTotal / CONSTANTS.BONUS_POINT_DIVISOR));
+
+      return { dayDiscountApplied, bulkDiscountApplied, quantityDiscount};
     };
 
-    calculateTotal();
+    const discounts = calculateTotal();
+    setDiscountStatus(discounts);
   }, [cartItems]);
 
   useEffect(() => {
@@ -170,6 +182,19 @@ const App = () => {
         <div className="text-xl font-bold my-4">
           총액: {totalAmount.toLocaleString()}원
           <span className="text-blue-500 ml-2">(포인트: {bonusPoints.toLocaleString()})</span>
+          {(discountStatus.dayDiscountApplied || discountStatus.bulkDiscountApplied || discountStatus.quantityDiscount) && (
+            <div className="text-sm text-green-500 mt-1">
+              {discountStatus.dayDiscountApplied && (
+                <span className="mr-2">(화요일 10.0% 할인 적용)</span>
+              )}
+              {discountStatus.bulkDiscountApplied && (
+                <span className="mr-2">(25.0% 대량구매 할인 적용)</span>
+              )}
+              {discountStatus.quantityDiscount && (
+                <span>(개별상품 할인 적용)</span>
+              )}
+            </div>
+          )}
         </div>
         <ProductSelector
           products={products}
