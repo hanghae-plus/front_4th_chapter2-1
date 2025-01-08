@@ -1,3 +1,3 @@
 export { createStore } from "./store";
-export { setupEventListeners } from "./event";
-export { updateElement } from "./render";
+export { setupEventListeners, addEvent } from "./event";
+export { updateElement, html } from "./render";

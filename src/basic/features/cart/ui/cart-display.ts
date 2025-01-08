@@ -1,6 +1,5 @@
 import { productStore } from "@basic/entities/product";
-import { addEvent } from "@basic/shared/lib/event";
-import { html } from "@basic/shared/lib/render";
+import { addEvent, html } from "@basic/shared/lib";
 import { cartStore } from "../model";
 
 export function CartDisplay() {

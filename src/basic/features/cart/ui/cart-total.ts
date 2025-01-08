@@ -1,4 +1,4 @@
-import { html } from "@basic/shared/lib/render";
+import { html } from "@basic/shared/lib";
 import { calcDiscountedCost, calcDiscountRate, calcTotalPoint } from "../lib";
 import { cartStore } from "../model";
 
