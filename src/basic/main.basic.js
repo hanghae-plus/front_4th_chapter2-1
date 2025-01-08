@@ -312,8 +312,10 @@ cartContainer.addEventListener('click', function (event) {
   // 수량 변경 버튼일 경우
   if (target.classList.contains('quantity-change')) {
     const quantityChange = parseInt(target.dataset.change);
+    console.log('quantityChange : ', quantityChange);
     const updatedQuantity = getCurrentQuantity($selectedProduct) + quantityChange;
-    updatedQuantityChange(quantityChange, updatedQuantity, $selectedProduct, selectedProduct);
+    console.log('updatedQuantity : ', updatedQuantity);
+    updatedProductQuantity(quantityChange, updatedQuantity, $selectedProduct, selectedProduct);
   }
 
   // 삭제 버튼일 경우
@@ -327,14 +329,17 @@ cartContainer.addEventListener('click', function (event) {
 });
 
 // 수량 변경 버튼(+/-) 클릭 시 수량 증가 및 재고 확인
-const updatedQuantityChange = (quantityChange, updatedQuantity, $selectedProduct, selectedProduct) => {
-  if (updatedQuantity > 0 && updatedQuantity <= selectedProduct.quantity + getCurrentQuantity($selectedProduct)) {
+const updatedProductQuantity = (quantityChange, updatedQuantity, $selectedProduct, selectedProduct) => {
+  let stockQuantity = selectedProduct.quantity + getCurrentQuantity($selectedProduct);
+  if (updatedQuantity === 0 || updatedQuantity > stockQuantity) {
+    alert('재고가 부족합니다.');
+    return;
+  }
+
+  if (updatedQuantity > 0 && updatedQuantity <= stockQuantity) {
     $selectedProduct.querySelector('span').textContent = $selectedProduct.querySelector('span').textContent.split('x ')[0] + 'x ' + updatedQuantity;
-    selectedProduct.quantity -= quantityChange;
   } else if (updatedQuantity <= 0) {
     $selectedProduct.remove();
-    selectedProduct.quantity -= quantityChange;
-  } else {
-    alert('재고가 부족합니다.');
   }
+  selectedProduct.quantity -= quantityChange;
 };
