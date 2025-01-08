@@ -6,7 +6,7 @@ export const createCartItemsElement = ({ cartItems, productList }) => {
   const $cartItems = document.createElement('div');
   $cartItems.id = 'cart-items';
 
-  $cartItems.addEventListener('click', (event) => {
+  document.getElementById('app').addEventListener('click', (event) => {
     const $targetElement = event.target;
     if (
       $targetElement.classList.contains('quantity-change') ||

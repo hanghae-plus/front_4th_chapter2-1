@@ -21,8 +21,8 @@
  * - 파일 이동, 변경
  */
 
+import { Container } from './components/Container';
 import { renderCartTotal } from './renders/cartTotal';
-import { createContainerElement } from './renders/container';
 import { renderProductSelectOptionElement } from './renders/productSelect';
 import { renderStockStatus } from './renders/stockStatus';
 import { CART_ITEMS } from './store/cartItems';
@@ -31,10 +31,8 @@ import { PRODUCT_LIST } from './store/productList';
 export const lastSelectedProduct = { id: null };
 
 export default function main() {
-  const $container = createContainerElement();
-
   const $root = document.getElementById('app');
-  $root.appendChild($container);
+  $root.innerHTML = Container();
 
   renderProductSelectOptionElement({ productList: PRODUCT_LIST });
   renderCartTotal({ cartItems: CART_ITEMS });
