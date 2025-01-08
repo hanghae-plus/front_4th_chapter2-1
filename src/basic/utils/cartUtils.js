@@ -3,11 +3,10 @@ import { CartTotalPrice, DiscountRate, Points } from "../components";
 import { productsStore } from "../store/productsStore";
 import { getProdData } from "./productUtils";
 
-let cartTotalPrice = 0;
 const products = productsStore.getInstance().getProducts();
 
 const calcTotalPrice = () => {
-  cartTotalPrice = 0;
+  let cartTotalPrice = 0;
   [...document.querySelector("#cart-items").children].forEach((item) => {
     const { prod, curQuantity } = getProdData(item.id);
     let discount = 1;
@@ -37,7 +36,7 @@ const calcOriginTotalPrice = () => {
   return originTotalPrice;
 };
 
-const calcDiscountRate = (itemCnt, originTotalPrice) => {
+const calcDiscountRate = (itemCnt, originTotalPrice, cartTotalPrice) => {
   const bulkDiscPrice = originTotalPrice * 0.25;
   const normalDiscPrice = originTotalPrice - cartTotalPrice;
   const originDiscountRate = (originTotalPrice - cartTotalPrice) / originTotalPrice;
@@ -46,10 +45,10 @@ const calcDiscountRate = (itemCnt, originTotalPrice) => {
 };
 
 export const calcCart = () => {
-  cartTotalPrice = calcTotalPrice();
+  let cartTotalPrice = calcTotalPrice();
   let itemCnt = calcItemCnt();
   let originTotalPrice = calcOriginTotalPrice();
-  let discountRate = calcDiscountRate(itemCnt, originTotalPrice);
+  let discountRate = calcDiscountRate(itemCnt, originTotalPrice, cartTotalPrice);
 
   if (new Date().getDay() === 2) {
     cartTotalPrice *= 1 - 0.1;
@@ -63,7 +62,7 @@ export const calcCart = () => {
   }
 
   updateStockStatus();
-  renderPoints();
+  renderPoints(cartTotalPrice);
 };
 
 const updateStockStatus = () => {
@@ -76,7 +75,7 @@ const makeLowStockMessage = (product) => {
   return `${product.name}: ${product.quantity > 0 ? "재고 부족 (" + product.quantity + "개 남음)" : "품절"}\n`;
 };
 
-const renderPoints = () => {
+const renderPoints = (cartTotalPrice) => {
   const bonusPts = Math.floor(cartTotalPrice / 1000);
   appendToElement("#cart-total", Points(bonusPts));
 };
