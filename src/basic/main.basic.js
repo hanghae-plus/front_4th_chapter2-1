@@ -48,31 +48,15 @@ const isOutOfStockRange = (newQty, qty) =>
 const getPointRatioMessage = (totalAmt) =>
   `(포인트: ${Math.floor(totalAmt / POINT_RATIO)})`;
 
-const createElement = (tag, options) => {
-  const element = document.createElement(tag);
-  Object.entries(options).forEach(([key, value]) => {
-    element[key] = value;
-  });
-  return element;
-};
-
-const getOrCreateElement = (tag, options) => {
-  const { parentElement, id, ...props } = options;
-  let element = document.getElementById(id);
-  if (!element) {
-    element = createElement(tag, { id, ...props });
-    parentElement.appendChild(element);
-  }
-  return element;
-};
-
 const renderBonusPts = (totalAmt, parentElement) => {
-  getOrCreateElement('span', {
-    parentElement,
-    id: 'loyalty-points',
-    className: 'text-blue-500 ml-2',
-    textContent: getPointRatioMessage(totalAmt),
-  });
+  let pointsTag = document.getElementById('loyalty-points');
+  if (!pointsTag) {
+    pointsTag = document.createElement('span');
+    pointsTag.id = 'loyalty-points';
+    pointsTag.className = 'text-blue-500 ml-2';
+    parentElement.appendChild(pointsTag);
+  }
+  pointsTag.textContent = getPointRatioMessage(totalAmt);
 };
 
 const getStockStatusMessage = (item) =>
@@ -92,12 +76,11 @@ const getOptionsMessage = (product) => `${product.name} - ${product.price}원`;
 const updateSelectedOptions = (parentElement, prodList) => {
   initInnerHTML(parentElement);
   prodList.forEach((product) => {
-    getOrCreateElement('option', {
-      parentElement: parentElement,
-      value: product.id,
-      textContent: getOptionsMessage(product),
-      disabled: isOutOfStock(product),
-    });
+    const option = document.createElement('option');
+    option.value = product.id;
+    option.textContent = getOptionsMessage(product);
+    option.disabled = isOutOfStock(product);
+    parentElement.appendChild(option);
   });
 };
 
@@ -193,10 +176,10 @@ function calculateCart() {
   totalCartAmountElement.textContent = totalPriceMessage(totalAmount);
 
   if (discountRate > DISCOUNT.NONE) {
-    const span = createElement('span', {
-      className: 'text-green-500 ml-2',
-      textContent: discountRateMessage(discountRate),
-    });
+    const span = document.createElement('span');
+    span.className = 'text-green-500 ml-2';
+    span.textContent = discountRateMessage(discountRate);
+
     appendChild(totalCartAmountElement, span);
   }
 
@@ -255,44 +238,36 @@ function main() {
 
   const root = document.getElementById('app');
 
-  const container = createElement('div', {
-    className: 'bg-gray-100 p-8',
-  });
+  const container = document.createElement('div');
+  container.className = 'bg-gray-100 p-8';
 
-  const wrapper = createElement('div', {
-    className:
-      'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8',
-  });
+  const wrapper = document.createElement('div');
+  wrapper.className =
+    'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
 
-  const title = createElement('h1', {
-    className: 'text-2xl font-bold mb-4',
-    textContent: '장바구니',
-  });
+  const title = document.createElement('h1');
+  title.className = 'text-2xl font-bold mb-4';
+  title.textContent = '장바구니';
 
-  cartElement = createElement('div', {
-    id: 'cart-items',
-  });
+  cartElement = document.createElement('div');
+  cartElement.id = 'cart-items';
 
-  totalCartAmountElement = createElement('div', {
-    id: 'cart-total',
-    className: 'text-xl font-bold my-4',
-  });
+  totalCartAmountElement = document.createElement('div');
+  totalCartAmountElement.id = 'cart-total';
+  totalCartAmountElement.className = 'text-xl font-bold my-4';
 
-  selectProductElement = createElement('select', {
-    id: 'product-select',
-    className: 'border rounded p-2 mr-2',
-  });
+  selectProductElement = document.createElement('select');
+  selectProductElement.id = 'product-select';
+  selectProductElement.className = 'border rounded p-2 mr-2';
 
-  addCartButton = createElement('button', {
-    id: 'add-to-cart',
-    className: 'bg-blue-500 text-white px-4 py-2 rounded',
-    textContent: '추가',
-  });
+  addCartButton = document.createElement('button');
+  addCartButton.id = 'add-to-cart';
+  addCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
+  addCartButton.textContent = '추가';
 
-  stockStatusElement = createElement('div', {
-    id: 'stock-status',
-    className: 'text-sm text-gray-500 mt-2',
-  });
+  stockStatusElement = document.createElement('div');
+  stockStatusElement.id = 'stock-status';
+  stockStatusElement.className = 'text-sm text-gray-500 mt-2';
 
   updateSelectedOptions(selectProductElement, products);
 
@@ -348,18 +323,18 @@ addCartButton.addEventListener('click', function () {
         alert('재고가 부족합니다.');
       }
     } else {
-      const element = getOrCreateElement('div', {
-        parentElement: cartElement,
-        id: product.id,
-        className: 'flex justify-between items-center mb-2',
-      });
+      const element = document.createElement('div');
+      element.id = product.id;
+      element.className = 'flex justify-between items-center mb-2';
       element.innerHTML = `
-          <span>${product.name} - ${product.price}원 x 1</span>
+      <span>${product.name} - ${product.price}원 x 1</span>
           <div>
             <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="-1">-</button>
             <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="1">+</button>
             <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${product.id}">삭제</button>
-          </div>`;
+          </div>
+      `;
+      cartElement.appendChild(element);
       product.quantity--;
     }
     calculateCart();
