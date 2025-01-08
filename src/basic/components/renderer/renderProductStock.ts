@@ -1,15 +1,10 @@
 import { products } from '../../data/product';
+import { getStockStatus } from '../../services/getStockStatus';
 import { $ } from '../../utils/dom.utils';
 
 export const renderProductStock = () => {
-  let stockStatusMessage = '';
+  const stockStatus = getStockStatus(products);
+  const stockStatusMessage = stockStatus.map((item) => `${item.name}: ${item.status}`).join('\n');
 
-  products.forEach((item) => {
-    if (item.quantity < 5) {
-      stockStatusMessage += `${item.name}: ${
-        item.quantity > 0 ? `재고 부족 (${item.quantity}개 남음)` : '품절'
-      }\n`;
-    }
-  });
   $('#stock-status').textContent = stockStatusMessage;
 };
