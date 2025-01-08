@@ -47,39 +47,46 @@ function main() {
   updateProductSelectOptions();
   calculateCart();
 
-  // 번개세일 및 추천 상품 이벤트
-  setTimeout(function () {
-    setInterval(function () {
-      const luckyItem =
-        state.productList[Math.floor(Math.random() * state.productList.length)];
+  // 번개세일 및 추천 상품 이벤트 실행
+  offerLuckySale();
+  offerSuggestedProduct();
+}
 
-      if (Math.random() < 0.3 && luckyItem.quantity > 0) {
-        luckyItem.value = Math.round(luckyItem.value * SPETIAL_DISCOUNT.LUCKY);
-        alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
-        updateProductSelectOptions();
-      }
-    }, 30000);
-  }, Math.random() * 10000);
+// 번개세일 이벤트
+function offerLuckySale() {
+  const luckyItem =
+    state.productList[Math.floor(Math.random() * state.productList.length)];
 
-  setTimeout(function () {
-    setInterval(function () {
-      if (state.lastSelectedProduct) {
-        const suggestedItem = state.productList.find(function (item) {
-          return item.id !== state.lastSelectedProduct && item.quantity > 0;
-        });
+  if (Math.random() < 0.3 && luckyItem.quantity > 0) {
+    luckyItem.value = Math.round(luckyItem.value * SPETIAL_DISCOUNT.LUCKY);
+    alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
+    updateProductSelectOptions();
+  }
 
-        if (suggestedItem) {
-          alert(
-            `${suggestedItem.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`,
-          );
-          suggestedItem.value = Math.round(
-            suggestedItem.value * SPETIAL_DISCOUNT.SUGGESTED,
-          );
-          updateProductSelectOptions();
-        }
-      }
-    }, 60000);
-  }, Math.random() * 20000);
+  // 랜덤 시간 (0초 ~ 20초 사이) 후 번개세일 이벤트 실행
+  setTimeout(offerLuckySale, Math.random() * 20000);
+}
+
+// 추천 상품 이벤트
+function offerSuggestedProduct() {
+  if (state.lastSelectedProduct) {
+    const suggestedItem = state.productList.find(function (item) {
+      return item.id !== state.lastSelectedProduct && item.quantity > 0;
+    });
+
+    if (suggestedItem) {
+      alert(
+        `${suggestedItem.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`,
+      );
+      suggestedItem.value = Math.round(
+        suggestedItem.value * SPETIAL_DISCOUNT.SUGGESTED,
+      );
+      updateProductSelectOptions();
+    }
+  }
+
+  // 랜덤 시간 (0초 ~ 30초 사이) 후 추천 상품 이벤트 실행
+  setTimeout(offerSuggestedProduct, Math.random() * 30000);
 }
 
 // 제품 선택 옵션 업데이트
