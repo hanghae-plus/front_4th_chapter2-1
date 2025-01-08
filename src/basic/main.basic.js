@@ -21,19 +21,10 @@
  * - 파일 이동, 변경
  */
 
-import { createAddButtonElement } from './renders/addButton';
-import { createCartItemsElement, renderCartItems } from './renders/cartItems';
-import { createCartTotalElement, renderCartTotal } from './renders/cartTotal';
+import { renderCartTotal } from './renders/cartTotal';
 import { createContainerElement } from './renders/container';
-import { createHeaderElement } from './renders/header';
-import {
-  createProductSelectElement,
-  renderProductSelectOptionElement,
-} from './renders/productSelect';
-import {
-  createStockStatusElement,
-  renderStockStatus,
-} from './renders/stockStatus';
+import { renderProductSelectOptionElement } from './renders/productSelect';
+import { renderStockStatus } from './renders/stockStatus';
 import { createWrapElement } from './renders/warp';
 import { CART_ITEMS } from './store/cartItems';
 import { PRODUCT_LIST } from './store/productList';
@@ -41,26 +32,7 @@ import { PRODUCT_LIST } from './store/productList';
 export const lastSelectedProduct = { id: null };
 
 export default function main() {
-  const $header = createHeaderElement();
-  const $cartItems = createCartItemsElement({
-    cartItems: CART_ITEMS,
-    productList: PRODUCT_LIST,
-  });
-  const $cartTotal = createCartTotalElement();
-  const $productSelect = createProductSelectElement();
-  const $addButton = createAddButtonElement({
-    cartItems: CART_ITEMS,
-    productList: PRODUCT_LIST,
-  });
-  const $stockStatus = createStockStatusElement();
-
   const $wrap = createWrapElement();
-  $wrap.appendChild($header);
-  $wrap.appendChild($cartItems);
-  $wrap.appendChild($cartTotal);
-  $wrap.appendChild($productSelect);
-  $wrap.appendChild($addButton);
-  $wrap.appendChild($stockStatus);
 
   const $container = createContainerElement();
   $container.appendChild($wrap);
