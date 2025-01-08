@@ -21,69 +21,9 @@
  * - 파일 이동, 변경
  */
 
+import { renderCartTotal } from './renders/cartTotal';
 import { renderStockStatus } from './renders/stockStatus';
 import { PRODUCT_LIST } from './store/productList';
-
-function renderCartTotal({ cartItems }) {
-  let retailPrice = 0;
-  let salePrice = 0;
-  let totalQuantity = 0;
-  for (let i = 0; i < cartItems.length; i++) {
-    const currentProduct = cartItems[i];
-    const { quantity, id, price } = currentProduct;
-
-    let discountRate = 0;
-    if (quantity >= 10) {
-      if (id === 'p1') discountRate = 0.1;
-      else if (id === 'p2') discountRate = 0.15;
-      else if (id === 'p3') discountRate = 0.2;
-      else if (id === 'p4') discountRate = 0.05;
-      else if (id === 'p5') discountRate = 0.25;
-    }
-
-    const subtotal = price * quantity;
-    totalQuantity += quantity;
-    retailPrice += subtotal;
-    salePrice += subtotal * (1 - discountRate);
-  }
-
-  let discountRate = 0;
-  const discountAmount = retailPrice - salePrice;
-  if (totalQuantity >= 30) {
-    const volumeDiscountAmount = retailPrice * 0.25;
-    if (volumeDiscountAmount > discountAmount) {
-      salePrice = retailPrice * (1 - 0.25);
-      discountRate = 0.25;
-    } else {
-      discountRate = discountAmount / retailPrice;
-    }
-  } else {
-    discountRate = discountAmount / retailPrice;
-  }
-
-  const $cartTotal = document.getElementById('cart-total');
-  $cartTotal.textContent = '총액: ' + Math.round(salePrice) + '원';
-  if (new Date().getDay() === 2) {
-    salePrice *= 1 - 0.1;
-    discountRate = Math.max(discountRate, 0.1);
-  }
-  if (discountRate > 0) {
-    const span = document.createElement('span');
-    span.className = 'text-green-500 ml-2';
-    span.textContent = '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
-    $cartTotal.appendChild(span);
-  }
-
-  const loyaltyPoint = salePrice > 0 ? Math.floor(salePrice / 1000) : 0;
-  let $loyaltyPoints = document.getElementById('loyalty-points');
-  if (!$loyaltyPoints) {
-    $loyaltyPoints = document.createElement('span');
-    $loyaltyPoints.id = 'loyalty-points';
-    $loyaltyPoints.className = 'text-blue-500 ml-2';
-    $cartTotal.appendChild($loyaltyPoints);
-  }
-  $loyaltyPoints.textContent = '(포인트: ' + loyaltyPoint + ')';
-}
 
 function renderProductSelectOptionElement() {
   const $productSelect = document.getElementById('product-select');
