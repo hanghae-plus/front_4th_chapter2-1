@@ -1,5 +1,5 @@
-var prodList, sel, addBtn, cartDisp, sum, stockInfo;
-var lastSel,
+let prodList, sel, addBtn, cartDisp, sum, stockInfo;
+let lastSel,
   bonusPts = 0,
   totalAmt = 0,
   itemCnt = 0;
@@ -11,9 +11,9 @@ function main() {
     { id: "p4", name: "상품4", val: 15000, q: 0 },
     { id: "p5", name: "상품5", val: 25000, q: 10 },
   ];
-  var root = document.getElementById("app");
+  let root = document.getElementById("app");
   let cont = document.createElement("div");
-  var wrap = document.createElement("div");
+  let wrap = document.createElement("div");
   let hTxt = document.createElement("h1");
   cartDisp = document.createElement("div");
   sum = document.createElement("div");
@@ -47,7 +47,7 @@ function main() {
   calcCart();
   setTimeout(function () {
     setInterval(function () {
-      var luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
+      let luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
       if (Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val = Math.round(luckyItem.val * 0.8);
         alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
@@ -58,7 +58,7 @@ function main() {
   setTimeout(function () {
     setInterval(function () {
       if (lastSel) {
-        var suggest = prodList.find(function (item) {
+        let suggest = prodList.find(function (item) {
           return item.id !== lastSel && item.q > 0;
         });
         if (suggest) {
@@ -75,7 +75,7 @@ function main() {
 function updateSelOpts() {
   sel.innerHTML = "";
   prodList.forEach(function (item) {
-    var opt = document.createElement("option");
+    let opt = document.createElement("option");
     opt.value = item.id;
     opt.textContent = item.name + " - " + item.val + "원";
     if (item.q === 0) opt.disabled = true;
@@ -85,22 +85,22 @@ function updateSelOpts() {
 function calcCart() {
   totalAmt = 0;
   itemCnt = 0;
-  var cartItems = cartDisp.children;
-  var subTot = 0;
-  for (var i = 0; i < cartItems.length; i++) {
+  let cartItems = cartDisp.children;
+  let subTot = 0;
+  for (let i = 0; i < cartItems.length; i++) {
     (function () {
-      var curItem;
-      for (var j = 0; j < prodList.length; j++) {
+      let curItem;
+      for (let j = 0; j < prodList.length; j++) {
         if (prodList[j].id === cartItems[i].id) {
           curItem = prodList[j];
           break;
         }
       }
-      var q = parseInt(
+      let q = parseInt(
         cartItems[i].querySelector("span").textContent.split("x ")[1]
       );
-      var itemTot = curItem.val * q;
-      var disc = 0;
+      let itemTot = curItem.val * q;
+      let disc = 0;
       itemCnt += q;
       subTot += itemTot;
       if (q >= 10) {
@@ -115,8 +115,8 @@ function calcCart() {
   }
   let discRate = 0;
   if (itemCnt >= 30) {
-    var bulkDisc = totalAmt * 0.25;
-    var itemDisc = subTot - totalAmt;
+    let bulkDisc = totalAmt * 0.25;
+    let itemDisc = subTot - totalAmt;
     if (bulkDisc > itemDisc) {
       totalAmt = subTot * (1 - 0.25);
       discRate = 0.25;
@@ -132,7 +132,7 @@ function calcCart() {
   }
   sum.textContent = "총액: " + Math.round(totalAmt) + "원";
   if (discRate > 0) {
-    var span = document.createElement("span");
+    let span = document.createElement("span");
     span.className = "text-green-500 ml-2";
     span.textContent = "(" + (discRate * 100).toFixed(1) + "% 할인 적용)";
     sum.appendChild(span);
@@ -142,7 +142,7 @@ function calcCart() {
 }
 const renderBonusPts = () => {
   bonusPts = Math.floor(totalAmt / 1000);
-  var ptsTag = document.getElementById("loyalty-points");
+  let ptsTag = document.getElementById("loyalty-points");
   if (!ptsTag) {
     ptsTag = document.createElement("span");
     ptsTag.id = "loyalty-points";
@@ -152,7 +152,7 @@ const renderBonusPts = () => {
   ptsTag.textContent = "(포인트: " + bonusPts + ")";
 };
 function updateStockInfo() {
-  var infoMsg = "";
+  let infoMsg = "";
   prodList.forEach(function (item) {
     if (item.q < 5) {
       infoMsg +=
@@ -166,14 +166,14 @@ function updateStockInfo() {
 }
 main();
 addBtn.addEventListener("click", function () {
-  var selItem = sel.value;
-  var itemToAdd = prodList.find(function (p) {
+  let selItem = sel.value;
+  let itemToAdd = prodList.find(function (p) {
     return p.id === selItem;
   });
   if (itemToAdd && itemToAdd.q > 0) {
-    var item = document.getElementById(itemToAdd.id);
+    let item = document.getElementById(itemToAdd.id);
     if (item) {
-      var newQty =
+      let newQty =
         parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
       if (newQty <= itemToAdd.q) {
         item.querySelector("span").textContent =
@@ -183,7 +183,7 @@ addBtn.addEventListener("click", function () {
         alert("재고가 부족합니다.");
       }
     } else {
-      var newItem = document.createElement("div");
+      let newItem = document.createElement("div");
       newItem.id = itemToAdd.id;
       newItem.className = "flex justify-between items-center mb-2";
       newItem.innerHTML =
@@ -209,19 +209,19 @@ addBtn.addEventListener("click", function () {
   }
 });
 cartDisp.addEventListener("click", function (event) {
-  var tgt = event.target;
+  let tgt = event.target;
   if (
     tgt.classList.contains("quantity-change") ||
     tgt.classList.contains("remove-item")
   ) {
-    var prodId = tgt.dataset.productId;
-    var itemElem = document.getElementById(prodId);
-    var prod = prodList.find(function (p) {
+    let prodId = tgt.dataset.productId;
+    let itemElem = document.getElementById(prodId);
+    let prod = prodList.find(function (p) {
       return p.id === prodId;
     });
     if (tgt.classList.contains("quantity-change")) {
-      var qtyChange = parseInt(tgt.dataset.change);
-      var newQty =
+      let qtyChange = parseInt(tgt.dataset.change);
+      let newQty =
         parseInt(itemElem.querySelector("span").textContent.split("x ")[1]) +
         qtyChange;
       if (
@@ -242,7 +242,7 @@ cartDisp.addEventListener("click", function (event) {
         alert("재고가 부족합니다.");
       }
     } else if (tgt.classList.contains("remove-item")) {
-      var remQty = parseInt(
+      let remQty = parseInt(
         itemElem.querySelector("span").textContent.split("x ")[1]
       );
       prod.q += remQty;
