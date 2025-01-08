@@ -1,4 +1,5 @@
 import { addToCart } from './features/cart/actions/addToCart';
+import { getTotalPriceBeforeSpecialOffer } from './features/cart/actions/getTotalPriceBeforeSpecialOffer';
 import { renderBonusPoints } from './features/cart/components/BonusPointsVIew';
 import { productList } from './features/product';
 import {
@@ -7,8 +8,7 @@ import {
   suggestEvent,
 } from './features/product/actions';
 import { renderProductOptionsView } from './features/product/components/ProductOptionsView';
-import { getDiscountRate } from './shared/actions/getDiscountRate';
-import { DISCOUNT_RATE } from './shared/constant/discountRate';
+import { getToday } from './shared/util/date/getToday';
 
 var SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
 var lastSelectedItemValue,
@@ -65,27 +65,15 @@ function calculateCartItems() {
   totalAmount = 0;
   totalItemCount = 0;
   var cartItems = CartItemsView.children;
-  var subTotalPrice = 0;
-  for (var i = 0; i < cartItems.length; i++) {
-    (function () {
-      const currentItem = productList.find(
-        (product) => product.id === cartItems[i].id,
-      );
-      if (!currentItem) return;
-      const currentQuantity = parseInt(
-        cartItems[i].querySelector('span').textContent.split('x ')[1],
-      );
-      var itemTotalPrice = currentItem.val * q;
-      var discountRate = 0;
-      totalItemCount += currentQuantity;
-      subTotalPrice += itemTotalPrice;
-      if (currentQuantity >= 10) {
-        if (DISCOUNT_RATE[currentItem.id])
-          discountRate = getDiscountRate(currentItem.id);
-      }
-      totalAmount += itemTotalPrice * (1 - discountRate);
-    })();
-  }
+
+  const {
+    subTotalPrice,
+    totalPrice,
+    totalItemCount: resItemCount,
+  } = getTotalPriceBeforeSpecialOffer(cartItems, productList, totalItemCount);
+  totalAmount = totalPrice;
+  totalItemCount = resItemCount;
+
   let discountRate = 0;
   if (totalItemCount >= 30) {
     var bulkDiscount = totalAmount * 0.25;
@@ -99,7 +87,7 @@ function calculateCartItems() {
   } else {
     discountRate = (subTotalPrice - totalAmount) / subTotalPrice;
   }
-  if (new Date().getDay() === 2) {
+  if (getToday() === 2) {
     totalAmount *= 1 - 0.1;
     discountRate = Math.max(discountRate, 0.1);
   }
