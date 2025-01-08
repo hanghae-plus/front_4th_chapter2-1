@@ -93,24 +93,24 @@ export const addToCartClickHandler = () => {
   const selItem = document.querySelector("#product-select").value;
   const itemToAdd = products.find((p) => p.id === selItem);
 
-  if (itemToAdd && itemToAdd.quantity > 0) {
-    const itemElem = document.getElementById(itemToAdd.id);
-    if (itemElem) {
-      const [_, curQuantity] = splitItemPriceQuantity(itemElem);
-      const newQty = Number(curQuantity) + 1;
-      if (newQty <= itemToAdd.quantity) {
-        replaceToElement(`#${itemToAdd.id} > span`, CartItemInfo({ ...itemToAdd, quantity: newQty }));
-        itemToAdd.quantity--;
-      } else {
-        alert("재고가 부족합니다.");
-      }
-    } else {
-      appendToElement("#cart-items", CartItem(itemToAdd));
+  if (!(itemToAdd && itemToAdd.quantity > 0)) return;
+
+  const itemElem = document.getElementById(itemToAdd.id);
+  if (itemElem) {
+    const [_, curQuantity] = splitItemPriceQuantity(itemElem);
+    const newQty = Number(curQuantity) + 1;
+    if (newQty <= itemToAdd.quantity) {
+      replaceToElement(`#${itemToAdd.id} > span`, CartItemInfo({ ...itemToAdd, quantity: newQty }));
       itemToAdd.quantity--;
+    } else {
+      alert("재고가 부족합니다.");
     }
-    calcCart();
-    return selItem;
+  } else {
+    appendToElement("#cart-items", CartItem(itemToAdd));
+    itemToAdd.quantity--;
   }
+  calcCart();
+  return selItem;
 };
 
 export const cartItemsClickHandler = (event) => {
