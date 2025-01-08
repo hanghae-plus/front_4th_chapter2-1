@@ -22,6 +22,7 @@
     "@feature-sliced/eslint-config": "^0.1.1",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.10.5",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.0",
     "@vitest/ui": "^2.1.1",
