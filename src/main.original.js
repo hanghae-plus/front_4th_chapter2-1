@@ -170,15 +170,16 @@ function calculateDiscountRate(subTotal) {
   if (itemCount >= 30) {
     var bulkPurchaseDiscount = totalAmount * BULK_DISCOUNT_RATE;
     var itemSpecificDiscount = subTotal - totalAmount;
+
     if (bulkPurchaseDiscount > itemSpecificDiscount) {
       totalAmount = subTotal * (1 - BULK_DISCOUNT_RATE);
       return BULK_DISCOUNT_RATE;
-    } else {
-      return (subTotal - totalAmount) / subTotal;
     }
-  } else {
+
     return (subTotal - totalAmount) / subTotal;
   }
+
+  return (subTotal - totalAmount) / subTotal;
 }
 
 // 화요일 추가 할인 적용하는 함수
@@ -187,6 +188,7 @@ function applyWeeklyDiscount(totalAmount, totalDiscountRate) {
     totalAmount *= 1 - 0.1;
     totalDiscountRate = Math.max(totalDiscountRate, 0.1);
   }
+
   return { totalAmount, totalDiscountRate };
 }
 
@@ -304,9 +306,10 @@ function updateCartProductQuantity(existingItem, product) {
   if (newQuantity <= product.quantity) {
     quantityElement.textContent = `${product.name} - ${product.price}원 x ${newQuantity}`;
     product.quantity--;
-  } else {
-    alert('재고가 부족합니다.');
+    return;
   }
+
+  alert('재고가 부족합니다.');
 }
 
 // 장바구니에 새로운 제품을 추가하는 함수
@@ -355,7 +358,9 @@ function handleAddProductQuantity(event) {
 
   if (clickedElement.classList.contains('quantity-change')) {
     updateProductQuantity(clickedElement, cartItemElement, product);
-  } else if (clickedElement.classList.contains('remove-item')) {
+  }
+
+  if (clickedElement.classList.contains('remove-item')) {
     removeProductFromCart(cartItemElement, product);
   }
 
@@ -391,12 +396,16 @@ function updateProductQuantity(clickedElement, cartItemElement, product) {
       'x ' +
       newQuantity;
     product.quantity -= quantityChange;
-  } else if (newQuantity <= 0) {
+    return;
+  }
+
+  if (newQuantity <= 0) {
     removeProductFromCart(clickedElement);
     product.quantity -= quantityChange;
-  } else {
-    alert('재고가 부족합니다.');
+    return;
   }
+
+  alert('재고가 부족합니다.');
 }
 
 // 추가 버튼 클릭 이벤트 핸들러
