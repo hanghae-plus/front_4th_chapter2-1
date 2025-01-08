@@ -22,6 +22,13 @@ function main() {
 
   calcCart();
 
+  alertLuckySale();
+
+  alertSuggestProduct();
+}
+
+const alertLuckySale = () => {
+  // 번개 세일 alert 함수
   setTimeout(function () {
     setInterval(function () {
       const luckyProduct =
@@ -33,12 +40,15 @@ function main() {
       }
     }, 30000);
   }, Math.random() * 10000);
+};
 
+const alertSuggestProduct = () => {
+  // 상품 추천 함수
   setTimeout(function () {
     setInterval(function () {
       if (lastAddCartProductId) {
-        const suggest = productList.find(function (item) {
-          return item.id !== lastAddCartProductId && item.stock > 0;
+        const suggest = productList.find(function (product) {
+          return product.id !== lastAddCartProductId && product.stock > 0;
         });
         if (suggest) {
           alert(
@@ -50,7 +60,7 @@ function main() {
       }
     }, 60000);
   }, Math.random() * 20000);
-}
+};
 
 const renderCart = () => {
   const root = document.getElementById('app');
