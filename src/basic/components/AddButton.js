@@ -1,7 +1,7 @@
 import { renderCartItems } from './CartItems';
 import { renderCartTotal } from './CartTotal';
 import { lastSelectedProduct } from '../main.basic';
-import { renderStockStatus } from '../renders/stockStatus';
+import { renderStockStatus } from './StockStatus';
 
 export const AddButton = ({ cartItems, productList }) => {
   document.getElementById('app').addEventListener('click', (e) => {

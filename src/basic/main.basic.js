@@ -23,7 +23,7 @@
 
 import { Container } from './components/Container';
 import { renderProductSelectOptionElement } from './components/ProductSelect';
-import { renderStockStatus } from './renders/stockStatus';
+import { renderStockStatus } from './components/StockStatus';
 import { PRODUCT_LIST } from './store/productList';
 
 export const lastSelectedProduct = { id: null };
