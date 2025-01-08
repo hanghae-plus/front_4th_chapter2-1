@@ -16,55 +16,19 @@ export const BULK_DISCOUNT_RATE = 0.25;
 export const QUANTITY_THRESHOLD_FOR_FINAL_AMOUNT = 30;
 const QUANTITY_THRESHOLD_FOR_TOTAL_AMOUNT = 10;
 
-const calculateCartPrice = (cartList: Product[]) => {
-  let totalAmt = 0;
-  const itemCnt = 0;
-  const subTot = 0;
-
+export const calculateCartPrice = (cartList: Product[]) => {
   const { totalQuantity, totalAmount, totalDiscountedAmount } = getCartItemsInfo(cartList);
 
-  // 할인율 같음
-  let discRate = 0;
+  const { discountRate, bulkDiscountedAmount } = getDiscountedAmount(totalQuantity, totalAmount, totalDiscountedAmount);
 
-  // itemCount가 30이 넘으면 할인 로직을 따로 처리하는 듯
-  if (itemCnt >= 30) {
-    // itemCount가 30이 넘으면 총액의 0.25를 곱해 할당
-    const bulkDisc = totalAmt * 0.25;
-
-    // 현재 아이템들의 총액에 카트 총액을 빼서 할당
-    const itemDisc = subTot - totalAmt;
-
-    // itemDisc보다 총액의 0.25를 곱한 값이 더 크면
-    if (bulkDisc > itemDisc) {
-      // 총액에 현재 아이템에서 0.75를 곱해 총액에 할당
-      totalAmt = subTot * (1 - 0.25);
-      // 할인율 할당
-      discRate = 0.25;
-    } else {
-      // itemDisc보다 총액의 0.25를 곱한 값이 더 크지 않으면
-      // 할인율에 현재 아이템의 총액에서 카트의 총액을 빼고 해당 값을 현재 아이템의 총액만큼 나누어서 할당
-      discRate = (subTot - totalAmt) / subTot;
-    }
-  } else {
-    // itemCount가 30이 넘지 않으면
-    // 할인율에 현재 아이템의 총액에서 카트의 총액을 빼고 해당 값을 현재 아이템의 총액만큼 나누어서 할당
-    discRate = (subTot - totalAmt) / subTot;
-  }
-
-  // 화요일이면! (화요일만 특수하게 할인 로직이 들어간다)
-  if (new Date().getDay() === 2) {
-    // 총액에 0.9를 곱한다
-    totalAmt *= 1 - 0.1;
-    // 할인율이 0.1보다 큰 걸 처리하는듯?
-    discRate = Math.max(discRate, 0.1);
-  }
+  const { finalAmount, finalDiscountRate } = getTuesdayDiscount(discountRate, bulkDiscountedAmount);
 
   // 총액을 처리하는 엘리먼트에 string을 처리한다
   // TotalPrice 컴포넌트에서 처리
   // sum.textContent = '총액: ' + Math.round(totalAmt) + '원';
 
   // 할인율이 0보다 크면
-  if (discRate > 0) {
+  if (finalDiscountRate > 0) {
     // 총액을 처리하는 엘리먼트에 클래스와 string을 입혀 넣는다.
     // TotalPrice 컴포넌트에서 처리
     // const span = document.createElement('span');
@@ -77,6 +41,8 @@ const calculateCartPrice = (cartList: Product[]) => {
 
   // 보너스 함수 호출
   // renderBonusPts();
+
+  return { finalAmount, finalDiscountRate };
 };
 
 function getCartItemsInfo(cartList: Product[]) {
@@ -91,19 +57,11 @@ function getCartItemsInfo(cartList: Product[]) {
   for (const cartItem of cartList) {
     const { val, q } = cartItem;
 
-    // 현재 아이템으로 선택된 아이템의 재고 총액
     const cartItemTotalAmount = val * q;
-
-    // 아이템의 할인율
     const discountRate = calculateTotalDiscountRate(q, cartItem.id as ProductId);
 
-    // 재고의 합
     totalQuantity = sumQuantity(cartItem.q);
-
-    // 현재 아이템의 총액을 subTotal에 더한다.
     totalAmount = sumAmount(cartItemTotalAmount);
-
-    // 총액에 현재 아이템의 총액에 할인율을 계산한 값을 할당
     totalDiscountedAmount = sumDiscountedAmount(cartItemTotalAmount * (1 - discountRate));
   }
 
@@ -144,11 +102,10 @@ function getDiscountedAmount(totalQuantity: number, totalAmount: number, totalDi
   let amount = totalAmount;
 
   if (quantity >= QUANTITY_THRESHOLD_FOR_FINAL_AMOUNT) {
-    const bulkDisc = amount * BULK_DISCOUNT_RATE;
+    const bulkDiscountAmount = amount * BULK_DISCOUNT_RATE;
+    const discountAmount = discountedAmount - amount;
 
-    const itemDisc = discountedAmount - amount;
-
-    if (bulkDisc > itemDisc) {
+    if (bulkDiscountAmount > discountAmount) {
       amount = discountedAmount * (1 - BULK_DISCOUNT_RATE);
       discountRate = BULK_DISCOUNT_RATE;
     } else {
@@ -158,5 +115,20 @@ function getDiscountedAmount(totalQuantity: number, totalAmount: number, totalDi
     discountRate = (discountedAmount - amount) / discountedAmount;
   }
 
-  return { discountRate, amount };
+  return { discountRate, bulkDiscountedAmount: amount };
+}
+
+function getTuesdayDiscount(discountRate: number, bulkDiscountedAmount: number) {
+  const isTuesday = new Date().getDay() === 2;
+  let finalAmount = bulkDiscountedAmount;
+
+  // 화요일이면! (화요일만 특수하게 할인 로직이 들어간다)
+  if (isTuesday) {
+    // 총액에 0.9를 곱한다
+    finalAmount *= 1 - 0.1;
+    // 할인율이 0.1보다 큰 걸 처리하는듯?
+    discountRate = Math.max(discountRate, 0.1);
+  }
+
+  return { finalAmount, finalDiscountRate: discountRate };
 }
