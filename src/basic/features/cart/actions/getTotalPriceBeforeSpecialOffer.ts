@@ -21,7 +21,7 @@ const getTotalPriceBeforeSpecialOffer = (
       const currentQuantity = parseInt(
         cartItems[i].querySelector('span').textContent.split('x ')[1],
       );
-      const itemTotalPrice = currentItem.val * currentQuantity;
+      const itemTotalPrice = currentItem.price * currentQuantity;
       let discountRate = 0;
       totalItemCount += currentQuantity;
       subTotalPrice += itemTotalPrice;
