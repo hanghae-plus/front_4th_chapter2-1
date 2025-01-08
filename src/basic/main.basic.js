@@ -14,6 +14,8 @@ import { PRODUCTS } from "./constant/products";
 // 이벤트 타임이다 -> 상품의 가격이 변동된다.
 // 상태에 따라서 ui 표시 -> 유저 이벤트 감지 -> 상태 변경 -> ui에 반영
 // 상태: 장바구니에 담긴 아이템(수), 총액(할인율, 포인트) => 장바구니에 담긴 아이템의 종류와 수만 필요하지 않을까?
+// 여기저기서 꼬인 느낌... 하나의 책임을 하지 못함
+// 어디서부터 손대야 할지 모르겟음...
 
 // * 필요한 변수 선언 (전역으로...)
 let select, addButton, cartItemDisplay, sum, stock;
@@ -21,6 +23,8 @@ let lastSelectedProduct,
   bonusPoints = 0,
   totalAmount = 0,
   itemCount = 0;
+
+const cartItems = []; // 나중에 현재 장바구니에 담은 아이템의 정보를 담을 배열
 
 function main() {
   const root = document.getElementById("app");
@@ -50,8 +54,8 @@ function main() {
   calculateCart();
 
   // 랜덤 번개 세일
-  setTimeout(function () {
-    setInterval(function () {
+  setTimeout(() => {
+    setInterval(() => {
       const luckyItem = PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)];
       if (Math.random() < 0.3 && luckyItem.quantity > 0) {
         luckyItem.value = Math.round(luckyItem.value * 0.8);
@@ -62,11 +66,11 @@ function main() {
   }, Math.random() * 10000);
 
   // 랜덤 할인 광고
-  setTimeout(function () {
-    setInterval(function () {
+  setTimeout(() => {
+    setInterval(() => {
       if (lastSelectedProduct) {
         // 가장 최근에 구매한 아이템 광고
-        const suggest = PRODUCTS.find(function (item) {
+        const suggest = PRODUCTS.find((item) => {
           return item.id !== lastSelectedProduct && item.quantity > 0;
         });
         if (suggest) {
@@ -191,7 +195,7 @@ function renderBonusPoints() {
 // 재고 정보 업데이트하는 함수
 function updateStockInfo() {
   let infoMessage = "";
-  PRODUCTS.forEach(function (item) {
+  PRODUCTS.forEach((item) => {
     if (item.quantity < 5) {
       infoMessage +=
         item.name + ": " + (item.quantity > 0 ? "재고 부족 (" + item.quantity + "개 남음)" : "품절") + "\n";
@@ -203,10 +207,10 @@ function updateStockInfo() {
 main();
 
 // 추가 버튼에 이벤트 리스너 연결
-addButton.addEventListener("click", function () {
+addButton.addEventListener("click", () => {
   // 옵션으로 선택한 아이템 찾기
   const selectedItem = select.value;
-  const itemToAdd = PRODUCTS.find(function (p) {
+  const itemToAdd = PRODUCTS.find((p) => {
     return p.id === selectedItem;
   });
 
@@ -256,14 +260,14 @@ addButton.addEventListener("click", function () {
 });
 
 // 상품 +,-,삭제 버튼에 이벤트 리스너 연결
-cartItemDisplay.addEventListener("click", function (event) {
+cartItemDisplay.addEventListener("click", (event) => {
   const target = event.target;
 
   // 상품 +,-,삭제 버튼을 눌렀다면
   if (target.classList.contains("quantity-change") || target.classList.contains("remove-item")) {
     const productId = target.dataset.productId;
     const itemElement = document.getElementById(productId);
-    const product = PRODUCTS.find(function (p) {
+    const product = PRODUCTS.find((p) => {
       return p.id === productId;
     });
 
