@@ -1,10 +1,10 @@
 import { products } from './data/products';
-import { DISCOUNT_POLICY } from './features/cart/policies/discount';
-import { STOCK_POLICY } from './features/cart/policies/stock';
-import { TIMER_POLICY } from './features/cart/policies/timer';
-import { applyDiscount } from './features/cart/utils/applyDiscount';
+import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './features/cart/constants/policy';
+import { applyDiscount } from './features/cart/utils/discount';
 
 let productSelector, addToCartButton, cartItemContainer, cartTotal, stockStatus;
+
+const getStockStatus = () => document.getElementById('stock-status');
 
 let lastSelectedProduct,
   points = 0,
@@ -159,15 +159,13 @@ const renderPoints = () => {
 };
 
 const renderStockStatus = () => {
-  let stockStatusMessage = '';
-
-  products.forEach((item) => {
-    if (item.quantity < STOCK_POLICY.STOCK_THRESHOLD) {
-      stockStatusMessage += `${item.name}: ${item.quantity > 0 ? `재고 부족 (${item.quantity}개 남음)` : '품절'}\n`;
-    }
-  });
-
-  stockStatus.textContent = stockStatusMessage;
+  getStockStatus().innerHTML = products
+    .filter((item) => item.quantity < STOCK_POLICY.STOCK_THRESHOLD)
+    .map(({ name, quantity }) => {
+      const message = `${name}: ${quantity > 0 ? `재고 부족 (${quantity}개 남음)` : '품절'}`;
+      return /* html */ `<div class="stock-status-item">${message}</div>`;
+    })
+    .join('');
 };
 
 main();
