@@ -133,20 +133,23 @@ describe('basic test', () => {
     });
 
     it('번개세일 기능이 정상적으로 동작하는지 확인', () => {
-      const products = [
-        { id: 'p1', name: '상품1', price: 10000, quantity: 10 },
-        { id: 'p2', name: '상품2', price: 20000, quantity: 5 },
-        { id: 'p3', name: '상품3', price: 30000, quantity: 0 },
-      ];
+      // 기존 products 목록을 복사해서 사용
+      const testProducts = Array.from(sel.children).map(option => ({
+        id: option.value,
+        name: option.textContent.split(' - ')[0],
+        price: parseInt(option.textContent.split(' - ')[1]),
+        quantity: option.disabled ? 0 : 10,
+      }));
+
       vi.spyOn(Math, 'random').mockReturnValue(0.1);
       vi.spyOn(helper, 'getLightningSaleMessage').mockReturnValue(
         '번개세일 적용!',
       );
 
-      startLightningSale(products);
+      startLightningSale(testProducts);
       vi.advanceTimersByTime(LIGHTNING_SALE_DELAY + LIGHTNING_SALE_INTERVAL);
 
-      expect(products[0].price).toBe(8_000);
+      expect(testProducts[0].price).toBe(8_000);
       expect(window.alert).toHaveBeenCalledWith('번개세일 적용!');
 
       Math.random.mockRestore();
@@ -154,20 +157,23 @@ describe('basic test', () => {
     });
 
     it('추천 상품 알림이 표시되는지 확인', () => {
-      const products = [
-        { id: 'p1', name: '상품1', price: 10000, quantity: 10 },
-        { id: 'p2', name: '상품2', price: 20000, quantity: 5 },
-        { id: 'p3', name: '상품3', price: 30000, quantity: 0 },
-      ];
+      // 기존 products 목록을 복사해서 사용
+      const testProducts = Array.from(sel.children).map(option => ({
+        id: option.value,
+        name: option.textContent.split(' - ')[0],
+        price: parseInt(option.textContent.split(' - ')[1]),
+        quantity: option.disabled ? 0 : 10,
+      }));
+
       vi.spyOn(Math, 'random').mockReturnValue(0.1);
       vi.spyOn(helper, 'getSuggestionMessage').mockReturnValue(
         '추천 상품 알림!',
       );
 
-      startSuggestion(products, 'p1');
+      startSuggestion(testProducts, 'p1');
       vi.advanceTimersByTime(SUGGESTION_DELAY + SUGGESTION_INTERVAL);
 
-      expect(products[1].price).toBe(19000); // 20000 * 0.95
+      expect(testProducts[1].price).toBe(19000); // 20000 * 0.95
       expect(window.alert).toHaveBeenCalledWith('추천 상품 알림!');
 
       Math.random.mockRestore();
