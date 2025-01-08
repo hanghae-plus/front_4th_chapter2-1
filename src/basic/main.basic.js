@@ -1,6 +1,5 @@
 import App from './components/App.js';
 import {
-  calculateCart,
   startLightningSale,
   startRecommendProduct,
   updateSelectedOptions,
@@ -11,27 +10,10 @@ function main() {
   root.appendChild(App());
 
   const selectedOptions = document.getElementById('product-select');
-  const cartDisplay = document.getElementById('cart-items');
-  const totalSum = document.getElementById('cart-total');
-  const stockStatus = document.getElementById('stock-status');
-  const addToCartButton = document.getElementById('add-to-cart');
-  const quantityPlusButton = document.getElementById('quantity-change');
 
   updateSelectedOptions(selectedOptions);
-  calculateCart(cartDisplay, totalSum);
   startLightningSale(selectedOptions);
   startRecommendProduct(selectedOptions);
-  // addToCartButton.addEventListener('click', () => {
-  //   console.log('111', cartDisplay1, selectedOptions);
-  //   addToCart(cartDisplay, selectedOptions);
-  // });
-  // quantityPlusButton.addEventListener('click', () => {
-  //   addToCart(cartDisplay, selectedOptions);
-  // });
-  // quantityMinusButton.addEventListener('click', () => {
-  //   addToCart(cartDisplay, selectedOptions);
-  // });
-  // initializeCartEvents(cartDisplay, totalSum);
 }
 
 //실행
