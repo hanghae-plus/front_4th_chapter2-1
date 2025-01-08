@@ -1,5 +1,4 @@
-let lastAddCartProductId,
-  totalAmount = 0;
+import { utils } from './utils';
 
 const productList = [
   { id: 'p1', name: '상품1', price: 10000, stock: 50 },
@@ -8,6 +7,9 @@ const productList = [
   { id: 'p4', name: '상품4', price: 15000, stock: 0 },
   { id: 'p5', name: '상품5', price: 25000, stock: 10 },
 ];
+const _utils = utils();
+let lastAddCartProductId,
+  totalAmount = 0;
 
 const ElementProductSelect = document.createElement('select');
 const ElementAddCartBtn = document.createElement('button');
@@ -31,8 +33,7 @@ const alertLuckySale = () => {
   // 번개 세일 alert 함수
   setTimeout(function () {
     setInterval(function () {
-      const luckyProduct =
-        productList[Math.floor(Math.random() * productList.length)];
+      const luckyProduct = productList[_utils.randomIndex(productList.length)];
       if (Math.random() < 0.3 && luckyProduct.stock > 0) {
         luckyProduct.price = Math.round(luckyProduct.price * 0.8);
         alert(`번개세일! ${luckyProduct.name}이(가) 20% 할인 중입니다!`);
@@ -144,6 +145,10 @@ const calcCart = () => {
   for (let i = 0; i < cartItems.length; i++) {
     (function () {
       let currentProduct;
+      let discount = 0;
+      const count = parseInt(
+        cartItems[i].querySelector('span').textContent.split('x ')[1]
+      );
 
       for (let j = 0; j < productList.length; j++) {
         if (productList[j].id === cartItems[i].id) {
@@ -152,13 +157,7 @@ const calcCart = () => {
         }
       }
 
-      const count = parseInt(
-        cartItems[i].querySelector('span').textContent.split('x ')[1]
-      );
       const itemTot = currentProduct.price * count;
-      let discount = 0;
-      totalCount += count;
-      subTot += itemTot;
 
       if (count >= 10) {
         if (currentProduct.id === 'p1') discount = 0.1;
@@ -168,6 +167,8 @@ const calcCart = () => {
         else if (currentProduct.id === 'p5') discount = 0.25;
       }
 
+      totalCount += count;
+      subTot += itemTot;
       totalAmount += itemTot * (1 - discount);
     })();
   }
