@@ -5,6 +5,11 @@ export interface Product {
   qty: number;
 }
 
+export interface CartItem {
+  id: string;
+  qty: number;
+}
+
 export type Discount =
   | 'LUCKY_DISC'
   | 'ADDITIONAL_DISC'
@@ -12,7 +17,7 @@ export type Discount =
   | 'DAY_OF_THE_WEEK_DISC'
   | 'ITEM_DISC';
 
-export type AlertingDiscount = Extract<
+export type IndividualDiscount = Extract<
   Discount,
   'LUCKY_DISC' | 'ADDITIONAL_DISC'
 >;

@@ -1,4 +1,4 @@
-import { AlertingDiscount, Discount } from './type';
+import { IndividualDiscount } from './type';
 
 export const ID_BY_COMPONENT = Object.freeze({
   CART_ID: 'cart-items',
@@ -36,18 +36,20 @@ export const DISC_RATES: {
   ITEM_DISC: DISC_RATES_PER_ITEM,
 });
 
-export const DISC_PROB: Record<AlertingDiscount, number> = Object.freeze({
+export const DISC_PROB: Record<IndividualDiscount, number> = Object.freeze({
   LUCKY_DISC: 0.3,
   ADDITIONAL_DISC: 1,
 });
 
-export const DISC_INITIAL_BUFFERS: Record<AlertingDiscount, number> =
+export const DISC_INITIAL_BUFFERS: Record<IndividualDiscount, number> =
   Object.freeze({
     LUCKY_DISC: 10000,
     ADDITIONAL_DISC: 20000,
   });
 
-export const DISC_INTERVALS: Record<AlertingDiscount, number> = Object.freeze({
-  LUCKY_DISC: 30000,
-  ADDITIONAL_DISC: 60000,
-});
+export const DISC_INTERVALS: Record<IndividualDiscount, number> = Object.freeze(
+  {
+    LUCKY_DISC: 30000,
+    ADDITIONAL_DISC: 60000,
+  },
+);
