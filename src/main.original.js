@@ -1,10 +1,14 @@
+import {
+  BULK_DISCOUNT_RATE,
+  DISCOUNT_RATE,
+  POINT_RATE,
+  productList,
+  SALE_PROBABILITY,
+  TUESDAY,
+} from './constant/product';
+
 // 전역 변수 선언
-var productList,
-  productSelect,
-  addCartButton,
-  cartDisplay,
-  cartTotalPrice,
-  stockStatus;
+var productSelect, addCartButton, cartDisplay, cartTotalPrice, stockStatus;
 
 var lastSelectedProduct,
   bonusPoints = 0,
@@ -13,15 +17,6 @@ var lastSelectedProduct,
 
 // 메인 함수
 function initializeShoppingCart() {
-  // 상품 데이터 초기화
-  productList = [
-    { id: 'p1', name: '상품1', price: 10000, quantity: 50 },
-    { id: 'p2', name: '상품2', price: 20000, quantity: 30 },
-    { id: 'p3', name: '상품3', price: 30000, quantity: 20 },
-    { id: 'p4', name: '상품4', price: 15000, quantity: 0 },
-    { id: 'p5', name: '상품5', price: 25000, quantity: 10 },
-  ];
-
   // 요소 생성 및 설정
   var root = document.getElementById('app');
   let contents = document.createElement('div');
@@ -72,9 +67,12 @@ function initializeShoppingCart() {
     setInterval(function () {
       var randomDiscountProduct =
         productList[Math.floor(Math.random() * productList.length)];
-      if (Math.random() < 0.3 && randomDiscountProduct.quantity > 0) {
+      if (
+        Math.random() < SALE_PROBABILITY &&
+        randomDiscountProduct.quantity > 0
+      ) {
         randomDiscountProduct.price = Math.round(
-          randomDiscountProduct.price * 0.8
+          randomDiscountProduct.price * DISCOUNT_RATE
         );
         alert(
           '번개세일! ' +
@@ -163,11 +161,11 @@ function calculateCartTotal() {
 
   // 대량 구매 할인 적용
   if (itemCount >= 30) {
-    var bulkPurchaseDiscount = totalAmount * 0.25;
+    var bulkPurchaseDiscount = totalAmount * BULK_DISCOUNT_RATE;
     var itemSpecificDiscount = subTotal - totalAmount;
     if (bulkPurchaseDiscount > itemSpecificDiscount) {
-      totalAmount = subTotal * (1 - 0.25);
-      totalDiscountRate = 0.25;
+      totalAmount = subTotal * (1 - BULK_DISCOUNT_RATE);
+      totalDiscountRate = BULK_DISCOUNT_RATE;
     } else {
       totalDiscountRate = (subTotal - totalAmount) / subTotal;
     }
@@ -176,7 +174,7 @@ function calculateCartTotal() {
   }
 
   // 화요일 추가 할인 적용
-  if (new Date().getDay() === 2) {
+  if (new Date().getDay() === TUESDAY) {
     totalAmount *= 1 - 0.1;
     totalDiscountRate = Math.max(totalDiscountRate, 0.1);
   }
@@ -198,7 +196,7 @@ function calculateCartTotal() {
 
 // 보너스 포인트 렌더 함수
 const renderBonusPoints = () => {
-  bonusPoints = Math.floor(totalAmount / 1000);
+  bonusPoints = Math.floor(totalAmount / POINT_RATE);
 
   var loyaltyPointsElement = document.getElementById('loyalty-points');
 
