@@ -1,2 +1,2 @@
 export * from "./commonUtils";
-export * from "./productUtils";
+export * from "./cartUtils";
