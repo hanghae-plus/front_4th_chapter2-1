@@ -2,8 +2,11 @@ import { cartStore } from '@/stores/cartStore';
 
 import { createElement } from '@utils/createElement';
 
-const BonusPoint = (cartTotal: HTMLElement) => {
+const BonusPoint = () => {
   let bonusPoint = document.getElementById('bonus-point');
+  const cartTotal = document.getElementById('cart-total');
+
+  if (!cartTotal) return;
 
   const updateBonusPoint = () => {
     const points = Math.floor(cartStore.get('totalAmount') / 1000);

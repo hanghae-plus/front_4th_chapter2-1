@@ -1,6 +1,7 @@
 import { cartStore } from '@/stores/cartStore';
 
 import BonusPoint from '@components/BonusPoint';
+import CartTotal from '@components/CartTotal';
 import ProductSelect from '@components/ProductSelect';
 import Stock from '@components/Stock';
 import { createElement } from '@utils/createElement';
@@ -57,8 +58,9 @@ const Cart = () => {
   root!.appendChild(container);
 
   ProductSelect();
-  BonusPoint(cartTotal);
-  Stock(stockStatus);
+  BonusPoint();
+  Stock();
+  CartTotal({ totalAmount: 0, discountRate: 0 });
 
   addToCartButton.addEventListener('click', () => {
     const selectedId = productSelect.value;

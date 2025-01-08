@@ -1,8 +1,11 @@
 import { cartStore } from '@/stores/cartStore';
 
-const Stock = (stockStatus: HTMLElement) => {
+const Stock = () => {
   let info = '';
   const productList = cartStore.get('productList');
+  const stockStatus = document.getElementById('stock-status');
+
+  if (!stockStatus) return;
 
   productList.forEach((product) => {
     if (product.stock < 5) {
