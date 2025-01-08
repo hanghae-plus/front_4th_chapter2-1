@@ -22,21 +22,10 @@
  */
 
 import { renderCartTotal } from './renders/cartTotal';
+import { renderProductSelectOptionElement } from './renders/productSelect';
 import { renderStockStatus } from './renders/stockStatus';
 import { CART_ITEMS } from './store/cartItems';
 import { PRODUCT_LIST } from './store/productList';
-
-function renderProductSelectOptionElement() {
-  const $productSelect = document.getElementById('product-select');
-  $productSelect.innerHTML = '';
-  PRODUCT_LIST.forEach((item) => {
-    const $option = document.createElement('option');
-    $option.value = item.id;
-    $option.textContent = item.name + ' - ' + item.price + '원';
-    if (item.stock === 0) $option.disabled = true;
-    $productSelect.appendChild($option);
-  });
-}
 
 export default function main() {
   let lastSelectedProductId;
@@ -191,9 +180,10 @@ export default function main() {
   const $root = document.getElementById('app');
   $root.appendChild($container);
 
-  renderProductSelectOptionElement();
+  renderProductSelectOptionElement({ productList: PRODUCT_LIST });
   renderCartTotal({ cartItems: CART_ITEMS });
   renderStockStatus({ productList: PRODUCT_LIST });
+
   setTimeout(function () {
     setInterval(function () {
       const luckyItem =
@@ -201,7 +191,7 @@ export default function main() {
       if (Math.random() < 0.3 && luckyItem.stock > 0) {
         luckyItem.price = Math.round(luckyItem.price * 0.8);
         alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
-        renderProductSelectOptionElement();
+        renderProductSelectOptionElement({ productList: PRODUCT_LIST });
       }
     }, 30000);
   }, Math.random() * 10000);
@@ -217,7 +207,7 @@ export default function main() {
             suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!'
           );
           suggest.price = Math.round(suggest.price * 0.95);
-          renderProductSelectOptionElement();
+          renderProductSelectOptionElement({ productList: PRODUCT_LIST });
         }
       }
     }, 60000);
