@@ -26,7 +26,7 @@ let lastSelectedProduct,
   totalAmount = 0,
   itemCount = 0;
 
-const cartItems = []; // 나중에 현재 장바구니에 담은 아이템의 정보를 담을 배열
+const cartItems = []; // 현재 장바구니에 담은 아이템의 정보를 담을 배열
 
 function main() {
   // 필요한 ui 만들기
@@ -40,6 +40,7 @@ function main() {
 }
 
 function render() {
+  // ! ui를 좀 더 잘 구현하는 방법...
   const root = document.getElementById("app");
 
   const content = Content();
@@ -78,50 +79,41 @@ function updateProductOption() {
 function calculateCart() {
   totalAmount = 0;
   itemCount = 0;
-  const cartItems = cartItemDisplay.children;
+
   let originalTotalPrice = 0;
 
-  for (let i = 0; i < cartItems.length; i++) {
+  cartItems.forEach((item) => {
     // * 장바구니에 담겨져 있는 아이템을 돌면서
 
     // * 총액 개산
-    (function () {
-      // * 장바구니에 있는 상품이 뭔지 찾기
-      let curItem;
-      for (let j = 0; j < PRODUCTS.length; j++) {
-        if (PRODUCTS[j].id === cartItems[i].id) {
-          curItem = PRODUCTS[j];
-          break;
-        }
-      }
+    let curItem = item;
 
-      // * 해당 상품이 몇 개 담겨져 있는지 찾기
-      const quantity = parseInt(cartItems[i].querySelector("span").textContent.split("x ")[1]);
+    // * 해당 상품이 몇 개 담겨져 있는지 찾기
+    const quantity = curItem.quantity;
 
-      // * 상품의 가격 * 상품의 수 = 장바구니에 담은 해당 상품의 가격의 총합
-      let itemTotalPrice = curItem.value * quantity;
+    // * 상품의 가격 * 상품의 수 = 장바구니에 담은 해당 상품의 가격의 총합
+    let itemTotalPrice = curItem.value * quantity;
 
-      // * 할인율;;
-      let discount = 0;
+    // * 할인율;;
+    let discount = 0;
 
-      itemCount += quantity;
+    itemCount += quantity;
 
-      // 할인율 적용하기 전 총액
-      originalTotalPrice += itemTotalPrice;
+    // 할인율 적용하기 전 총액
+    originalTotalPrice += itemTotalPrice;
 
-      // * 만약 해당 상품이 10개 이상 담겨져 있다면 상품에 따라 다른 할인율 적용
-      if (quantity >= 10) {
-        if (curItem.id === "p1") discount = 0.1;
-        else if (curItem.id === "p2") discount = 0.15;
-        else if (curItem.id === "p3") discount = 0.2;
-        else if (curItem.id === "p4") discount = 0.05;
-        else if (curItem.id === "p5") discount = 0.25;
-      }
+    // * 만약 해당 상품이 10개 이상 담겨져 있다면 상품에 따라 다른 할인율 적용
+    if (quantity >= 10) {
+      if (curItem.id === "p1") discount = 0.1;
+      else if (curItem.id === "p2") discount = 0.15;
+      else if (curItem.id === "p3") discount = 0.2;
+      else if (curItem.id === "p4") discount = 0.05;
+      else if (curItem.id === "p5") discount = 0.25;
+    }
 
-      // * 총액 갱신
-      totalAmount += itemTotalPrice * (1 - discount);
-    })();
-  }
+    // * 총액 갱신
+    totalAmount += itemTotalPrice * (1 - discount);
+  });
 
   // * 총 얼마의 할인율이 적용되었는지 계산
   let discountRate = 0;
@@ -199,16 +191,18 @@ addButton.addEventListener("click", () => {
 
   // 아이템이 있는 아이템이고 재고가 남아있다면
   if (itemToAdd && itemToAdd.quantity > 0) {
+    const cartItem = cartItems.find((i) => i.id === itemToAdd.id);
     const item = document.getElementById(itemToAdd.id);
 
     // 이미 한번 추가된 아이템이라면
     if (item) {
-      const newQuantity = parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
+      const newQuantity = cartItem.quantity + 1;
 
       // 충분한 재고가 있다면
       if (newQuantity <= itemToAdd.quantity) {
         item.querySelector("span").textContent = itemToAdd.name + " - " + itemToAdd.value + "원 x " + newQuantity;
         itemToAdd.quantity--;
+        cartItem.quantity++;
       } else {
         alert("재고가 부족합니다.");
       }
@@ -234,6 +228,12 @@ addButton.addEventListener("click", () => {
         '">삭제</button></div>';
       cartItemDisplay.appendChild(newItem);
       itemToAdd.quantity--;
+      cartItems.push({
+        id: itemToAdd.id,
+        quantity: 1,
+        value: itemToAdd.value,
+        name: itemToAdd.name,
+      });
     }
     // 카트 갱신
     calculateCart();
@@ -253,6 +253,7 @@ cartItemDisplay.addEventListener("click", (event) => {
     const product = PRODUCTS.find((p) => {
       return p.id === productId;
     });
+    const cartItem = cartItems.find((i) => i.id === productId);
 
     // +,- 버튼을 눌렀다면
     if (target.classList.contains("quantity-change")) {
@@ -260,19 +261,18 @@ cartItemDisplay.addEventListener("click", (event) => {
       const quantityChange = parseInt(target.dataset.change);
 
       // 갱신된 선택한 아이템의 수
-      const newQuantity = parseInt(itemElement.querySelector("span").textContent.split("x ")[1]) + quantityChange;
+      const newQuantity = cartItem.quantity + quantityChange;
 
       // 갱신된 선택한 아이템의 수가 0개 넘고 재고가 남아있다면
-      if (
-        newQuantity > 0 &&
-        newQuantity <= product.quantity + parseInt(itemElement.querySelector("span").textContent.split("x ")[1])
-      ) {
+      if (newQuantity > 0 && newQuantity <= product.quantity + cartItem.quantity) {
         itemElement.querySelector("span").textContent =
           itemElement.querySelector("span").textContent.split("x ")[0] + "x " + newQuantity;
         product.quantity -= quantityChange;
+        cartItem.quantity += quantityChange;
       } else if (newQuantity <= 0) {
         itemElement.remove();
         product.quantity -= quantityChange;
+        cartItem.quantity += quantityChange;
       } else {
         alert("재고가 부족합니다.");
       }
@@ -280,7 +280,10 @@ cartItemDisplay.addEventListener("click", (event) => {
       // 삭제 버튼을 눌렀다면
       const removeQuantity = parseInt(itemElement.querySelector("span").textContent.split("x ")[1]);
       product.quantity += removeQuantity;
+
       itemElement.remove();
+      const index = cartItems.findIndex((i) => i.id === cartItem.id);
+      cartItems.splice(index, 1);
     }
     // 카트 갱신
     calculateCart();
