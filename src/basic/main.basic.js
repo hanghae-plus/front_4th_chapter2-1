@@ -1,10 +1,11 @@
-import { updateCartSummary, setTotalAmount } from "../models/calculateLogic"
-import { productList } from "../models/userData"
+import { updateCartSummary, setTotalAmount } from "./models/calculateLogic"
+import { productList } from "./models/userData"
 
 // 동적
 let lastSelected = null
 let bonusPts = 0
 
+// 그저 노드 창조 함수
 const createElement = (tag, options = {}) => {
   const element = document.createElement(tag);
   if (options.id) element.id = options.id;
@@ -88,6 +89,7 @@ const handleAddtoCart = () => {
   lastSelected=selectItem;
 }
 
+// 장바구니 컨트롤 이벤트 리스너
 const handleCartControll = (cartItems) => {
   cartItems.addEventListener('click', function (event) {
     const tgt = event.target;
@@ -135,6 +137,7 @@ const handleCartControll = (cartItems) => {
   }  
 }
 
+// 랜더링 함수
 const render = (component) => {
   const root = document.getElementById('app');
   root.innerHTML = '';
@@ -142,40 +145,58 @@ const render = (component) => {
   carculateLogic();
 };
 
+// 로직 실행 함수
 const carculateLogic = () => {
-  updateSelectOptions();
   cartCalculator();
+  updateSelectOptions();
 
-  // 랜덤한 시간마다(시간이 지나면(시간마다?)) 3초동안 세일을 알림
+  // 콜백 구조로 랜덤 할인 알림 실행
+  initRandomAlert({
+    onFlashSale: luckyItem => {
+      luckyItem.val = Math.round(luckyItem.val * 0.8); // 20% 할인
+      alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
+      updateSelectOptions();
+    },
+    onSuggestion: suggestItem => {
+      suggestItem.val = Math.round(suggestItem.val * 0.95); // 5% 할인
+      alert(`${suggestItem.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
+      updateSelectOptions();
+    }
+  });  
+}
+
+// 콜백 구조로 랜덤 할인 알림 실행 : 초기화 단계
+const initRandomAlert = ({ onFlashSale, onSuggestion }) => {
   setTimeout(() => {
     setInterval(() => {
-      let luckyItem=productList[Math.floor(Math.random() * productList.length)];
-      if(Math.random() < 0.3 && luckyItem.q > 0) {
-        luckyItem.val = Math.round(luckyItem.val * 0.8);
-        alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
-        updateSelectOptions();
+      const luckyItem = getRandomItem();
+      if(Math.random() < 0.3 && luckyItem) {
+        onFlashSale(luckyItem)
       }
-      // 다만 setTimeout 과 setInterval 을 동시에 사용하는 것은 과잉 구현에 속함
-      // 하지만 논쟁의 대상으로 UX 를 조정하기 위해, 첫 랜더링 시간만 조정한 것 일수도 있다
-      // setTimeout 으로 첫 이벤트 페이지만 setTimeout 으로 조정되며 그 후에는 setInterval 로 사용자에게 보여지는 것이다
     }, 30000);
-    // 더 빠르게 사용자에게 노출이 되는 UX 차이가 있기 때문에 아래 로직과 중복 로직으로 제거 대상이 되지는 않음
   }, Math.random() * 10000); 
 
-  // // 랜덤한 시간마다(시간이 지나면(시간마다?)) 6초동안 세일을 알린다
   setTimeout(() => {
     setInterval(() => {
       if(lastSelected) {
-        let suggest = productList.find(item => { return item.id !== lastSelected && item.q > 0; });
-        if(suggest) {
-          alert(`${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
-          suggest.val = Math.round(suggest.val * 0.95);
-          updateSelectOptions();
+        let suggestItem = productList.find(
+          item => item.id !== lastSelected && item.q > 0
+        );
+        
+        if (suggestItem) {
+          onSuggestion(suggestItem);
         }
       }
     }, 60000);
-    // 위와 반대되는 사유
   }, Math.random() * 20000);
+}
+
+// 콜백 구조로 랜덤 할인 알림 실행 : 랜덤 아이템을 Stock으로 부터 승선 시킴
+const getRandomItem = () => {
+  const availableItems = productList.filter(item => item.q > 0);
+  return availableItems.length > 0 
+    ? availableItems[Math.floor(Math.random() * productList.length)]
+    : null;
 }
 
 // select 노드의 옵션을 업데이트하는 함수
@@ -183,45 +204,49 @@ const updateSelectOptions = () => {
   const $select = document.getElementById('product-select')
   $select.innerHTML = '';
   productList.forEach(item => {
-    let opt = document.createElement('option');
-    opt.value = item.id;
-    opt.textContent = `${item.name} - ${item.val}원`;
-    if(item.q === 0) opt.disabled = true;
-    $select && $select.appendChild(opt);
+    let $option = document.createElement('option');
+    $option.value = item.id;
+    $option.textContent = `${item.name} - ${item.val}원`;
+    if(item.q === 0) $option.disabled = true;
+    $select && $select.appendChild($option);
   });
 }
 
-// 장바구니를 계산하는 함수
+// 장바구니 업데이트 할때마다 요소 업데이트 하는 함수
 const cartCalculator = () => {
-  updateCartSummary();
+  updateCartSummary(); // model 단계에 존재
   updateStockInfo();
   updateBonusPts();
 }
 
 // 보너스 혜택 표시 함수
 const updateBonusPts=() => {
-  let loyalPoint = document.getElementById('loyalty-points');
+  let $loyalPoint = document.getElementById('loyalty-points');
   bonusPts = Math.floor(setTotalAmount / 1000);
 
-  if(!loyalPoint) {
-    loyalPoint = document.createElement('span');
-    loyalPoint.id = 'loyalty-points';
-    loyalPoint.className = 'text-blue-500 ml-2';
+  if(!$loyalPoint) {
+    $loyalPoint = document.createElement('span');
+    $loyalPoint.id = 'loyalty-points';
+    $loyalPoint.className = 'text-blue-500 ml-2';
     const $sum = document.getElementById('cart-total');
-    $sum && $sum.appendChild(loyalPoint);
+    $sum && $sum.appendChild($loyalPoint);
   }
-  loyalPoint.textContent = `(포인트: ${bonusPts})`;
+
+  $loyalPoint.textContent = `(포인트: ${bonusPts})`;
 };
 
 // 품절 상품 (재고부족 상품) 표시 함수
 function updateStockInfo() {
-  const stockInfo = document.getElementById('stock-status');
+  const $stockInfo = document.getElementById('stock-status');
   let infoMsg = 
     productList.filter(item => item.q < 5)
-      .map(item => `${item.name}: ${item.q > 0 ? '재고 부족 (' + item.q + '개 남음)' : '품절'}`)
+      .map(item => 
+        `${item.name}: ${item.q > 0
+          ? '재고 부족 (' + item.q + '개 남음)'
+          : '품절'}`)
       .join('\n');
 
-  if (stockInfo) stockInfo.textContent = infoMsg;
+  $stockInfo.textContent = infoMsg;
 }
 
 render(App); // 랜더링 담당자 : main() 에서 render() 로 함수명 변경
