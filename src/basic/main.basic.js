@@ -23,6 +23,7 @@
 
 import { renderCartTotal } from './renders/cartTotal';
 import { renderStockStatus } from './renders/stockStatus';
+import { CART_ITEMS } from './store/cartItems';
 import { PRODUCT_LIST } from './store/productList';
 
 function renderProductSelectOptionElement() {
@@ -36,8 +37,6 @@ function renderProductSelectOptionElement() {
     $productSelect.appendChild($option);
   });
 }
-
-let CART_ITEMS = [];
 
 export default function main() {
   let lastSelectedProductId;
@@ -56,7 +55,7 @@ export default function main() {
     ) {
       const productId = $targetElement.dataset.productId;
       const $cartItem = document.getElementById(productId);
-      const cartItem = CART_ITEMS.find((item) => {
+      const cartItem = [...CART_ITEMS].find((item) => {
         return item.id === productId;
       });
       const product = PRODUCT_LIST.find((product) => {
@@ -77,7 +76,11 @@ export default function main() {
         } else if (newQuantity <= 0) {
           $cartItem.remove();
 
-          CART_ITEMS = CART_ITEMS.filter((item) => item.id !== productId);
+          CART_ITEMS.forEach((item) => {
+            if (item.id === productId) {
+              CART_ITEMS.delete(item);
+            }
+          });
           product.stock -= orderUnit;
         } else {
           alert('재고가 부족합니다.');
@@ -86,7 +89,11 @@ export default function main() {
         $cartItem.remove();
 
         product.stock += cartItem.quantity;
-        CART_ITEMS = CART_ITEMS.filter((item) => item.id !== productId);
+        CART_ITEMS.forEach((item) => {
+          if (item.id === productId) {
+            CART_ITEMS.delete(item);
+          }
+        });
       }
       renderCartTotal({ cartItems: CART_ITEMS });
       renderStockStatus({ productList: PRODUCT_LIST });
@@ -113,7 +120,7 @@ export default function main() {
     if (selectedProduct && selectedProduct.stock > 0) {
       const $cartItem = document.getElementById(selectedProduct.id);
       if ($cartItem) {
-        const cartItem = CART_ITEMS.find((item) => {
+        const cartItem = [...CART_ITEMS].find((item) => {
           return item.id === selectedProduct.id;
         });
 
@@ -134,7 +141,7 @@ export default function main() {
           price: selectedProduct.price,
           quantity: 1,
         };
-        CART_ITEMS.push(newCartItem);
+        CART_ITEMS.add(newCartItem);
 
         const $newCartItem = document.createElement('div');
         $newCartItem.id = selectedProduct.id;
