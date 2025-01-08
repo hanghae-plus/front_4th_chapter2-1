@@ -141,33 +141,37 @@ export const addToCart = (cartItems, selectedOptions) => {
   const selectedItem = selectedOptions.value;
   const itemToAdd = productData.find((p) => p.id === selectedItem);
 
-  if (itemToAdd && itemToAdd.quantity > 0) {
-    let existingItem = document.getElementById(itemToAdd.id);
+  try {
+    if (itemToAdd && itemToAdd.quantity > 0) {
+      let existingItem = document.getElementById(itemToAdd.id);
 
-    if (existingItem) {
-      // 이미 장바구니에 있는 상품인 경우
-      const newQty =
-        parseInt(
-          existingItem.querySelector('span').textContent.split('x ')[1]
-        ) + 1;
-      if (newQty <= itemToAdd.quantity) {
-        existingItem.querySelector(
-          'span'
-        ).textContent = `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQty}`;
-        itemToAdd.quantity--;
+      if (existingItem) {
+        // 이미 장바구니에 있는 상품인 경우
+        const newQty =
+          parseInt(
+            existingItem.querySelector('span').textContent.split('x ')[1]
+          ) + 1;
+        if (newQty <= itemToAdd.quantity) {
+          existingItem.querySelector(
+            'span'
+          ).textContent = `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQty}`;
+          itemToAdd.quantity--;
+        } else {
+          alert('재고가 부족합니다.');
+        }
       } else {
-        alert('재고가 부족합니다.');
+        // 새로운 상품 추가
+        const newItem = CartItem(itemToAdd);
+        cartItems.appendChild(newItem);
+        itemToAdd.quantity--;
       }
-    } else {
-      // 새로운 상품 추가
-      const newItem = CartItem(itemToAdd);
-      cartItems.appendChild(newItem);
-      itemToAdd.quantity--;
+      return true;
     }
-    return true;
-  }
 
-  return false;
+    return false;
+  } finally {
+    calculateCart();
+  }
 };
 
 //번개 세일 기능 함수 호출
@@ -214,6 +218,7 @@ export const handleCartItemDelete = (productId) => {
 
   product.quantity += quantity;
   itemElement.remove();
+  calculateCart();
 };
 
 export const initializeCartEvents = (cartItems, sum) => {
@@ -287,4 +292,5 @@ export const updateCartItemQuantity = (itemId, isIncrease) => {
 
     quantityDisplay.textContent = `${product.name} - ${product.price}원 x ${newQuantity}`;
   }
+  calculateCart();
 };

@@ -1,7 +1,6 @@
 import { createElement } from '../core/createElement.js';
 import {
   addToCart,
-  calculateCart,
   handleCartItemDelete,
   updateCartItemQuantity
 } from '../logic/logic.js';
@@ -35,10 +34,7 @@ export const QuantityButton = (itemId, isIncrease, label) => {
     'data-product-id': itemId,
     'data-change': isIncrease ? 1 : -1,
     textContent: label,
-    onclick: () => {
-      updateCartItemQuantity(itemId, isIncrease);
-      calculateCart();
-    }
+    onclick: () => updateCartItemQuantity(itemId, isIncrease)
   });
 };
 
@@ -47,10 +43,7 @@ export const RemoveButton = (itemId) => {
     className: 'remove-item bg-red-500 text-white px-2 py-1 rounded',
     'data-product-id': itemId,
     textContent: '삭제',
-    onclick: () => {
-      handleCartItemDelete(itemId);
-      calculateCart();
-    }
+    onclick: () => handleCartItemDelete(itemId)
   });
 };
 
@@ -86,7 +79,6 @@ export const AddToCartButton = () => {
       const selectedOptions = document.getElementById('product-select');
       const cartItems = document.getElementById('cart-items');
       addToCart(cartItems, selectedOptions);
-      calculateCart();
     }
   });
 };
