@@ -1,5 +1,5 @@
+import { renderCartItems } from '../components/CartItems';
 import { lastSelectedProduct } from '../main.basic';
-import { renderCartItems } from './cartItems';
 import { renderCartTotal } from './cartTotal';
 import { renderStockStatus } from './stockStatus';
 

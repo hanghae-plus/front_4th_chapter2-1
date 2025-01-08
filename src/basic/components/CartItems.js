@@ -1,4 +1,4 @@
-import { createCartItemElement } from '../renders/cartItem';
+import { CartItem } from './CartItem';
 import { renderCartTotal } from '../renders/cartTotal';
 import { renderStockStatus } from '../renders/stockStatus';
 
@@ -17,6 +17,8 @@ export const CartItems = ({ cartItems, productList }) => {
       const product = productList.find((product) => {
         return product.id === productId;
       });
+
+      // 수량 변경 이벤트
       if ($targetElement.classList.contains('quantity-change')) {
         const orderUnit = parseInt($targetElement.dataset.change);
         const newQuantity = cartItem.quantity + orderUnit;
@@ -43,6 +45,7 @@ export const CartItems = ({ cartItems, productList }) => {
           alert('재고가 부족합니다.');
         }
       } else if ($targetElement.classList.contains('remove-item')) {
+        // 삭제 이벤트
         product.stock += cartItem.quantity;
         cartItems.forEach((item) => {
           if (item.id === productId) {
@@ -58,20 +61,18 @@ export const CartItems = ({ cartItems, productList }) => {
   });
 
   return `
-    <div id="cart-items">${[...cartItems]
-      .map((cartItem) => {
-        return createCartItemElement({ cartItem }).outerHTML;
-      })
-      .join('')}</div>
+    <div id="cart-items">${[...cartItems].map((cartItem) => {
+      return CartItem({ cartItem });
+    })}</div>
   `;
 };
 
-const renderCartItems = ({ cartItems }) => {
+export const renderCartItems = ({ cartItems }) => {
   const $cartItems = document.getElementById('cart-items');
   $cartItems.innerHTML = '';
 
-  [...cartItems].forEach((cartItem) => {
-    const $cartItem = createCartItemElement({ cartItem });
-    $cartItems.appendChild($cartItem);
+  const cartItemTemplate = [...cartItems].map((cartItem) => {
+    return CartItem({ cartItem });
   });
+  $cartItems.innerHTML = cartItemTemplate.join('');
 };
