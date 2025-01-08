@@ -22,6 +22,7 @@
  */
 
 import { renderCartTotal } from './renders/cartTotal';
+import { createHeaderElement } from './renders/header';
 import { renderProductSelectOptionElement } from './renders/productSelect';
 import { renderStockStatus } from './renders/stockStatus';
 import { CART_ITEMS } from './store/cartItems';
@@ -30,9 +31,7 @@ import { PRODUCT_LIST } from './store/productList';
 export default function main() {
   let lastSelectedProductId;
 
-  const $header = document.createElement('h1');
-  $header.className = 'text-2xl font-bold mb-4';
-  $header.textContent = '장바구니';
+  const $header = createHeaderElement();
 
   const $cartItems = document.createElement('div');
   $cartItems.id = 'cart-items';
