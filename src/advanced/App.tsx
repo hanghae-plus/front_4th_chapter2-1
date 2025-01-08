@@ -1,9 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ID_BY_COMPONENT } from './const';
-
 import { setAdditionalDiscAlert, setLuckyDiscAlert } from './discountService';
-
-import { handleClickCart } from './eventHandlers';
 
 import { CartItem, Product } from './type';
 import { AddBtn, Cart, Select, StockInfo, Sum } from './component';
@@ -34,16 +30,17 @@ export const App = () => {
   useEffect(() => {
     setLuckyDiscAlert(productList);
     setAdditionalDiscAlert(productList, lastSelId.current);
-
-    const cart = document.querySelector(`#${ID_BY_COMPONENT.CART_ID}`);
-    cart?.addEventListener('click', (e) => handleClickCart(e, productList));
   }, []);
 
   return (
     <div className="bg-gray-100 p-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <h1 className="text-2xl font-bold mb-4">장바구니</h1>
-        <Cart productList={productList} cartItemList={cartItemList} />
+        <Cart
+          productList={productList}
+          cartItemList={cartItemList}
+          setCartItemList={setCartItemList}
+        />
         <Sum
           productList={productList}
           cartItemList={cartItemList}
