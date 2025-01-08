@@ -1,6 +1,4 @@
-import { ProductSelect, ProductStatus } from "./entities/product";
-import { AddToCartButton, CartDisplay, CartTotal } from "./features/cart";
-import { Heading } from "./shared/ui";
+import { Cart } from "./widgets";
 
 interface Product {
   id: string;
@@ -26,22 +24,8 @@ function main() {
   const $root = document.getElementById("app") as HTMLDivElement;
   const $container = document.createElement("div");
   $container.className = "bg-gray-100 p-8";
-
-  const $wrapper = document.createElement("div");
-  $wrapper.className =
-    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
-
-  $wrapper.innerHTML = `
-    ${Heading({ label: "장바구니" })}
-    ${CartDisplay()}
-    ${CartTotal()}
-    ${ProductSelect()}
-    ${AddToCartButton()}
-    ${ProductStatus()}
-  `;
-
+  $container.innerHTML = Cart();
   updateSelOpts();
-  $container.appendChild($wrapper);
   $root.appendChild($container);
   calcCart();
   setTimeout(function () {
