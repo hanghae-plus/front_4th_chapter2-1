@@ -16,7 +16,7 @@ const ProductSelect = () => {
         'option',
         {
           value: product.id,
-          disabled: product.volume === 0 ? 'true' : undefined,
+          disabled: product.stock === 0 ? 'true' : undefined,
         },
         `${product.name} - ${product.price}원`
       );
@@ -27,8 +27,6 @@ const ProductSelect = () => {
 
   updateOptions();
   cartStore.subscribe('productList', updateOptions);
-
-  return productSelect;
 };
 
 export default ProductSelect;

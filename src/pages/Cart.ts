@@ -1,6 +1,8 @@
 import { cartStore } from '@/stores/cartStore';
 
+import BonusPoint from '@components/BonusPoint';
 import ProductSelect from '@components/ProductSelect';
+import Stock from '@components/Stock';
 import { createElement } from '@utils/createElement';
 
 const Cart = () => {
@@ -55,13 +57,15 @@ const Cart = () => {
   root!.appendChild(container);
 
   ProductSelect();
+  BonusPoint(cartTotal);
+  Stock(stockStatus);
 
   addToCartButton.addEventListener('click', () => {
     const selectedId = productSelect.value;
     const productList = cartStore.get('productList');
     const itemToAdd = productList.find((p) => p.id === selectedId);
 
-    if (itemToAdd && itemToAdd.volume > 0) {
+    if (itemToAdd && itemToAdd.stock > 0) {
       const item = document.getElementById(itemToAdd.id);
 
       if (item) {
@@ -71,13 +75,13 @@ const Cart = () => {
 
         const newQty = parseInt(span.textContent.split('x ')[1]) + 1;
 
-        if (newQty <= itemToAdd.volume) {
+        if (newQty <= itemToAdd.stock) {
           item.querySelector('span')!.textContent =
             `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQty}`;
 
           cartStore.set(
             'productList',
-            productList.map((p) => (p.id === selectedId ? { ...p, volume: p.volume - 1 } : p))
+            productList.map((p) => (p.id === selectedId ? { ...p, stock: p.stock - 1 } : p))
           );
         } else {
           alert('재고가 부족합니다.');
@@ -96,7 +100,7 @@ const Cart = () => {
 
         cartStore.set(
           'productList',
-          productList.map((p) => (p.id === selectedId ? { ...p, volume: p.volume - 1 } : p))
+          productList.map((p) => (p.id === selectedId ? { ...p, volume: p.stock - 1 } : p))
         );
       }
       cartStore.set('lastSaleItem', selectedId);

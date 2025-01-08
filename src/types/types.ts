@@ -1,4 +1,4 @@
-export type Product = { id: string; name: string; price: number; volume: number };
+export type Product = { id: string; name: string; price: number; stock: number };
 
 export type Cart = {
   lastSaleItem: string | null;
