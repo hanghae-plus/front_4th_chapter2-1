@@ -1,22 +1,11 @@
-import {
-  appendToElement,
-  renderToElement,
-  replaceToElement,
-} from "./commonUtils";
-import {
-  CartItem,
-  CartItemInfo,
-  CartTotalPrice,
-  DiscountRate,
-  Points,
-} from "../components";
+import { appendToElement, renderToElement, replaceToElement } from "./commonUtils";
+import { CartItem, CartItemInfo, CartTotalPrice, DiscountRate, Points } from "../components";
 import { productsStore } from "../store/productsStore";
 
 let cartTotalPrice = 0;
 const products = productsStore.getInstance().getProducts();
 
-const splitItemPriceQuantity = (itemElement) =>
-  itemElement.querySelector("span").textContent.split("x ");
+const splitItemPriceQuantity = (itemElement) => itemElement.querySelector("span").textContent.split("x ");
 
 const getProdData = (productId) => {
   const prod = products.find((p) => p.id === productId);
@@ -93,20 +82,13 @@ export const calcCart = () => {
 };
 
 const updateStockStatus = () => {
-  renderToElement(
-    "#stock-status",
-    products.filter(isLowStock).map(makeLowStockMessage).join("")
-  );
+  renderToElement("#stock-status", products.filter(isLowStock).map(makeLowStockMessage).join(""));
 };
 
 const isLowStock = (product) => product.quantity < 5;
 
 const makeLowStockMessage = (product) => {
-  return `${product.name}: ${
-    product.quantity > 0
-      ? "재고 부족 (" + product.quantity + "개 남음)"
-      : "품절"
-  }\n`;
+  return `${product.name}: ${product.quantity > 0 ? "재고 부족 (" + product.quantity + "개 남음)" : "품절"}\n`;
 };
 
 const renderPoints = () => {
@@ -124,10 +106,7 @@ export const addToCartClickHandler = () => {
       const [_, curQuantity] = splitItemPriceQuantity(itemElem);
       const newQty = Number(curQuantity) + 1;
       if (newQty <= itemToAdd.quantity) {
-        replaceToElement(
-          `#${itemToAdd.id} > span`,
-          CartItemInfo({ ...itemToAdd, quantity: newQty })
-        );
+        replaceToElement(`#${itemToAdd.id} > span`, CartItemInfo({ ...itemToAdd, quantity: newQty }));
         itemToAdd.quantity--;
       } else {
         alert("재고가 부족합니다.");
@@ -162,10 +141,7 @@ const quantityChange = ({ productId, change }) => {
   const totalQty = prod.quantity + curQuantity;
 
   if (newQty > 0 && newQty <= totalQty) {
-    replaceToElement(
-      `#${itemElem.id} > span`,
-      CartItemInfo({ ...prod, quantity: newQty })
-    );
+    replaceToElement(`#${itemElem.id} > span`, CartItemInfo({ ...prod, quantity: newQty }));
     prod.quantity -= qtyChange;
     return;
   }

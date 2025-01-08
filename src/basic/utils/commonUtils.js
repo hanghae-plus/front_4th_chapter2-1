@@ -28,14 +28,10 @@ const delay = (ms) => (callback) => setTimeout(callback, ms);
 
 const repeat = (ms) => (callback) => () => setInterval(callback, ms);
 
-export const renderToElement = (selector, content) =>
-  pipe(querySelector, renderContent(content))(selector);
+export const renderToElement = (selector, content) => pipe(querySelector, renderContent(content))(selector);
 
-export const appendToElement = (selector, content) =>
-  pipe(querySelector, appendContent(content))(selector);
+export const appendToElement = (selector, content) => pipe(querySelector, appendContent(content))(selector);
 
-export const replaceToElement = (selector, content) =>
-  pipe(querySelector, replaceContent(content))(selector);
+export const replaceToElement = (selector, content) => pipe(querySelector, replaceContent(content))(selector);
 
-export const scheduleInterval = (callback, intervalMs, delayMs) =>
-  pipe(repeat(intervalMs), delay(delayMs))(callback);
+export const scheduleInterval = (callback, intervalMs, delayMs) => pipe(repeat(intervalMs), delay(delayMs))(callback);
