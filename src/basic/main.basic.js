@@ -1,3 +1,5 @@
+import renderBonusPoints from './features/bonus-points/ui.js';
+
 let products,
   selectProductElement,
   addCartButton,
@@ -9,7 +11,6 @@ let selectedProductId;
 const hasClass = (element, className) => element.classList.contains(className);
 const getProduct = (productList, id) => productList.find((p) => p.id === id);
 
-const POINT_RATIO = Object.freeze(1000);
 const STOCK = Object.freeze({
   LOW: 5,
   EMPTY: 0,
@@ -45,20 +46,6 @@ const isOutOfStock = (item) => item.quantity <= STOCK.EMPTY;
 const isOutOfStockRange = (newQty, qty) =>
   newQty <= STOCK.EMPTY || newQty > qty;
 
-const getPointRatioMessage = (totalAmt) =>
-  `(포인트: ${Math.floor(totalAmt / POINT_RATIO)})`;
-
-const renderBonusPts = (totalAmt, parentElement) => {
-  let pointsTag = document.getElementById('loyalty-points');
-  if (!pointsTag) {
-    pointsTag = document.createElement('span');
-    pointsTag.id = 'loyalty-points';
-    pointsTag.className = 'text-blue-500 ml-2';
-    parentElement.appendChild(pointsTag);
-  }
-  pointsTag.textContent = getPointRatioMessage(totalAmt);
-};
-
 const getStockStatusMessage = (item) =>
   isOutOfStock(item) ? '품절' : `재고 부족 (${item.quantity}개 남음)`;
 
@@ -68,13 +55,9 @@ const formatItemStockDisplay = (item) =>
 const updateStockInfo = (prodList) =>
   prodList.filter(isLowStock).map(formatItemStockDisplay).join('');
 
-const initInnerHTML = (element) => {
-  element.innerHTML = '';
-};
-
 const getOptionsMessage = (product) => `${product.name} - ${product.price}원`;
 const updateSelectedOptions = (parentElement, prodList) => {
-  initInnerHTML(parentElement);
+  parentElement.innerHTML = '';
   prodList.forEach((product) => {
     const option = document.createElement('option');
     option.value = product.id;
@@ -184,7 +167,7 @@ function calculateCart() {
   }
 
   stockStatusElement.textContent = updateStockInfo(products);
-  renderBonusPts(totalAmount, totalCartAmountElement);
+  renderBonusPoints(totalAmount, totalCartAmountElement);
 }
 
 const appendChild = (parentElement, ...children) => {
