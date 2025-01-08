@@ -1,63 +1,75 @@
 import { CartStore } from '../../store/cartStore';
+import { productList } from '../../store/constants/productList';
 import { ProductStore } from '../../store/productStore';
 import { addEventListener } from '../../utils/eventUtil';
 
 import type { Product } from '../../store/cartStore';
 
+let isEventListenerAdded = false;
+
 export const ProductSelector = () => {
   const { actions: ProductActions } = ProductStore;
   const { actions: CartActions } = CartStore;
 
-  const productList = ProductActions.getProductList();
+  // console.count('render');
+  const productListState = ProductActions.getProductList();
 
   // INFO: "추가" 버튼 클릭 핸들러
-  addEventListener('click', function (event: MouseEvent) {
-    // addBtn 클릭인지 확인해야함
+  if (!isEventListenerAdded) {
+    addEventListener('click', function (event: MouseEvent) {
+      // addBtn 클릭인지 확인해야함
 
-    if (!(event.target instanceof HTMLButtonElement) || event.target.id !== 'add-to-cart') return;
+      if (!(event.target instanceof HTMLButtonElement) || event.target.id !== 'add-to-cart') return;
 
-    const select = document.getElementById('product-select') as HTMLSelectElement;
+      const select = document.getElementById('product-select') as HTMLSelectElement;
 
-    const selectItem = select.value;
+      const selectItem = select.value;
 
-    //   prodList에서 id와 같은 필드 찾기
-    const targetItem = productList?.find(function (p) {
-      return p.id === selectItem;
+      //   prodList에서 id와 같은 필드 찾기
+      const targetItem = productListState?.find(function (p) {
+        return p.id === selectItem;
+      });
+
+      if (targetItem && targetItem.q > 0) {
+        const item = document.getElementById(targetItem.id) as HTMLOptionElement;
+
+        if (item) {
+          const targetId = item.id;
+
+          const quantity = productList.find(function (p) {
+            return p.id === targetId;
+          })?.q;
+
+          if (quantity && targetItem.q <= quantity) {
+            addCart(targetItem);
+          } else {
+            alert('재고가 부족합니다.');
+          }
+        } else {
+          addCart(targetItem);
+        }
+
+        // calcCart();
+        // lastSel = selItem;
+      }
     });
 
-    if (targetItem && targetItem.q > 0) {
-      const item = document.getElementById(targetItem.id);
-
-      if (item) {
-        const newQty = parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
-        if (newQty <= targetItem.q) {
-          item.querySelector('span').textContent = targetItem.name + ' - ' + targetItem.val + '원 x ' + newQty;
-          ProductActions.decreaseQ(targetItem.id);
-        } else {
-          alert('재고가 부족합니다.');
-        }
-      } else {
-        addCart(targetItem);
-        ProductActions.decreaseQ(targetItem.id);
-      }
-
-      // calcCart();
-      // lastSel = selItem;
-    }
-  });
+    isEventListenerAdded = true;
+  }
 
   function addCart(targetItem: Product) {
     CartActions.addCartItem(targetItem);
+    ProductActions.decreaseQ(targetItem.id);
   }
 
   const render = `
-        <select id="product-select" class="border rounded p-2 mr-2">
+        <select id="product-select" class="border rounded p-2 mr-2" >
         ${
-          productList &&
-          productList.map((product) => {
+          productListState &&
+          productListState.map((product) => {
             const isDisabled = product.q === 0 ? 'disabled' : '';
 
-            return `<option value="${product.id}" ${isDisabled}>${product.name} - ${product.val}원</option>`;
+            return `<option id="${product.id}" value="${product.id}" ${isDisabled}>${product.name} - ${product.val}원</option>`;
           })
         }
         </select>
