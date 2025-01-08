@@ -3,3 +3,4 @@ export * from "./ItemOption";
 export * from "./Points";
 export * from "./DiscountRate";
 export * from "./CartTotalPrice";
+export * from "./CartItemInfo";

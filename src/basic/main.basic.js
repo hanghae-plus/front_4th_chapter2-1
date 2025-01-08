@@ -1,5 +1,6 @@
 import {
   CartItem,
+  CartItemInfo,
   CartTotalPrice,
   DiscountRate,
   ItemOption,
@@ -12,12 +13,12 @@ import {
   scheduleInterval,
   isLowStock,
   makeLowStockMessage,
+  replaceToElement,
 } from "./utils";
 
 /**
  * 장바구니
  */
-const shoppingCart = [];
 let shoppingCartTotal = 0;
 
 const calcCart = () => {
@@ -75,8 +76,7 @@ const renderPoints = () => {
 };
 
 const addToCartClickHandler = () => {
-  const sel = document.querySelector("#product-select");
-  const selItem = sel.value;
+  const selItem = document.querySelector("#product-select").value;
   const itemToAdd = PRODUCTS.find((p) => p.id === selItem);
 
   if (itemToAdd && itemToAdd.quantity > 0) {
@@ -85,8 +85,10 @@ const addToCartClickHandler = () => {
       const newQty =
         parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
       if (newQty <= itemToAdd.quantity) {
-        item.querySelector("span").textContent =
-          itemToAdd.name + " - " + itemToAdd.price + "원 x " + newQty;
+        replaceToElement(
+          `#${itemToAdd.id} > span`,
+          CartItemInfo({ ...itemToAdd, quantity: newQty })
+        );
         itemToAdd.quantity--;
       } else {
         alert("재고가 부족합니다.");
@@ -114,24 +116,28 @@ const cartItemsClickHandler = (event) => {
   calcCart();
 };
 
+const splitItemPriceQuantity = (itemElement) =>
+  itemElement.querySelector("span").textContent.split("x ");
+
 const getProdData = (productId) => {
   const prod = PRODUCTS.find((p) => p.id === productId);
   const itemElem = document.getElementById(productId);
-  const [itemPrice, curQuantity] = itemElem
-    .querySelector("span")
-    .textContent.split("x ");
+  const [_, curQuantity] = splitItemPriceQuantity(itemElem);
 
-  return { prod, itemElem, itemPrice, curQuantity: parseInt(curQuantity) };
+  return { prod, itemElem, curQuantity: parseInt(curQuantity) };
 };
 
 const quantityChange = ({ productId, change }) => {
   const qtyChange = parseInt(change);
-  const { prod, itemElem, itemPrice, curQuantity } = getProdData(productId);
+  const { prod, itemElem, curQuantity } = getProdData(productId);
   const newQty = curQuantity + qtyChange;
   const totalQty = prod.quantity + curQuantity;
 
   if (newQty > 0 && newQty <= totalQty) {
-    itemElem.querySelector("span").textContent = itemPrice + "x " + newQty;
+    replaceToElement(
+      `#${itemElem.id} > span`,
+      CartItemInfo({ ...prod, quantity: newQty })
+    );
     prod.quantity -= qtyChange;
     return;
   }
