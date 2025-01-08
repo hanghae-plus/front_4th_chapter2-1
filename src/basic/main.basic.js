@@ -35,7 +35,7 @@ const alertLuckySale = () => {
         productList[Math.floor(Math.random() * productList.length)];
       if (Math.random() < 0.3 && luckyProduct.stock > 0) {
         luckyProduct.price = Math.round(luckyProduct.price * 0.8);
-        alert('번개세일! ' + luckyProduct.name + '이(가) 20% 할인 중입니다!');
+        alert(`번개세일! ${luckyProduct.name}이(가) 20% 할인 중입니다!`);
         renderProductSelectOptions();
       }
     }, 30000);
@@ -52,7 +52,7 @@ const alertSuggestProduct = () => {
         });
         if (suggest) {
           alert(
-            suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!'
+            `${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`
           );
           suggest.price = Math.round(suggest.price * 0.95);
           renderProductSelectOptions();
@@ -100,8 +100,7 @@ const renderProductSelectOptions = () => {
   productList.forEach(function (item) {
     const ElementProductSelectOption = document.createElement('option');
     ElementProductSelectOption.value = item.id;
-    ElementProductSelectOption.textContent =
-      item.name + ' - ' + item.price + '원';
+    ElementProductSelectOption.textContent = `${item.name} - ${item.price}원`;
     if (item.stock === 0) ElementProductSelectOption.disabled = true;
     ElementProductSelect.appendChild(ElementProductSelectOption);
   });
@@ -118,7 +117,7 @@ const renderLoyaltyPoints = () => {
     ElementTotalPrice.appendChild(ElementLoyaltyPoints);
   }
 
-  ElementLoyaltyPoints.textContent = '(포인트: ' + loyaltyPoints + ')';
+  ElementLoyaltyPoints.textContent = `(포인트: ${loyaltyPoints})`;
 };
 
 const renderStockInfo = () => {
@@ -126,11 +125,9 @@ const renderStockInfo = () => {
 
   productList.forEach(function (item) {
     if (item.stock < 5) {
-      infoMsg +=
-        item.name +
-        ': ' +
-        (item.stock > 0 ? '재고 부족 (' + item.stock + '개 남음)' : '품절') +
-        '\n';
+      infoMsg += `${item.name}: ${
+        item.stock > 0 ? `재고 부족 (${item.stock}개 남음)` : '품절'
+      }\n`;
     }
   });
 
@@ -195,12 +192,12 @@ const calcCart = () => {
     discountRate = Math.max(discountRate, 0.1);
   }
 
-  ElementTotalPrice.textContent = '총액: ' + Math.round(totalAmount) + '원';
+  ElementTotalPrice.textContent = `총액: ${Math.round(totalAmount)}원`;
 
   if (discountRate > 0) {
     const span = document.createElement('span');
     span.className = 'text-green-500 ml-2';
-    span.textContent = '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
+    span.textContent = `(${(discountRate * 100).toFixed(1)}% 할인 적용)`;
 
     ElementTotalPrice.appendChild(span);
   }
@@ -224,8 +221,9 @@ ElementAddCartBtn.addEventListener('click', function () {
         parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
 
       if (newQuantity <= itemToAdd.stock) {
-        item.querySelector('span').textContent =
-          itemToAdd.name + ' - ' + itemToAdd.price + '원 x ' + newQuantity;
+        item.querySelector(
+          'span'
+        ).textContent = `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQuantity}`;
         itemToAdd.stock--;
       } else {
         alert('재고가 부족합니다.');
@@ -234,21 +232,22 @@ ElementAddCartBtn.addEventListener('click', function () {
       const newItem = document.createElement('div');
       newItem.id = itemToAdd.id;
       newItem.className = 'flex justify-between items-center mb-2';
-      newItem.innerHTML =
-        '<span>' +
-        itemToAdd.name +
-        ' - ' +
-        itemToAdd.price +
-        '원 x 1</span><div>' +
-        '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-        itemToAdd.id +
-        '" data-change="-1">-</button>' +
-        '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-        itemToAdd.id +
-        '" data-change="1">+</button>' +
-        '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' +
-        itemToAdd.id +
-        '">삭제</button></div>';
+      newItem.innerHTML = `
+      <span>${itemToAdd.name} - ${itemToAdd.price}원 x 1</span>
+      <div>
+        <button 
+          class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+          data-product-id="${itemToAdd.id}" 
+          data-change="-1">-</button>
+        <button 
+          class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+          data-product-id="${itemToAdd.id}" 
+          data-change="1">+</button>
+        <button 
+          class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
+          data-product-id="${itemToAdd.id}">삭제</button>
+      </div>
+      `;
       ElementCartItems.appendChild(newItem);
       itemToAdd.stock--;
     }
