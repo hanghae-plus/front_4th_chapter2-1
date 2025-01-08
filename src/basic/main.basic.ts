@@ -1,4 +1,4 @@
-import { CartDisplay } from "./features/cart";
+import { CartDisplay, CartTotal } from "./features/cart";
 import { Heading } from "./shared/ui";
 
 interface Product {
@@ -11,7 +11,6 @@ interface Product {
 let products: Product[];
 let $productSelect: HTMLSelectElement;
 let $addButton: HTMLButtonElement;
-let $cartTotal: HTMLDivElement;
 let $stockStatus: HTMLDivElement;
 let lastSelectedItem: string;
 let bonusPoints = 0;
@@ -37,23 +36,20 @@ function main() {
   $wrapper.innerHTML = `
     ${Heading({ label: "장바구니" })}
     ${CartDisplay()}
+    ${CartTotal()}
   `;
 
-  $cartTotal = document.createElement("div");
   $productSelect = document.createElement("select");
   $addButton = document.createElement("button");
   $stockStatus = document.createElement("div");
-  $cartTotal.id = "cart-total";
   $productSelect.id = "product-select";
   $addButton.id = "add-to-cart";
   $stockStatus.id = "stock-status";
-  $cartTotal.className = "text-xl font-bold my-4";
   $productSelect.className = "border rounded p-2 mr-2";
   $addButton.className = "bg-blue-500 text-white px-4 py-2 rounded";
   $stockStatus.className = "text-sm text-gray-500 mt-2";
   $addButton.textContent = "추가";
   updateSelOpts();
-  $wrapper.appendChild($cartTotal);
   $wrapper.appendChild($productSelect);
   $wrapper.appendChild($addButton);
   $wrapper.appendChild($stockStatus);
@@ -99,8 +95,10 @@ function updateSelOpts() {
 }
 function calcCart() {
   const $cartDisplay = document.getElementById("cart-items");
-
   if (!$cartDisplay) return;
+
+  const $cartTotal = document.getElementById("cart-total");
+  if (!$cartTotal) return;
 
   totalAmount = 0;
   itemCount = 0;
@@ -165,6 +163,9 @@ function calcCart() {
   renderBonusPts();
 }
 const renderBonusPts = () => {
+  const $cartTotal = document.getElementById("cart-total");
+  if (!$cartTotal) return;
+
   bonusPoints = Math.floor(totalAmount / 1000);
   let ptsTag = document.getElementById("loyalty-points");
   if (!ptsTag) {
