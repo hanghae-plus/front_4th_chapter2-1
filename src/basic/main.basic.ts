@@ -1,5 +1,5 @@
 import { ProductSelect } from "./entities/product";
-import { CartDisplay, CartTotal } from "./features/cart";
+import { AddToCartButton, CartDisplay, CartTotal } from "./features/cart";
 import { Heading } from "./shared/ui";
 
 interface Product {
@@ -10,7 +10,6 @@ interface Product {
 }
 
 let products: Product[];
-let $addButton: HTMLButtonElement;
 let $stockStatus: HTMLDivElement;
 let lastSelectedItem: string;
 let bonusPoints = 0;
@@ -38,17 +37,13 @@ function main() {
     ${CartDisplay()}
     ${CartTotal()}
     ${ProductSelect()}
+    ${AddToCartButton()}
   `;
 
-  $addButton = document.createElement("button");
   $stockStatus = document.createElement("div");
-  $addButton.id = "add-to-cart";
   $stockStatus.id = "stock-status";
-  $addButton.className = "bg-blue-500 text-white px-4 py-2 rounded";
   $stockStatus.className = "text-sm text-gray-500 mt-2";
-  $addButton.textContent = "추가";
   updateSelOpts();
-  $wrapper.appendChild($addButton);
   $wrapper.appendChild($stockStatus);
   $container.appendChild($wrapper);
   $root.appendChild($container);
@@ -193,7 +188,7 @@ function updateStockInfo() {
 
 main();
 
-$addButton!.addEventListener("click", function () {
+document.getElementById("add-to-cart")!.addEventListener("click", function () {
   const $productSelect = document.getElementById(
     "product-select"
   ) as HTMLSelectElement;

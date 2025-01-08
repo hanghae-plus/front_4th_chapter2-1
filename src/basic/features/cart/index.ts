@@ -1,1 +1,1 @@
-export { CartDisplay, CartTotal } from "./ui";
+export { CartDisplay, CartTotal, AddToCartButton } from "./ui";
