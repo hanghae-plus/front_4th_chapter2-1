@@ -6,15 +6,8 @@ function main() {
       <div class="bg-gray-100 p-8"> 
         <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
           <h1 class="text-2xl font-bold mb-4">장바구니</h1>
-          <div id="cart-items">
-            
-          </div>
-          <div id="cart-total" class="text-xl font-bold my-4">
-            총액: 0원
-            <span id="loyalty-points" class="text-blue-500 ml-2">
-              (포인트: 0)
-            </span>
-          </div>
+          <div id="cart-items"></div>
+          <div id="cart-total" class="text-xl font-bold my-4"></div>
           <select id="product-select" class="border rounded p-2 mr-2"></select>
           <button id="add-to-cart" class="bg-blue-500 text-white px-4 py-2 rounded">
             추가
@@ -28,7 +21,7 @@ function main() {
 
 // 상품 목록
 const productList = [
-  { id: 'p1', name: '상품1', value: 10000, stock: 10 },
+  { id: 'p1', name: '상품1', value: 10000, stock: 50 },
   { id: 'p2', name: '상품2', value: 20000, stock: 30 },
   { id: 'p3', name: '상품3', value: 30000, stock: 20 },
   { id: 'p4', name: '상품4', value: 15000, stock: 0 },
@@ -50,6 +43,96 @@ function updateSelectOptions() {
     if (product.stock === 0) option.disabled = true
     $productSelect.appendChild(option)
   })
+}
+
+/**
+ * 장바구니 총액 계산 함수
+ */
+function calculateCartTotal() {
+  const $cartTotal = document.getElementById('cart-total')
+  const $cartItems = document.getElementById('cart-items').children
+  let totalAmount = 0
+  let itemCount = 0
+  let subtotal = 0
+  let discount = 0
+  // 각 장바구니 아이템 순회
+  Array.from($cartItems).forEach((cartItem) => {
+    // 현재 상품 정보 찾기
+    const currentProduct = productList.find(
+      (product) => product.id === cartItem.id,
+    )
+    const quantity = parseInt(
+      cartItem.querySelector('span').textContent.split('x ')[1],
+    )
+    const itemTotal = currentProduct.value * quantity
+
+    itemCount += quantity
+    subtotal += itemTotal
+
+    if (quantity >= 10) {
+      if (currentProduct.id === 'p1') discount = 0.1
+      else if (currentProduct.id === 'p2') discount = 0.15
+      else if (currentProduct.id === 'p3') discount = 0.2
+      else if (currentProduct.id === 'p4') discount = 0.05
+      else if (currentProduct.id === 'p5') discount = 0.25
+    }
+
+    totalAmount += itemTotal * (1 - discount)
+  })
+
+  // 대량 구매 할인 적용 (30개 이상)
+  if (itemCount >= 30) {
+    const bulkDiscount = totalAmount * 0.25
+    const itemDiscount = subtotal - totalAmount
+
+    if (bulkDiscount > itemDiscount) {
+      totalAmount = subtotal * 0.75 // 25% 할인
+      discount = 0.25
+    } else {
+      discount = (subtotal - totalAmount) / subtotal
+    }
+  } else {
+    discount = (subtotal - totalAmount) / subtotal
+  }
+
+  // 화요일 추가 할인 (10%)
+  if (new Date().getDay() === 2) {
+    totalAmount *= 0.9
+    discount = Math.max(discount, 0.1)
+  }
+
+  $cartTotal.textContent = `총액: ${Math.round(totalAmount)}원`
+
+  if (discount > 0) {
+    const span = document.createElement('span')
+    span.className = 'text-green-500 ml-2'
+    span.textContent = `(${(discount * 100).toFixed(1)}% 할인 적용)`
+    $cartTotal.appendChild(span)
+  }
+  updateBonusPoints(totalAmount)
+}
+
+/**
+ * 포인트 업데이트 함수
+ */
+function updateBonusPoints(totalAmount) {
+  // 포인트 계산
+  const points = Math.floor(totalAmount / 1000)
+
+  // 포인트 요소 찾기
+  const $cartTotal = document.getElementById('cart-total')
+  const $loyaltyPoints = document.getElementById('loyalty-points')
+
+  // 포인트 요소가 없으면 생성
+  if (!$loyaltyPoints) {
+    const pointsElement = document.createElement('span')
+    pointsElement.id = 'loyalty-points'
+    pointsElement.className = 'text-blue-500 ml-2'
+    pointsElement.textContent = `(포인트: ${points})`
+    $cartTotal.appendChild(pointsElement)
+  } else {
+    $loyaltyPoints.textContent = `(포인트: ${points})`
+  }
 }
 
 /**
@@ -118,6 +201,7 @@ function handleAddToCart() {
       selectedProduct.stock -= 1
     }
   }
+  calculateCartTotal()
 }
 
 /**
@@ -137,6 +221,7 @@ function init() {
   $root.innerHTML = main()
   updateSelectOptions()
   EventManager()
+  calculateCartTotal()
 }
 
 init()
