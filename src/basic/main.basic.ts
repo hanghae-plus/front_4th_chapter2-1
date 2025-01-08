@@ -1,4 +1,5 @@
 import { getTotalPriceBeforeSpecialOffer } from './features/cart/actions/getTotalPriceBeforeSpecialOffer';
+import { getStockInfo } from './features/product/getStockInfo';
 import { productList } from './shared/entity/data/productList';
 
 let SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
@@ -112,7 +113,7 @@ function calculateCartItems() {
       '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
     TotalCostView.appendChild(DiscountText);
   }
-  updateStockInfo();
+  StockInfoView.textContent = getStockInfo(productList);
   renderBonusPoints();
 }
 const renderBonusPoints = () => {
@@ -126,21 +127,7 @@ const renderBonusPoints = () => {
   }
   PointsTag.textContent = '(포인트: ' + bonusPoints + ')';
 };
-function updateStockInfo() {
-  let message = '';
-  productList.forEach(function (item) {
-    if (item.quantity < 5) {
-      message +=
-        item.name +
-        ': ' +
-        (item.quantity > 0
-          ? '재고 부족 (' + item.quantity + '개 남음)'
-          : '품절') +
-        '\n';
-    }
-  });
-  StockInfoView.textContent = message;
-}
+
 main();
 AddToCartButton.addEventListener('click', function () {
   const selectedItemId = SelectView.value;
