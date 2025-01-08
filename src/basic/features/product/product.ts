@@ -1,4 +1,4 @@
-import { Product } from './types/Product';
+import { Product } from '../../shared/entity/model/Product';
 
 const productList: Product[] = [
   { id: 'p1', name: '상품1', price: 10000, quantity: 50 },

@@ -1,5 +1,5 @@
 import { findProductById } from '../../product/actions';
-import { Product } from '../../product/types/Product';
+import { Product } from '../../../shared/entity/model/Product';
 
 const addToCart = (
   CartItemsView: HTMLDivElement,

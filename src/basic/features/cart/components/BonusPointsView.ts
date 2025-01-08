@@ -1,4 +1,4 @@
-import { Product } from '../../product/types/Product';
+import { Product } from '../../../shared/entity/model/Product';
 
 const renderBonusPoints = (
   totalAmount: Product['quantity'],

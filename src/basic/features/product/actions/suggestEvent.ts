@@ -1,5 +1,5 @@
 import { renderProductOptionsView } from '../components/ProductOptionsView';
-import { Product } from '../types/Product';
+import { Product } from '../../../shared/entity/model/Product';
 
 const suggestEvent = (
   selectedItemId: string | null = null,
