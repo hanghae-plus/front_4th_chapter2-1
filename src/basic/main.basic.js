@@ -1,7 +1,49 @@
-let lastSelectedProductId, // 장바구니에서 마지막으로 선택한 상품 ID
-  bonusPts = 0, // 포인트
-  totalAmt = 0, // 총액
-  itemCnt = 0; //상품 수량을 저장하는 변수
+// 매직넘버 정의
+const DISCOUNTS = {
+  BULK: 0.25,
+  TUESDAY: 0.1,
+  PRODUCT_SPECIFIC: {
+    p1: 0.1,
+    p2: 0.15,
+    p3: 0.2,
+    p4: 0.05,
+    p5: 0.25,
+  },
+};
+
+const UI_CLASSES = {
+  CONTAINER: 'bg-gray-100 p-8',
+  WRAPPER: 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8',
+  HEADING: 'text-2xl font-bold mb-4',
+  TOTAL: 'text-xl font-bold my-4',
+  SELECT: 'border rounded p-2 mr-2',
+  ADD_BUTTON: 'bg-blue-500 text-white px-4 py-2 rounded',
+  STOCK_STATUS: 'text-sm text-gray-500 mt-2',
+  CART_ITEM: 'flex justify-between items-center mb-2',
+  QUANTITY_BUTTON: 'bg-blue-500 text-white px-2 py-1 rounded mr-1',
+  REMOVE_BUTTON: 'bg-red-500 text-white px-2 py-1 rounded',
+  DISCOUNT_TEXT: 'text-green-500 ml-2',
+  POINTS_TEXT: 'text-blue-500 ml-2',
+};
+
+const UI_TEXT = {
+  CART_TITLE: '장바구니',
+  ADD_BUTTON: '추가',
+  REMOVE_BUTTON: '삭제',
+  LOW_STOCK: '재고 부족',
+  OUT_OF_STOCK: '품절',
+  FLASH_SALE: '번개세일!',
+  FLASH_SALE_MESSAGE: '이(가) 20% 할인 중입니다!',
+  RECOMMEND_MESSAGE: '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!',
+  LOW_STOCK_MESSAGE: '개 남음',
+  STOCK_ERROR: '재고가 부족합니다.',
+};
+
+// 전역변수
+let lastSelectedProductId = null; // 장바구니에서 마지막으로 선택한 상품 ID
+let bonusPts = 0; // 포인트
+let totalAmt = 0; // 총액
+let itemCnt = 0; //상품 수량을 저장하는 변수
 
 // 상품 데이터 (상품 ID, 이름, 가격 재고)
 const productList = [
@@ -14,47 +56,53 @@ const productList = [
 
 // DOM 요소 초기화
 const root = document.getElementById('app');
-const cont = document.createElement('div');
-const wrap = document.createElement('div');
-const hTxt = document.createElement('h1');
+const container = document.createElement('div');
+const wrapper = document.createElement('div');
+const heading = document.createElement('h1');
 const cartDisplay = document.createElement('div');
 const totalDisplay = document.createElement('div');
 const productSelect = document.createElement('select');
-const addBtn = document.createElement('button');
-const stockStatusDisplay = document.createElement('div');
+const addButton = document.createElement('button');
+const stockStatus = document.createElement('div');
 
-function main() {
-  // UI 요소 ID 및 클래스 설정
+const initializeUIElements = () => {
+  // id 부여
   cartDisplay.id = 'cart-items';
   totalDisplay.id = 'cart-total';
   productSelect.id = 'product-select';
-  addBtn.id = 'add-to-cart';
-  stockStatusDisplay.id = 'stock-status';
-  cont.className = 'bg-gray-100 p-8';
-  wrap.className =
-    'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  hTxt.className = 'text-2xl font-bold mb-4';
-  totalDisplay.className = 'text-xl font-bold my-4';
-  productSelect.className = 'border rounded p-2 mr-2';
-  addBtn.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  stockStatusDisplay.className = 'text-sm text-gray-500 mt-2';
+  addButton.id = 'add-to-cart';
+  stockStatus.id = 'stock-status';
 
-  // UI 텍스트 설정
-  hTxt.textContent = '장바구니';
-  addBtn.textContent = '추가';
+  // classname 부여
+  container.className = UI_CLASSES.CONTAINER;
+  wrapper.className = UI_CLASSES.WRAPPER;
+  heading.className = UI_CLASSES.HEADING;
+  totalDisplay.className = UI_CLASSES.TOTAL;
+  productSelect.className = UI_CLASSES.SELECT;
+  addButton.className = UI_CLASSES.ADD_BUTTON;
+  stockStatus.className = UI_CLASSES.STOCK_STATUS;
+
+  // 텍스트 부여
+  heading.textContent = UI_TEXT.CART_TITLE;
+  addButton.textContent = UI_TEXT.ADD_BUTTON;
+};
+
+function main() {
+  // UI 초기화
+  initializeUIElements();
 
   // 상품 옵션을 드랍다운에 추가
   updateSelOpts();
 
   // UI 구조 생성
-  wrap.appendChild(hTxt);
-  wrap.appendChild(cartDisplay);
-  wrap.appendChild(totalDisplay);
-  wrap.appendChild(productSelect);
-  wrap.appendChild(addBtn);
-  wrap.appendChild(stockStatusDisplay);
-  cont.appendChild(wrap);
-  root.appendChild(cont);
+  wrapper.appendChild(heading);
+  wrapper.appendChild(cartDisplay);
+  wrapper.appendChild(totalDisplay);
+  wrapper.appendChild(productSelect);
+  wrapper.appendChild(addButton);
+  wrapper.appendChild(stockStatus);
+  container.appendChild(wrapper);
+  root.appendChild(container);
 
   // 장바구니 초기 상태 계산
   calcCart();
@@ -65,7 +113,7 @@ function main() {
       let luckyItem = productList[Math.floor(Math.random() * productList.length)];
       if (Math.random() < 0.3 && luckyItem.quantity > 0) {
         luckyItem.price = Math.round(luckyItem.price * 0.8);
-        alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
+        alert(`${UI_TEXT.FLASH_SALE} ${luckyItem.name}${UI_TEXT.FLASH_SALE_MESSAGE}`);
         updateSelOpts();
       }
     }, 30000);
@@ -124,11 +172,11 @@ function calcCart() {
       subTot += itemTot;
 
       if (q >= 10) {
-        if (curItem.id === 'p1') disc = 0.1;
-        else if (curItem.id === 'p2') disc = 0.15;
-        else if (curItem.id === 'p3') disc = 0.2;
-        else if (curItem.id === 'p4') disc = 0.05;
-        else if (curItem.id === 'p5') disc = 0.25;
+        if (curItem.id === 'p1') disc = DISCOUNTS.PRODUCT_SPECIFIC.p1;
+        else if (curItem.id === 'p2') disc = DISCOUNTS.PRODUCT_SPECIFIC.p2;
+        else if (curItem.id === 'p3') disc = DISCOUNTS.PRODUCT_SPECIFIC.p3;
+        else if (curItem.id === 'p4') disc = DISCOUNTS.PRODUCT_SPECIFIC.p4;
+        else if (curItem.id === 'p5') disc = DISCOUNTS.PRODUCT_SPECIFIC.p5;
       }
       totalAmt += itemTot * (1 - disc);
     })();
@@ -137,11 +185,11 @@ function calcCart() {
   let discRate = 0;
 
   if (itemCnt >= 30) {
-    let bulkDisc = totalAmt * 0.25;
+    let bulkDisc = totalAmt * DISCOUNTS.BULK;
     let itemDisc = subTot - totalAmt;
     if (bulkDisc > itemDisc) {
-      totalAmt = subTot * (1 - 0.25);
-      discRate = 0.25;
+      totalAmt = subTot * (1 - DISCOUNTS.BULK);
+      discRate = DISCOUNTS.BULK;
     } else {
       discRate = (subTot - totalAmt) / subTot;
     }
@@ -150,8 +198,8 @@ function calcCart() {
   }
 
   if (new Date().getDay() === 2) {
-    totalAmt *= 1 - 0.1;
-    discRate = Math.max(discRate, 0.1);
+    totalAmt *= 1 - DISCOUNTS.TUESDAY;
+    discRate = Math.max(discRate, DISCOUNTS.TUESDAY);
   }
 
   totalDisplay.textContent = '총액: ' + Math.round(totalAmt) + '원';
@@ -189,12 +237,12 @@ function updateStockInfo() {
         '\n';
     }
   });
-  stockStatusDisplay.textContent = infoMsg;
+  stockStatus.textContent = infoMsg;
 }
 
 main();
 
-addBtn.addEventListener('click', function () {
+addButton.addEventListener('click', function () {
   let selItem = productSelect.value;
   let itemToAdd = productList.find(function (p) {
     return p.id === selItem;
@@ -235,7 +283,6 @@ addBtn.addEventListener('click', function () {
     }
 
     calcCart();
-    lastSel = selItem;
     lastSelectedProductId = selItem;
   }
 });
