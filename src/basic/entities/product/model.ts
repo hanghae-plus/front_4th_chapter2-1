@@ -9,8 +9,7 @@ export interface Product {
 
 interface ProductStore {
   products: Product[];
-  selectedProductId: string;
-  selectProduct: (productId: string) => void;
+  updateProductQuantity: (productId: string, delta: number) => void;
 }
 
 const products: Product[] = [
@@ -21,10 +20,25 @@ const products: Product[] = [
   { id: "p5", name: "상품5", val: 25000, q: 10 }
 ];
 
-export const productStore = createStore<ProductStore>((set) => ({
+export const productStore = createStore<ProductStore>((set, get) => ({
   products,
-  selectedProductId: products[0].id,
-  selectProduct: (productId: string) => {
-    set((prev) => ({ ...prev, selectedProductId: productId }));
+  updateProductQuantity: (productId, delta) => {
+    const { products } = get();
+    const product = products.find((product) => product.id === productId);
+
+    if (!product) return;
+
+    if (product.q + delta < 0) {
+      return;
+    }
+
+    set((prev) => ({
+      ...prev,
+      products: prev.products.map((product) =>
+        product.id === productId
+          ? { ...product, q: product.q + delta }
+          : product
+      )
+    }));
   }
 }));
