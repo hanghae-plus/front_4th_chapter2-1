@@ -1,6 +1,6 @@
-import { CartProduct } from '../components/CartProducts';
+import { CartProduct } from '../CartProducts';
 
-import type { Product } from '../types/product.type';
+import type { Product } from '../../types/product.type';
 
 export const renderCartProducts = ($cartProductsContainer: HTMLElement, cartItems: Product[]) => {
   if (cartItems.length === 0) {

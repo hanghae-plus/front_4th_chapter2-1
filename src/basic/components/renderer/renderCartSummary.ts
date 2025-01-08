@@ -1,16 +1,16 @@
-import { calculateFinalAmount } from './calcProductDiscount';
+import { renderCartTotalText } from './renderCartTotalText';
 import { renderDiscount } from './renderDiscount';
 import { renderBonusPoint } from './renderPoint';
 import { renderProductStock } from './renderProductStock';
-import { updateCartTotalText } from './setCartTotalText';
-import { Cart } from '../stores/cart.store';
-import { $ } from '../utils/dom.utils';
+import { calculateFinalAmount } from '../../services/calcProductDiscount';
+import { Cart } from '../../stores/cart.store';
+import { $ } from '../../utils/dom.utils';
 
 export const renderCartSummary = () => {
   const { amount, discountRate } = calculateFinalAmount(Cart.items);
   const $cartTotal = $('#cart-total');
 
-  updateCartTotalText($cartTotal, amount);
+  renderCartTotalText($cartTotal, amount);
   renderDiscount($cartTotal, discountRate);
   renderProductStock();
   renderBonusPoint(amount);

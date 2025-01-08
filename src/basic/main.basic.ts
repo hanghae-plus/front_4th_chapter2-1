@@ -1,7 +1,7 @@
 import { Main } from './components/Main';
 import { products } from './data/product';
-import { renderCartProducts } from './services/renderCartProducts';
-import { renderCartSummary } from './services/renderCartSummary';
+import { renderCartProducts } from './components/renderer/renderCartProducts';
+import { renderCartSummary } from './components/renderer/renderCartSummary';
 import { Cart } from './stores/cart.store';
 import { $ } from './utils/dom.utils';
 import { updateSelectOptions } from './utils/select.utils';

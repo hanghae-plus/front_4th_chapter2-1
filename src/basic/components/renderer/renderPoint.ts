@@ -1,5 +1,5 @@
-import { createElement as h } from '../utils/createElement';
-import { $ } from '../utils/dom.utils';
+import { createElement as h } from '../../utils/createElement';
+import { $ } from '../../utils/dom.utils';
 
 export const renderBonusPoint = (totalAmount: number) => {
   const bonusPoint = Math.floor(totalAmount / 1000);

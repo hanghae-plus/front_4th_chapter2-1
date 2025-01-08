@@ -1,5 +1,5 @@
-import { products } from '../data/product';
-import { $ } from '../utils/dom.utils';
+import { products } from '../../data/product';
+import { $ } from '../../utils/dom.utils';
 
 export const renderProductStock = () => {
   let stockStatusMessage = '';
