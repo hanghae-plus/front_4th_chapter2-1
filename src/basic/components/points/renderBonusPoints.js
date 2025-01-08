@@ -1,4 +1,5 @@
 import { helper } from '../../utils/helper';
+import Points from './Points';
 
 /**
  * 보너스 포인트를 렌더링하는 함수
@@ -7,14 +8,13 @@ import { helper } from '../../utils/helper';
  * @returns {void}
  */
 export function renderBonusPoints(bonusPoints) {
-  let pointsTag = document.getElementById('loyalty-points');
-  if (!pointsTag) {
-    pointsTag = document.createElement('span');
-    pointsTag.id = 'loyalty-points';
-    pointsTag.className = 'text-blue-500 ml-2';
+  let points = document.getElementById('loyalty-points');
+  if (!points) {
+    points = Points();
 
-    const totalDisplay = document.getElementById('cart-total');
-    totalDisplay.appendChild(pointsTag);
+    const cartTotal = document.getElementById('cart-total');
+    cartTotal.appendChild(points);
   }
-  pointsTag.textContent = helper.getBonusPointsMessage(bonusPoints);
+
+  points.textContent = helper.getBonusPointsMessage(bonusPoints);
 }
