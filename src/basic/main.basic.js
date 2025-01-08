@@ -1,3 +1,4 @@
+import { OUT_OF_STOCK_MSG } from './constants';
 import { utils } from './utils';
 
 const productList = [
@@ -226,7 +227,7 @@ ElementAddCartBtn.addEventListener('click', function () {
         ).textContent = `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQuantity}`;
         itemToAdd.stock--;
       } else {
-        alert('재고가 부족합니다.');
+        alert(OUT_OF_STOCK_MSG);
       }
     } else {
       const newItem = document.createElement('div');
@@ -293,7 +294,7 @@ ElementCartItems.addEventListener('click', function (event) {
         ElementCartItem.remove();
         product.stock -= quantityChange;
       } else {
-        alert('재고가 부족합니다.');
+        alert(OUT_OF_STOCK_MSG);
       }
     } else if (target.classList.contains('remove-item')) {
       const remQuantity = parseInt(
