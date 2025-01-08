@@ -7,6 +7,8 @@ import {
   suggestEvent,
 } from './features/product/actions';
 import { renderProductOptionsView } from './features/product/components/ProductOptionsView';
+import { getDiscountRate } from './shared/actions/getDiscountRate';
+import { DISCOUNT_RATE } from './shared/constant/discountRate';
 
 var SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
 var lastSelectedItemValue,
@@ -66,13 +68,10 @@ function calculateCartItems() {
   var subTotalPrice = 0;
   for (var i = 0; i < cartItems.length; i++) {
     (function () {
-      var currentItem;
-      for (var j = 0; j < productList.length; j++) {
-        if (productList[j].id === cartItems[i].id) {
-          currentItem = productList[j];
-          break;
-        }
-      }
+      const currentItem = productList.find(
+        (product) => product.id === cartItems[i].id,
+      );
+      if (!currentItem) return;
       var q = parseInt(
         cartItems[i].querySelector('span').textContent.split('x ')[1],
       );
@@ -81,11 +80,8 @@ function calculateCartItems() {
       itemCount += q;
       subTotalPrice += itemTotalPrice;
       if (q >= 10) {
-        if (currentItem.id === 'p1') discountRate = 0.1;
-        else if (currentItem.id === 'p2') discountRate = 0.15;
-        else if (currentItem.id === 'p3') discountRate = 0.2;
-        else if (currentItem.id === 'p4') discountRate = 0.05;
-        else if (currentItem.id === 'p5') discountRate = 0.25;
+        if (DISCOUNT_RATE[currentItem.id])
+          discountRate = getDiscountRate(currentItem.id);
       }
       totalAmount += itemTotalPrice * (1 - discountRate);
     })();
