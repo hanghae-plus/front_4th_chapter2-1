@@ -21,7 +21,7 @@ export const AddButton = ({ cartItems, productList }) => {
           cartItem.quantity += 1;
           selectedProduct.stock--;
 
-          renderCartItems({ cartItems });
+          renderCartItems({ cartItems, productList });
         } else {
           const newCartItem = {
             id: selectedProduct.id,
@@ -30,7 +30,7 @@ export const AddButton = ({ cartItems, productList }) => {
             quantity: 1,
           };
           cartItems.add(newCartItem);
-          renderCartItems({ cartItems });
+          renderCartItems({ cartItems, productList });
 
           selectedProduct.stock--;
         }

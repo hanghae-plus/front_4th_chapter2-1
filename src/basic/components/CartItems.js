@@ -1,6 +1,6 @@
 import { CartItem } from './CartItem';
 import { renderCartTotal } from './CartTotal';
-import { renderStockStatus } from '../renders/stockStatus';
+import { renderStockStatus } from './StockStatus';
 
 export const CartItems = ({ cartItems, productList }) => {
   document.getElementById('app').addEventListener('click', (event) => {
@@ -61,9 +61,11 @@ export const CartItems = ({ cartItems, productList }) => {
   });
 
   return `
-    <div id="cart-items">${[...cartItems].map((cartItem) => {
-      return CartItem({ cartItem });
-    })}</div>
+    <div id="cart-items">${[...cartItems]
+      .map((cartItem) => {
+        return CartItem({ cartItem });
+      })
+      .join('')}</div>
   `;
 };
 
