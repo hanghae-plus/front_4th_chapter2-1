@@ -41,9 +41,9 @@ const UI_TEXT = {
 
 // 전역변수
 let lastSelectedProductId = null; // 장바구니에서 마지막으로 선택한 상품 ID
-let bonusPts = 0; // 포인트
-let totalAmt = 0; // 총액
-let itemCnt = 0; //상품 수량을 저장하는 변수
+let bonusPoints = 0; // 포인트
+let totalAmount = 0; // 총액
+let itemCount = 0; //상품 수량을 저장하는 변수
 
 // 상품 데이터 (상품 ID, 이름, 가격 재고)
 const productList = [
@@ -150,8 +150,8 @@ function updateSelOpts() {
 
 // 장바구니 상태 계산 및 UI 업데이트
 function calcCart() {
-  totalAmt = 0;
-  itemCnt = 0;
+  totalAmount = 0;
+  itemCount = 0;
   let cartItems = cartDisplay.children;
   let subTot = 0;
   for (let i = 0; i < cartItems.length; i++) {
@@ -164,58 +164,58 @@ function calcCart() {
         }
       }
 
-      let q = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
+      let quantity = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
 
-      let itemTot = curItem.price * q;
-      let disc = 0;
-      itemCnt += q;
-      subTot += itemTot;
+      let itemTotal = curItem.price * quantity;
+      let discount = 0;
+      itemCount += quantity;
+      subTot += itemTotal;
 
-      if (q >= 10) {
-        if (curItem.id === 'p1') disc = DISCOUNTS.PRODUCT_SPECIFIC.p1;
-        else if (curItem.id === 'p2') disc = DISCOUNTS.PRODUCT_SPECIFIC.p2;
-        else if (curItem.id === 'p3') disc = DISCOUNTS.PRODUCT_SPECIFIC.p3;
-        else if (curItem.id === 'p4') disc = DISCOUNTS.PRODUCT_SPECIFIC.p4;
-        else if (curItem.id === 'p5') disc = DISCOUNTS.PRODUCT_SPECIFIC.p5;
+      if (quantity >= 10) {
+        if (curItem.id === 'p1') discount = DISCOUNTS.PRODUCT_SPECIFIC.p1;
+        else if (curItem.id === 'p2') discount = DISCOUNTS.PRODUCT_SPECIFIC.p2;
+        else if (curItem.id === 'p3') discount = DISCOUNTS.PRODUCT_SPECIFIC.p3;
+        else if (curItem.id === 'p4') discount = DISCOUNTS.PRODUCT_SPECIFIC.p4;
+        else if (curItem.id === 'p5') discount = DISCOUNTS.PRODUCT_SPECIFIC.p5;
       }
-      totalAmt += itemTot * (1 - disc);
+      totalAmount += itemTotal * (1 - discount);
     })();
   }
 
-  let discRate = 0;
+  let discountRate = 0;
 
-  if (itemCnt >= 30) {
-    let bulkDisc = totalAmt * DISCOUNTS.BULK;
-    let itemDisc = subTot - totalAmt;
-    if (bulkDisc > itemDisc) {
-      totalAmt = subTot * (1 - DISCOUNTS.BULK);
-      discRate = DISCOUNTS.BULK;
+  if (itemCount >= 30) {
+    let bulkDiscount = totalAmount * DISCOUNTS.BULK;
+    let itemDiscount = subTot - totalAmount;
+    if (bulkDiscount > itemDiscount) {
+      totalAmount = subTot * (1 - DISCOUNTS.BULK);
+      discountRate = DISCOUNTS.BULK;
     } else {
-      discRate = (subTot - totalAmt) / subTot;
+      discountRate = (subTot - totalAmount) / subTot;
     }
   } else {
-    discRate = (subTot - totalAmt) / subTot;
+    discountRate = (subTot - totalAmount) / subTot;
   }
 
   if (new Date().getDay() === 2) {
-    totalAmt *= 1 - DISCOUNTS.TUESDAY;
-    discRate = Math.max(discRate, DISCOUNTS.TUESDAY);
+    totalAmount *= 1 - DISCOUNTS.TUESDAY;
+    discountRate = Math.max(discountRate, DISCOUNTS.TUESDAY);
   }
 
-  totalDisplay.textContent = '총액: ' + Math.round(totalAmt) + '원';
+  totalDisplay.textContent = '총액: ' + Math.round(totalAmount) + '원';
 
-  if (discRate > 0) {
+  if (discountRate > 0) {
     let span = document.createElement('span');
     span.className = 'text-green-500 ml-2';
-    span.textContent = '(' + (discRate * 100).toFixed(1) + '% 할인 적용)';
+    span.textContent = '(' + (discountRate * 100).toFixed(1) + '% 할인 적용)';
     totalDisplay.appendChild(span);
   }
   updateStockInfo();
-  renderBonusPts();
+  renderBonusPoints();
 }
 
-const renderBonusPts = () => {
-  bonusPts = Math.floor(totalAmt / 1000);
+const renderBonusPoints = () => {
+  bonusPoints = Math.floor(totalAmount / 1000);
   let ptsTag = document.getElementById('loyalty-points');
   if (!ptsTag) {
     ptsTag = document.createElement('span');
@@ -223,7 +223,7 @@ const renderBonusPts = () => {
     ptsTag.className = 'text-blue-500 ml-2';
     totalDisplay.appendChild(ptsTag);
   }
-  ptsTag.textContent = '(포인트: ' + bonusPts + ')';
+  ptsTag.textContent = '(포인트: ' + bonusPoints + ')';
 };
 
 function updateStockInfo() {
