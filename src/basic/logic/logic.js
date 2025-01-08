@@ -275,15 +275,16 @@ export const updateCartItemQuantity = (itemId, isIncrease) => {
   }
 
   const newQuantity = isIncrease ? currentQuantity + 1 : currentQuantity - 1;
-
+  const stockInfo = document.getElementById('stock-status');
   if (newQuantity > 0) {
     if (isIncrease) {
       product.quantity--;
-      const stockInfo = document.getElementById('stock-status');
       updateStockInfo(stockInfo);
     } else {
       product.quantity++;
+      updateStockInfo(stockInfo);
     }
+
     quantityDisplay.textContent = `${product.name} - ${product.price}원 x ${newQuantity}`;
   }
 };
