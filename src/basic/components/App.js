@@ -1,9 +1,8 @@
-import {
-  cartDisplay,
-  cartTotal,
-  productStockInfo,
-  selectedProduct,
-} from '../main.basic.js';
+import { ProductSelect } from './ProductSelect.js';
+import { CartDisplay } from './CartDisplay.js';
+import { CartTotal } from './CartTotal.js';
+import { StockInfo } from './StockInfo.js';
+import { useCartActions } from '../hooks/useCartActions.js';
 
 export function App() {
   const contentContainer = document.createElement('div');
@@ -22,14 +21,25 @@ export function App() {
   addToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
   addToCartButton.textContent = '추가';
 
-  useCartActions(addToCartButton);
+  const cartDisplay = CartDisplay();
+  const cartTotal = CartTotal();
+  const productSelect = ProductSelect();
+  const stockInfo = StockInfo();
+
+  useCartActions(
+    addToCartButton,
+    productSelect,
+    cartDisplay,
+    cartTotal,
+    stockInfo,
+  );
 
   wrapper.appendChild(headerTitle);
   wrapper.appendChild(cartDisplay);
   wrapper.appendChild(cartTotal);
-  wrapper.appendChild(selectedProduct);
+  wrapper.appendChild(productSelect);
   wrapper.appendChild(addToCartButton);
-  wrapper.appendChild(productStockInfo);
+  wrapper.appendChild(stockInfo);
 
   contentContainer.appendChild(wrapper);
   return contentContainer;

@@ -3,8 +3,9 @@ import { productStockInfo } from '../main.basic.js';
 
 export function updateStockInfo() {
   let infoMessage = '';
+
   productList.forEach(function (item) {
-    if (item.quantity < 5) {
+    if (getLastCount() < 5) {
       infoMessage +=
         item.name +
         ': ' +
