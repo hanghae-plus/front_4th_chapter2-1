@@ -1,8 +1,9 @@
 import { updateSelectOptions } from '../components/productSelect/updateSelectOptions';
-import { CONSTANTS } from '../constants';
 import { helper } from './helper';
 import { startPromotion } from './startPromotion';
 
+const SUGGESTION_INTERVAL = 60_000; // 60초마다 추천 알림
+const SUGGESTION_DELAY = 20_000; // 추천 알림 초기 지연
 /**
  * 추천 프로모션 시작
  * @description 전달받은 제품 목록에서 추천 프로모션 시작
@@ -13,11 +14,12 @@ import { startPromotion } from './startPromotion';
 export function startSuggestion(products, lastSelectedItem) {
   startPromotion(
     () => runSuggestion(products, lastSelectedItem),
-    CONSTANTS.SUGGESTION_INTERVAL,
-    CONSTANTS.SUGGESTION_DELAY,
+    SUGGESTION_INTERVAL,
+    SUGGESTION_DELAY,
   );
 }
 
+const SUGGESTION_DISCOUNT_RATE = 0.95; // 추천 상품 할인율
 /**
  * 추천 프로모션 실행
  * @description 마지막으로 선택된 제품을 제외한 제품 중 수량이 남아 있는 항목을 찾아 추천
@@ -34,9 +36,7 @@ function runSuggestion(products, lastSelectedItem) {
 
   if (suggest) {
     alert(helper.getSuggestionMessage(suggest.name));
-    suggest.price = Math.round(
-      suggest.price * CONSTANTS.SUGGESTION_DISCOUNT_RATE,
-    );
+    suggest.price = Math.round(suggest.price * SUGGESTION_DISCOUNT_RATE);
     updateSelectOptions(products);
   }
 }

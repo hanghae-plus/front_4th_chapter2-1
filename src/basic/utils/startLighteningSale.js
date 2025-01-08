@@ -1,8 +1,9 @@
 import { updateSelectOptions } from '../components/productSelect/updateSelectOptions';
-import { CONSTANTS } from '../constants';
 import { helper } from './helper';
 import { startPromotion } from './startPromotion';
 
+const LIGHTNING_SALE_INTERVAL = 30_000; // 30초마다 번개세일
+const LIGHTNING_SALE_DELAY = 10_000; // 번개세일 초기 지연
 /**
  * 번개 세일 시작
  * @description 전달받은 제품 목록에서 랜덤으로 선택된 제품에 번개 세일 적용
@@ -13,11 +14,13 @@ import { startPromotion } from './startPromotion';
 export function startLightningSale(products) {
   startPromotion(
     () => runLightningSale(products),
-    CONSTANTS.LIGHTNING_SALE_INTERVAL,
-    CONSTANTS.LIGHTNING_SALE_DELAY,
+    LIGHTNING_SALE_INTERVAL,
+    LIGHTNING_SALE_DELAY,
   );
 }
 
+const RANDOM_SALE_RATE = 0.3; // 랜덤 세일 확률
+const LIGHTNING_SALE_RATE = 0.8; // 번개세일 할인율
 /**
  * 번개 세일 실행
  * @description 제품 목록에서 랜덤으로 제품을 선택하여 세일 조건 충족 시 할인 적용
@@ -28,10 +31,8 @@ export function startLightningSale(products) {
 function runLightningSale(products) {
   const luckyItem = products[Math.floor(Math.random() * products.length)];
 
-  if (Math.random() < CONSTANTS.RANDOM_SALE_RATE && luckyItem.quantity > 0) {
-    luckyItem.price = Math.round(
-      luckyItem.price * CONSTANTS.LIGHTNING_SALE_RATE,
-    );
+  if (Math.random() < RANDOM_SALE_RATE && luckyItem.quantity > 0) {
+    luckyItem.price = Math.round(luckyItem.price * LIGHTNING_SALE_RATE);
     alert(helper.getLightningSaleMessage(luckyItem.name));
     updateSelectOptions(products);
   }

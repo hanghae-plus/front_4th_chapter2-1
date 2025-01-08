@@ -1,4 +1,4 @@
-import { CONSTANTS } from '../../constants';
+import { OUT_OF_STOCK_MESSAGE } from '../../constants';
 import { ProductStore } from '../../store/productStore';
 import { updateCartItemQuantity } from '../cartAddButton/cartItem/updateCartItemQuantity';
 
@@ -33,6 +33,6 @@ export function handleQuantityChange(productId, changedQuantity) {
   }
 
   // 재고 부족 알림
-  alert(CONSTANTS.OUT_OF_STOCK_MESSAGE);
+  alert(OUT_OF_STOCK_MESSAGE);
   return false;
 }

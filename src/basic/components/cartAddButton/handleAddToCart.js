@@ -26,8 +26,7 @@ export function handleAddToCart() {
       updateCartItemQuantity(productElement, productToAdd, newQuantity);
       productStore.updateProductQuantity(productToAdd.id, -1);
     } else {
-      // 재고가 부족한 경우 알림 표시
-      alert(CONSTANTS.OUT_OF_STOCK_MESSAGE);
+      alert(OUT_OF_STOCK_MESSAGE);
     }
   } else {
     // 장바구니에 새로운 상품 추가

@@ -1,5 +1,6 @@
-import { CONSTANTS } from '../../constants';
 import { helper } from '../../utils/helper';
+
+const QUANTITY_THRESHOLD = 10; // 할인 적용 최소 수량
 
 /**
  * 장바구니 제품 총액 계산
@@ -26,7 +27,7 @@ export function calculateCartItems(items) {
     itemCount += quantity;
     preDiscountTotal += currentItemAmount;
 
-    const discountCondition = quantity >= CONSTANTS.QUANTITY_THRESHOLD;
+    const discountCondition = quantity >= QUANTITY_THRESHOLD;
     const discountRate = discountCondition
       ? helper.getDiscountRate(currentItem.id)
       : 0;
