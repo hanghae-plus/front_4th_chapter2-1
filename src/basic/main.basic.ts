@@ -1,5 +1,6 @@
 import { getTotalPriceBeforeSpecialOffer } from './features/cart/actions/getTotalPriceBeforeSpecialOffer';
-import { getStockInfo } from './features/product/getStockInfo';
+import { getStockInfo } from './features/product/actions/getStockInfo';
+import ProductOption from './features/product/views/ProductOption';
 import { productList } from './shared/entity/data/productList';
 
 let SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
@@ -72,13 +73,13 @@ function main() {
 }
 function updateSelectedOptions() {
   SelectView.innerHTML = '';
-  productList.forEach(function (item) {
-    const OptionView = document.createElement('option');
-    OptionView.value = item.id;
-    OptionView.textContent = item.name + ' - ' + item.price + '원';
-    if (item.quantity === 0) OptionView.disabled = true;
-    SelectView.appendChild(OptionView);
-  });
+  const Options = productList.reduce((template, item) => {
+    const OptionView = ProductOption({
+      product: item,
+    });
+    return template + OptionView.view;
+  }, '');
+  SelectView.innerHTML = Options;
 }
 function calculateCartItems() {
   totalAmount = 0;
