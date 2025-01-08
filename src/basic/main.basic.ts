@@ -1,3 +1,4 @@
+import { ProductSelect } from "./entities/product";
 import { CartDisplay, CartTotal } from "./features/cart";
 import { Heading } from "./shared/ui";
 
@@ -9,7 +10,6 @@ interface Product {
 }
 
 let products: Product[];
-let $productSelect: HTMLSelectElement;
 let $addButton: HTMLButtonElement;
 let $stockStatus: HTMLDivElement;
 let lastSelectedItem: string;
@@ -37,20 +37,17 @@ function main() {
     ${Heading({ label: "장바구니" })}
     ${CartDisplay()}
     ${CartTotal()}
+    ${ProductSelect()}
   `;
 
-  $productSelect = document.createElement("select");
   $addButton = document.createElement("button");
   $stockStatus = document.createElement("div");
-  $productSelect.id = "product-select";
   $addButton.id = "add-to-cart";
   $stockStatus.id = "stock-status";
-  $productSelect.className = "border rounded p-2 mr-2";
   $addButton.className = "bg-blue-500 text-white px-4 py-2 rounded";
   $stockStatus.className = "text-sm text-gray-500 mt-2";
   $addButton.textContent = "추가";
   updateSelOpts();
-  $wrapper.appendChild($productSelect);
   $wrapper.appendChild($addButton);
   $wrapper.appendChild($stockStatus);
   $container.appendChild($wrapper);
@@ -84,6 +81,10 @@ function main() {
   }, Math.random() * 20000);
 }
 function updateSelOpts() {
+  const $productSelect = document.getElementById("product-select");
+
+  if (!$productSelect) return;
+
   $productSelect.innerHTML = "";
   products.forEach((product) => {
     const $option = document.createElement("option");
@@ -193,6 +194,12 @@ function updateStockInfo() {
 main();
 
 $addButton!.addEventListener("click", function () {
+  const $productSelect = document.getElementById(
+    "product-select"
+  ) as HTMLSelectElement;
+
+  if (!$productSelect) return;
+
   const selItem = $productSelect.value;
   const itemToAdd = products.find(function (p) {
     return p.id === selItem;
