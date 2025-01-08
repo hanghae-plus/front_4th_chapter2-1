@@ -66,50 +66,15 @@ function calcCart(cartList: CartState['cartList']) {
   // 임시 변수
   // let sum;
 
-  const item: Product = {
-    id: 'p1',
-    name: 'dummy',
-    val: 30000,
-    q: 30,
-  };
-
-  const productList = [item];
-
   // 토탈 가격
   let totalAmt = 0;
   // 아이템 개수 itemCount
-  let itemCnt = 0;
+  const itemCnt = 0;
 
   // 뭔지 모르겠음 Total
-  let subTot = 0;
+  const subTot = 0;
 
-  // cartCount만큼 반복문
-
-  for (const cartItem of cartList) {
-    const matchedItem = getMatchedProductInCart(cartItem, productList);
-
-    if (!matchedItem) continue;
-
-    // 재고 (cartStore 내부에서 현재 아이템의 q를 뽑아오면 된다)
-    const matchedItemQuantity = matchedItem.q;
-
-    // 현재 아이템으로 선택된 아이템의 재고 총액
-    const matchedItemTotalAmount = matchedItem.val * matchedItemQuantity;
-
-    // 매칭된 아이템의 할인율
-    const discountRate = getDiscountRateByMatchedItem(matchedItemQuantity, matchedItem.id);
-
-    // 재고를 itemCount에 더한다
-    itemCnt += matchedItemQuantity;
-
-    // 현재 아이템의 총액을 subTotal에 더한다.
-    subTot += matchedItemTotalAmount;
-
-    // 총액에 현재 아이템의 총액에 할인율을 계산한 값을 할당
-    totalAmt += matchedItemTotalAmount * (1 - discountRate);
-
-    // 반복문 마지막 줄
-  }
+  const { totalQuantity, totalAmount, totalDiscountedAmount } = getCartItemsInfo(cartList);
 
   // 할인율 같음
   let discRate = 0;
@@ -167,27 +132,71 @@ function calcCart(cartList: CartState['cartList']) {
   renderBonusPts();
 }
 
-function getMatchedProductInCart(cartItem: Product, productList: Product[]) {
-  // 아이템 객체 (스토어에서 처리하기 때문에 children으로 빼오지 않아도 된다 state에서 빼오면 됨)
+function getCartItemsInfo(cartList: Product[]) {
+  let totalQuantity = 0;
+  let totalAmount = 0;
+  let totalDiscountedAmount = 0;
 
-  return productList.find((product) => product.id === cartItem.id);
-}
+  const sumQuantity = createSum();
+  const sumAmount = createSum();
+  const sumDiscountedAmount = createSum();
 
-function getDiscountRateByMatchedItem(quantity: number, id: Product['id']) {
-  const discountRate = 0;
+  for (const cartItem of cartList) {
+    const { val, q } = cartItem;
 
-  const discountRates = {
-    p1: 0.1,
-    p2: 0.15,
-    p3: 0.2,
-    p4: 0.05,
-    p5: 0.25,
-  };
+    // 현재 아이템으로 선택된 아이템의 재고 총액
+    const cartItemTotalAmount = val * q;
 
-  // 아이템 갯수별 할인 적용률을 처리하는 로직
-  if (quantity >= 10) {
-    discountRates[id];
+    // 매칭된 아이템의 할인율
+    const discountRate = calculateFinalDiscountRate(q, cartItem.id as ProductId);
+
+    // 재고의 합
+    totalQuantity = sumQuantity(cartItem.q);
+
+    // 현재 아이템의 총액을 subTotal에 더한다.
+    totalAmount = sumAmount(cartItemTotalAmount);
+
+    // 총액에 현재 아이템의 총액에 할인율을 계산한 값을 할당
+    totalDiscountedAmount = sumDiscountedAmount(cartItemTotalAmount * (1 - discountRate));
   }
 
-  return discountRate;
+  return {
+    totalQuantity,
+    totalAmount,
+    totalDiscountedAmount,
+  };
+}
+
+type ProductId = 'p1' | 'p2' | 'p3' | 'p4' | 'p5';
+type DiscountRates = Record<ProductId, number>;
+
+const PRODUCT_DISCOUNT_RATES: DiscountRates = {
+  p1: 0.1,
+  p2: 0.15,
+  p3: 0.2,
+  p4: 0.05,
+  p5: 0.25,
+} as const;
+
+const QUANTITY_THRESHOLD = 10;
+
+function getProductBaseDiscountRate(productId: ProductId): number {
+  return PRODUCT_DISCOUNT_RATES[productId] ?? 0;
+}
+
+function isOverDiscountQuantity(quantity: number): boolean {
+  return quantity >= QUANTITY_THRESHOLD;
+}
+
+function calculateFinalDiscountRate(quantity: number, id: ProductId) {
+  const baseDiscountRate = getProductBaseDiscountRate(id);
+  return isOverDiscountQuantity(quantity) ? baseDiscountRate : 0;
+}
+
+function createSum() {
+  let sum = 0;
+
+  return (value: number) => {
+    return (sum += value);
+  };
 }
