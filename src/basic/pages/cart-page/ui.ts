@@ -1,4 +1,4 @@
-import { Cart } from "@basic/widgets";
+import { Cart } from "@basic/widgets/commerce";
 import { html } from "@basic/shared/lib";
 
 export function CartPage() {
