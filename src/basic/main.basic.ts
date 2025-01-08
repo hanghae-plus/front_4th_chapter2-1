@@ -1,3 +1,5 @@
+import { Heading } from "./shared/ui";
+
 interface Product {
   id: string;
   name: string;
@@ -26,8 +28,15 @@ function main() {
   ];
   const $root = document.getElementById("app") as HTMLDivElement;
   const $container = document.createElement("div");
+  $container.className = "bg-gray-100 p-8";
+
   const $wrapper = document.createElement("div");
-  const $heading = document.createElement("h1");
+  $wrapper.className =
+    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
+
+  $wrapper.innerHTML = `
+    ${Heading({ label: "장바구니" })}
+  `;
   $cartDisplay = document.createElement("div");
   $cartTotal = document.createElement("div");
   $productSelect = document.createElement("select");
@@ -38,18 +47,12 @@ function main() {
   $productSelect.id = "product-select";
   $addButton.id = "add-to-cart";
   $stockStatus.id = "stock-status";
-  $container.className = "bg-gray-100 p-8";
-  $wrapper.className =
-    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
-  $heading.className = "text-2xl font-bold mb-4";
   $cartTotal.className = "text-xl font-bold my-4";
   $productSelect.className = "border rounded p-2 mr-2";
   $addButton.className = "bg-blue-500 text-white px-4 py-2 rounded";
   $stockStatus.className = "text-sm text-gray-500 mt-2";
-  $heading.textContent = "장바구니";
   $addButton.textContent = "추가";
   updateSelOpts();
-  $wrapper.appendChild($heading);
   $wrapper.appendChild($cartDisplay);
   $wrapper.appendChild($cartTotal);
   $wrapper.appendChild($productSelect);
