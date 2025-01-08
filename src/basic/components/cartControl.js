@@ -1,7 +1,0 @@
-const addToCart = () => {
-
-};
-
-const removeCartItem = () => {
-
-};
