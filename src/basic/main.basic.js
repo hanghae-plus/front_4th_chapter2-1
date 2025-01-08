@@ -3,6 +3,9 @@ import { isOutOfStock, isOutOfStockRange } from './entities/stock/model.js';
 import { updateStockInformation } from './features/stock-status/ui.js';
 import { STOCK } from './shared/lib/stock/config.js';
 import { updateSelectedOptions } from './features/product-select/ui.js';
+import { CRITERIA, DISCOUNT } from './entities/discount/config.js';
+import { isTuesday } from './shared/lib/date/index.js';
+import { getDiscount } from './entities/discount/model.js';
 
 let products,
   selectProductElement,
@@ -24,7 +27,6 @@ const DISCOUNT = Object.freeze({
   QUARTER: 0.25,
 });
 
-const TUESDAY_NUMBER = Object.freeze(2);
 const CRITERIA = Object.freeze({
   DISCOUNT: 10,
   BULK: 30,
@@ -40,25 +42,9 @@ const SUGGEST_EVENT = Object.freeze({
   INTERVAL_DELAY: 60000,
 });
 
-const isTuesday = () => new Date().getDay() === TUESDAY_NUMBER;
 const discountRateMessage = (discountRate) =>
   `(${(discountRate * 100).toFixed(1)}% 할인 적용)`;
 const totalPriceMessage = (totalAmount) => `총액: ${Math.round(totalAmount)}원`;
-const getDiscount = (id, condition) => {
-  if (!condition) {
-    return DISCOUNT.NONE;
-  }
-
-  const discountRate = {
-    p1: DISCOUNT.TEN_PERCENT,
-    p2: DISCOUNT.FIFTEEN_PERCENT,
-    p3: DISCOUNT.TWENTY_PERCENT,
-    p4: DISCOUNT.FIVE_PERCENT,
-    p5: DISCOUNT.QUARTER,
-  };
-
-  return discountRate[id] ?? DISCOUNT.NONE;
-};
 
 const getDiscountRate = (itemCount, totalAmount, subTotal) => {
   let discountRate = 0;
