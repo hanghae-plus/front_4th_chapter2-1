@@ -1,10 +1,12 @@
-import { Product } from '../types/product';
 import { createElement } from '../utils/dom.ts';
+import { productStore } from '../stores/productStore.ts';
 
-export const updateProductSelectOptions = ($select: HTMLSelectElement, prodList: Product[]) => {
+export const updateProductSelectOptions = ($select: HTMLSelectElement) => {
+  const productList = productStore.getState();
+
   $select.innerHTML = '';
 
-  prodList.forEach(function (item) {
+  productList.forEach(function (item) {
     const $option = createElement('option', {
       value: item.id,
       textContent: item.name + ' - ' + item.val + '원',
