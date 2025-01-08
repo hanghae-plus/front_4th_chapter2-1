@@ -1,3 +1,5 @@
+import CartList from '../components/CartList';
+
 export const state = (() => {
   const data = {
     lastSel: null,
@@ -10,7 +12,8 @@ export const state = (() => {
       { id: 'p3', name: '상품3', price: 30000, volume: 20 },
       { id: 'p4', name: '상품4', price: 15000, volume: 0 },
       { id: 'p5', name: '상품5', price: 25000, volume: 10 }
-    ]
+    ],
+    cartList: []
   };
 
   const listeners = new Map();
