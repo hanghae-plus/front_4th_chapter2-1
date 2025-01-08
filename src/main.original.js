@@ -195,34 +195,29 @@ function calculateCartTotal() {
   totalAmount = 0;
   itemCount = 0;
 
-  var cartItems = cartDisplay.children;
+  var cartItems = Array.from(cartDisplay.children);
   var subTotal = 0;
 
-  for (var i = 0; i < cartItems.length; i++) {
-    (function () {
-      var currentProduct;
-      for (var j = 0; j < productList.length; j++) {
-        if (productList[j].id === cartItems[i].id) {
-          currentProduct = productList[j];
-          break;
-        }
-      }
+  cartItems.forEach((item) => {
+    const currentProduct = productList.find(
+      (product) => product.id === item.id
+    );
+    const cartItemQuantity = parseInt(
+      item.querySelector('span').textContent.split('x ')[1]
+    );
 
-      var cartItemQuantity = parseInt(
-        cartItems[i].querySelector('span').textContent.split('x ')[1]
-      );
-      var itemTotal = currentProduct.price * cartItemQuantity;
-      var discountRate = 0;
-      itemCount += cartItemQuantity;
-      subTotal += itemTotal;
+    const itemTotal = currentProduct.price * cartItemQuantity;
 
-      if (cartItemQuantity >= 10) {
-        discountRate = discountRates[currentProduct.id];
-      }
+    let discountRate = 0;
+    itemCount += cartItemQuantity;
+    subTotal += itemTotal;
 
-      totalAmount += itemTotal * (1 - discountRate);
-    })();
-  }
+    if (cartItemQuantity >= 10) {
+      discountRate = discountRates[currentProduct.id];
+    }
+
+    totalAmount += itemTotal * (1 - discountRate);
+  });
 
   //전체 할인율
   let totalDiscountRate = 0;
