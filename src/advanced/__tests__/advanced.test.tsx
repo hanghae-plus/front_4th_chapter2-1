@@ -72,11 +72,19 @@ describe('Shopping Cart Tests', () => {
     fireEvent.change(screen.getByRole('combobox'), { target: { value: 'p1' } });
     fireEvent.click(screen.getByRole('button', { name: '추가' }));
 
+    // 삭제 전에 장바구니에 상품이 있는지 확인
+    expect(screen.getByText(/상품1.*x 1/)).toBeInTheDocument();
+
     // 삭제 버튼 클릭
     fireEvent.click(screen.getByRole('button', { name: '삭제' }));
 
-    expect(screen.queryByText(/상품1/)).not.toBeInTheDocument();
-    expect(screen.getByText(/총액: 0원/)).toBeInTheDocument();
+    // 장바구니에서만 삭제되었는지 확인
+    expect(screen.queryByText(/상품1.*x 1/)).not.toBeInTheDocument();
+
+    // 총액 확인 - 텍스트를 개별적으로 체크
+    const cartTotalDiv = screen.getByText(/총액:/, { exact: false });
+    expect(cartTotalDiv).toHaveTextContent('0');
+    expect(screen.getByText(/포인트: 0/)).toBeInTheDocument();
   });
 
   it('총액이 올바르게 계산되는지 확인', () => {
