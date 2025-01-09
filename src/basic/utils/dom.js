@@ -8,8 +8,8 @@ export const getCartItemsElement = () => document.getElementById(ELEMENT_IDS.CAR
 export const getProductItemElement = (id) => document.getElementById(id);
 
 export const getDecreaseButtonElement = (id) =>
-  document.querySelector(`button[data-product-id="${id}"][data-product-event-type="decrease"]`);
+  document.querySelector(`button[data-product-id="${id}"][data-event-type="decrease"]`);
 export const getIncreaseButtonElement = (id) =>
-  document.querySelector(`button[data-product-id="${id}"][data-product-event-type="increase"]`);
+  document.querySelector(`button[data-product-id="${id}"][data-event-type="increase"]`);
 export const getRemoveButtonElement = (id) =>
-  document.querySelector(`button[data-product-id="${id}"][data-product-event-type="remove"]`);
+  document.querySelector(`button[data-product-id="${id}"][data-event-type="remove"]`);
