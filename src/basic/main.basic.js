@@ -1,11 +1,11 @@
+import CartItem from './components/CartItem';
+import { DAY_OF_WEEK } from './constants/day';
+import { ELEMENT_IDS } from './constants/element-id';
+import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './constants/policy';
 import { products } from './data/products';
-import CartItem from './features/cart/components/Item';
-import { DAY_OF_WEEK } from './features/cart/constants/day';
-import { ELEMENT_IDS } from './features/cart/constants/\belement-id';
-import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './features/cart/constants/policy';
-import { applyDiscount } from './features/cart/utils/discount';
 import CartStore from './stores/cart.store';
 import ProductStore from './stores/product.store';
+import { applyDiscount } from './utils/applyDiscount';
 
 const getStockStatusElement = () => document.getElementById(ELEMENT_IDS.STOCK_STATUS);
 const getAddCartButtonElement = () => document.getElementById(ELEMENT_IDS.ADD_TO_CART);
