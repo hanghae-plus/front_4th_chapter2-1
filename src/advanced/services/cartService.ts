@@ -1,14 +1,14 @@
 import { Product, CartItem, CartTotalList } from "../types";
-import { PRODUCT_DISCOUNTS } from "../constants";
+import { PRODUCT_DISCOUNT_LIST } from "../constants";
 
-export const calculateTotalList = (
+export const calcTotalList = (
   cartItemList: CartItem[],
   productList: Product[]
 ): CartTotalList => {
   const initialTotalList: CartTotalList = {
     subTotal: 0,
-    totalAmount: 0,
-    itemCount: 0,
+    totalAmt: 0,
+    itemCnt: 0,
     discount: 0,
   };
 
@@ -17,14 +17,14 @@ export const calculateTotalList = (
     if (!product) return totalList;
 
     const itemSubTotal = product.price * item.quantity;
-    const discount = PRODUCT_DISCOUNTS[item.id] || 0;
+    const discount = PRODUCT_DISCOUNT_LIST[item.id] || 0;
     const itemDiscount = itemSubTotal * discount;
 
     return {
       subTotal: totalList.subTotal + itemSubTotal,
       discount: totalList.discount + itemDiscount,
-      itemCount: totalList.itemCount + item.quantity,
-      totalAmount: totalList.totalAmount + (itemSubTotal - itemDiscount),
+      itemCnt: totalList.itemCnt + item.quantity,
+      totalAmt: totalList.totalAmt + (itemSubTotal - itemDiscount),
     };
   }, initialTotalList);
 };

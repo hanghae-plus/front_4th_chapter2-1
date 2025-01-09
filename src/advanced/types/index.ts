@@ -13,13 +13,13 @@ export interface CartItem {
 export interface CartState {
   lastSelectedProduct: string | null;
   bonusPointList: number;
-  itemCount: number;
+  itemCnt: number;
 }
 
 export interface CartTotalList {
   subTotal: number;
-  totalAmount: number;
-  itemCount: number;
+  totalAmt: number;
+  itemCnt: number;
   discount: number;
 }
 

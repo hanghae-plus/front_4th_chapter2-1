@@ -11,7 +11,7 @@ const CartSummary: React.FC<CartSummaryProps> = ({ totalList }) => {
   return (
     <div className="mt-4 space-y-2">
       <div className="text-lg">
-        총액: {Math.round(totalList.totalAmount)}원
+        총액: {Math.round(totalList.totalAmt)}원
         {totalList.discount > 0 &&
           ` (${(totalList.discount * 100).toFixed(1)}% 할인 적용)`}
       </div>

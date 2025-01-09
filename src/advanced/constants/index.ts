@@ -1,4 +1,4 @@
-export const PRODUCT_DISCOUNTS: { [key: string]: number } = {
+export const PRODUCT_DISCOUNT_LIST: { [key: string]: number } = {
   p1: 0.1,
   p2: 0.15,
   p3: 0.2,
