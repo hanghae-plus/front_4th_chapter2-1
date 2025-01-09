@@ -14,7 +14,7 @@ const itemDiscountRates = {
   p5: 0.25,
 };
 
-const main = () => `
+const createMainContainer = () => `
   <div class="bg-gray-100 p-8">
     <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
       <h1 class="text-2xl font-bold mb-4">장바구니</h1>
@@ -124,12 +124,14 @@ const handleCartItemQuantity = () => {
       currentProduct.q += initialQty;
       targetProdctIdElem.remove();
     }
+
+    calculateCartItem();
   });
 };
 
 const calculateCartItem = () => {
   let totalAmount = 0;
-  let totalAmoutDisc = 0;
+  let totalAmountDisc = 0;
   let totalQuantity = 0;
   let discountRate = 0;
   const cartItems = document.querySelectorAll('#cart-items > div');
@@ -145,34 +147,38 @@ const calculateCartItem = () => {
 
     totalQuantity += qty;
     totalAmount += currentItemTotal;
-    totalAmoutDisc += currentItemTotal * (1 - discount);
+    totalAmountDisc += currentItemTotal * (1 - discount);
   });
 
-  let itemDiscount = totalAmount - totalAmoutDisc;
-  let bulkDiscount = totalAmoutDisc * 0.25;
+  let itemDiscount = totalAmount - totalAmountDisc;
+  let bulkDiscount = totalAmountDisc * 0.25;
 
   if (totalQuantity >= 30 && bulkDiscount > itemDiscount) {
-    totalAmoutDisc = totalAmount * (1 - 0.25);
+    totalAmountDisc = totalAmount * (1 - 0.25);
     discountRate = 0.25;
   } else {
-    discountRate = (totalAmount - totalAmoutDisc) / totalAmount;
+    discountRate = (totalAmount - totalAmountDisc) / totalAmount;
   }
 
   if (new Date().getDay() === 2) {
-    totalAmoutDisc *= 1 - 0.1;
+    totalAmountDisc *= 1 - 0.1;
     discountRate = Math.max(discountRate, 0.1);
   }
 
-  cartTotalElem.innerHTML = createCartTotal(totalAmoutDisc, discountRate);
   updateStockInfo();
+  cartTotalElem.innerHTML = createTotal(totalAmountDisc, discountRate);
 };
 
-const createCartTotal = (totalAmoutDisc, discountRate) => `
-  총액: ${Math.round(totalAmoutDisc)} 원
-  <span class="ext-green-500 ml-2">(${(discountRate * 100).toFixed(
-    1
-  )}% 할인 적용)</span>
-`;
+const createTotal = (totalAmountDisc, discountRate) =>
+  `총액: ${Math.round(totalAmountDisc)}원${
+    discountRate > 0
+      ? `<span class="text-green-500 ml-2">(${(discountRate * 100).toFixed(
+          1
+        )}% 할인 적용)</span>`
+      : ``
+  }<span id=loyalty-points class="text-blue-500 ml-2">(포인트: ${Math.floor(
+    totalAmountDisc / 1000
+  )})</span>`;
 
 const updateStockInfo = () => {
   const stockStatusElem = document.getElementById('stock-status');
@@ -186,7 +192,12 @@ const updateStockInfo = () => {
   stockStatusElem.textContent = infoMessage;
 };
 
-const root = document.getElementById('app');
-root.innerHTML = main();
-handleAddCartItem();
-handleCartItemQuantity();
+const init = () => {
+  const root = document.getElementById('app');
+  root.innerHTML = createMainContainer();
+  calculateCartItem();
+  handleAddCartItem();
+  handleCartItemQuantity();
+};
+
+init();
