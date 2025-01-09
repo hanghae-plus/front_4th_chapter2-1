@@ -1,4 +1,6 @@
 import { ELEMENT_IDS } from '../constants/element-id';
+import { products } from '../data/products';
+import { getProductSelectElement } from '../utils/dom';
 
 const ProductSelect = ({ products }) => {
   return `
@@ -12,3 +14,8 @@ const ProductSelect = ({ products }) => {
 };
 
 export default ProductSelect;
+
+export const updateProductSelect = () => {
+  const selectElement = getProductSelectElement();
+  selectElement.innerHTML = ProductSelect({ products });
+};
