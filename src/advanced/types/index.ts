@@ -12,11 +12,11 @@ export interface CartItem {
 
 export interface CartState {
   lastSelectedProduct: string | null;
-  bonusPoints: number;
+  bonusPointList: number;
   itemCount: number;
 }
 
-export interface CartTotals {
+export interface CartTotalList {
   subTotal: number;
   totalAmount: number;
   itemCount: number;

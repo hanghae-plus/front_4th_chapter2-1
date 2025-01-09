@@ -3,8 +3,8 @@ import { Product } from "../types";
 import { PROMOTION_CONFIG } from "../constants";
 
 export const usePromotion = (
-  products: Product[],
-  setProducts: React.Dispatch<React.SetStateAction<Product[]>>,
+  productList: Product[],
+  setProductList: React.Dispatch<React.SetStateAction<Product[]>>,
   lastSelectedProduct: string | null
 ) => {
   useEffect(() => {
@@ -13,13 +13,13 @@ export const usePromotion = (
     const flashSaleTimer = setTimeout(() => {
       const interval = setInterval(() => {
         if (Math.random() < flashSaleConfig.PROBABILITY) {
-          setProducts((prev) => {
-            const availableProducts = prev.filter((p) => p.stock > 0);
-            if (availableProducts.length === 0) return prev;
+          setProductList((prev) => {
+            const availableProductList = prev.filter((p) => p.stock > 0);
+            if (availableProductList.length === 0) return prev;
 
             const randomProduct =
-              availableProducts[
-                Math.floor(Math.random() * availableProducts.length)
+              availableProductList[
+                Math.floor(Math.random() * availableProductList.length)
               ];
 
             alert(`번개세일! ${randomProduct.name}이(가) 20% 할인 중입니다!`);
@@ -44,15 +44,15 @@ export const usePromotion = (
     const recTimer = setTimeout(() => {
       const interval = setInterval(() => {
         if (lastSelectedProduct) {
-          setProducts((prev) => {
-            const availableProducts = prev.filter(
+          setProductList((prev) => {
+            const availableProductList = prev.filter(
               (p) => p.id !== lastSelectedProduct && p.stock > 0
             );
-            if (availableProducts.length === 0) return prev;
+            if (availableProductList.length === 0) return prev;
 
             const randomProduct =
-              availableProducts[
-                Math.floor(Math.random() * availableProducts.length)
+              availableProductList[
+                Math.floor(Math.random() * availableProductList.length)
               ];
 
             alert(

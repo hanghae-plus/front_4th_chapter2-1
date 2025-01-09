@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import Cart from "./components/Cart";
-import { INITIAL_PRODUCTS } from "./constants";
+import { INITIAL_PRODUCT_LIST } from "./constants";
 import { Product } from "./types";
 
 const App: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+  const [productList, setProductList] = useState<Product[]>(INITIAL_PRODUCT_LIST);
 
   return (
     <div className="container mx-auto p-4">
-      <Cart products={products} setProducts={setProducts} />
+      <Cart productList={productList} setProductList={setProductList} />
     </div>
   );
 };

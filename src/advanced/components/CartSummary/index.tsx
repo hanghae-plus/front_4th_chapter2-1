@@ -1,21 +1,21 @@
 import React from "react";
-import { CartTotals } from "../../types";
+import { CartTotalList } from "../../types";
 
 interface CartSummaryProps {
-  totals: CartTotals;
+  totalList: CartTotalList;
 }
 
-const CartSummary: React.FC<CartSummaryProps> = ({ totals }) => {
-  const points = Math.floor(totals.subTotal / 100);
+const CartSummary: React.FC<CartSummaryProps> = ({ totalList }) => {
+  const pointList = Math.floor(totalList.subTotal / 100);
 
   return (
     <div className="mt-4 space-y-2">
       <div className="text-lg">
-        총액: {Math.round(totals.totalAmount)}원
-        {totals.discount > 0 &&
-          ` (${(totals.discount * 100).toFixed(1)}% 할인 적용)`}
+        총액: {Math.round(totalList.totalAmount)}원
+        {totalList.discount > 0 &&
+          ` (${(totalList.discount * 100).toFixed(1)}% 할인 적용)`}
       </div>
-      <div className="text-sm text-gray-600">(포인트: {points})</div>
+      <div className="text-sm text-gray-600">(포인트: {pointList})</div>
     </div>
   );
 };
