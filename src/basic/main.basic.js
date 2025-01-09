@@ -1,9 +1,10 @@
 import CartItem from './components/CartItem';
 import CartTotal from './components/CartTotal';
 import ProductSelect from './components/ProductSelect';
+import StockStatus from './components/StockStatus';
 import { DAY_OF_WEEK } from './constants/day';
 import { ELEMENT_IDS } from './constants/element-id';
-import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './constants/policy';
+import { DISCOUNT_POLICY, TIMER_POLICY } from './constants/policy';
 import { products } from './data/products';
 import CartStore from './stores/cart.store';
 import ProductStore from './stores/product.store';
@@ -126,20 +127,12 @@ const renderCartTotal = ({ amount, discountRate, point }) => {
 
 const renderStockStatus = () => {
   getStockStatusElement().innerHTML = products
-    .map((product) => {
-      const cartItem = cartStore.getCartItem(product.id);
-      if (!cartItem) {
-        return product.quantity < STOCK_POLICY.STOCK_THRESHOLD
-          ? `${product.name}: ${product.quantity > 0 ? `재고 부족 (${product.quantity}개 남음)` : '품절'}`
-          : '';
-      }
-
-      const remainingQuantity = product.quantity - cartItem.getQuantity();
-
-      return remainingQuantity < STOCK_POLICY.STOCK_THRESHOLD
-        ? `${product.name}: ${remainingQuantity > 0 ? `재고 부족 (${remainingQuantity}개 남음)` : '품절'}`
-        : '';
-    })
+    .map((product) =>
+      StockStatus({
+        product,
+        cartItem: cartStore.getCartItem(product.id),
+      }),
+    )
     .filter((text) => text !== '')
     .join('\n');
 };
