@@ -197,7 +197,7 @@ main(() => {
     }, TIMER_POLICY.PRODUCT_RECOMMENDATION_INTERVAL);
   }, Math.random() * 20000);
 
-  getAddCartButtonElement().addEventListener('click', () => {
+  const handleAddToCart = () => {
     const selectedProductId = getProductSelectElement().value;
     const selectedProductModel = products.find(({ id }) => id === selectedProductId);
     let cartItem = cartStore.getCartItem(selectedProductId);
@@ -223,7 +223,9 @@ main(() => {
 
     calcCart();
     productStore.setLastSelectedProduct(selectedProductId);
-  });
+  };
+
+  getAddCartButtonElement().addEventListener('click', handleAddToCart);
 
   const renderCartItem = (cartItem) => /* html */ `
   <div id="${cartItem.id}" class="flex justify-between items-center mb-2">
@@ -297,3 +299,5 @@ main(() => {
     calcCart();
   };
 });
+
+const canUpdateQuantity = (productModel, cartItem) => productModel.quantity > (cartItem?.getQuantity() || 0);
