@@ -16,7 +16,7 @@ export const renderStockStatus = () => {
     .map((product) =>
       StockStatus({
         product,
-        cartItem: cartStore.getCartItem(product.id),
+        cartItem: cartStore.getCartItemByProductId(product.id),
       }),
     )
     .filter((text) => text !== '')

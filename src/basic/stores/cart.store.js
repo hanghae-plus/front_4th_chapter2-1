@@ -17,7 +17,7 @@ class CartStore {
    * @returns {void}
    */
   addCartItem(product) {
-    const cartItem = this.getCartItem(product.id);
+    const cartItem = this.getCartItemByProductId(product.id);
     if (cartItem) {
       cartItem.increaseQuantity(1);
     } else {
@@ -28,7 +28,7 @@ class CartStore {
   }
 
   removeCartItem(productId) {
-    const cartItem = this.getCartItem(productId);
+    const cartItem = this.getCartItemByProductId(productId);
 
     if (!cartItem) {
       throw new Error('해당 상품이 존재하지 않습니다.');
@@ -51,7 +51,7 @@ class CartStore {
    * @param {number} productId
    * @returns {ProductModel | undefined}
    */
-  getCartItem(productId) {
+  getCartItemByProductId(productId) {
     return this.cartItems.find((item) => item.id === productId);
   }
 

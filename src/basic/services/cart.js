@@ -9,7 +9,7 @@ import { calculateCart } from './calculator';
 export const handleAddToCart = () => {
   const selectedProductId = getProductSelectElement().value;
   const selectedProductModel = products.find(({ id }) => id === selectedProductId);
-  let cartItem = cartStore.getCartItem(selectedProductId);
+  let cartItem = cartStore.getCartItemByProductId(selectedProductId);
 
   if (!canUpdateQuantity(selectedProductModel, cartItem)) {
     alert('재고가 부족합니다.');
@@ -17,7 +17,7 @@ export const handleAddToCart = () => {
   }
 
   cartStore.addCartItem(selectedProductModel);
-  cartItem = cartStore.getCartItem(selectedProductId);
+  cartItem = cartStore.getCartItemByProductId(selectedProductId);
 
   const productItemElement = getProductItemElement(cartItem.id);
 
@@ -36,7 +36,7 @@ export const handleAddToCart = () => {
 
 export const handleDecreaseQuantity = (productId) => {
   cartStore.removeCartItem(productId);
-  const cartItem = cartStore.getCartItem(productId);
+  const cartItem = cartStore.getCartItemByProductId(productId);
 
   if (cartItem?.getQuantity() === 0) {
     getProductItemElement(productId)?.remove();
@@ -47,7 +47,7 @@ export const handleDecreaseQuantity = (productId) => {
 };
 
 export const handleIncreaseQuantity = (productId, productModel) => {
-  const currentCartItem = cartStore.getCartItem(productId);
+  const currentCartItem = cartStore.getCartItemByProductId(productId);
 
   if (!canUpdateQuantity(productModel, currentCartItem)) {
     alert('재고가 부족합니다.');
@@ -55,7 +55,7 @@ export const handleIncreaseQuantity = (productId, productModel) => {
   }
 
   cartStore.addCartItem(productModel);
-  updateCartItem(productId, cartStore.getCartItem(productId));
+  updateCartItem(productId, cartStore.getCartItemByProductId(productId));
   calculateCart((updatedTotals) => updateCartUI(updatedTotals));
 };
 
