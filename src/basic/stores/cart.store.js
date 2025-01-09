@@ -27,6 +27,20 @@ class CartStore {
     }
   }
 
+  removeCartItem(productId) {
+    const cartItem = this.getCartItem(productId);
+
+    if (!cartItem) {
+      throw new Error('해당 상품이 존재하지 않습니다.');
+    }
+
+    cartItem.decreaseQuantity(1);
+  }
+
+  deleteCartItem(productId) {
+    this.cartItems = this.cartItems.filter((item) => item.id !== productId);
+  }
+
   getAmount() {
     return this.cartItems.reduce((acc, item) => {
       return acc + item.price * item.quantity;

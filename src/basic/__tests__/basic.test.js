@@ -24,14 +24,6 @@ describe('basic test', () => {
       vi.useRealTimers();
       vi.setSystemTime(new Date('2024-01-08'));
       vi.spyOn(window, 'alert').mockImplementation(() => {});
-
-      if ('productStore' in window) {
-        window.productStore.destroyInstance();
-      }
-
-      if ('cartStore' in window) {
-        window.cartStore.destroyInstance();
-      }
     });
 
     afterEach(() => {
