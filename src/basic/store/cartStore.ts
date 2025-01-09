@@ -22,6 +22,7 @@ interface CartActions {
   removeCartItem: (id: string) => void;
   getTotalAmount: () => number;
   getTotalDiscountRate: () => number;
+  getPoint: () => number;
 }
 
 export const CartStore = createStore<CartState, CartActions>(
@@ -69,6 +70,9 @@ export const CartStore = createStore<CartState, CartActions>(
       },
       getTotalDiscountRate: () => {
         return state.totalDiscountRate;
+      },
+      getPoint: () => {
+        return state.point;
       },
       clearCartItem: (id: string) => {
         clearCartItemById(id);
