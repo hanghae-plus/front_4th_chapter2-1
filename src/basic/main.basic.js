@@ -123,8 +123,6 @@ function calculateCartTotal() {
  */
 function updateBonusPoints(totalAmount) {
   const points = Math.floor(totalAmount / 1000)
-  console.log('🚀 ~ updateBonusPoints ~ totalAmount:', totalAmount)
-  console.log('🚀 ~ updateBonusPoints ~ points:', points)
 
   const $cartTotal = document.getElementById('cart-total')
   const $loyaltyPoints = document.getElementById('loyalty-points')
