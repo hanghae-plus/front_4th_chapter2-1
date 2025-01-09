@@ -1,18 +1,16 @@
+import { DISCOUNT_RATES } from '../../constants/discountRates';
+
 import type { Product } from '../../types/product';
 
 type ProductId = 'p1' | 'p2' | 'p3' | 'p4' | 'p5';
-type DiscountRates = Record<ProductId, number>;
 
-const PRODUCT_DISCOUNT_RATES: DiscountRates = {
-  p1: 0.1,
-  p2: 0.15,
-  p3: 0.2,
-  p4: 0.05,
-  p5: 0.25,
+const PRODUCT_DISCOUNT_RATES = {
+  p1: DISCOUNT_RATES.TEN_PERCENT,
+  p2: DISCOUNT_RATES.FIFTEEN_PERCENT,
+  p3: DISCOUNT_RATES.TWENTY_PERCENT,
+  p4: DISCOUNT_RATES.FIVE_PERCENT,
+  p5: DISCOUNT_RATES.TWENTY_FIVE_PERCENT,
 } as const;
-
-export const TUESDAY_DISCOUNT_RATE = 0.1;
-export const BULK_DISCOUNT_RATE = 0.25;
 
 export const QUANTITY_THRESHOLDS = {
   BULK_PURCHASE: 30,
@@ -24,15 +22,12 @@ export const calculateCartPrice = (cartList: Product[]) => {
   const bulkDiscount = calculateBulkDiscount(totals);
   const { finalAmount, finalDiscountRate } = applyTuesdayDiscount(bulkDiscount);
 
-  // 재고 함수 호출
-  // updateStockInfo();
-
-  // 보너스 함수 호출
   const point = getBonusPoint(finalAmount);
 
   return { finalAmount, finalDiscountRate, point };
 };
 
+// 장바구니 토탈 가격 및 재고 계산
 const calculateCartTotals = (cartList: Product[]) => {
   return cartList.reduce(
     (acc, item) => {
@@ -62,7 +57,7 @@ const calculateRegularDiscount = (totalAmount: number, totalDiscountedAmount: nu
   };
 };
 
-// 대량 구매 할인 로직
+// 대량 구매 할인
 function calculateBulkDiscount(totals: ReturnType<typeof calculateCartTotals>) {
   const { totalQuantity, totalAmount, totalDiscountedAmount } = totals;
 
@@ -71,13 +66,13 @@ function calculateBulkDiscount(totals: ReturnType<typeof calculateCartTotals>) {
   }
 
   if (totalQuantity >= QUANTITY_THRESHOLDS.BULK_PURCHASE) {
-    const bulkDiscountAmount = totalAmount * BULK_DISCOUNT_RATE;
+    const bulkDiscountAmount = totalAmount * DISCOUNT_RATES.TWENTY_FIVE_PERCENT;
     const discountAmount = totalAmount - totalDiscountedAmount;
 
     return bulkDiscountAmount > discountAmount
       ? {
-          discountRate: BULK_DISCOUNT_RATE,
-          finalDiscountedAmount: totalAmount * (1 - BULK_DISCOUNT_RATE),
+          discountRate: DISCOUNT_RATES.TWENTY_FIVE_PERCENT,
+          finalDiscountedAmount: totalAmount * (1 - DISCOUNT_RATES.TWENTY_FIVE_PERCENT),
         }
       : calculateRegularDiscount(totalAmount, totalDiscountedAmount);
   }
@@ -88,7 +83,7 @@ function calculateBulkDiscount(totals: ReturnType<typeof calculateCartTotals>) {
   };
 }
 
-// 화요일 할인 로직
+// 화요일 할인
 function applyTuesdayDiscount(total: ReturnType<typeof calculateBulkDiscount>) {
   let { discountRate, finalDiscountedAmount } = total;
 
@@ -102,11 +97,12 @@ function applyTuesdayDiscount(total: ReturnType<typeof calculateBulkDiscount>) {
   }
 
   return {
-    finalAmount: (finalDiscountedAmount *= 1 - 0.1),
-    finalDiscountRate: (discountRate = Math.max(discountRate, 0.1)),
+    finalAmount: (finalDiscountedAmount *= 1 - DISCOUNT_RATES.TEN_PERCENT),
+    finalDiscountRate: (discountRate = Math.max(discountRate, DISCOUNT_RATES.TEN_PERCENT)),
   };
 }
 
+// 포인트 계산
 function getBonusPoint(amount: number) {
   const bonusPoint = Math.floor(amount / 1000);
 

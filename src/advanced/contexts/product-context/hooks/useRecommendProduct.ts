@@ -1,8 +1,9 @@
 import { useEffect, useCallback } from 'react';
 
+import { RECOMMEND_DISCOUNT_RATE } from '../../../constants/discountRates';
+
 import type { Product } from '../../../types/product';
 
-const RECOMMEND_DISCOUNT_RATE = 0.95;
 const INITIAL_RECOMMENDATION_DELAY = 20000;
 const RECOMMENDATION_INTERVAL = 60000;
 

@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
 
+import { FLASH_SALE_DISCOUNT_RATE } from '../../../constants/discountRates';
+
 import type { Product } from '../../../types/product';
 
-const FLASH_SALE_DISCOUNT_RATE = 0.8; // 20% 할인
-const FLASH_SALE_PROBABILITY = 0.3; // 30% 확률
-const INITIAL_FLASH_SALE_DELAY = 10000; // 초기 딜레이 (10초)
-const FLASH_SALE_INTERVAL = 30000; // 번개세일 간격 (30초)
+const FLASH_SALE_PROBABILITY = 0.3;
+const INITIAL_FLASH_SALE_DELAY = 10000;
+const FLASH_SALE_INTERVAL = 30000;
 
 export const useFlashSale = (
   productList: Product[],
