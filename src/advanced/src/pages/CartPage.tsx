@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { ICartItem, IProduct } from '../type/product';
 import { calculateCart } from '../components/CalculateCart';
 import CartSelect from '../components/CartSelect';
+import Cart from '../components/Cart';
 import CartTotal from '../components/CartTotal';
 
 const initialProducts: IProduct[] = [
@@ -44,13 +45,51 @@ export default function CartPage() {
     );
   };
 
+  const handleChangeQuantity = (productId: string, change: number) => {
+    setCartItems((prev) =>
+      prev
+        .map((item) =>
+          item.productId === productId
+            ? { ...item, quantity: item.quantity + change }
+            : item
+        )
+        .filter((item) => item.quantity > 0)
+    );
+
+    setProducts((prev) =>
+      prev.map((p) =>
+        p.id === productId
+          ? { ...p, quantity: p.quantity - change }
+          : p
+      )
+    );
+  };
+
+  const handleRemoveItem = (productId: string) => {
+    const removedItem = cartItems.find((item) => item.productId === productId);
+    if (removedItem) {
+      setProducts((prev) =>
+        prev.map((p) =>
+          p.id === productId
+            ? { ...p, quantity: p.quantity + removedItem.quantity }
+            : p
+        )
+      );
+    }
+    setCartItems((prev) => prev.filter((item) => item.productId !== productId));
+  };
+
   const { totalAmount, discountRate, loyaltyPoints } = calculateCart(cartItems, products);
 
   return (
     <Container className="bg-gray-100 p-8">
       <Wrapper className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <Title className="text-2xl font-bold mb-4">장바구니</Title>
-        
+        <Cart
+          cartItems={cartItems}
+          onChangeQuantity={handleChangeQuantity}
+          onRemoveItem={handleRemoveItem}
+        />
         <CartTotal
           totalAmount={totalAmount}
           discountRate={discountRate}
