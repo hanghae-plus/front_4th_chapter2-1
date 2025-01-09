@@ -1,4 +1,4 @@
-import { ProductType } from 'src/advanced/types/ProductsType';
+import { ProductType } from 'src/advanced/types/ProductType';
 
 interface Props {
   product: ProductType;

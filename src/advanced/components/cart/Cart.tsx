@@ -1,4 +1,4 @@
-import { ProductListType, ProductType } from 'src/advanced/types/ProductsType';
+import { ProductListType, ProductType } from 'src/advanced/types/ProductType';
 import CartItem from '../cart-item/CartItem';
 
 interface Props {

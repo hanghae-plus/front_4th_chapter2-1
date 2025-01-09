@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ProductListType } from '../../types/ProductsType';
+import { ProductListType } from '../../types/ProductType';
 import Cart from './Cart';
 
 export default function CartContainer() {

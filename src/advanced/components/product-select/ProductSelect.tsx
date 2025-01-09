@@ -1,4 +1,4 @@
-import { ProductListType } from 'src/advanced/types/ProductsType';
+import { ProductListType } from 'src/advanced/types/ProductType';
 import ProductSelectOption from './ProductSelectOption';
 
 interface Props {

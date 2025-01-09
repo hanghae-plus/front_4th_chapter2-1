@@ -1,4 +1,4 @@
-import { ProductListType } from '../types/ProductsType';
+import { ProductListType } from '../types/ProductType';
 
 export const initialProductList: ProductListType = [
   { id: 'p1', name: '상품1', price: 10_000, quantity: 50 },
