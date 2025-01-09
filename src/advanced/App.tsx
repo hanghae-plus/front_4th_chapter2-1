@@ -3,6 +3,7 @@ import { useState } from 'react';
 import CartItem from './components/CartItem';
 import CartTotal from './components/CartTotal';
 import ProductSelect from './components/ProductSelect';
+import { ELEMENT_IDS } from './constants/element-id';
 import { products as initialProducts } from './data/products';
 import { calculateCartTotals } from './services/calculator';
 import { canIncreaseQuantity } from './services/cart';
@@ -116,7 +117,7 @@ const App = () => {
     <div className="bg-gray-100 p-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <h1 className="text-2xl font-bold mb-4">장바구니</h1>
-        <div id="${ELEMENT_IDS.CART_ITEMS}">
+        <div id={ELEMENT_IDS.CART_ITEMS}>
           {cartItems.map((item) => (
             <CartItem
               key={item.id}
@@ -127,7 +128,7 @@ const App = () => {
             />
           ))}
         </div>
-        <div id="${ELEMENT_IDS.CART_TOTAL}" className="text-xl font-bold my-4">
+        <div id={ELEMENT_IDS.CART_TOTAL} className="text-xl font-bold my-4">
           <CartTotal amount={amount} discountRate={discountRate} point={point} />
         </div>
         <ProductSelect
@@ -136,13 +137,13 @@ const App = () => {
           selectedProductId={selectedProductId}
         />
         <button
-          id="${ELEMENT_IDS.ADD_TO_CART}"
+          id={ELEMENT_IDS.ADD_TO_CART}
           className="bg-blue-500 text-white px-4 py-2 rounded"
           onClick={handleAddToCart}
         >
           추가
         </button>
-        <div id="${ELEMENT_IDS.STOCK_STATUS}" className="text-sm text-gray-500 mt-2" />
+        <div id={ELEMENT_IDS.STOCK_STATUS} className="text-sm text-gray-500 mt-2" />
       </div>
     </div>
   );
