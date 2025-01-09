@@ -253,18 +253,7 @@ main(() => {
 `;
 
   const setupCartItemEvents = (productId, productModel) => {
-    getDecreaseButtonElement(productId).addEventListener('click', () => {
-      cartStore.removeCartItem(productId);
-      const cartItem = cartStore.getCartItem(productId);
-
-      if (cartItem?.getQuantity() === 0) {
-        getProductItemElement(productId)?.remove();
-      } else {
-        getProductItemElement(productId).querySelector('span').textContent =
-          `${cartItem.name} - ${cartItem.price}원 x ${cartItem.getQuantity()}`;
-      }
-      calcCart();
-    });
+    getDecreaseButtonElement(productId).addEventListener('click', () => handleDecreaseQuantity(productId));
 
     getIncreaseButtonElement(productId).addEventListener('click', () =>
       handleIncreaseQuantity(productId, productModel),
@@ -273,7 +262,18 @@ main(() => {
     getRemoveButtonElement(productId).addEventListener('click', () => handleRemoveItem(productId));
   };
 
-  const handleDecreaseQuantity = (productId) => {};
+  const handleDecreaseQuantity = (productId) => {
+    cartStore.removeCartItem(productId);
+    const cartItem = cartStore.getCartItem(productId);
+
+    if (cartItem?.getQuantity() === 0) {
+      getProductItemElement(productId)?.remove();
+    } else {
+      getProductItemElement(productId).querySelector('span').textContent =
+        `${cartItem.name} - ${cartItem.price}원 x ${cartItem.getQuantity()}`;
+    }
+    calcCart();
+  };
 
   const handleIncreaseQuantity = (productId, productModel) => {
     const currentCartItem = cartStore.getCartItem(productId);
