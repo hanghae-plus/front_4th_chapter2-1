@@ -18,3 +18,13 @@ export let totalAmt = 0;
 export const setTotalAmt = (val) => {
   totalAmt = val;
 };
+
+export let itemCnt = 0;
+export const setItemCnt = (val) => {
+  itemCnt = val;
+};
+
+export let subTot = 0;
+export const setSubTot = (val) => {
+  subTot = val;
+};

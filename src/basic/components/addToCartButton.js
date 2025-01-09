@@ -10,7 +10,9 @@ export const AddToCartButton = () => {
 
   button.addEventListener("click", () => {
     const selItem = document.getElementById("product-select").value;
-    const itemToAdd = prodList.find((p) => p.id === selItem);
+    const itemToAdd = prodList.find((p) => {
+      return p.id === selItem;
+    });
 
     if (itemToAdd && itemToAdd.q > 0) {
       const item = document.getElementById(itemToAdd.id);
@@ -26,11 +28,7 @@ export const AddToCartButton = () => {
         }
       } else {
         const newItemComponent = newItem(itemToAdd);
-        const cartDisplayElement = document.getElementById("cart-display");
-        if (!cartDisplayElement) {
-          console.error("cart-display 요소를 찾을 수 없습니다.");
-          return;
-        }
+        const cartDisplayElement = document.getElementById("cart-items");
         cartDisplayElement.appendChild(newItemComponent);
         itemToAdd.q--;
       }

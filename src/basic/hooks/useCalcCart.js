@@ -1,20 +1,12 @@
 import { useRenderBonusPts, useUpdateStockInfo } from "./";
-import {
-  prodList,
-  totalAmt as originTotalAmt,
-  setTotalAmt,
-} from "../common/state";
+import { prodList, setTotalAmt, setItemCnt, setSubTot } from "../common/state";
 
 export function useCalcCart() {
+  let totalAmt = 0;
   let itemCnt = 0;
   let subTot = 0;
-  let totalAmt = originTotalAmt;
 
-  const cartDisplayElement = document.getElementById("cart-display");
-  if (!cartDisplayElement) {
-    console.error("cart-display 요소를 찾을 수 없습니다.");
-    return;
-  }
+  const cartDisplayElement = document.getElementById("cart-items");
   const cartItems = cartDisplayElement.children;
 
   for (let i = 0; i < cartItems.length; i++) {
@@ -65,10 +57,6 @@ export function useCalcCart() {
   }
 
   const cartTotalElement = document.getElementById("cart-total");
-  if (!cartTotalElement) {
-    console.error("cart-total 요소를 찾을 수 없습니다.");
-    return;
-  }
   cartTotalElement.textContent = "총액: " + Math.round(totalAmt) + "원";
 
   if (discRate > 0) {
@@ -79,6 +67,8 @@ export function useCalcCart() {
   }
 
   setTotalAmt(totalAmt);
+  setItemCnt(itemCnt);
+  setSubTot(subTot);
   useUpdateStockInfo();
   useRenderBonusPts();
 }

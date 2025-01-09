@@ -9,8 +9,10 @@ export const useRenderBonusPts = () => {
   let bonusPts = Math.floor(totalAmt / 1000);
   let ptsTag = document.getElementById("loyalty-points");
   if (!ptsTag) {
-    const ptsTagComponent = document.getElementById("loyalty-points");
-    cartTotal.appendChild(ptsTagComponent);
+    ptsTag = document.createElement("span");
+    ptsTag.id = "loyalty-points";
+    ptsTag.className = "text-blue-500 ml-2";
+    cartTotal.appendChild(ptsTag);
   }
   ptsTag.textContent = "(포인트: " + bonusPts + ")";
 };

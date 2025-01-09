@@ -13,6 +13,7 @@ export const newItem = (itemToAdd) => {
     button.className = className;
     button.textContent = text;
     button.dataset.productId = itemToAdd.id;
+    console.log(button.dataset.productId);
     if (dataChange) {
       button.dataset.change = dataChange;
     }

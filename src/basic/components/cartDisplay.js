@@ -1,4 +1,5 @@
 import { useCalcCart } from "../hooks";
+import { prodList } from "../common/state";
 
 const handleClick = (event) => {
   var tgt = event.target;
