@@ -10,8 +10,10 @@ import useCartActions from "./hooks/useCartActions";
 import { initialProductList } from "./config/constans";
 
 const App = () => {
+  // 상품 목록 상태 정의 (초기값: initialProductList)
   const [products, setProducts] = useState(initialProductList);
   
+  // useCartActions 커스텀 훅 사용: 장바구니 관련 기능 제공
   const { 
     cartItems, 
     lastPickProduct, 
@@ -19,9 +21,12 @@ const App = () => {
     updateCartQuantity, 
   } = useCartActions(products, setProducts);
 
+  // useCalculations 커스텀 훅 사용: 가격, 포인트 및 할인 상태 계산
   const { totalAmount, bonusPoints, discountStatus } = useCalculations(cartItems, products);
 
+  // 이벤트 세일 훅 (상품 가격에 대한 동적 변화)
   useEventSale(products, setProducts);
+  // 상품 추천 훅 (특정 조건에서 추천 상품 제시)
   useRecommendations(products, setProducts, lastPickProduct);
 
   return (

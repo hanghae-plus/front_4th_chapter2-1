@@ -1,11 +1,17 @@
 import React from "react";
 import { CONSTANTS } from "../config/constans";
 
+/**
+ * StockInfo
+ * - products: 상품 목록을 포함하는 배열. 상품은 id, name, quantity 속성을 가짐
+ */
 const StockInfo = ({ products }) => {
+  // LOW_STOCK_THRESHOLD(5) 미만의 재고를 가진 상품 필터링
   const lowStockItems = products.filter(
     item => item.quantity < CONSTANTS.LOW_STOCK_THRESHOLD
   );
 
+  // 재고 부족 상품이 없으면 아무것도 렌더링하지 않음
   if (lowStockItems.length === 0){
     return null;
   }

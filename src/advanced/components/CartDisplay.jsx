@@ -1,10 +1,16 @@
 import React from "react";
-
+/**
+ * CartDisplay
+ * - cartItems: 장바구니에 담긴 상품 정보, 각 상품의 Id를 키로 하는 객체
+ * - updateQuantity: 장바구니에 담긴 상품의 수량 업데이트 함수
+ */
 const CartDisplay = ({ cartItems, updateQuantity }) => {
+  // 장바구니가 비어있다면 메세지 표시
   if (Object.keys(cartItems).length === 0) {
     return <div className="text-gray-500 my-4">장바구니가 비어있습니다.</div>;
   }
 
+  // 장바구니에 상품이 있을 경우 목록 표시. 스타일 약간 변경함
   return (
     <div className="space-y-2">
       {Object.entries(cartItems).map(([id, item]) => (
