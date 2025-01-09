@@ -1,6 +1,7 @@
-import { useCallback, useState, createContext, useContext, useMemo } from 'react';
+import { useCallback, useState, createContext, useMemo } from 'react';
 
 import { calculateCartPrice } from '../../utils/cart/calculateCart';
+import { useCreateCartContext } from '../utils/createContext';
 
 import type { Product } from '../../types/product';
 import type { PropsWithChildren } from 'react';
@@ -17,61 +18,17 @@ interface CartContextType {
 
 export const cartContext = createContext<CartContextType | undefined>(undefined);
 
-export const useGetCartList = () => {
-  const context = useContext(cartContext);
-  if (context === undefined) {
-    throw new Error('useGetCartList must be used within an CartProvider');
-  }
-  return context.cartList;
-};
-
-export const useGetTotalAmount = () => {
-  const context = useContext(cartContext);
-  if (context === undefined) {
-    throw new Error('useGetCartTotalAmount must be used within an CartProvider');
-  }
-  return context.totalAmount;
-};
-
-export const useGetPoint = () => {
-  const context = useContext(cartContext);
-  if (context === undefined) {
-    throw new Error('useGetPoint must be used within an CartProvider');
-  }
-  return context.point;
-};
-
-export const useGetTotalDiscountRate = () => {
-  const context = useContext(cartContext);
-  if (context === undefined) {
-    throw new Error('useGetTotalDiscountRate must be used within an CartProvider');
-  }
-  return context.totalDiscountRate;
-};
-
-export const useAddCartItem = () => {
-  const context = useContext(cartContext);
-  if (context === undefined) {
-    throw new Error('useAddCartItem must be used within an CartProvider');
-  }
-  return context.addCartItem;
-};
-
-export const useRemoveCartItem = () => {
-  const context = useContext(cartContext);
-  if (context === undefined) {
-    throw new Error('useRemoveCartItem must be used within an CartProvider');
-  }
-  return context.removeCartItem;
-};
-
-export const useClearCartItem = () => {
-  const context = useContext(cartContext);
-  if (context === undefined) {
-    throw new Error('useClearCartItem must be used within an CartProvider');
-  }
-  return context.clearCartItem;
-};
+export const useGetCartList = () => useCreateCartContext(cartContext, 'useGetCartList', 'cartProvider').cartList;
+export const useGetTotalAmount = () =>
+  useCreateCartContext(cartContext, 'useGetTotalAmount', 'cartProvider').totalAmount;
+export const useGetPoint = () => useCreateCartContext(cartContext, 'useGetPoint', 'cartProvider').point;
+export const useGetTotalDiscountRate = () =>
+  useCreateCartContext(cartContext, 'useGetTotalDiscountRate', 'cartProvider').totalDiscountRate;
+export const useAddCartItem = () => useCreateCartContext(cartContext, 'useAddCartItem', 'cartProvider').addCartItem;
+export const useRemoveCartItem = () =>
+  useCreateCartContext(cartContext, 'useRemoveCartItem', 'cartProvider').removeCartItem;
+export const useClearCartItem = () =>
+  useCreateCartContext(cartContext, 'useClearCartItem', 'cartProvider').clearCartItem;
 
 export const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartList, setCartList] = useState<Product[]>([]);
