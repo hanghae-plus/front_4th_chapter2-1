@@ -5,6 +5,7 @@ import prettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
 import typescriptPlugin from '@typescript-eslint/eslint-plugin';
 import typescriptParser from '@typescript-eslint/parser';
+import vitestPlugin from 'eslint-plugin-react-hooks';
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
@@ -60,6 +61,18 @@ export default [
     rules: {
       ...prettierConfig.rules,
       'prettier/prettier': 'error',
+    },
+  }, // Vitest 설정
+  {
+    files: ['**/*.{test,spec}.{js,mjs,cjs,jsx,ts,tsx}'], // 테스트 파일만 적용
+    plugins: {
+      vitest: vitestPlugin,
+    },
+    rules: {
+      ...vitestPlugin.configs.recommended.rules, // Vitest 추천 규칙 가져오기
+    },
+    env: {
+      'vitest/globals': true, // Vitest 글로벌 환경 추가
     },
   },
 ];
