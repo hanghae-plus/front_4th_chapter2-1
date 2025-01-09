@@ -23,6 +23,7 @@ interface CartActions {
   getTotalAmount: () => number;
   getTotalDiscountRate: () => number;
   getPoint: () => number;
+  clearCartItem: (id: string) => void;
 }
 
 export const CartStore = createStore<CartState, CartActions>(

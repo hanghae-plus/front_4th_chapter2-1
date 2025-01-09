@@ -1,67 +1,50 @@
 import { CartStore } from '../../../store/cartStore';
 import { ProductStore } from '../../../store/productStore';
+import { isQuantityCountOver } from '../../hooks/useQuantityChecker';
 
 interface CartItemProps {
   id: string;
   name: string;
-  val: number;
-  q: number;
+  amount: number;
+  quantity: number;
 }
 
 let isQuantityChangeEventListenerAdded = false;
 let isRemoveCartEventListenerAdded = false;
 
-export const CartItem = (props: CartItemProps) => {
-  const { id, name, val } = props;
+export const CartItem = (item: CartItemProps) => {
+  const { id, name, amount } = item;
 
   const { actions: productActions } = ProductStore;
   const { actions: cartActions } = CartStore;
 
   const productList = productActions.getProductList();
 
-  const cartCount = cartActions.getCartItem(id)?.q;
+  const cartCount = cartActions.getCartItem(id)?.quantity;
 
-  // INFO: 카트 제거 버튼
   if (!isQuantityChangeEventListenerAdded) {
     addEventListener('click', function (event) {
-      // cart-items로 클릭인지 처리
-
       const target = (event as MouseEvent).target;
 
-      // 타입 에러 처리를 위한 임시 유효성
       if (!target) return;
 
       if (target instanceof HTMLButtonElement && target.classList.contains('quantity-change')) {
         const prodId = target.dataset.productId;
+        const compareTarget = target.dataset.change === '1' ? 'increase' : 'decrease';
 
         if (!prodId) return;
 
-        const itemElem = document.getElementById(prodId);
+        if (compareTarget === 'increase') {
+          if (isQuantityCountOver(item, 0)) {
+            return;
+          }
 
-        // 타입 에러 처리를 위한 임시 유효성
-        if (!itemElem || !productList) return;
-
-        const prod = productList.find(function (p) {
-          return p.id === prodId;
-        });
-
-        if (!prod || !cartCount) return;
-        // 카트 아이템 추가
-
-        if (cartCount > 0 && cartCount <= prod.q + cartCount) {
-          productActions.decreaseQ(prod?.id);
-          cartActions.addCartItem(prod);
-        } else if (cartCount <= 0) {
-          // itemElem.remove();
-          // 삭제하다 넘치면 제거해야함
-
-          productActions.decreaseQ(prod?.id);
-          cartActions.removeCartItem(prod.id);
+          productActions.decreaseQuantity(item.id);
+          cartActions.addCartItem(item);
         } else {
-          alert('재고가 부족합니다.');
+          productActions.increaseQuantity(item.id);
+          cartActions.removeCartItem(item.id);
         }
-
-        // calcCart();
       }
     });
 
@@ -76,16 +59,7 @@ export const CartItem = (props: CartItemProps) => {
       if (!productList) return;
 
       if (target instanceof HTMLButtonElement && target.classList.contains('remove-item')) {
-        const productId = target.dataset.productId;
-
-        const product = productList.find(function (product) {
-          return product.id === productId;
-        });
-
-        if (!product) return;
-
-        productActions.increaseQ(product.id);
-        cartActions.removeCartItem(id);
+        cartActions.clearCartItem(id);
       }
     });
     isRemoveCartEventListenerAdded = true;
@@ -94,7 +68,7 @@ export const CartItem = (props: CartItemProps) => {
   const render = `
         <div id=${id} class="flex justify-between items-center mb-2">
             <span>
-             ${name} - ${val}원 x ${cartCount}
+             ${name} - ${amount}원 x ${cartCount}
             </span>
             <div>
             <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${id}" data-change="-1">-</button>
