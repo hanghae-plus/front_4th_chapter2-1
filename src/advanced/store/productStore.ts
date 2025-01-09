@@ -1,15 +1,15 @@
 import { create } from 'zustand';
 import { PRODUCTS } from '../constants';
-import { IPRODUCT } from '../types/products';
+import { IPRODUCT } from '../types';
 
 interface IProductStore {
 	products: IPRODUCT[];
-	setProducts: (item: IPRODUCT) => void;
+	updateProducts: (item: IPRODUCT) => void;
 }
 
 export const ProductStore = create<IProductStore>((set) => ({
 	products: PRODUCTS,
-	setProducts: (item: IPRODUCT) => {
+	updateProducts: (item: IPRODUCT) => {
 		set((prev) => ({
 			products: prev.products.map((product) => (product.id === item.id ? item : product)),
 		}));

@@ -4,8 +4,8 @@ import { CartStore } from '../store/cartStore';
 import { ProductStore } from '../store/productStore';
 
 export const AddButton = () => {
-	const { cart, addCart, updateCart, setLastSelectedItemId } = CartStore();
-	const { products, setProducts } = ProductStore();
+	const { cart, addCartItem: addCart, updateCartItem, setLastSelectedItemId } = CartStore();
+	const { products, updateProducts } = ProductStore();
 
 	const handleClickAddButton = () => {
 		const selectBox = document.getElementById(DOM_ID.SELECT_BOX) as HTMLSelectElement | null;
@@ -18,9 +18,9 @@ export const AddButton = () => {
 			const cartItem = cart.find((item) => item.id === selectedId);
 
 			if (selectedItem.quantity > 0) {
-				setProducts({ ...selectedItem, quantity: selectedItem.quantity - 1 });
+				updateProducts({ ...selectedItem, quantity: selectedItem.quantity - 1 });
 				cartItem
-					? updateCart({ ...selectedItem, quantity: cartItem.quantity + 1 })
+					? updateCartItem({ ...selectedItem, quantity: cartItem.quantity + 1 })
 					: addCart({ ...selectedItem, quantity: 1 });
 			}
 

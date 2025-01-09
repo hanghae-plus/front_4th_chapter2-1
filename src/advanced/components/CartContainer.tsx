@@ -1,13 +1,10 @@
 import { DOM_ID } from '../constants';
-import { alertOutOfStock } from '../models/alert';
-import { calculateCart } from '../models/cart';
-
-import { CartStore } from '../store/cartStore';
-import { ProductStore } from '../store/productStore';
+import { alertOutOfStock, calculateCart } from '../models';
+import { CartStore, ProductStore } from '../store';
 
 export const CartContainer = () => {
-	const { cart, updateCart, removeCartItem } = CartStore();
-	const { products, setProducts } = ProductStore();
+	const { cart, updateCartItem, removeCartItem } = CartStore();
+	const { products, updateProducts } = ProductStore();
 
 	const handleClickCart = (event: React.MouseEvent<HTMLDivElement>) => {
 		const $button = event.target as HTMLElement;
@@ -23,13 +20,13 @@ export const CartContainer = () => {
 			const newQuantity = selectedCartItem.quantity + changeQuantity;
 
 			if (newQuantity > 0 && selectedStockItem.quantity - changeQuantity >= 0) {
-				updateCart({ ...selectedCartItem, quantity: newQuantity });
-				setProducts({
+				updateCartItem({ ...selectedCartItem, quantity: newQuantity });
+				updateProducts({
 					...selectedStockItem,
 					quantity: selectedStockItem.quantity - changeQuantity,
 				});
 			} else if (newQuantity <= 0) {
-				setProducts({
+				updateProducts({
 					...selectedStockItem,
 					quantity: selectedStockItem.quantity - changeQuantity,
 				});
@@ -39,7 +36,7 @@ export const CartContainer = () => {
 			}
 			calculateCart();
 		} else if ($button.classList.contains('remove-item')) {
-			setProducts({
+			updateProducts({
 				...selectedStockItem,
 				quantity: selectedStockItem.quantity + selectedCartItem.quantity,
 			});
