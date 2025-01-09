@@ -10,7 +10,9 @@ export const useQuantityCountChecker = () => {
 
     if (!matchedItem) return false;
 
-    if (matchedItem.quantity === compareTarget) {
+    const isShowAlert = matchedItem.quantity === compareTarget;
+
+    if (isShowAlert) {
       alert('재고가 부족합니다.');
       return true;
     }

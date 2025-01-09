@@ -78,7 +78,9 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
       if (!matchedCartItem) return;
 
-      if (matchedCartItem.quantity === 1) {
+      const isNoMoreCartItem = matchedCartItem.quantity === 1;
+
+      if (isNoMoreCartItem) {
         clearCartItem(id);
         return;
       }
