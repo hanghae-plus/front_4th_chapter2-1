@@ -1,26 +1,10 @@
-import { useCart } from '../stores/CartContext';
-import { useProducts } from '../stores/ProductContext';
+import { useAddToCart } from '../hooks/useAddToCart';
 
 type AddToCartButtonProps = {
   selectedItemId: string;
 };
 export const AddToCartButton = ({ selectedItemId }: AddToCartButtonProps) => {
-  const { dispatch } = useCart();
-  const { getItem, decreaseQuantity } = useProducts();
-
-  const handleAddToCart = () => {
-    if (!selectedItemId) return;
-
-    if (getItem(selectedItemId)?.quantity > 0) {
-      dispatch({
-        type: 'ADD_ITEM',
-        payload: { product: getItem(selectedItemId), quantity: 1 },
-      });
-      decreaseQuantity(selectedItemId, 1);
-    } else {
-      alert('재고가 부족합니다');
-    }
-  };
+  const { handleAddToCart } = useAddToCart(selectedItemId);
 
   return (
     <button
