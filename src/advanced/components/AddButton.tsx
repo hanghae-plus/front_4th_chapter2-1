@@ -1,13 +1,13 @@
+import { useCallback } from 'react';
 import { DOM_ID } from '../constants';
-import { alertOutOfStock } from '../models/alert';
-import { CartStore } from '../store/cartStore';
-import { ProductStore } from '../store/productStore';
+import { alertOutOfStock } from '../models';
+import { CartStore, ProductStore } from '../store';
 
 export const AddButton = () => {
 	const { cart, addCartItem: addCart, updateCartItem, setLastSelectedItemId } = CartStore();
 	const { products, updateProducts } = ProductStore();
 
-	const handleClickAddButton = () => {
+	const handleClickAddButton = useCallback(() => {
 		const selectBox = document.getElementById(DOM_ID.SELECT_BOX) as HTMLSelectElement | null;
 		if (!selectBox) return;
 
@@ -27,9 +27,9 @@ export const AddButton = () => {
 			setLastSelectedItemId(selectedId);
 		} else {
 			alertOutOfStock();
-			return;
 		}
-	};
+	}, [cart, products]);
+
 	return (
 		<button
 			id={DOM_ID.ADD_BUTTON}
