@@ -1,4 +1,4 @@
-// Component 클래스 정의
+// TODO : 나중에 VDOM으로 수정하기
 export class Component {
   constructor({ type, props, parent, children }) {
     this.type = type;
@@ -14,6 +14,7 @@ export class Component {
     for (const prop in this.props) {
       if (prop.startsWith('on') && typeof this.props[prop] === 'function') {
         const eventType = prop.slice(2).toLowerCase();
+
         this.element.addEventListener(eventType, this.props[prop]);
       } else if (this.props[prop] === true) {
         this.element.setAttribute(prop, '');
@@ -30,11 +31,16 @@ export class Component {
           child instanceof Component
             ? child.render()
             : document.createTextNode(child);
+
         this.element.appendChild(childElement);
       });
     }
 
     return this.element;
+  }
+
+  getChildren() {
+    return this.element ? Array.from(this.element.childNodes) : [];
   }
 
   setChildren(newChildren) {
@@ -50,6 +56,7 @@ export class Component {
           child instanceof Component
             ? child.render()
             : document.createTextNode(child);
+
         this.element.appendChild(childElement);
       });
     }
@@ -61,6 +68,7 @@ export class Component {
       for (const prop in newProps) {
         if (prop.startsWith('on') && typeof newProps[prop] === 'function') {
           const eventType = prop.slice(2).toLowerCase();
+
           this.element.addEventListener(eventType, newProps[prop]);
         } else if (newProps[prop] === true) {
           this.element.setAttribute(prop, '');
@@ -70,6 +78,24 @@ export class Component {
           this.element.setAttribute(prop, newProps[prop]);
         }
       }
+    }
+  }
+
+  get({ target }) {
+    if (target === 'children') {
+      return this.getChildren();
+    }
+    if (target === 'props') {
+      return this.props;
+    }
+    if (target === 'element') {
+      return this.element;
+    }
+    if (target === 'parent') {
+      return this.element.parentNode;
+    }
+    if (target === 'type') {
+      return this.type;
     }
   }
 
