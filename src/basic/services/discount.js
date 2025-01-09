@@ -1,6 +1,5 @@
 import { DAY_OF_WEEK } from '../constants/day';
 import { DISCOUNT_POLICY } from '../constants/policy';
-import { applyDiscount } from '../utils/discount';
 
 export const calculateItemDiscount = (cartItems) => {
   const subTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -70,4 +69,8 @@ const calculateTotalPrice = (cartItems) => {
 
     return total + applyDiscount({ amount: itemAmount, discountRate });
   }, 0);
+};
+
+export const applyDiscount = ({ amount, discountRate }) => {
+  return amount * (1 - discountRate);
 };

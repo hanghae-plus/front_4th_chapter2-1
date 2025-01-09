@@ -1,7 +1,6 @@
 import { updateCartUI } from '../components/Cart';
 import CartItem, { updateCartItem } from '../components/CartItem';
 import { products } from '../data/products';
-import { canUpdateQuantity } from '../utils/cart';
 import { getCartItemsElement, getProductItemElement, getProductSelectElement } from '../utils/dom';
 import eventManager from '../utils/events';
 import { calculateCart } from './calculator';
@@ -64,3 +63,9 @@ export const handleRemoveItem = (productId) => {
   cartStore.deleteCartItem(productId);
   calculateCart((updatedTotals) => updateCartUI(updatedTotals));
 };
+
+export const canUpdateQuantity = (productModel, cartItem) => productModel.quantity > (cartItem?.getQuantity() || 0);
+
+export const getTotalQuantity = (cartItems) => cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+export const calculatePoint = (amount) => Math.floor(amount / 1000);

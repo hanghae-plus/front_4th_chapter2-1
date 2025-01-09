@@ -1,7 +1,7 @@
 import { STOCK_POLICY } from '../constants/policy';
 import { products } from '../data/products';
+import { getRemainingQuantity, getStockMessage, isLowStock } from '../services/stock';
 import { getStockStatusElement } from '../utils/dom';
-import { getRemainingQuantity, getStockMessage, isLowStock } from '../utils/stock';
 
 const StockStatus = ({ product, cartItem }) => {
   const quantity = getRemainingQuantity(product, cartItem);
