@@ -1,4 +1,5 @@
 import CartItem from './components/CartItem';
+import CartTotal from './components/CartTotal';
 import ProductSelect from './components/ProductSelect';
 import { DAY_OF_WEEK } from './constants/day';
 import { ELEMENT_IDS } from './constants/element-id';
@@ -38,7 +39,9 @@ const main = (callbackFn) => {
       <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <h1 class="text-2xl font-bold mb-4">장바구니</h1>
         <div id="${ELEMENT_IDS.CART_ITEMS}"></div>
-        <div id="${ELEMENT_IDS.CART_TOTAL}" class="text-xl font-bold my-4"></div>
+        <div id="${ELEMENT_IDS.CART_TOTAL}" class="text-xl font-bold my-4">
+          ${CartTotal({ amount: 0, discountRate: 0, point: 0 })}
+        </div>
         ${ProductSelect({ products })}
         <button id="${ELEMENT_IDS.ADD_TO_CART}" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
         <div id="${ELEMENT_IDS.STOCK_STATUS}" class="text-sm text-gray-500 mt-2"></div>
@@ -110,25 +113,17 @@ const calculateCart = () => {
   // store 상태 업데이트
   productStore.setAmount(finalAmount);
   productStore.setItemCount(totalItemCount);
+  productStore.setPoint(calculatePoint(finalAmount));
 
   // UI 업데이트
-  renderCartTotal(finalAmount, totalDiscountRate);
+  renderCartTotal({ amount: finalAmount, discountRate: totalDiscountRate, point: productStore.getPoint() });
   renderStockStatus();
   renderPoint();
 };
 
-const renderCartTotal = (amount, discountRate) => {
+const renderCartTotal = ({ amount, discountRate, point }) => {
   const cartTotal = getCartTotalElement();
-  cartTotal.textContent = `총액: ${Math.round(amount)}원`;
-
-  if (discountRate > 0) {
-    cartTotal.insertAdjacentHTML(
-      'beforeend',
-      /* html */ `
-      <span class="text-green-500 ml-2">(${(discountRate * 100).toFixed(1)}% 할인 적용)</span>
-      `,
-    );
-  }
+  cartTotal.innerHTML = CartTotal({ amount, discountRate, point });
 };
 
 const renderPoint = () => {
