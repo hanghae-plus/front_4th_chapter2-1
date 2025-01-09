@@ -50,11 +50,8 @@ const productList = [
 ];
 
 // 현재 상품 수량 추출
-const extractQuantity = (element) => {
-  const textContent = element.textContent;
-  const quantity = textContent.split("x ")[1];
-
-  return parseInt(quantity);
+const extractQuantity = (textContent) => {
+  return parseInt(textContent.split("x ")[1]); // 숫자 리턴이니까
 };
 
 // 10개 이상 구매시 할인율
@@ -84,6 +81,7 @@ const createSaleInterval = (callback, interval, delay) => {
   }, Math.random() * delay);
 };
 
+// 함수명 고민해보기 (set은 arg 있을 때 지정하는 용도..니까!)
 const setSurpriseSale = () => {
   const luckyItem = productList[Math.floor(Math.random() * productList.length)];
 
@@ -98,6 +96,8 @@ const setSurpriseSale = () => {
   }
 };
 
+// 함수명 고민해보기 (set은 arg 있을 때 지정하는 용도..니까!)
+// setUp으로 일관성을 줘도 괜찮겠다 !
 const setRecommendSale = () => {
   if (lastSelectedProductID) {
     const suggest = productList.find(
@@ -223,6 +223,7 @@ const renderNewItemToCart = ({ id, name, price }) => {
 };
 
 // 장바구니 계산
+// 바꿔
 const calculateCart = () => {
   // 총 금액과 수량을 초기화
   let finalPrice = 0,
@@ -236,7 +237,8 @@ const calculateCart = () => {
     const targetItem = productList.find(
       (product) => product.id === cartItems[i].id
     );
-    const currentQuantity = extractQuantity(cartItems[i].querySelector("span"));
+    const targetSpan = cartItems[i].querySelector("span");
+    const currentQuantity = extractQuantity(targetSpan.textContent);
     const currentPrice = targetItem.price * currentQuantity;
 
     let discount = 0;
@@ -272,6 +274,7 @@ const calculateCart = () => {
   }
 
   // UI 업데이트
+  // 아래 함수 순서대로 위에서 순서 수정해보기
   renderCartMessage(finalPrice, discountRate);
   updateStockStatus();
   updateLoyaltyPoints(finalPrice);
@@ -286,7 +289,7 @@ const reduceCartItem = (itemDiv, remaining, currentQuantity) => {
 // 수량 변경
 const updateCartQuantity = (itemDiv, quantityChange, product) => {
   const itemSpan = itemDiv.querySelector("span");
-  const currentQuantity = extractQuantity(itemSpan);
+  const currentQuantity = extractQuantity(itemSpan.textContent);
   const newQuantity = currentQuantity + quantityChange;
 
   if (newQuantity > product.remaining + currentQuantity) {
@@ -315,7 +318,7 @@ const handleAddToCart = () => {
     if (itemInCart) {
       const quantitySpan = itemInCart.querySelector("span");
 
-      const currentQuantity = extractQuantity(quantitySpan) + 1;
+      const currentQuantity = extractQuantity(quantitySpan.textContent) + 1;
 
       if (itemToAdd.remaining < currentQuantity) {
         alert(ALERT_MESSAGES.OUT_OF_STOCK);
@@ -350,7 +353,7 @@ const handleClickCart = (event) => {
 
   const itemDiv = document.getElementById(productId); // (id로 element조회)
   const quantitySpan = itemDiv.querySelector("span");
-  const itemQuantity = extractQuantity(quantitySpan);
+  const itemQuantity = extractQuantity(quantitySpan.textContent);
 
   // 수량 변경
   if (clickedBtn.classList.contains("quantity-change")) {
