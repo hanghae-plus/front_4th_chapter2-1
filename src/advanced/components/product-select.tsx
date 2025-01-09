@@ -9,6 +9,7 @@ interface ProductSelectProps {
 function ProductSelect({ products, handleAddCart }: ProductSelectProps) {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
 
+  // 상품 선택
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedProductId = e.target.value
     const selectedProduct = products.find(
@@ -19,6 +20,7 @@ function ProductSelect({ products, handleAddCart }: ProductSelectProps) {
     }
   }
 
+  // 장바구니 추가
   const onClickAddCart = () => {
     if (selectedProduct) {
       handleAddCart(selectedProduct.id)
