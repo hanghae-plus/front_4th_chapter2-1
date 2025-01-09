@@ -2,49 +2,51 @@ import {
   DISCOUNT_RATES,
   DOM_IDS,
   ITEMS_REQUIRED_FOR_DISCOUNT,
+  TUESDAY,
 } from "advanced/constants";
 import { useCartContext } from "advanced/contexts/CartProvider";
 
-export const CartTotal = () => {
-  const { cartState } = useCartContext();
-
-  // 10개 이상 구매시 할인율
-  const getDiscountRate = (productID: string) => {
-    const discountMap: Record<string, number> = {
-      p1: DISCOUNT_RATES.TEN_PERCENT,
-      p2: DISCOUNT_RATES.FIFTEEN_PERCENT,
-      p3: DISCOUNT_RATES.TWENTY_PERCENT,
-      p4: DISCOUNT_RATES.FIVE_PERCENT,
-      p5: DISCOUNT_RATES.TWENTY_FIVE_PERCENT,
-    };
-
-    return discountMap[productID] || 0;
+// 10개 이상 구매시 할인율
+const getDiscountRate = (productID: string): number => {
+  const discountMapByItem: Record<string, number> = {
+    p1: DISCOUNT_RATES.TEN_PERCENT,
+    p2: DISCOUNT_RATES.FIFTEEN_PERCENT,
+    p3: DISCOUNT_RATES.TWENTY_PERCENT,
+    p4: DISCOUNT_RATES.FIVE_PERCENT,
+    p5: DISCOUNT_RATES.TWENTY_FIVE_PERCENT,
   };
 
-  const cartOriginalPrice = cartState.items.reduce(
-    (acc, cur) => acc + cur.price * cur.quantity,
-    0
-  );
+  return discountMapByItem[productID] || 0;
+};
 
+// 10개 구매 할인
+const applyDiscount = (
+  cartOriginalPrice: number,
+  items: { id: string; quantity: number }[]
+): { discountedPrice: number; discountedRate: number } => {
   // 총액
-  let finalPrice = cartOriginalPrice;
-
+  let discountedPrice = cartOriginalPrice;
   // 할인율
-  let discountRate = 0;
+  let discountedRate = 0;
 
-  cartState.items.forEach((item) => {
+  items.forEach((item) => {
     // 10개 이상 구매 시, 상품에 따른 할인율 적용
     if (item.quantity >= ITEMS_REQUIRED_FOR_DISCOUNT.DEFAULT) {
-      discountRate = getDiscountRate(item.id);
-      finalPrice = cartOriginalPrice * (1 - discountRate);
+      discountedRate = getDiscountRate(item.id);
+      discountedPrice = cartOriginalPrice * (1 - discountedRate);
     }
   });
 
-  const cartTotalQuantity = cartState.items.reduce(
-    (acc, cur) => acc + cur.quantity,
-    0
-  );
+  return { discountedPrice, discountedRate };
+};
 
+// 대량 구매 할인
+const applyBulkDiscount = (
+  cartTotalQuantity: number,
+  cartOriginalPrice: number,
+  finalPrice: number,
+  discountRate: number
+): { bulkDiscountedPrice: number; bulkDiscountedRate: number } => {
   if (cartTotalQuantity >= ITEMS_REQUIRED_FOR_DISCOUNT.BIG) {
     const bulkDiscountedPrice =
       cartOriginalPrice * DISCOUNT_RATES.TWENTY_FIVE_PERCENT;
@@ -56,6 +58,59 @@ export const CartTotal = () => {
       discountRate = DISCOUNT_RATES.TWENTY_FIVE_PERCENT;
     }
   }
+
+  return { bulkDiscountedPrice: finalPrice, bulkDiscountedRate: discountRate };
+};
+
+// 화요일 특별 할인
+const applyTuesdayDiscount = (
+  finalPrice: number,
+  discountRate: number
+): { tuesdayDiscountedPrice: number; tuesdayDiscountedRate: number } => {
+  const today = new Date().getDay();
+
+  if (today === TUESDAY) {
+    finalPrice *= 1 - DISCOUNT_RATES.TEN_PERCENT;
+    discountRate = Math.max(discountRate, DISCOUNT_RATES.TEN_PERCENT);
+  }
+
+  return {
+    tuesdayDiscountedPrice: finalPrice,
+    tuesdayDiscountedRate: discountRate,
+  };
+};
+
+export const CartTotal = () => {
+  const { cartState } = useCartContext();
+
+  const cartOriginalPrice = cartState.items.reduce(
+    (acc, cur) => acc + cur.price * cur.quantity,
+    0
+  );
+
+  const { discountedPrice, discountedRate } = applyDiscount(
+    cartOriginalPrice,
+    cartState.items
+  );
+
+  const cartTotalQuantity = cartState.items.reduce(
+    (acc, cur) => acc + cur.quantity,
+    0
+  );
+
+  const { bulkDiscountedPrice, bulkDiscountedRate } = applyBulkDiscount(
+    cartTotalQuantity,
+    cartOriginalPrice,
+    discountedPrice,
+    discountedRate
+  );
+
+  const {
+    tuesdayDiscountedPrice: finalPrice,
+    tuesdayDiscountedRate: finalDiscountRate,
+  } = applyTuesdayDiscount(bulkDiscountedPrice, bulkDiscountedRate);
+
+  const discountRate = finalDiscountRate || discountedRate;
 
   // 포인트
   const point = Math.floor(finalPrice / 1000);
