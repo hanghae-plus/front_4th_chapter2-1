@@ -7,11 +7,13 @@ export default defineConfig(({ mode }) => {
       outDir: 'dist/basic',
       openFile: './index.basic.html',
       tsconfig: null,
+      testPattern: 'src/basic/__tests__/**/*.test.{js,tsx}',
     },
     advanced: {
       outDir: 'dist/advance',
       plugins: [react()],
       openFile: './index.advanced.html',
+      testPattern: 'src/advanced/__tests__/**/*.test.{js,tsx}',
       // tsconfig: './tsconfig.json',
     },
   };
@@ -30,6 +32,7 @@ export default defineConfig(({ mode }) => {
       environment: 'jsdom',
       globals: true,
       emptyOutDir: true,
+      include: [config.testPattern],
     },
     plugins: config.plugins,
     resolve: {
