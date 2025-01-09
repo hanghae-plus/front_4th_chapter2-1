@@ -1,14 +1,17 @@
 import { useCallback, useState, createContext, useContext, useMemo } from 'react';
 
+import { calculateCartPrice } from '../../utils/cart/calculateCart';
+
 import type { Product } from '../../types/product';
 import type { PropsWithChildren } from 'react';
 
 interface CartContextType {
   cartList: Product[];
+  totalAmount: number;
+  totalDiscountRate: number;
   addCartItem: (item: Product) => void;
   clearCartItem: (id: string) => void;
   removeCartItem: (id: string) => void;
-  getTotalAmount: () => number;
 }
 
 export const cartContext = createContext<CartContextType | undefined>(undefined);
@@ -19,6 +22,22 @@ export const useGetCartList = () => {
     throw new Error('useGetCartList must be used within an CartProvider');
   }
   return context.cartList;
+};
+
+export const useGetTotalAmount = () => {
+  const context = useContext(cartContext);
+  if (context === undefined) {
+    throw new Error('useGetCartTotalAmount must be used within an CartProvider');
+  }
+  return context.totalAmount;
+};
+
+export const useGetTotalDiscountRate = () => {
+  const context = useContext(cartContext);
+  if (context === undefined) {
+    throw new Error('useGetTotalDiscountRate must be used within an CartProvider');
+  }
+  return context.totalDiscountRate;
 };
 
 export const useAddCartItem = () => {
@@ -45,22 +64,23 @@ export const useClearCartItem = () => {
   return context.clearCartItem;
 };
 
-export const useGetTotalAmount = () => {
-  const context = useContext(cartContext);
-  if (context === undefined) {
-    throw new Error('useGetTotalAmount must be used within an CartProvider');
-  }
-  return context.getTotalAmount();
-};
-
 export const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartList, setCartList] = useState<Product[]>([]);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalDiscountRate, setTotalDiscountRate] = useState(0);
+
+  const calculateCart = (cartList: Product[]) => {
+    const { finalAmount, finalDiscountRate } = calculateCartPrice(cartList);
+    setTotalAmount(finalAmount);
+    setTotalDiscountRate(finalDiscountRate);
+  };
 
   const clearCartItem = useCallback(
     (id: string) => {
       const filterdCartList = cartList.filter((cartItem) => cartItem.id !== id);
 
       setCartList(filterdCartList);
+      calculateCart(filterdCartList);
     },
     [cartList],
   );
@@ -82,10 +102,14 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
         );
 
         setCartList(newCartList);
+        calculateCart(newCartList);
         return;
       }
 
-      setCartList((cartList) => [...cartList, { ...item, quantity: 1 }]);
+      const newCartList = [...cartList, { ...item, quantity: 1 }];
+      setCartList(newCartList);
+
+      calculateCart(newCartList);
     },
     [cartList],
   );
@@ -106,23 +130,21 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
       );
 
       setCartList(newCartList);
+      calculateCart(newCartList);
     },
     [cartList, clearCartItem, getMatchedCartItemById],
   );
-
-  const getTotalAmount = useCallback(() => {
-    return cartList.reduce((sum, cart) => sum + cart.amount * cart.quantity, 0);
-  }, [cartList]);
 
   const contextValue = useMemo(() => {
     return {
       addCartItem,
       clearCartItem,
       removeCartItem,
-      getTotalAmount,
+      totalAmount,
+      totalDiscountRate,
       cartList,
     };
-  }, [addCartItem, clearCartItem, removeCartItem, getTotalAmount, cartList]);
+  }, [addCartItem, clearCartItem, removeCartItem, totalAmount, totalDiscountRate, cartList]);
 
   return <cartContext.Provider value={contextValue}>{children}</cartContext.Provider>;
 };
