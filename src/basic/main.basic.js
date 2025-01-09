@@ -1,7 +1,9 @@
 import { AddToCart } from "./components/AddToCart";
+import { BonusPoints } from "./components/BonusPoints";
 import { CartItems } from "./components/CartItemDisplay";
 import { CartTotal } from "./components/CartTotal";
 import { Content } from "./components/Content";
+import { DiscountRate } from "./components/DiscountRate";
 import { Heading } from "./components/Heading";
 import { ProductOption } from "./components/ProductOption";
 import { ProductSelect } from "./components/ProductSelect";
@@ -15,6 +17,7 @@ import { startLuckySale } from "./domain/sale/lucky-sale";
 
 // ! 나름의 그라데이션 사고, 데이터, 추상화적 사고 적용
 // ! 근데 ui 는 어떻게 추상화 + 흐름을 가져가야할지 모르겠다!
+// ! 이대로 괜찮은가?
 
 // 유저가 셀렉트에서 아이템을 선택해 추가한다 -> 총액을 표시한다. 상품수를 표시한다. 포인트를 표시한다.
 // 유저가 +,-, 삭제 버튼을 누른다. -> 총액을 표시한다. 상품 수를 표시한다. 포인트를 표시한다.
@@ -22,7 +25,8 @@ import { startLuckySale } from "./domain/sale/lucky-sale";
 // 상태에 따라서 ui 표시 -> 유저 이벤트 감지 -> 상태 변경 -> ui에 반영
 // 상태: 장바구니에 담긴 아이템(수), 총액(할인율, 포인트) => 장바구니에 담긴 아이템의 종류와 수만 필요하지 않을까?
 // 여기저기서 꼬인 느낌... 하나의 책임을 하지 못함
-// 어디서부터 손대야 할지 모르겟음...
+// 어디서부터 손대야 할지 모르겟음... => 일단 침착하고 용감하게, 가장 거슬리면서도 가장 바꾸기 쉬운 것부터 리팩토링하니까 길이 보이더라..
+// 변수 이름도 좀 더 통일성을 가져야함
 
 // * 필요한 변수 선언 (전역으로...)
 let select, addButton, cartItemDisplay, sum, stock;
@@ -82,28 +86,10 @@ function calculateCart() {
   // 총액 및 할인율 최종 표시
   sum.textContent = "총액: " + Math.round(cartItems.totalAmount) + "원";
   if (cartItems.discountRate > 0) {
-    const span = document.createElement("span");
-    span.className = "text-green-500 ml-2";
-    span.textContent = "(" + (cartItems.discountRate * 100).toFixed(1) + "% 할인 적용)";
-    sum.appendChild(span);
+    sum.appendChild(DiscountRate(cartItems.discountRate));
   }
-
   updateStockInfo();
-  renderBonusPoints();
-}
-
-// 적립되는 포인트 계산 및 표시하는 함수
-function renderBonusPoints() {
-  let pointsTag = document.getElementById("loyalty-points");
-
-  if (!pointsTag) {
-    pointsTag = document.createElement("span");
-    pointsTag.id = "loyalty-points";
-    pointsTag.className = "text-blue-500 ml-2";
-    sum.appendChild(pointsTag);
-  }
-
-  pointsTag.textContent = "(포인트: " + cartItems.bonusPoints + ")";
+  sum.appendChild(BonusPoints(cartItems.bonusPoints));
 }
 
 // 재고 정보 업데이트하는 함수
