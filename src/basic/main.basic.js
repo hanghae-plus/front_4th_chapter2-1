@@ -75,14 +75,15 @@ const getDiscountRate = (productID) => {
   }
 };
 
-const createSaleInterval = (callback, interval, delay) => {
+// 함수가 실행되도록 '설정'하는 거라 schedule-*함수명을 사용함.
+const scheduleRandomSale = (callback, interval, delay) => {
   setTimeout(() => {
     setInterval(callback, interval);
   }, Math.random() * delay);
 };
 
-// 함수명 고민해보기 (set은 arg 있을 때 지정하는 용도..니까!)
-const setSurpriseSale = () => {
+// arg가 없고, 단순히 세일 내용을 적용하는거라서 apply-*함수명을 사용함.
+const applySurpriseDiscount = () => {
   const luckyItem = productList[Math.floor(Math.random() * productList.length)];
 
   if (Math.random() < DISCOUNT_RATES.SURPRISE_SALE && luckyItem.remaining > 0) {
@@ -96,9 +97,7 @@ const setSurpriseSale = () => {
   }
 };
 
-// 함수명 고민해보기 (set은 arg 있을 때 지정하는 용도..니까!)
-// setUp으로 일관성을 줘도 괜찮겠다 !
-const setRecommendSale = () => {
+const applyRecommendedDiscount = () => {
   if (lastSelectedProductID) {
     const suggest = productList.find(
       (item) => item.id !== lastSelectedProductID && item.remaining > 0
@@ -116,11 +115,11 @@ const setRecommendSale = () => {
   }
 };
 
-const setUpSaleEvents = () => {
+const initializeSaleEvents = () => {
   // 임의의 시간마다 깜짝세일 20%
-  createSaleInterval(setSurpriseSale, 30000, 10000);
+  scheduleRandomSale(applySurpriseDiscount, 30000, 10000);
   // 추천세일 5%
-  createSaleInterval(setRecommendSale, 60000, 20000);
+  scheduleRandomSale(applyRecommendedDiscount, 60000, 20000);
 };
 
 // 적립 포인트
@@ -421,7 +420,7 @@ function main() {
   calculateCart();
 
   // 할인 세일 설정
-  setUpSaleEvents();
+  initializeSaleEvents();
 }
 
 // 초기화 및 이벤트 리스너 등록
