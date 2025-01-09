@@ -216,35 +216,7 @@ main(() => {
       const cartItemText = productItemElement.querySelector('span');
       cartItemText.textContent = `${cartItem.name} - ${cartItem.price}원 x ${cartItem.getQuantity()}`;
     } else {
-      getCartItemsElement().insertAdjacentHTML(
-        'beforeend',
-        /* html */ `
-        <div id="${cartItem.id}" class="flex justify-between items-center mb-2">
-          <span>${cartItem.name} - ${cartItem.price}원 x ${cartItem.getQuantity()}</span>
-          <div>
-            <button 
-              class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-              data-product-id="${cartItem.id}" 
-              data-product-event-type="decrease"
-              data-change="-1"
-            >-</button>
-            
-            <button 
-              class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-              data-product-id="${cartItem.id}" 
-              data-product-event-type="increase"
-              data-change="1"
-            >+</button>
-
-            <button 
-              class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
-              data-product-id="${cartItem.id}"
-              data-product-event-type="remove"
-            >삭제</button>
-          </div>
-        </div>
-      `,
-      );
+      getCartItemsElement().insertAdjacentHTML('beforeend', renderCartItem(cartItem));
 
       setupCartItemEvents(cartItem.id, selectedProductModel);
     }
@@ -252,6 +224,33 @@ main(() => {
     calcCart();
     productStore.setLastSelectedProduct(selectedProductId);
   });
+
+  const renderCartItem = (cartItem) => /* html */ `
+  <div id="${cartItem.id}" class="flex justify-between items-center mb-2">
+    <span>${cartItem.name} - ${cartItem.price}원 x ${cartItem.getQuantity()}</span>
+    <div>
+      <button 
+        class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+        data-product-id="${cartItem.id}" 
+        data-product-event-type="decrease"
+        data-change="-1"
+      >-</button>
+      
+      <button 
+        class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+        data-product-id="${cartItem.id}" 
+        data-product-event-type="increase"
+        data-change="1"
+      >+</button>
+
+      <button 
+        class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
+        data-product-id="${cartItem.id}"
+        data-product-event-type="remove"
+      >삭제</button>
+    </div>
+  </div>
+`;
 
   const setupCartItemEvents = (productId, productModel) => {
     getDecreaseButtonElement(productId).addEventListener('click', () => {
