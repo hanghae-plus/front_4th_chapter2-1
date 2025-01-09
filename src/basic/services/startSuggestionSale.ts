@@ -26,6 +26,7 @@ export const startSuggestionSale = (products: Product[], getLastSelected: () => 
 
     if (suggestion) {
       applySuggestionDiscount(suggestion);
+      alert(suggestion.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
       renderSelectOptions(products);
     }
   };

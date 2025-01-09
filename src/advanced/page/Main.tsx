@@ -7,6 +7,8 @@ import { ProductSelect } from '../components/ProductSelect';
 import { Stock } from '../components/Stock';
 import { TotalPrice } from '../components/TotalPrice';
 import { useAddToCart } from '../hooks/useAddToCart';
+import { useFlashSale } from '../hooks/useFlashSale';
+import { useSuggestionSale } from '../hooks/useSuggestionSale';
 import { useProducts } from '../stores/ProductContext';
 export const Main = () => {
   const {
@@ -14,6 +16,9 @@ export const Main = () => {
   } = useProducts();
   const [selectedItemId, setSelectedItemId] = useState<string | null>(items[0].id);
   const { handleAddToCart } = useAddToCart();
+
+  useFlashSale();
+  useSuggestionSale(selectedItemId);
 
   return (
     <div className="bg-gray-100 p-8">
