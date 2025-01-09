@@ -7,6 +7,9 @@ export const ACTION_TYPES = {
   DECREASE_CART_ITEM: 'DECREASE_CART_ITEM',
   REMOVE_CART_ITEM: 'REMOVE_CART_ITEM',
   SET_LAST_SELECTED: 'SET_LAST_SELECTED',
+  UPDATE_PRICE: 'UPDATE_PRICE',
+  RUN_LIGHTNING_SALE: 'RUN_LIGHTNING_SALE',
+  RUN_SUGGESTION: 'RUN_SUGGESTION',
 } as const;
 
 export interface ProductState {
@@ -35,6 +38,18 @@ type ProductActionType =
   | {
       type: typeof ACTION_TYPES.REMOVE_CART_ITEM;
       payload: { productId: string };
+    }
+  | {
+      type: typeof ACTION_TYPES.UPDATE_PRICE;
+      payload: { productId: string; price: number };
+    }
+  | {
+      type: typeof ACTION_TYPES.RUN_LIGHTNING_SALE;
+      payload: { productId: string; price: number };
+    }
+  | {
+      type: typeof ACTION_TYPES.RUN_SUGGESTION;
+      payload: { productId: string; price: number };
     };
 
 /**
@@ -110,6 +125,27 @@ export function productReducer(state: ProductState, action: ProductActionType) {
             : product,
         ),
       };
+    case ACTION_TYPES.UPDATE_PRICE: // 상품 가격 변경
+      return {
+        ...state,
+        productList: state.productList.map((product) =>
+          product.id === action.payload.productId
+            ? { ...product, price: action.payload.price }
+            : product,
+        ),
+      };
+    case ACTION_TYPES.RUN_LIGHTNING_SALE: // 번개세일 실행
+    case ACTION_TYPES.RUN_SUGGESTION: {
+      // 추천 프로모션 실행
+      const { productId, price } = action.payload;
+      return {
+        ...state,
+        productList: state.productList.map((product) =>
+          product.id === productId ? { ...product, price } : product,
+        ),
+        cartList: state.cartList.map((item) => (item.id === productId ? { ...item, price } : item)),
+      };
+    }
     default:
       return state;
   }

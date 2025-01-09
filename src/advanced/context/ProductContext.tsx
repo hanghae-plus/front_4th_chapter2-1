@@ -1,6 +1,15 @@
-import { createContext, PropsWithChildren, useCallback, useContext, useReducer } from 'react';
+import {
+  createContext,
+  PropsWithChildren,
+  useCallback,
+  useContext,
+  useEffect,
+  useReducer,
+} from 'react';
+import { DISCOUNT_RATES, LIGHTNING_SALE, SUGGESTION } from '../constants';
 import { initialProductList } from '../data/initialProductList';
 import { ProductListType, ProductType } from '../types/ProductType';
+import { helper } from '../utils/helper';
 import { ACTION_TYPES, productReducer, ProductState } from './productReducer';
 
 const initialState = {
@@ -16,6 +25,9 @@ interface ProductContextType extends ProductState {
   increaseCartItem: (productId: string) => void;
   decreaseCartItem: (productId: string) => void;
   removeCartItem: (productId: string) => void;
+  updateProductPrice: (productId: string, price: number) => void;
+  runLightningSale: () => void;
+  runSuggestion: () => void;
 }
 const ProductContext = createContext<ProductContextType | null>(null);
 
@@ -65,6 +77,79 @@ export function ProductProvider({ children }: PropsWithChildren) {
     });
   }, []);
 
+  // 장바구니 제품 삭제
+  const removeCartItem = useCallback((productId: string) => {
+    dispatch({
+      type: ACTION_TYPES.REMOVE_CART_ITEM,
+      payload: { productId },
+    });
+  }, []);
+
+  // 제품 가격 업데이트
+  const updateProductPrice = useCallback((productId: string, price: number) => {
+    dispatch({
+      type: ACTION_TYPES.UPDATE_PRICE,
+      payload: { productId, price },
+    });
+  }, []);
+
+  // 반짝 세일 실행
+  const runLightningSale = useCallback(() => {
+    const luckyItem = state.productList[Math.floor(Math.random() * state.productList.length)];
+    const isLucky = Math.random() < DISCOUNT_RATES.RANDOM && luckyItem.quantity > 0;
+    if (isLucky) {
+      alert(helper.getLightningSaleMessage(luckyItem.name));
+
+      const newPrice = Math.round(luckyItem.price * LIGHTNING_SALE.RATE);
+
+      dispatch({
+        type: ACTION_TYPES.RUN_LIGHTNING_SALE,
+        payload: { productId: luckyItem.id, price: newPrice },
+      });
+    }
+  }, [state.productList]);
+
+  // 추천 프로모션 실행
+  const runSuggestion = useCallback(() => {
+    if (!state.lastSelectedItem) return;
+
+    const suggest = state.productList.find(
+      (item) => item.id !== state.lastSelectedItem && item.quantity > 0,
+    );
+
+    if (suggest) {
+      const newPrice = Math.round(suggest.price * SUGGESTION.RATE);
+      alert(helper.getSuggestionMessage(suggest.name));
+      dispatch({
+        type: ACTION_TYPES.RUN_SUGGESTION,
+        payload: { productId: suggest.id, price: newPrice },
+      });
+    }
+  }, [state.lastSelectedItem, state.productList]);
+
+  // 번개 세일, 추천 프로모션 실행
+  useEffect(() => {
+    const lightningDelay = Math.random() * LIGHTNING_SALE.DELAY;
+    const suggestionDelay = Math.random() * SUGGESTION.DELAY;
+
+    const lightningTimer = setTimeout(() => {
+      runLightningSale();
+      const lightningInterval = setInterval(runLightningSale, LIGHTNING_SALE.INTERVAL);
+      return () => clearInterval(lightningInterval);
+    }, lightningDelay);
+
+    const suggestionTimer = setTimeout(() => {
+      runSuggestion();
+      const suggestionInterval = setInterval(runSuggestion, SUGGESTION.INTERVAL);
+      return () => clearInterval(suggestionInterval);
+    }, suggestionDelay);
+
+    return () => {
+      clearTimeout(lightningTimer);
+      clearTimeout(suggestionTimer);
+    };
+  }, [runLightningSale, runSuggestion]);
+
   const value: ProductContextType = {
     cartList: state.cartList,
     productList: state.productList,
@@ -74,6 +159,10 @@ export function ProductProvider({ children }: PropsWithChildren) {
     setLastSelectedItem,
     increaseCartItem,
     decreaseCartItem,
+    removeCartItem,
+    updateProductPrice,
+    runLightningSale,
+    runSuggestion,
   };
 
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;
