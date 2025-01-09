@@ -77,9 +77,8 @@ export const applyTuesdayDiscount = (amount, currentRate) => {
 };
 
 // 장바구니에 있는 데이터 기반으로 총액 계산
-export const calculateCart = ({ component, prodList }) => {
-  // component: CartDisplay 컴포넌트
-  const cartItemDOMs = component.get('children');
+export const calculateCart = ({ cartDisplayComponent, prodList }) => {
+  const cartItemDOMs = cartDisplayComponent.get('children');
 
   // 총액, 총 아이템 수, 소계 계산
   const { totalAmount, totalItemsCount, subTotalAmount } = calculateTotals({
@@ -95,5 +94,7 @@ export const calculateCart = ({ component, prodList }) => {
   });
 
   // 화요일 할인 적용
-  return applyTuesdayDiscount(bulkDiscountedAmount, bulkDiscountRate);
+  const { amount, discountRate } = applyTuesdayDiscount(bulkDiscountedAmount, bulkDiscountRate);
+
+  return { amount, discountRate };
 };
