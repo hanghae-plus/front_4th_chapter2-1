@@ -1,1 +1,1 @@
-export { html } from './htmlParser/parser';
+export { html } from './htmlParser/parser.js';
