@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { AddButton } from './AddButton';
 import { useCartItemsStore } from '../store/useCartStore';
 import type { ProductType } from '../store/useProductsStore';
 import { useProductsStore } from '../store/useProductsStore';
@@ -86,5 +85,20 @@ export const ProductSelect = () => {
       </select>
       <AddButton onClick={handleAddButtonClick} />
     </>
+  );
+};
+
+interface AddButtonProps {
+  onClick: () => void;
+}
+
+export const AddButton = ({ onClick }: AddButtonProps) => {
+  return (
+    <button
+      className='rounded bg-blue-500 px-4 py-2 text-white'
+      onClick={onClick}
+    >
+      추가
+    </button>
   );
 };
