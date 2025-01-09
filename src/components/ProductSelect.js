@@ -1,4 +1,4 @@
-export function ProductSelect({ products, onSelect }) {
+export function ProductSelect({ products }) {
   const element = document.createElement('select');
   element.className = 'border rounded p-2 mr-2';
 
@@ -11,8 +11,6 @@ export function ProductSelect({ products, onSelect }) {
       )
       .join('');
   };
-
-  element.addEventListener('change', (e) => onSelect(e.target.value));
 
   return {
     getElement: () => element,

@@ -3,23 +3,34 @@ import { CartSummary } from './components/CartSummary.js';
 import { useCart } from './state/useCart.js';
 import { useProducts } from './state/useProduct.js';
 import { AddButton } from './components/AddButton.js';
+import { CartItemList } from './components/CartItemList.js';
 
 function App(rootElement) {
-  const { cart, setCart } = useCart();
-  const { products, setProducts } = useProducts();
+  const { getCart, addToCart, removeFromCart, subscribeCart, updateItemQuantity } = useCart();
+  const { getProducts, updateQuantity, updatePrice, subscribeProduct } = useProducts();
 
+  const cart = getCart();
+  const products = getProducts();
+
+  // 상품 선택 컴포넌트
   const productSelect = ProductSelect({
     products: products,
-    onSelect: (productId) => {
-      console.log(productId);
-    },
   });
 
+  // 장바구니 정보 컴포넌트
   const cartSummary = CartSummary({
     cartItems: cart,
   });
 
-  const addButton = AddButton();
+  // 장바구니 목록 컴포넌트
+  const cartItemList = CartItemList({ cartItems: cart });
+
+  // 장바구니 추가 컴포넌트
+  const addButton = AddButton({
+    onClick: () => {
+      addToCart(productSelect.getElement().value);
+    },
+  });
 
   const container = document.createElement('div');
   container.className = `bg-gray-100 p-8`;
@@ -36,9 +47,21 @@ function App(rootElement) {
   productSelectionContainer.appendChild(productSelect.getElement());
   productSelectionContainer.appendChild(addButton.getElement());
   cartItemsContainer.before(cartSummary.getElement());
+  cartItemsContainer.appendChild(cartItemList.getElement());
 
+  subscribeProduct(() => {
+    productSelect.render();
+  });
+
+  subscribeCart(() => {
+    cartItemList.render();
+    cartSummary.render();
+  });
+
+  // 초기 렌더링
   productSelect.render();
   cartSummary.render();
+  cartItemList.render();
 
   rootElement.appendChild(container);
 }
