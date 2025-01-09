@@ -73,7 +73,7 @@ export function createPoints() {
 	const $parent = document.getElementById(DOM_ID.CART_TOTAL);
 	const $points = document.createElement('span');
 
-	$points.id = 'loyalty-points';
+	$points.id = DOM_ID.POINTS;
 	$points.className = 'text-blue-500 ml-2';
 	$parent.appendChild($points);
 
