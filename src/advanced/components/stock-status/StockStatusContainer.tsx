@@ -1,4 +1,4 @@
-import { useProduct } from '../../store/ProductContext';
+import { useProduct } from '../../context/ProductContext';
 import StockStatus from './StockStatus';
 import { updateStockInfoMessage } from './updateInfoMessage';
 

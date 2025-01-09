@@ -1,19 +1,21 @@
 import { createContext, PropsWithChildren, useCallback, useContext, useReducer } from 'react';
 import { initialProductList } from '../data/initialProductList';
 import { ProductListType, ProductType } from '../types/ProductType';
-import { ACTION_TYPES, productReducer } from './productReducer';
+import { ACTION_TYPES, productReducer, ProductState } from './productReducer';
 
 const initialState = {
+  cartList: [] as ProductListType,
   productList: initialProductList,
-  lastSelectedItem: null,
+  lastSelectedItem: initialProductList[0].id,
 } as const;
 
-interface ProductContextType {
-  productList: ProductListType;
-  lastSelectedItem: string | null;
+interface ProductContextType extends ProductState {
   updateProductQuantity: (productId: string, quantityChange: number) => void;
   findProduct: (productId: string) => ProductType | undefined;
   setLastSelectedItem: (productId: string) => void;
+  increaseCartItem: (productId: string) => void;
+  decreaseCartItem: (productId: string) => void;
+  removeCartItem: (productId: string) => void;
 }
 const ProductContext = createContext<ProductContextType | null>(null);
 
@@ -47,12 +49,31 @@ export function ProductProvider({ children }: PropsWithChildren) {
     });
   }, []);
 
+  // 장바구니 제품 수량 증가
+  const increaseCartItem = useCallback((productId: string) => {
+    dispatch({
+      type: ACTION_TYPES.INCREASE_CART_ITEM,
+      payload: { productId },
+    });
+  }, []);
+
+  // 장바구니 제품 수량 감소
+  const decreaseCartItem = useCallback((productId: string) => {
+    dispatch({
+      type: ACTION_TYPES.DECREASE_CART_ITEM,
+      payload: { productId },
+    });
+  }, []);
+
   const value: ProductContextType = {
+    cartList: state.cartList,
     productList: state.productList,
     lastSelectedItem: state.lastSelectedItem,
     updateProductQuantity,
     findProduct,
     setLastSelectedItem,
+    increaseCartItem,
+    decreaseCartItem,
   };
 
   return <ProductContext.Provider value={value}>{children}</ProductContext.Provider>;
