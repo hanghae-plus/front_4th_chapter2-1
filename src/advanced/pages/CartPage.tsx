@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { CartItems } from '../components/CartItems';
 import { CartTotal } from '../components/CartTotal';
 import { ProductSelect } from '../components/ProductSelect';
+import { StockStatus } from '../components/StockStatus';
 import { Layout } from '../layout/Layout';
 import { useProductsStore } from '../store/useProductsStore';
 
@@ -38,6 +39,7 @@ export const CartPage = () => {
       <CartItems />
       <CartTotal />
       <ProductSelect />
+      <StockStatus />
     </Layout>
   );
 };
