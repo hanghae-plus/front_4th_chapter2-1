@@ -1,5 +1,7 @@
 import React from "react";
-import { ShoppingCart } from "./clean";
+import { ShoppingCart } from "./advanced/main.advanced";
+
+
 
 const App: React.FC = () => {
   return <ShoppingCart />
