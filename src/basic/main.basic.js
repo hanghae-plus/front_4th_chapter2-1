@@ -10,7 +10,7 @@ const productList = [
 ];
 const _utils = utils();
 let lastAddCartProductId,
-  totalAmount = 0;
+  totalAmt = 0;
 
 const ElementProductSelect = document.createElement('select');
 const ElementAddCartBtn = document.createElement('button');
@@ -109,7 +109,7 @@ const renderProductSelectOptions = () => {
 };
 
 const renderLoyaltyPoints = () => {
-  const loyaltyPoints = Math.floor(totalAmount / 1000);
+  const loyaltyPoints = Math.floor(totalAmt / 1000);
   let ElementLoyaltyPoints = document.getElementById('loyalty-points');
 
   if (!ElementLoyaltyPoints) {
@@ -137,9 +137,9 @@ const renderStockInfo = () => {
 };
 
 const calcCart = () => {
-  totalAmount = 0;
+  totalAmt = 0;
   const cartItems = ElementCartItems.children;
-  let totalCount = 0;
+  let totalCnt = 0;
   let subTot = 0;
   let discountRate = 0;
 
@@ -147,7 +147,7 @@ const calcCart = () => {
     (function () {
       let currentProduct;
       let discount = 0;
-      const count = parseInt(
+      const cnt = parseInt(
         cartItems[i].querySelector('span').textContent.split('x ')[1]
       );
 
@@ -158,9 +158,9 @@ const calcCart = () => {
         }
       }
 
-      const itemTot = currentProduct.price * count;
+      const itemTot = currentProduct.price * cnt;
 
-      if (count >= 10) {
+      if (cnt >= 10) {
         if (currentProduct.id === 'p1') discount = 0.1;
         else if (currentProduct.id === 'p2') discount = 0.15;
         else if (currentProduct.id === 'p3') discount = 0.2;
@@ -168,32 +168,32 @@ const calcCart = () => {
         else if (currentProduct.id === 'p5') discount = 0.25;
       }
 
-      totalCount += count;
+      totalCnt += cnt;
       subTot += itemTot;
-      totalAmount += itemTot * (1 - discount);
+      totalAmt += itemTot * (1 - discount);
     })();
   }
 
-  if (totalCount >= 30) {
-    const bulkDiscount = totalAmount * 0.25;
-    const itemDiscount = subTot - totalAmount;
+  if (totalCnt >= 30) {
+    const bulkDiscount = totalAmt * 0.25;
+    const itemDiscount = subTot - totalAmt;
 
     if (bulkDiscount > itemDiscount) {
-      totalAmount = subTot * (1 - 0.25);
+      totalAmt = subTot * (1 - 0.25);
       discountRate = 0.25;
     } else {
-      discountRate = (subTot - totalAmount) / subTot;
+      discountRate = (subTot - totalAmt) / subTot;
     }
   } else {
-    discountRate = (subTot - totalAmount) / subTot;
+    discountRate = (subTot - totalAmt) / subTot;
   }
 
   if (new Date().getDay() === 2) {
-    totalAmount *= 1 - 0.1;
+    totalAmt *= 1 - 0.1;
     discountRate = Math.max(discountRate, 0.1);
   }
 
-  ElementTotalPrice.textContent = `총액: ${Math.round(totalAmount)}원`;
+  ElementTotalPrice.textContent = `총액: ${Math.round(totalAmt)}원`;
 
   if (discountRate > 0) {
     const span = document.createElement('span');
@@ -218,13 +218,13 @@ ElementAddCartBtn.addEventListener('click', function () {
   if (itemToAdd && itemToAdd.stock > 0) {
     const item = document.getElementById(itemToAdd.id);
     if (item) {
-      const newQuantity =
+      const newQty =
         parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
 
-      if (newQuantity <= itemToAdd.stock) {
+      if (newQty <= itemToAdd.stock) {
         item.querySelector(
           'span'
-        ).textContent = `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQuantity}`;
+        ).textContent = `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQty}`;
         itemToAdd.stock--;
       } else {
         alert(OUT_OF_STOCK_MSG);
@@ -272,14 +272,14 @@ ElementCartItems.addEventListener('click', function (event) {
     });
 
     if (target.classList.contains('quantity-change')) {
-      const quantityChange = parseInt(target.dataset.change);
-      const newQuantity =
+      const qtyChange = parseInt(target.dataset.change);
+      const newQty =
         parseInt(
           ElementCartItem.querySelector('span').textContent.split('x ')[1]
-        ) + quantityChange;
+        ) + qtyChange;
       if (
-        newQuantity > 0 &&
-        newQuantity <=
+        newQty > 0 &&
+        newQty <=
           product.stock +
             parseInt(
               ElementCartItem.querySelector('span').textContent.split('x ')[1]
@@ -288,11 +288,11 @@ ElementCartItems.addEventListener('click', function (event) {
         ElementCartItem.querySelector('span').textContent =
           ElementCartItem.querySelector('span').textContent.split('x ')[0] +
           'x ' +
-          newQuantity;
-        product.stock -= quantityChange;
-      } else if (newQuantity <= 0) {
+          newQty;
+        product.stock -= qtyChange;
+      } else if (newQty <= 0) {
         ElementCartItem.remove();
-        product.stock -= quantityChange;
+        product.stock -= qtyChange;
       } else {
         alert(OUT_OF_STOCK_MSG);
       }
