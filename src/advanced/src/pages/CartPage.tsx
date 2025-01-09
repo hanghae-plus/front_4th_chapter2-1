@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { ICartItem, IProduct } from '../type/product';
-import { CartItems, CartTotal } from '../components/CalculateCart';
+import { calculateCart } from '../components/CalculateCart';
 import CartSelect from '../components/CartSelect';
+import CartTotal from '../components/CartTotal';
 
 const initialProducts: IProduct[] = [
   { id: 'p1', name: '상품1', price: 10000, quantity: 50 },
@@ -43,12 +44,18 @@ export default function CartPage() {
     );
   };
 
+  const { totalAmount, discountRate, loyaltyPoints } = calculateCart(cartItems, products);
+
   return (
     <Container className="bg-gray-100 p-8">
       <Wrapper className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <Title className="text-2xl font-bold mb-4">장바구니</Title>
-        <CartItems />
-        <CartTotal />
+        
+        <CartTotal
+          totalAmount={totalAmount}
+          discountRate={discountRate}
+          loyaltyPoints={loyaltyPoints}
+        />
         <CartSelect products={products} addToCart={addToCart} />
       </Wrapper>
     </Container>
