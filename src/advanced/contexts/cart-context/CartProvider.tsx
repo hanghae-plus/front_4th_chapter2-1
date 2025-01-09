@@ -1,7 +1,7 @@
 import { useCallback, useState, createContext, useMemo } from 'react';
 
 import { calculateCartPrice } from '../../utils/cart/calculateCart';
-import { useResetQuantity } from '../product-context/ProductProvider';
+import { useAddLastSaleItem, useResetQuantity } from '../product-context/ProductProvider';
 import { useCreateCartContext } from '../utils/createContext';
 
 import type { Product } from '../../types/product';
@@ -45,6 +45,8 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
   const resetQuantity = useResetQuantity();
 
+  const addLastSaleItem = useAddLastSaleItem();
+
   const calculateCart = (cartList: Product[]) => {
     const { finalAmount, finalDiscountRate, point } = calculateCartPrice(cartList);
     setTotalAmount(finalAmount);
@@ -72,6 +74,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
   const addCartItem = useCallback(
     (item: Product) => {
+      addLastSaleItem(item);
       const matchedCartItem = cartList.find((cartItem) => cartItem.id === item.id);
 
       if (matchedCartItem) {
@@ -89,7 +92,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
       calculateCart(newCartList);
     },
-    [cartList],
+    [addLastSaleItem, cartList],
   );
 
   const removeCartItem = useCallback(
