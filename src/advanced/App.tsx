@@ -1,5 +1,5 @@
 import Cart from './components/cart';
-import CartAddButton from './components/cart-add-button/CartAddButton';
+import CartAddButton from './components/cart-add-button';
 import CartTotal from './components/cart-total';
 import Container from './components/Container';
 import ContentWrapper from './components/ContentWrapper';
