@@ -56,7 +56,7 @@ export function calculateCart() {
 		totalBeforeDiscount += itemTotal;
 
 		// 10개 이상 주문 시 할인
-		const discount = quantity >= 10 ? (discount = DISCOUNT_PER_PRODUCTS[currentItem.id]) : 0;
+		const discount = quantity >= 10 ? DISCOUNT_PER_PRODUCTS[currentItem.id] : 0;
 		totalAmount += itemTotal * (1 - discount);
 	});
 
