@@ -2,6 +2,7 @@ import { useCallback, useState, createContext, useMemo } from 'react';
 
 import { productList as initialProductList } from '../../constants/product';
 import { useCreateCartContext } from '../utils/createContext';
+import { useFlashSale } from './hooks/useFlashSale';
 
 import type { Product } from '../../types/product';
 import type { PropsWithChildren } from 'react';
@@ -29,6 +30,8 @@ export const useResetQuantity = () =>
 
 export const ProductProvider = ({ children }: PropsWithChildren) => {
   const [productList, setProductList] = useState<Product[]>(initialProductList);
+
+  useFlashSale(productList, setProductList);
 
   const calculateQuantity = useCallback(
     (id: string, delta: number) => {

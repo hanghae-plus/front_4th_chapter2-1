@@ -35,8 +35,12 @@ export const ProductSelector = () => {
       return;
     }
 
-    addCartItem(selectedItem);
-    decreaseQuantity(selectedItem.id);
+    const productItem = productList.find((item) => item.id === selectedItem.id);
+
+    if (productItem) {
+      addCartItem(productItem);
+      decreaseQuantity(selectedItem.id);
+    }
   };
 
   return (
