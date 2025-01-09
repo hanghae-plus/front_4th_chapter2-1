@@ -12,6 +12,8 @@ export const App = () => {
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const [products, setProducts] = useState<Product[]>(productList);
 
+  //화요일 할인
+
   return (
     <div>
       <div className='bg-gray-100 p-8'>

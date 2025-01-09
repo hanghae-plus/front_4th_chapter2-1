@@ -7,6 +7,6 @@ export const DISCOUNT_RATES = {
 };
 
 export const BULK_DISCOUNT_RATE = 0.25;
-export const BULK_DISCOUNT_THRESHOLD = 3;
+export const BULK_DISCOUNT_THRESHOLD = 30;
 
 export const POINT_RATE = 0.001;
