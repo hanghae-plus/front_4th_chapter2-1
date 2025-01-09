@@ -5,6 +5,7 @@ import { CartTotal } from "./components/CartTotal";
 import { Content } from "./components/Content";
 import { DiscountRate } from "./components/DiscountRate";
 import { Heading } from "./components/Heading";
+import { NewCartItem } from "./components/NewCartItem";
 import { ProductOption } from "./components/ProductOption";
 import { ProductSelect } from "./components/ProductSelect";
 import { StockStatus } from "./components/StockStatus";
@@ -12,8 +13,10 @@ import { Wrap } from "./components/Wrap";
 import { PRODUCTS } from "./constant/products";
 import Cart from "./domain/cart/Cart";
 import CartItem from "./domain/cart/cart-item";
+import Item from "./domain/item/item";
 import { startCommercialSale } from "./domain/sale/commercial-sale";
 import { startLuckySale } from "./domain/sale/lucky-sale";
+import Stock from "./domain/stock/stock";
 
 // ! 나름의 그라데이션 사고, 데이터, 추상화적 사고 적용
 // ! 근데 ui 는 어떻게 추상화 + 흐름을 가져가야할지 모르겠다!
@@ -33,6 +36,7 @@ let select, addButton, cartItemDisplay, sum, stock;
 let lastSelectedProduct;
 
 const cartItems = new Cart(); // 현재 장바구니에 담은 아이템의 정보를 담을 배열
+const stockItems = new Stock(PRODUCTS.map((p) => new Item({ ...p })));
 
 function main() {
   // 필요한 ui 만들기
@@ -94,14 +98,7 @@ function calculateCart() {
 
 // 재고 정보 업데이트하는 함수
 function updateStockInfo() {
-  let infoMessage = "";
-  PRODUCTS.forEach((item) => {
-    if (item.quantity < 5) {
-      infoMessage +=
-        item.name + ": " + (item.quantity > 0 ? "재고 부족 (" + item.quantity + "개 남음)" : "품절") + "\n";
-    }
-  });
-  stock.textContent = infoMessage;
+  stock.textContent = stockItems.generateStockInfoMessage();
 }
 
 main();
@@ -110,9 +107,7 @@ main();
 addButton.addEventListener("click", () => {
   // 옵션으로 선택한 아이템 찾기
   const selectedItem = select.value;
-  const itemToAdd = PRODUCTS.find((p) => {
-    return p.id === selectedItem;
-  });
+  const itemToAdd = stockItems.findById(selectedItem);
 
   // 아이템이 있는 아이템이고 재고가 남아있다면
   if (itemToAdd && itemToAdd.quantity > 0) {
@@ -120,39 +115,22 @@ addButton.addEventListener("click", () => {
     const item = document.getElementById(itemToAdd.id);
 
     // 이미 한번 추가된 아이템이라면
-    if (item) {
+    if (cartItem) {
       const newQuantity = cartItem.quantity + 1;
 
       // 충분한 재고가 있다면
       if (newQuantity <= itemToAdd.quantity) {
         item.querySelector("span").textContent = itemToAdd.name + " - " + itemToAdd.value + "원 x " + newQuantity;
-        itemToAdd.quantity--;
+        itemToAdd.decreaseQuantity();
         cartItem.increaseQuantity();
       } else {
         alert("재고가 부족합니다.");
       }
     } else {
       // 한번도 추가되지 않은 아이템이라면 화면에 추가
-      const newItem = document.createElement("div");
-      newItem.id = itemToAdd.id;
-      newItem.className = "flex justify-between items-center mb-2";
-      newItem.innerHTML =
-        "<span>" +
-        itemToAdd.name +
-        " - " +
-        itemToAdd.value +
-        "원 x 1</span><div>" +
-        '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-        itemToAdd.id +
-        '" data-change="-1">-</button>' +
-        '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-        itemToAdd.id +
-        '" data-change="1">+</button>' +
-        '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' +
-        itemToAdd.id +
-        '">삭제</button></div>';
+      const newItem = NewCartItem(itemToAdd);
       cartItemDisplay.appendChild(newItem);
-      itemToAdd.quantity--;
+      itemToAdd.decreaseQuantity();
       cartItems.push(
         new CartItem({
           id: itemToAdd.id,
@@ -177,9 +155,7 @@ cartItemDisplay.addEventListener("click", (event) => {
   if (target.classList.contains("quantity-change") || target.classList.contains("remove-item")) {
     const productId = target.dataset.productId;
     const itemElement = document.getElementById(productId);
-    const product = PRODUCTS.find((p) => {
-      return p.id === productId;
-    });
+    const product = stockItems.findById(productId);
     const cartItem = cartItems.findById(productId);
 
     // +,- 버튼을 눌렀다면
@@ -194,11 +170,11 @@ cartItemDisplay.addEventListener("click", (event) => {
       if (newQuantity > 0 && newQuantity <= product.quantity + cartItem.quantity) {
         itemElement.querySelector("span").textContent =
           itemElement.querySelector("span").textContent.split("x ")[0] + "x " + newQuantity;
-        product.quantity -= quantityChange;
+        product.decreaseQuantity(quantityChange);
         cartItem.increaseQuantity(quantityChange);
       } else if (newQuantity <= 0) {
         itemElement.remove();
-        product.quantity -= quantityChange;
+        product.decreaseQuantity(quantityChange);
         cartItem.increaseQuantity(quantityChange);
       } else {
         alert("재고가 부족합니다.");
@@ -206,8 +182,7 @@ cartItemDisplay.addEventListener("click", (event) => {
     } else if (target.classList.contains("remove-item")) {
       // 삭제 버튼을 눌렀다면
       const removeQuantity = parseInt(itemElement.querySelector("span").textContent.split("x ")[1]);
-      product.quantity += removeQuantity;
-
+      product.increaseQuantity(removeQuantity);
       itemElement.remove();
       cartItems.removeItem(cartItem);
     }
