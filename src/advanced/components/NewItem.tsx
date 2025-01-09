@@ -7,15 +7,15 @@ interface NewItemProps {
 }
 
 export const NewItem: React.FC<NewItemProps> = ({ product }) => {
-  const { removeItem, changeQuantity } = useCartContext();
+  const { removeItem, changeQty } = useCartContext();
 
-  const handleUpdateQuantity = (
+  const handleUpdateQty = (
     event: React.MouseEvent<HTMLElement, MouseEvent>
   ) => {
     const { productId, change } = event.currentTarget.dataset;
     if (!productId || !change) return;
 
-    changeQuantity(productId, parseInt(change));
+    changeQty(productId, parseInt(change));
   };
 
   return (
@@ -24,22 +24,22 @@ export const NewItem: React.FC<NewItemProps> = ({ product }) => {
       className="mb-2 flex items-center justify-between"
     >
       <span>
-        {product.name} - {product.price}원 x {product.quantity}
+        {product.name} - {product.price}원 x {product.qty}
       </span>
       <div>
         <button
-          className="quantity-change mr-1 rounded bg-blue-500 px-2 py-1 text-white"
+          className="qty-change mr-1 rounded bg-blue-500 px-2 py-1 text-white"
           data-product-id={product.id}
           data-change="-1"
-          onClick={(e) => handleUpdateQuantity(e)}
+          onClick={(e) => handleUpdateQty(e)}
         >
           -
         </button>
         <button
-          className="quantity-change mr-1 rounded bg-blue-500 px-2 py-1 text-white"
+          className="qty-change mr-1 rounded bg-blue-500 px-2 py-1 text-white"
           data-product-id={product.id}
           data-change="1"
-          onClick={(e) => handleUpdateQuantity(e)}
+          onClick={(e) => handleUpdateQty(e)}
         >
           +
         </button>

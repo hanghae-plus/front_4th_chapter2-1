@@ -22,7 +22,7 @@ const getDiscountRate = (productID: string): number => {
 // 10개 구매 할인
 const applyDiscount = (
   cartOriginalPrice: number,
-  items: { id: string; quantity: number }[]
+  items: { id: string; qty: number }[]
 ): { discountedPrice: number; discountedRate: number } => {
   // 총액
   let discountedPrice = cartOriginalPrice;
@@ -31,7 +31,7 @@ const applyDiscount = (
 
   items.forEach((item) => {
     // 10개 이상 구매 시, 상품에 따른 할인율 적용
-    if (item.quantity >= ITEMS_REQUIRED_FOR_DISCOUNT.DEFAULT) {
+    if (item.qty >= ITEMS_REQUIRED_FOR_DISCOUNT.DEFAULT) {
       discountedRate = getDiscountRate(item.id);
       discountedPrice = cartOriginalPrice * (1 - discountedRate);
     }
@@ -42,12 +42,12 @@ const applyDiscount = (
 
 // 대량 구매 할인
 const applyBulkDiscount = (
-  cartTotalQuantity: number,
+  cartTotalQty: number,
   cartOriginalPrice: number,
   finalPrice: number,
   discountRate: number
 ): { bulkDiscountedPrice: number; bulkDiscountedRate: number } => {
-  if (cartTotalQuantity >= ITEMS_REQUIRED_FOR_DISCOUNT.BIG) {
+  if (cartTotalQty >= ITEMS_REQUIRED_FOR_DISCOUNT.BIG) {
     const bulkDiscountedPrice =
       cartOriginalPrice * DISCOUNT_RATES.TWENTY_FIVE_PERCENT;
     const priceGap = cartOriginalPrice - finalPrice;
@@ -84,7 +84,7 @@ export const CartTotal = () => {
   const { cartState } = useCartContext();
 
   const cartOriginalPrice = cartState.items.reduce(
-    (acc, cur) => acc + cur.price * cur.quantity,
+    (acc, cur) => acc + cur.price * cur.qty,
     0
   );
 
@@ -93,13 +93,10 @@ export const CartTotal = () => {
     cartState.items
   );
 
-  const cartTotalQuantity = cartState.items.reduce(
-    (acc, cur) => acc + cur.quantity,
-    0
-  );
+  const cartTotalQty = cartState.items.reduce((acc, cur) => acc + cur.qty, 0);
 
   const { bulkDiscountedPrice, bulkDiscountedRate } = applyBulkDiscount(
-    cartTotalQuantity,
+    cartTotalQty,
     cartOriginalPrice,
     discountedPrice,
     discountedRate

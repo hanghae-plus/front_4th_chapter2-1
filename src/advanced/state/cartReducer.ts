@@ -1,7 +1,7 @@
 import { Product } from "../models/Product";
-import { INITIAL_QUANTITY } from "advanced/constants";
+import { INITIAL_QTY } from "advanced/constants";
 
-export type CartItem = Product & { quantity: number };
+export type CartItem = Product & { qty: number };
 
 interface CartState {
   items: CartItem[];
@@ -10,7 +10,7 @@ interface CartState {
 
 type CartAction =
   | { type: "ADD_ITEM"; product: CartItem }
-  | { type: "CHANGE_QUANTITY"; id: string; change: number }
+  | { type: "CHANGE_QTY"; id: string; change: number }
   | { type: "REMOVE_ITEM"; id: string };
 
 export const cartReducer = (
@@ -37,7 +37,7 @@ export const cartReducer = (
             item.id === action.product.id
               ? {
                   ...item,
-                  quantity: item.quantity + 1,
+                  qty: item.qty + 1,
                   remaining: item.remaining - 1,
                 }
               : item
@@ -52,14 +52,14 @@ export const cartReducer = (
           ...state.items,
           {
             ...action.product,
-            quantity: INITIAL_QUANTITY,
-            remaining: action.product.remaining - INITIAL_QUANTITY,
+            qty: INITIAL_QTY,
+            remaining: action.product.remaining - INITIAL_QTY,
           },
         ],
       };
     }
 
-    case "CHANGE_QUANTITY": {
+    case "CHANGE_QTY": {
       const itemToChange = state.items.find((item) => item.id === action.id);
       if (!itemToChange) return state;
 
@@ -71,7 +71,7 @@ export const cartReducer = (
       state.lastSelectedItem = action.id;
 
       // 장바구니 잔여 수량 1에서 1감소 시 장바구니에서 삭제
-      if (itemToChange.quantity === 1 && action.change === -1) {
+      if (itemToChange.qty === 1 && action.change === -1) {
         return {
           ...state,
           items: state.items.filter((item) => item.id !== action.id),
@@ -84,7 +84,7 @@ export const cartReducer = (
           item.id === action.id
             ? {
                 ...item,
-                quantity: item.quantity + action.change,
+                qty: item.qty + action.change,
                 remaining: item.remaining - action.change,
               }
             : item

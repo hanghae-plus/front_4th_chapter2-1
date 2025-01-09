@@ -3,7 +3,7 @@ import { useCallback, useEffect, useReducer } from "react";
 import {
   ALERT_MESSAGES,
   DISCOUNT_RATES,
-  INITIAL_QUANTITY,
+  INITIAL_QTY,
 } from "advanced/constants";
 import { cartReducer } from "advanced/state/cartReducer";
 import { Product } from "advanced/models/Product";
@@ -75,20 +75,20 @@ export const useCart = () => {
       type: "ADD_ITEM",
       product: {
         ...product,
-        quantity: INITIAL_QUANTITY,
+        qty: INITIAL_QTY,
         remaining: product.remaining,
       },
     });
 
-  const changeQuantity = (id: string, change: number) =>
-    dispatch({ type: "CHANGE_QUANTITY", id, change });
+  const changeQty = (id: string, change: number) =>
+    dispatch({ type: "CHANGE_QTY", id, change });
 
   const removeItem = (id: string) => dispatch({ type: "REMOVE_ITEM", id });
 
   return {
     cartState,
     addItem,
-    changeQuantity,
+    changeQty,
     removeItem,
   };
 };
