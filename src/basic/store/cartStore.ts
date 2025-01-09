@@ -4,14 +4,15 @@ import { calculateCartPrice } from './utils/cart/calculateCartPrice';
 export interface Product {
   id: string;
   name: string;
-  val: number;
-  q: number;
+  amount: number;
+  quantity: number;
 }
 
 interface CartState {
   cartList: Product[];
-  totalPrice: number;
+  totalAmount: number;
   totalDiscountRate: number;
+  point: number;
 }
 
 interface CartActions {
@@ -26,46 +27,87 @@ interface CartActions {
 export const CartStore = createStore<CartState, CartActions>(
   {
     cartList: [],
-    totalPrice: 0,
+    totalAmount: 0,
     totalDiscountRate: 0,
+    point: 0,
   },
-  (state, notify) => ({
-    getCartList: () => {
-      return state.cartList;
-    },
-    getCartItem: (id: string) => {
-      return state.cartList?.find((item) => item.id === id);
-    },
-    getTotalAmount: () => {
-      return state.totalPrice;
-    },
-    getTotalDiscountRate: () => {
-      return state.totalDiscountRate;
-    },
-    addCartItem: (item: Product) => {
-      if (state.cartList) {
-        const existingItem = state.cartList.find((cartItem) => cartItem.id === item.id);
-        if (existingItem) {
-          existingItem.q += 1;
-        } else {
-          state.cartList.push({ ...item, q: 1 });
+  (state, notify) => {
+    const updateCartList = (cartList: Product[]) => {
+      state.cartList = cartList;
+
+      const { finalAmount, finalDiscountRate, point } = calculateCartPrice(cartList);
+
+      state.totalAmount = finalAmount;
+      state.totalDiscountRate = finalDiscountRate;
+      state.point = point;
+    };
+
+    const getMatchedCartItemById = (id: string) => {
+      return state.cartList.find((cartItem) => cartItem.id === id);
+    };
+
+    const getUpdatedCartListWithQuantity = (item: Product, delta: number) => {
+      return state.cartList.map((cartItem) =>
+        cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + delta } : cartItem,
+      );
+    };
+
+    const clearCartItemById = (id: string) => {
+      const filteredCartList = state.cartList.filter((cartItem) => cartItem.id !== id);
+      updateCartList(filteredCartList);
+    };
+
+    return {
+      getCartList: () => {
+        return state.cartList;
+      },
+      getCartItem: (id: string) => {
+        return state.cartList?.find((item) => item.id === id);
+      },
+      getTotalAmount: () => {
+        return state.totalAmount;
+      },
+      getTotalDiscountRate: () => {
+        return state.totalDiscountRate;
+      },
+      clearCartItem: (id: string) => {
+        clearCartItemById(id);
+        // resetQuantity(id);
+      },
+      addCartItem: (item: Product) => {
+        // addLastSaleItem(item);
+
+        const matchedCartItem = getMatchedCartItemById(item.id);
+
+        if (matchedCartItem) {
+          const updatedCartList = getUpdatedCartListWithQuantity(matchedCartItem, 1);
+
+          updateCartList(updatedCartList);
+          return;
         }
-      } else {
-        state.cartList = [item];
-      }
 
-      const { finalAmount, finalDiscountRate } = calculateCartPrice(state.cartList);
+        const updatedCartList = [...state.cartList, { ...item, quantity: 1 }];
 
-      state.totalPrice = finalAmount;
-      state.totalPrice = finalDiscountRate;
-      // state.totalPrice = (state.cartList || []).reduce((sum, item) => sum + item.val * item.q, 0);
-      notify();
-    },
-    removeCartItem: (id: string) => {
-      if (!state.cartList) return;
-      state.cartList = state.cartList.filter((item) => item.id !== id);
-      state.totalPrice = state.cartList.reduce((sum, item) => sum + item.val * item.q, 0);
-      notify();
-    },
-  }),
+        updateCartList(updatedCartList);
+
+        notify();
+      },
+      removeCartItem: (id: string) => {
+        const matchedCartItem = getMatchedCartItemById(id);
+
+        if (!matchedCartItem) return;
+
+        if (matchedCartItem.quantity === 1) {
+          clearCartItemById(id);
+          return;
+        }
+
+        const updatedCartList = getUpdatedCartListWithQuantity(matchedCartItem, -1);
+
+        updateCartList(updatedCartList);
+
+        notify();
+      },
+    };
+  },
 );

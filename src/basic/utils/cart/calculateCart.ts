@@ -1,6 +1,6 @@
-import { DISCOUNT_RATES } from '../../../constants/discountRates';
+import { DISCOUNT_RATES } from '../../constants/discountRates';
 
-import type { Product } from '../../cartStore';
+import type { Product } from '../../types/product';
 
 type ProductId = 'p1' | 'p2' | 'p3' | 'p4' | 'p5';
 
