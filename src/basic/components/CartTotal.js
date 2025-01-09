@@ -1,4 +1,5 @@
 import { ELEMENT_IDS } from '../constants/element-id';
+import { getCartTotalElement } from '../utils/dom';
 
 const CartTotal = ({ amount, discountRate, point }) => {
   return /* html */ `<div class="text-xl font-bold my-4">총액: ${Math.round(amount)}원${
@@ -7,3 +8,8 @@ const CartTotal = ({ amount, discountRate, point }) => {
 };
 
 export default CartTotal;
+
+export const renderCartTotal = ({ amount, discountRate, point }) => {
+  const cartTotal = getCartTotalElement();
+  cartTotal.innerHTML = CartTotal({ amount, discountRate, point });
+};

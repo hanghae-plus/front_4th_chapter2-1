@@ -1,15 +1,14 @@
+import { updateCartUI } from './components/Cart';
 import CartItem from './components/CartItem';
 import CartTotal from './components/CartTotal';
 import ProductSelect from './components/ProductSelect';
-import StockStatus from './components/StockStatus';
-import { DAY_OF_WEEK } from './constants/day';
 import { ELEMENT_IDS } from './constants/element-id';
 import { DISCOUNT_POLICY, TIMER_POLICY } from './constants/policy';
 import { products } from './data/products';
+import { calculateCart } from './services/calculator';
 import CartStore from './stores/cart.store';
 import ProductStore from './stores/product.store';
-import { applyDiscount } from './utils/applyDiscount';
-import { calculatePoint, canUpdateQuantity, getTotalQuantity } from './utils/cart';
+import { canUpdateQuantity } from './utils/cart';
 import {
   getAddCartButtonElement,
   getCartItemsElement,
@@ -46,83 +45,6 @@ const main = (callbackFn) => {
 const updateProductList = () => {
   const selectElement = getProductSelectElement();
   selectElement.innerHTML = ProductSelect({ products });
-};
-
-const calculateTotalPrice = (cartItems) => {
-  return cartItems.reduce((total, item) => {
-    const itemAmount = item.price * item.quantity;
-    let discountRate = 0;
-
-    if (item.quantity >= DISCOUNT_POLICY.MIN_QUANTITY_FOR_DISCOUNT) {
-      discountRate = DISCOUNT_POLICY.PRODUCT_DISCOUNT_RATES[item.id] || 0;
-    }
-
-    return total + applyDiscount({ amount: itemAmount, discountRate });
-  }, 0);
-};
-
-const calculateCart = () => {
-  const cartItems = cartStore.getCartItems();
-  const subTotal = cartStore.getAmount();
-  let finalAmount = subTotal;
-  let totalDiscountRate = 0;
-
-  // 각 상품별 할인 계산
-  finalAmount = calculateTotalPrice(cartItems);
-  const totalItemCount = getTotalQuantity(cartItems);
-
-  // 대량 구매 할인 계산
-  if (totalItemCount >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
-    const bulkDiscount = applyDiscount({
-      amount: subTotal,
-      discountRate: DISCOUNT_POLICY.BULK_DISCOUNT_RATE,
-    });
-
-    const itemDiscount = subTotal - finalAmount;
-    if (bulkDiscount > itemDiscount) {
-      finalAmount = bulkDiscount;
-      totalDiscountRate = DISCOUNT_POLICY.BULK_DISCOUNT_RATE;
-    } else {
-      totalDiscountRate = (subTotal - finalAmount) / subTotal;
-    }
-  } else {
-    totalDiscountRate = (subTotal - finalAmount) / subTotal;
-  }
-
-  // 화요일 할인 계산
-  if (new Date().getDay() === DAY_OF_WEEK.TUESDAY) {
-    finalAmount = applyDiscount({
-      amount: finalAmount,
-      discountRate: DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday,
-    });
-    totalDiscountRate = Math.max(totalDiscountRate, DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday);
-  }
-
-  // store 상태 업데이트
-  productStore.setAmount(finalAmount);
-  productStore.setItemCount(totalItemCount);
-  productStore.setPoint(calculatePoint(finalAmount));
-
-  // UI 업데이트
-  renderCartTotal({ amount: finalAmount, discountRate: totalDiscountRate, point: productStore.getPoint() });
-  renderStockStatus();
-};
-
-const renderCartTotal = ({ amount, discountRate, point }) => {
-  const cartTotal = getCartTotalElement();
-  cartTotal.innerHTML = CartTotal({ amount, discountRate, point });
-};
-
-const renderStockStatus = () => {
-  getStockStatusElement().innerHTML = products
-    .map((product) =>
-      StockStatus({
-        product,
-        cartItem: cartStore.getCartItem(product.id),
-      }),
-    )
-    .filter((text) => text !== '')
-    .join('\n');
 };
 
 const setupLightningSaleTimer = () => {
@@ -162,7 +84,7 @@ const handleRecommendation = () => {
 
 main(() => {
   updateProductList();
-  calculateCart();
+  calculateCart((updatedTotals) => updateCartUI(updatedTotals));
   setupLightningSaleTimer();
   setupRecommendationTimer();
 });
@@ -197,7 +119,7 @@ const handleAddToCart = () => {
     setupCartItemEvents(cartItem.id, selectedProductModel);
   }
 
-  calculateCart();
+  calculateCart((updatedTotals) => updateCartUI(updatedTotals));
   productStore.setLastSelectedProduct(selectedProductId);
 };
 
@@ -212,7 +134,7 @@ const handleDecreaseQuantity = (productId) => {
   } else {
     updateCartItemText(productId, cartItem);
   }
-  calculateCart();
+  calculateCart((updatedTotals) => updateCartUI(updatedTotals));
 };
 
 const handleIncreaseQuantity = (productId, productModel) => {
@@ -225,13 +147,13 @@ const handleIncreaseQuantity = (productId, productModel) => {
 
   cartStore.addCartItem(productModel);
   updateCartItemText(productId, cartStore.getCartItem(productId));
-  calculateCart();
+  calculateCart((updatedTotals) => updateCartUI(updatedTotals));
 };
 
 const handleRemoveItem = (productId) => {
   getProductItemElement(productId)?.remove();
   cartStore.deleteCartItem(productId);
-  calculateCart();
+  calculateCart((updatedTotals) => updateCartUI(updatedTotals));
 };
 
 const updateCartItemText = (productId, cartItem) => {

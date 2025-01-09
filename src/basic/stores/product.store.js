@@ -51,3 +51,11 @@ class ProductStore {
 }
 
 export default ProductStore;
+
+export const updateProductState = (totals) => {
+  productStore.setAmount(totals.finalAmount);
+  productStore.setItemCount(totals.totalItemCount);
+  productStore.setPoint(totals.point);
+
+  return totals;
+};
