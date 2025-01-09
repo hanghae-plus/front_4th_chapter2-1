@@ -41,11 +41,9 @@ const stockItems = new Stock(PRODUCTS.map((p) => new Item({ ...p })));
 function main() {
   // 필요한 ui 만들기
   render();
-
   calculateCart();
 
   startLuckySale(stockItems.items, updateProductOption);
-
   startCommercialSale(stockItems.items, lastSelectedProduct, updateProductOption);
 
   // 추가 버튼에 이벤트 리스너 연결
@@ -100,7 +98,7 @@ function render() {
   const heading = Heading();
   cartItemDisplay = CartItems();
   sum = CartTotal();
-  select = ProductSelect();
+  select = ProductSelect(stockItems.items);
   addButton = AddToCart();
   stock = StockStatus();
 
@@ -119,12 +117,7 @@ function render() {
 }
 
 function updateProductOption() {
-  select.reset();
-
-  stockItems.items.forEach((item) => {
-    const option = ProductOption({ item });
-    select.appendChild(option);
-  });
+  select.handleUpdateProductOption(stockItems.items, ProductOption);
 }
 
 // 총액 + 할인율 계산해서 표시하는 함수
@@ -153,9 +146,9 @@ function handleExistingCartItem(cartItem, itemToAdd, itemElement) {
   const newQuantity = cartItem.quantity + 1;
 
   if (newQuantity <= itemToAdd.quantity) {
-    updateCartItemElement(itemElement, itemToAdd, newQuantity);
     itemToAdd.decreaseQuantity();
     cartItem.increaseQuantity();
+    updateCartItemElement(itemElement, itemToAdd, newQuantity);
   } else {
     alert("재고가 부족합니다.");
   }

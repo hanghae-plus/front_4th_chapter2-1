@@ -15,10 +15,19 @@ export const ProductSelect = () => {
     return element.value;
   };
 
+  const handleUpdateProductOption = (items, Component) => {
+    reset();
+    items.forEach((item) => {
+      const option = Component({ item });
+      appendChild(option);
+    });
+  };
+
   return {
     element,
     appendChild,
     getValue,
     reset,
+    handleUpdateProductOption,
   };
 };
