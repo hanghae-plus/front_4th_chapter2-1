@@ -1,3 +1,4 @@
+// 서버와 통신을 가정하여 크게 건들지 않음
 export const prodList = [
   { id: 'p1', name: '상품1', val: 10000, qty: 50 },
   { id: 'p2', name: '상품2', val: 20000, qty: 30 },
