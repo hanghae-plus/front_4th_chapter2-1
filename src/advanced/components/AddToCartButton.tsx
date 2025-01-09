@@ -1,16 +1,12 @@
-import { useAddToCart } from '../hooks/useAddToCart';
-
 type AddToCartButtonProps = {
-  selectedItemId: string;
+  onClickButton: () => void;
 };
-export const AddToCartButton = ({ selectedItemId }: AddToCartButtonProps) => {
-  const { handleAddToCart } = useAddToCart(selectedItemId);
-
+export const AddToCartButton = ({ onClickButton }: AddToCartButtonProps) => {
   return (
     <button
       id="add-to-cart"
       className="bg-blue-500 text-white px-4 py-2 rounded"
-      onClick={handleAddToCart}
+      onClick={onClickButton}
     >
       추가
     </button>

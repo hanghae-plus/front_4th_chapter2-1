@@ -1,11 +1,11 @@
 import { useCart } from '../stores/CartContext';
 import { useProducts } from '../stores/ProductContext';
 
-export const useAddToCart = (productId: string) => {
+export const useAddToCart = () => {
   const { dispatch } = useCart();
   const { getItem: getProduct, decreaseQuantity } = useProducts();
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (productId: string) => {
     if (!productId) return;
 
     if (getProduct(productId)?.quantity > 0) {

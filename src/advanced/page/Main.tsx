@@ -6,12 +6,14 @@ import { Header } from '../components/Header';
 import { ProductSelect } from '../components/ProductSelect';
 import { Stock } from '../components/Stock';
 import { TotalPrice } from '../components/TotalPrice';
+import { useAddToCart } from '../hooks/useAddToCart';
 import { useProducts } from '../stores/ProductContext';
 export const Main = () => {
   const {
     state: { items },
   } = useProducts();
   const [selectedItemId, setSelectedItemId] = useState<string | null>(items[0].id);
+  const { handleAddToCart } = useAddToCart();
 
   return (
     <div className="bg-gray-100 p-8">
@@ -20,7 +22,7 @@ export const Main = () => {
         <CartProductList />
         <TotalPrice />
         <ProductSelect products={items} onSelect={setSelectedItemId} />
-        <AddToCartButton selectedItemId={selectedItemId} />
+        <AddToCartButton onClickButton={() => handleAddToCart(selectedItemId)} />
         <Stock stockStatus={[]} />
       </div>
     </div>
