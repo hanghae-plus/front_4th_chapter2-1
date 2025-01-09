@@ -1,11 +1,11 @@
-import { ELEMENT_IDS } from "@/constants/element-id";
-import type { Product } from "@/data/products";
+import { ELEMENT_IDS } from '../constants/element-id';
+import type { Product } from '../types/product.type';
 
 interface ProductSelectProps {
-  products: Product[];  
+  products: Product[];
 }
 
-const ProductSelect = ({ products }:ProductSelectProps) => {
+const ProductSelect = ({ products }: ProductSelectProps) => {
   return (
     <select id={ELEMENT_IDS.PRODUCT_SELECT} className="border rounded p-2 mr-2">
       {products.map(({ id, name, price, quantity }) => (

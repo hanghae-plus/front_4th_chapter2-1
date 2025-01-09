@@ -1,8 +1,7 @@
-import { getRemainingQuantity, getStockMessage, isLowStock } from '@/services/stock';
-import type { Cart } from '@/types/cart.type';
-import type { Product } from '@/types/product.type';
-
 import { STOCK_POLICY } from '../constants/policy';
+import { getRemainingQuantity, getStockMessage, isLowStock } from '../services/stock';
+import type { Cart } from '../types/cart.type';
+import type { Product } from '../types/product.type';
 
 interface StockStatusProps {
   product: Product;

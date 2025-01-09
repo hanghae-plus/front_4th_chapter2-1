@@ -16,9 +16,6 @@
     "noEmit": false,
     "jsx": "react-jsx",
     "baseUrl": ".",
-    "paths": {
-      "@/*": ["src/advanced/*"]
-    },
     "outDir": "./dist",
     "rootDir": "src/advanced",
     "incremental": true,
