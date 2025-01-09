@@ -26,7 +26,7 @@ export const CartItem = ({ item }: CartItemProps) => {
   };
 
   const handleAddButtonClick = () => {
-    if (isQuantityCountOver(item)) {
+    if (isQuantityCountOver(item, 0)) {
       return;
     }
 
