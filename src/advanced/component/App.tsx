@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import Button from "./Buttons";
+import Cart from "./Cart";
 
 import { updateCartSummary, sumAmount } from "../model/calculateLogic"
 import { productList, Product } from "../model/datas"
@@ -13,29 +13,11 @@ const App: React.FC = () => {
     const [lastSelected, setLastSelected] = useState<string | null>("");
     let bonusPoints: number | null = 0;
 
+    // App.tsx 에서는 장바구니 첫 랜더링 및 주기적 업데이트를 책임진다 
+    // 그래서 포인트 로직도 포함시켰음
     useEffect(() => {
         init();
     }, []);
-    
-    // select 노드의 옵션을 업데이트하는 함수
-    const updateSelectOptions = () => {
-        const $select = document.getElementById('product-select')
-        if (!$select) return;
-
-        $select.innerHTML = '';
-
-        productList.forEach(item => {
-            let $option = document.createElement('option');
-            if (!$option) return;
-
-            $option.value = item.id;
-            $option.textContent = `${item.name} - ${item.price}원`;
-
-            if(item.stock === 0) $option.disabled = true;
-
-            $select && $select.appendChild($option);
-        });
-    }
     
     // 장바구니 업데이트 할때마다 요소 업데이트 하는 함수
     const cartCalculator = () => {
@@ -57,7 +39,7 @@ const App: React.FC = () => {
         $sum && $sum.appendChild($loyalPoint);
     
         $loyalPoint.textContent = `(포인트: ${bonusPoints})`;
-    };
+    }
     
     // 품절 상품 (재고부족 상품) 표시 함수
     const updateStockInfo = () => {
@@ -118,19 +100,16 @@ const App: React.FC = () => {
     // 첫 모든 로직 실행 함수
     const init = () => {
         cartCalculator();
-        updateSelectOptions();
     
         // 콜백 구조로 랜덤 할인 알림 실행
         initRandomAlert({
             onFlashSale: luckyItem => {
                 luckyItem.price = Math.round(luckyItem.price * 0.8); // 20% 할인
                 alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
-                updateSelectOptions();
             },
             onSuggestion: suggestItem => {
                 suggestItem.price = Math.round(suggestItem.price * 0.95); // 5% 할인
                 alert(`${suggestItem.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
-                updateSelectOptions();
             }
         });  
     }
@@ -139,10 +118,7 @@ const App: React.FC = () => {
         <div className="bg-gray-100 p-8">
             <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
                 <h1 className="text-2xl font-bold mb-4">장바구니</h1>
-                <div id="cart-items" />
-                <div id="cart-total" className="text-xl font-bold my-4" />
-                <select id="product-select" className="border rounded p-2 mr-2" />
-                <Button
+                <Cart
                     cartCalculator = {cartCalculator}
                     setLastSelected = {setLastSelected}
                 />
