@@ -34,9 +34,8 @@ export const OrderSummary = ({ cartItems }: { cartItems: Product[] }) => {
     return {
       total: finalTotal,
       discountInfo:
-        discountRate > 0
-          ? `${(discountRate * 100).toFixed(1)}% 할인${isTuesday ? ' (화요일 할인 포함)' : ''}`
-          : '0% 할인',
+        discountRate > 0 &&
+        `${(discountRate * 100).toFixed(1)}% 할인${isTuesday ? ' (화요일 할인 포함)' : ''}`,
     };
   };
 

@@ -3,7 +3,7 @@ import { ProductSelector } from './ProductSelector';
 import { AddToCartButton } from './AddToCartButton';
 import { OrderSummary } from './OrderSummary';
 import { LowStockWarning } from './LowStockWarning';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Product } from '../type/type';
 import { productList } from '../data/data';
 
@@ -12,7 +12,27 @@ export const App = () => {
   const [cartItems, setCartItems] = useState<Product[]>([]);
   const [products, setProducts] = useState<Product[]>(productList);
 
-  //화요일 할인
+  //30초에 한번 30% 확률로 번개 세일 발생
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (Math.random() < 0.3) {
+        const randomProduct = products[Math.floor(Math.random() * products.length)];
+        alert(`🎉 번개 세일! ${randomProduct.name} 20% 할인!`);
+      }
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [products]);
+
+  // 1분마다 마지막으로 선택한 상품 외 다른 상품 추천
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const suggestionProduct = products.find((product) => product.id !== selectedProduct?.id);
+      if (suggestionProduct) {
+        alert(`${suggestionProduct.name} 은(는) 어떠세요? 지금 구매하시면 5% 할인!`);
+      }
+    }, 60000);
+    return () => clearInterval(interval);
+  }, [selectedProduct]);
 
   return (
     <div>
