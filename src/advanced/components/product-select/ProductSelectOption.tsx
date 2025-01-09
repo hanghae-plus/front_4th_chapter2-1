@@ -5,7 +5,12 @@ interface Props {
 }
 export default function ProductSelectOption({ product }: Props) {
   return (
-    <option value={product.id} disabled={product.quantity === 0} title={product.name}>
+    <option
+      value={product.id}
+      disabled={product.quantity === 0}
+      title={product.name}
+      dataset-id={product.id}
+    >
       {product.name} - {product.price}원
     </option>
   );
