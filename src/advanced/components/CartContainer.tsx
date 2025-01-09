@@ -1,5 +1,5 @@
 import { DOM_ID } from '../constants';
-import { alertOutOfStock, calculateCart } from '../models';
+import { alertOutOfStock } from '../models';
 import { CartStore, ProductStore } from '../store';
 
 export const CartContainer = () => {
@@ -34,14 +34,12 @@ export const CartContainer = () => {
 			} else {
 				alertOutOfStock();
 			}
-			calculateCart();
 		} else if ($button.classList.contains('remove-item')) {
 			updateProducts({
 				...selectedStockItem,
 				quantity: selectedStockItem.quantity + selectedCartItem.quantity,
 			});
 			removeCartItem(selectedCartItem);
-			calculateCart();
 		}
 	};
 
