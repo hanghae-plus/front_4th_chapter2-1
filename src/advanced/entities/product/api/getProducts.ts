@@ -4,8 +4,8 @@ interface GetProductsResponse {
   products: Product[];
 }
 
-export const getProducts = async (): Promise<GetProductsResponse> => {
+export const getProducts = async () => {
   const response = await fetch("/products");
-  const json = await response.json();
-  return json;
+  const data: GetProductsResponse = await response.json();
+  return data.products;
 };
