@@ -26,9 +26,18 @@ export const App = () => {
           />
           <LowStockWarning products={products} />
           <div id='cart-items'>
-            {cartItems.map((addedItem) => (
-              <CartItem addedItem={addedItem} key={addedItem.id} />
-            ))}
+            {cartItems.length > 0 ? (
+              cartItems.map((addedItem) => (
+                <CartItem
+                  key={addedItem.id}
+                  addedItem={addedItem}
+                  setCartItems={setCartItems}
+                  setProducts={setProducts}
+                />
+              ))
+            ) : (
+              <p>장바구니가 비었습니다.</p>
+            )}
           </div>
           <OrderSummary cartItems={cartItems} />
         </div>
