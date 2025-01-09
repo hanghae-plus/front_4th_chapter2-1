@@ -51,7 +51,7 @@ const tokenize = html => {
   return tokens;
 };
 
-export const lexer = (htmlString, placeholders, expressions) => {
+export function lexer(htmlString, placeholders, expressions) {
   const tokens = tokenize(htmlString);
   if (tokens.length === 0) {
     throw new Error(ERROR.EMPTY_HTML_STRING);
@@ -63,7 +63,7 @@ export const lexer = (htmlString, placeholders, expressions) => {
 
   tokens.forEach(token => {
     if (token.type === 'startTag') {
-      // 시작 태그
+      // 시작 태그 처리
       const props = {};
 
       for (const [attrName, attrValue] of Object.entries(token.attributes)) {
@@ -88,47 +88,68 @@ export const lexer = (htmlString, placeholders, expressions) => {
         stack.push(newComponent);
       }
     } else if (token.type === 'endTag') {
-      // 종료 태그
+      // 종료 태그 처리
       if (stack.length === 1 || stack[stack.length - 1].type !== token.name) {
         throw new Error(ERROR.MALFORMED_HTML);
       }
       stack.pop();
     } else if (token.type === 'text') {
-      // 텍스트 노드
-      const text = token.content.trim();
-      if (text === '') return; // 공백 텍스트 무시
+      // 텍스트 노드 처리
+      const text = token.content;
+      if (text.trim() === '') return; // 공백 텍스트 무시
 
-      // 플레이스홀더인 경우
-      const placeholderMatch = text.match(/^___expr(\d+)___$/);
-      if (placeholderMatch) {
-        const exprIndex = parseInt(placeholderMatch[1], 10);
+      // 플레이스홀더 패턴을 모두 찾아 처리
+      const regex = /___expr(\d+)___/g;
+      let lastIndex = 0;
+      let match;
+      const parts = [];
+
+      while ((match = regex.exec(text)) !== null) {
+        const exprIndex = parseInt(match[1], 10);
         const expr = expressions[exprIndex];
+        const start = match.index;
+        const end = regex.lastIndex;
+
+        // 플레이스홀더 이전의 텍스트 추가
+        if (start > lastIndex) {
+          const preText = text.substring(lastIndex, start);
+          if (preText) {
+            parts.push(preText);
+          }
+        }
+
+        // 표현식 추가
         if (typeof expr === 'string' || typeof expr === 'number') {
-          const textComponent = new Component({
-            type: 'text',
-            props: { value: expr.toString() },
-            children: [],
-          });
-          stack[stack.length - 1].children.push(textComponent);
+          parts.push(expr.toString());
+        } else if (expr instanceof Component) {
+          parts.push(expr);
         } else if (typeof expr === 'function') {
-          // 텍스트 노드 내에 함수는 올바르지 않으므로 에러 발생
           throw new Error(
             '텍스트 노드 내에 함수 표현식이 올바르게 사용되지 않았습니다.'
           );
         } else {
           throw new Error(ERROR.INVALID_TAGGED_TEMPLATE_TYPE);
         }
-      } else {
-        // 일반 텍스트
-        // const textComponent = new Component({
-        //   type: 'text',
-        //   props: { value: text },
-        //   children: [],
-        // });
-        // stack[stack.length - 1].children.push(textComponent);
-        // 일반 텍스트는 그대로 문자열로 추가
-        stack[stack.length - 1].children.push(text);
+
+        lastIndex = end;
       }
+
+      // 마지막 플레이스홀더 이후의 텍스트 추가
+      if (lastIndex < text.length) {
+        const postText = text.substring(lastIndex);
+        if (postText) {
+          parts.push(postText);
+        }
+      }
+
+      // parts 배열을 순회하며 자식 요소로 추가
+      parts.forEach(part => {
+        if (typeof part === 'string') {
+          stack[stack.length - 1].children.push(part);
+        } else if (part instanceof Component) {
+          stack[stack.length - 1].children.push(part);
+        }
+      });
     }
   });
 
@@ -137,4 +158,4 @@ export const lexer = (htmlString, placeholders, expressions) => {
   }
 
   return root.children[0]; // 루트 컴포넌트 제외
-};
+}
