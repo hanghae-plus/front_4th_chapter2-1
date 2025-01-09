@@ -99,7 +99,13 @@ describe('basic test', () => {
       sel.value = 'p1';
       addBtn.click();
       addBtn.click();
-      expect(sum.textContent).toContain('총액: 20000원(포인트: 20)');
+      if (new Date().getDay() === 2) {
+        expect(sum.textContent).toContain(
+          '총액: 18000원(10.0% 할인 적용)(포인트: 18)',
+        );
+      } else {
+        expect(sum.textContent).toContain('총액: 20000원(포인트: 20)');
+      }
     });
 
     it('할인이 올바르게 적용되는지 확인', () => {
@@ -113,9 +119,16 @@ describe('basic test', () => {
     it('포인트가 올바르게 계산되는지 확인', () => {
       sel.value = 'p2';
       addBtn.click();
-      expect(document.getElementById('loyalty-points').textContent).toContain(
-        '(포인트: 128)',
-      );
+
+      if (new Date().getDay() === 2) {
+        expect(document.getElementById('loyalty-points').textContent).toContain(
+          '(포인트: 115)',
+        );
+      } else {
+        expect(document.getElementById('loyalty-points').textContent).toContain(
+          '(포인트: 128)',
+        );
+      }
     });
 
     it('번개세일 기능이 정상적으로 동작하는지 확인', () => {
