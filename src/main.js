@@ -7,6 +7,29 @@ var lastSel,
   bonusPts = 0,
   totalAmt = 0,
   itemCnt = 0;
+
+function initApp() {
+  // 추가 버튼
+  addBtn = document.createElement("button");
+  addBtn.textContent = "추가";
+  addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded";
+  addBtn.addEventListener("click", handleAddToCart);
+
+  // 재고 정보 버튼
+  stockInfo = document.createElement("div");
+  stockInfo.id = "stock-status";
+  stockInfo.className = "text-sm text-gray-500 mt-2";
+
+  // 품절 상태 레이블
+  const lowStockItems = PRODUCT_LIST.filter((item) => item.stock < 5).map(
+    (item) =>
+      `${item.name}: ${
+        item.stock > 0 ? `재고 부족 (${item.stock}개 남음)` : "품절"
+      }`
+  );
+
+  stockInfo.textContent = lowStockItems.join("\n");
+}
 function main() {
   //------------init HTML---------------
   var root = document.getElementById("app");
@@ -24,18 +47,8 @@ function main() {
     "product-select"
   );
   sum = createElement("div", "text-xl font-bold my-4", null, "cart-total");
-  addBtn = createElement(
-    "button",
-    "bg-blue-500 text-white px-4 py-2 rounded",
-    "추가",
-    "add-to-cart"
-  );
-  stockInfo = createElement(
-    "div",
-    "text-sm text-gray-500 mt-2",
-    null,
-    "stock-status"
-  );
+
+  initApp();
   wrap.className =
     "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
   updateSelOpts();
