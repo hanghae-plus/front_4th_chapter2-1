@@ -1,6 +1,7 @@
 import { useCallback, useState, createContext, useMemo } from 'react';
 
 import { calculateCartPrice } from '../../utils/cart/calculateCart';
+import { useResetQuantity } from '../product-context/ProductProvider';
 import { useCreateCartContext } from '../utils/createContext';
 
 import type { Product } from '../../types/product';
@@ -42,6 +43,8 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
   const [point, setPoint] = useState(0);
   const [totalDiscountRate, setTotalDiscountRate] = useState(0);
 
+  const resetQuantity = useResetQuantity();
+
   const calculateCart = (cartList: Product[]) => {
     const { finalAmount, finalDiscountRate, point } = calculateCartPrice(cartList);
     setTotalAmount(finalAmount);
@@ -55,8 +58,9 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
       setCartList(filterdCartList);
       calculateCart(filterdCartList);
+      resetQuantity(id);
     },
-    [cartList],
+    [cartList, resetQuantity],
   );
 
   const getMatchedCartItemById = useCallback(

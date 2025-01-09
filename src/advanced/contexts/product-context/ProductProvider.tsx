@@ -10,6 +10,7 @@ interface ProductContextType {
   productList: Product[];
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
+  resetQuentity: (id: string) => void;
 }
 
 export const productContext = createContext<ProductContextType | undefined>(undefined);
@@ -23,6 +24,9 @@ export const useIncreaseQuantity = () =>
 export const useDecreaseQuantity = () =>
   useCreateCartContext(productContext, 'useDecreaseQuantity', 'productProvider').decreaseQuantity;
 
+export const useResetQuantity = () =>
+  useCreateCartContext(productContext, 'useResetQuantity', 'productProvider').resetQuentity;
+
 export const ProductProvider = ({ children }: PropsWithChildren) => {
   const [productList, setProductList] = useState<Product[]>(initialProductList);
 
@@ -30,6 +34,23 @@ export const ProductProvider = ({ children }: PropsWithChildren) => {
     (id: string, delta: number) => {
       const newProductList = productList.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity + delta } : item,
+      );
+
+      setProductList(newProductList);
+    },
+    [productList],
+  );
+
+  const resetQuentity = useCallback(
+    (id: string) => {
+      const initialProductItem = initialProductList.find((product) => product.id === id);
+
+      if (!initialProductItem) return;
+
+      const initialQuantity = initialProductItem.quantity;
+
+      const newProductList = productList.map((item) =>
+        item.id === id ? { ...item, quantity: initialQuantity } : item,
       );
 
       setProductList(newProductList);
@@ -56,8 +77,9 @@ export const ProductProvider = ({ children }: PropsWithChildren) => {
       increaseQuantity,
       decreaseQuantity,
       productList,
+      resetQuentity,
     };
-  }, [decreaseQuantity, increaseQuantity, productList]);
+  }, [decreaseQuantity, increaseQuantity, productList, resetQuentity]);
 
   return <productContext.Provider value={contextValue}>{children}</productContext.Provider>;
 };
