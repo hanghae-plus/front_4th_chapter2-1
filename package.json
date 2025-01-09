@@ -11,7 +11,7 @@
     "start:advanced": "vite serve --open ./index.advanced.html",
     "test": "vitest",
     "test:basic": "vitest basic.test.js",
-    "test:advanced": "vitest advanced.test.js",
+    "test:advanced": "vitest advanced.test.tsx",
     "test:ui": "vitest --ui",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^19.0.4",
     "@types/react-dom": "^19.0.2",
