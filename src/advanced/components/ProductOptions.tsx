@@ -1,6 +1,6 @@
 import { DOM_IDS } from "advanced/constants";
 import { useCartContext } from "advanced/contexts/CartProvider";
-import { productList } from "advanced/hooks/productList";
+import { productList } from "advanced/store/productList";
 import { Product } from "advanced/models/Product";
 
 export const ProductOptions = () => {
