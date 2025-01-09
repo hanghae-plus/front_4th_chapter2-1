@@ -1,7 +1,8 @@
 import { DAY_OF_WEEK } from '../constants/day';
 import { DISCOUNT_POLICY } from '../constants/policy';
+import type { Cart } from '../types/cart.type';
 
-export const calculateItemDiscount = (cartItems) => {
+export const calculateItemDiscount = (cartItems: Cart[]) => {
   const subTotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   const finalAmount = calculateTotalPrice(cartItems);
   const discountRate = (subTotal - finalAmount) / subTotal;
@@ -13,7 +14,15 @@ export const calculateItemDiscount = (cartItems) => {
   };
 };
 
-export const calculateBulkDiscount = (subTotal, finalAmount, totalItemCount) => {
+export const calculateBulkDiscount = ({
+  subTotal,
+  finalAmount,
+  totalItemCount,
+}: {
+  subTotal: number;
+  finalAmount: number;
+  totalItemCount: number;
+}) => {
   if (totalItemCount < DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
     return {
       finalAmount,
@@ -41,7 +50,13 @@ export const calculateBulkDiscount = (subTotal, finalAmount, totalItemCount) => 
   };
 };
 
-export const calculateWeeklyDiscount = (finalAmount, currentDiscountRate) => {
+export const calculateWeeklyDiscount = ({
+  finalAmount,
+  currentDiscountRate,
+}: {
+  finalAmount: number;
+  currentDiscountRate: number;
+}) => {
   if (new Date().getDay() !== DAY_OF_WEEK.TUESDAY) {
     return { finalAmount, discountRate: currentDiscountRate };
   }
@@ -58,7 +73,7 @@ export const calculateWeeklyDiscount = (finalAmount, currentDiscountRate) => {
   };
 };
 
-const calculateTotalPrice = (cartItems) => {
+const calculateTotalPrice = (cartItems: Cart[]): number => {
   return cartItems.reduce((total, item) => {
     const itemAmount = item.price * item.quantity;
     let discountRate = 0;
@@ -71,6 +86,6 @@ const calculateTotalPrice = (cartItems) => {
   }, 0);
 };
 
-export const applyDiscount = ({ amount, discountRate }) => {
+export const applyDiscount = ({ amount, discountRate }: { amount: number; discountRate: number }) => {
   return amount * (1 - discountRate);
 };
