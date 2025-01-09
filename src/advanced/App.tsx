@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import CartItem from './components/CartItem';
 import CartTotal from './components/CartTotal';
@@ -7,6 +7,7 @@ import { ELEMENT_IDS } from './constants/element-id';
 import { products as initialProducts } from './data/products';
 import { calculateCartTotals } from './services/calculator';
 import { canIncreaseQuantity } from './services/cart';
+import { setupLightningSaleTimer, setupRecommendationTimer } from './services/promotion';
 import type { Cart } from './types/cart.type';
 
 const INITIAL_SELECTED_PRODUCT_ID = initialProducts[0].id;
@@ -112,6 +113,11 @@ const App = () => {
   };
 
   const { finalAmount: amount, discountRate, point } = calculateCartTotals(cartItems);
+
+  useEffect(() => {
+    setupLightningSaleTimer();
+    setupRecommendationTimer();
+  }, []);
 
   return (
     <div className="bg-gray-100 p-8">
