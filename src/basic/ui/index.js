@@ -17,9 +17,9 @@ export function createLayout() {
 	const $cartContainer = document.createElement('div');
 	$cartContainer.id = DOM_ID.CART_CONTAINER;
 
-	const $sum = document.createElement('div');
-	$sum.id = DOM_ID.CART_TOTAL;
-	$sum.className = 'text-xl font-bold my-4';
+	const $cartTotal = document.createElement('div');
+	$cartTotal.id = DOM_ID.CART_TOTAL;
+	$cartTotal.className = 'text-xl font-bold my-4';
 
 	const $selectBox = document.createElement('select');
 	$selectBox.id = DOM_ID.SELECT_BOX;
@@ -36,7 +36,7 @@ export function createLayout() {
 
 	$wrapper.appendChild($title);
 	$wrapper.appendChild($cartContainer);
-	$wrapper.appendChild($sum);
+	$wrapper.appendChild($cartTotal);
 	$wrapper.appendChild($selectBox);
 	$wrapper.appendChild($addButton);
 	$wrapper.appendChild($stockStatus);
