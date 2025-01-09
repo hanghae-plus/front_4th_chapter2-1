@@ -30,8 +30,6 @@ const getTotalQuantity = (cartItems) => cartItems.reduce((sum, item) => sum + it
 
 const calculatePoint = (amount) => Math.floor(amount / 1000);
 
-const formatCartItemText = (item) => `${item.name} - ${item.price}원 x ${item.getQuantity()}`;
-
 const main = (callbackFn) => {
   const root = document.getElementById('app');
   root.innerHTML = /* html */ `
@@ -247,5 +245,10 @@ const handleRemoveItem = (productId) => {
 };
 
 const updateCartItemText = (productId, cartItem) => {
-  getProductItemElement(productId).querySelector('span').textContent = formatCartItemText(cartItem);
+  const container = document.createElement('div');
+  container.innerHTML = CartItem(cartItem);
+
+  const oldElement = getProductItemElement(productId);
+  oldElement.replaceWith(container.firstElementChild);
+  setupCartItemEvents(productId, cartItem);
 };
