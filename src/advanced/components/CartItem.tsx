@@ -1,5 +1,5 @@
-import { useProductListContext } from "../hooks/useProductListContext";
-import { Product } from "../types/product";
+import { useProductListContext } from "../hooks";
+import { Product } from "../types";
 import { CartItemInfo } from "./CartItemInfo";
 
 export function CartItem(product: Product) {

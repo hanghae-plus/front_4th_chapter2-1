@@ -1,8 +1,8 @@
-import { useProductListContext } from "../hooks/useProductListContext";
+import { useProductListContext } from "../hooks";
 import { CartItem } from "./CartItem";
 
 export function Cart() {
-  const { shoppingCart, cartTotalPrice, cartCount, discountRate } = useProductListContext();
+  const { shoppingCart, cartTotalPrice, discountRate } = useProductListContext();
   return (
     <>
       <h1 className="text-2xl font-bold mb-4">장바구니</h1>

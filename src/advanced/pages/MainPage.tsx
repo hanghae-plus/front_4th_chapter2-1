@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { Cart, ProductOption } from "../components";
-import { useProductListContext } from "../hooks/useProductListContext";
+import { useProductListContext } from "../hooks";
 
 export function MainPage() {
   const { shoppingCart, addToCart, increaseCart, products, getLowStockMessage, decreaseStock } = useProductListContext();

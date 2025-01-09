@@ -1,5 +1,5 @@
 import { ProductListContextProvider } from "./contexts";
-import { MainPage } from "./pages/MainPage";
+import { MainPage } from "./pages";
 
 export function App() {
   return (
