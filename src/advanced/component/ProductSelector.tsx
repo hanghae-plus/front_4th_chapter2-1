@@ -1,5 +1,4 @@
 import React from 'react';
-import { productData } from '../../basic/data/data';
 import { Product } from '../type/type';
 
 export const ProductSelector = ({
@@ -14,7 +13,7 @@ export const ProductSelector = ({
       id='product-select'
       className='border rounded p-2 mr-2'
       onChange={(e) => {
-        const selectedProduct = productData.find((product) => product.id === e.target.value);
+        const selectedProduct = products.find((product) => product.id === e.target.value);
         setSelectedProduct(selectedProduct ?? null);
       }}
     >

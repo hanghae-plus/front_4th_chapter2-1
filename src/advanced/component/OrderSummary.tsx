@@ -1,4 +1,3 @@
-import React from 'react';
 import { Product } from '../type/type';
 
 export const OrderSummary = ({ cartItems }: { cartItems: Product[] }) => {
