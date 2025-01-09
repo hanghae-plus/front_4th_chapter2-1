@@ -13,15 +13,16 @@ const PRODUCT_DISCOUNT_RATES: DiscountRates = {
 
 export const TUESDAY_DISCOUNT_RATE = 0.1;
 export const BULK_DISCOUNT_RATE = 0.25;
-export const QUANTITY_THRESHOLD_FOR_FINAL_AMOUNT = 30;
-const QUANTITY_THRESHOLD_FOR_TOTAL_AMOUNT = 10;
+
+export const QUANTITY_THRESHOLDS = {
+  BULK_PURCHASE: 30,
+  PRODUCT_DISCOUNT: 10,
+} as const;
 
 export const calculateCartPrice = (cartList: Product[]) => {
-  const { totalQuantity, totalAmount, totalDiscountedAmount } = getCartItemsInfo(cartList);
-
-  const { discountRate, bulkDiscountedAmount } = getDiscountedAmount(totalQuantity, totalAmount, totalDiscountedAmount);
-
-  const { finalAmount, finalDiscountRate } = getTuesdayDiscount(discountRate, bulkDiscountedAmount);
+  const totals = calculateCartTotals(cartList);
+  const bulkDiscount = calculateBulkDiscount(totals);
+  const { finalAmount, finalDiscountRate } = applyTuesdayDiscount(bulkDiscount);
 
   // 재고 함수 호출
   // updateStockInfo();
@@ -32,88 +33,76 @@ export const calculateCartPrice = (cartList: Product[]) => {
   return { finalAmount, finalDiscountRate };
 };
 
-function getCartItemsInfo(cartList: Product[]) {
-  let totalQuantity = 0;
-  let totalAmount = 0;
-  let totalDiscountedAmount = 0;
+const calculateCartTotals = (cartList: Product[]) => {
+  return cartList.reduce(
+    (acc, item) => {
+      const itemTotal = item.amount * item.quantity;
+      const discountRate = calculateTotalDiscountRate(item);
+      const discountedAmount = itemTotal * (1 - discountRate);
 
-  const sumQuantity = createSum();
-  const sumAmount = createSum();
-  const sumDiscountedAmount = createSum();
+      return {
+        totalQuantity: acc.totalQuantity + item.quantity,
+        totalAmount: acc.totalAmount + itemTotal,
+        totalDiscountedAmount: acc.totalDiscountedAmount + discountedAmount,
+      };
+    },
+    { totalQuantity: 0, totalAmount: 0, totalDiscountedAmount: 0 },
+  );
+};
 
-  for (const cartItem of cartList) {
-    const { amount, quantity } = cartItem;
+function calculateTotalDiscountRate(item: Product) {
+  if (item.quantity < QUANTITY_THRESHOLDS.PRODUCT_DISCOUNT) return 0;
+  return PRODUCT_DISCOUNT_RATES[item.id as ProductId] ?? 0;
+}
 
-    const cartItemTotalAmount = amount * quantity;
-    const discountRate = calculateTotalDiscountRate(quantity, cartItem.id as ProductId);
-
-    totalQuantity = sumQuantity(cartItem.quantity);
-    totalAmount = sumAmount(cartItemTotalAmount);
-    totalDiscountedAmount = sumDiscountedAmount(cartItemTotalAmount * (1 - discountRate));
-  }
-
+const calculateRegularDiscount = (totalAmount: number, totalDiscountedAmount: number) => {
   return {
-    totalQuantity,
-    totalAmount,
-    totalDiscountedAmount,
+    discountRate: (totalAmount - totalDiscountedAmount) / totalAmount,
+    finalDiscountedAmount: totalDiscountedAmount,
   };
-}
-
-function getProductBaseDiscountRate(productId: ProductId): number {
-  return PRODUCT_DISCOUNT_RATES[productId] ?? 0;
-}
-
-function isOverDiscountQuantity(quantity: number): boolean {
-  return quantity >= QUANTITY_THRESHOLD_FOR_TOTAL_AMOUNT;
-}
-
-function calculateTotalDiscountRate(quantity: number, id: ProductId) {
-  const baseDiscountRate = getProductBaseDiscountRate(id);
-  return isOverDiscountQuantity(quantity) ? baseDiscountRate : 0;
-}
-
-function createSum() {
-  let sum = 0;
-
-  return (value: number) => {
-    return (sum += value);
-  };
-}
+};
 
 // 대량 구매 할인 로직
-function getDiscountedAmount(totalQuantity: number, totalAmount: number, totalDiscountedAmount: number) {
-  let discountRate = 0;
-  let finalAmount = totalAmount;
+function calculateBulkDiscount(totals: ReturnType<typeof calculateCartTotals>) {
+  const { totalQuantity, totalAmount, totalDiscountedAmount } = totals;
 
-  if (totalQuantity >= QUANTITY_THRESHOLD_FOR_FINAL_AMOUNT) {
+  if (totalQuantity <= QUANTITY_THRESHOLDS.BULK_PURCHASE) {
+    return calculateRegularDiscount(totalAmount, totalDiscountedAmount);
+  }
+
+  if (totalQuantity >= QUANTITY_THRESHOLDS.BULK_PURCHASE) {
     const bulkDiscountAmount = totalAmount * BULK_DISCOUNT_RATE;
-    const individualDiscountAmount = totalAmount - totalDiscountedAmount;
+    const discountAmount = totalAmount - totalDiscountedAmount;
 
-    if (bulkDiscountAmount > individualDiscountAmount) {
-      finalAmount = totalAmount * (1 - BULK_DISCOUNT_RATE);
-      discountRate = BULK_DISCOUNT_RATE;
-    } else {
-      discountRate = (totalAmount - totalDiscountedAmount) / totalAmount;
-    }
-  } else {
-    discountRate = (totalAmount - totalDiscountedAmount) / totalAmount;
+    return bulkDiscountAmount > discountAmount
+      ? {
+          discountRate: BULK_DISCOUNT_RATE,
+          finalDiscountedAmount: totalAmount * (1 - BULK_DISCOUNT_RATE),
+        }
+      : calculateRegularDiscount(totalAmount, totalDiscountedAmount);
   }
 
   return {
-    discountRate,
-    bulkDiscountedAmount: finalAmount,
+    discountRate: 0,
+    finalDiscountedAmount: totalDiscountedAmount,
   };
 }
 
 // 화요일 할인 로직
-function getTuesdayDiscount(discountRate: number, bulkDiscountedAmount: number) {
-  const isTuesday = new Date().getDay() === 2;
-  let finalAmount = bulkDiscountedAmount;
+function applyTuesdayDiscount(total: ReturnType<typeof calculateBulkDiscount>) {
+  let { discountRate, finalDiscountedAmount } = total;
 
-  if (isTuesday) {
-    finalAmount *= 1 - 0.1;
-    discountRate = Math.max(discountRate, 0.1);
+  const isTuesday = new Date().getDay() === 2;
+
+  if (!isTuesday) {
+    return {
+      finalAmount: finalDiscountedAmount,
+      finalDiscountRate: discountRate,
+    };
   }
 
-  return { finalAmount, finalDiscountRate: discountRate };
+  return {
+    finalAmount: (finalDiscountedAmount *= 1 - 0.1),
+    finalDiscountRate: (discountRate = Math.max(discountRate, 0.1)),
+  };
 }
