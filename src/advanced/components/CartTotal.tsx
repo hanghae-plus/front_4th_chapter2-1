@@ -1,6 +1,12 @@
 import { ELEMENT_IDS } from "@/constants/element-id";
 
-const CartTotal = ({ amount, discountRate, point }) => {
+interface CartTotalProps {
+  amount: number;
+  discountRate: number;
+  point: number;
+}
+
+const CartTotal = ({ amount, discountRate, point }:CartTotalProps) => {
   return (
     <div className="text-xl font-bold my-4">
       총액: ${Math.round(amount)}원
