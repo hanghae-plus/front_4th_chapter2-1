@@ -3,18 +3,19 @@ import { createElement } from '@/utils/createElement';
 
 import { calcCart } from '@utils/calcCart';
 
-const CartItems = (): HTMLDivElement => {
-  const cartItems = createElement('div', {
+const CartList = (): HTMLDivElement => {
+  const container = createElement('div', {
     id: 'cart-items',
-  }) as HTMLDivElement;
+  });
 
-  cartItems.addEventListener('click', (event: Event) => {
+  container.addEventListener('click', (event: Event) => {
     const target = event.target as HTMLElement;
 
     if (target.classList.contains('quantity-change') || target.classList.contains('remove-item')) {
       const productId = target.dataset.productId;
 
       if (!productId) return;
+
       const itemElement = document.getElementById(productId);
 
       if (!itemElement) return;
@@ -70,11 +71,11 @@ const CartItems = (): HTMLDivElement => {
 
         itemElement.remove();
       }
+      calcCart();
     }
-    calcCart();
   });
 
-  return cartItems;
+  return container;
 };
 
-export default CartItems;
+export default CartList;

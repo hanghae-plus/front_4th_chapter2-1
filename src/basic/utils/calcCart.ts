@@ -1,9 +1,5 @@
-import CartTotal from '@/components/CartTotal';
-import Stock from '@/components/Stock';
 import { cartStore } from '@/stores/cartStore';
 import { DISCOUNT_RATES } from '@/types/constant';
-
-import BonusPoint from '@components/Point';
 
 export const calcCart = () => {
   let totalAmount = 0;
@@ -35,10 +31,11 @@ export const calcCart = () => {
 
         itemCount += stock;
         subTotal += itemTotal;
+
         if (stock >= 10) {
           discount = DISCOUNT_RATES[currentItem.id];
-          totalAmount += itemTotal * (1 - discount);
         }
+        totalAmount += itemTotal * (1 - discount);
       }
     })();
   }
@@ -58,6 +55,7 @@ export const calcCart = () => {
   } else {
     discountRate = (subTotal - totalAmount) / subTotal;
   }
+
   if (new Date().getDay() === 2) {
     totalAmount *= 1 - 0.1;
     discountRate = Math.max(discountRate, 0.1);
@@ -65,8 +63,5 @@ export const calcCart = () => {
 
   cartStore.set('totalAmount', totalAmount);
   cartStore.set('itemCount', itemCount);
-
-  CartTotal({ totalAmount: totalAmount, discountRate: discountRate });
-  Stock();
-  BonusPoint();
+  cartStore.set('discountRate', discountRate);
 };

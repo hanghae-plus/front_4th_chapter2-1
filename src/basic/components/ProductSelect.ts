@@ -1,31 +1,27 @@
 import { cartStore } from '@/stores/cartStore';
 import { createElement } from '@/utils/createElement';
 
-const ProductSelect = () => {
-  const productSelect = document.getElementById('product-select');
+export const ProductSelect = (): HTMLSelectElement => {
+  const container = createElement('select', {
+    id: 'product-select',
+    class: 'border rounded p-2 mr-2',
+  }) as HTMLSelectElement;
 
-  if (!productSelect) return;
-
-  const updateOptions = () => {
-    productSelect.innerHTML = '';
+  const render = () => {
     const productList = cartStore.get('productList');
 
-    productList.forEach((product) => {
-      const option = createElement(
-        'option',
-        {
-          value: product.id,
-          disabled: product.stock === 0 ? 'true' : undefined,
-        },
-        `${product.name} - ${product.price}원`
-      );
-
-      productSelect.appendChild(option);
-    });
+    container.innerHTML = productList
+      .map(
+        (product) =>
+          `<option value="${product.id}" ${product.stock === 0 ? 'disabled' : ''}>${product.name} - ${product.price}원</option>`
+      )
+      .join('');
   };
 
-  updateOptions();
-  cartStore.subscribe('productList', updateOptions);
+  render();
+  cartStore.subscribe('productList', render);
+
+  return container;
 };
 
 export default ProductSelect;

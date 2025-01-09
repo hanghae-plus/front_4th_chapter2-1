@@ -5,8 +5,7 @@ import { cartStore } from '@/stores/cartStore';
 import { createElement } from '@/utils/createElement';
 
 import AddToCartButton from '@components/AddToCartButton';
-import CartItems from '@components/CartItems';
-import Point from '@components/Point';
+import CartList from '@components/CartList';
 
 const Cart = () => {
   const root = document.getElementById('app');
@@ -27,33 +26,9 @@ const Cart = () => {
     '장바구니'
   );
 
-  const cartItems = CartItems();
-
-  const cartTotal = createElement('div', {
-    id: 'cart-total',
-    class: 'text-xl font-bold my-4',
-  });
-
-  const productSelect = createElement('select', {
-    id: 'product-select',
-    class: 'border rounded p-2 mr-2',
-  });
-
-  const addToCartButton = AddToCartButton();
-
-  const stockStatus = createElement('div', {
-    id: 'stock-status',
-    class: 'text-sm text-gray-500 mt-2',
-  });
-
-  subContainer.append(header, cartItems, cartTotal, productSelect, addToCartButton, stockStatus);
+  subContainer.append(header, CartList(), ProductSelect(), AddToCartButton(), Stock(), CartTotal());
   container.appendChild(subContainer);
   root!.appendChild(container);
-
-  CartTotal({ totalAmount: 0, discountRate: 0 });
-  ProductSelect();
-  Point();
-  Stock();
 
   setTimeout(() => {
     setInterval(() => {

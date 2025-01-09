@@ -1,6 +1,8 @@
 import { cartStore } from '@/stores/cartStore';
 import { createElement } from '@/utils/createElement';
 
+import { calcCart } from '@utils/calcCart';
+
 const AddToCartButton = (): HTMLButtonElement => {
   const addToCartButton = createElement(
     'button',
@@ -65,6 +67,7 @@ const AddToCartButton = (): HTMLButtonElement => {
 
       cartStore.set('lastSaleItem', selectedId);
     }
+    calcCart();
   });
 
   return addToCartButton;
