@@ -1,4 +1,4 @@
-import CartTotal from "./components/CartTotal";
+import { CartTotal } from "./components/CartTotal";
 import { NewItem } from "./components/NewItem";
 import { ProductOptions } from "./components/ProductOptions";
 import { StockStatus } from "./components/StockStatus";
