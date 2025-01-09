@@ -1,5 +1,5 @@
-interface CreateElementProps {
-  tag: string;
+interface CreateElementProps<T extends keyof HTMLElementTagNameMap> {
+  tag: T;
   id?: string;
   className?: string;
   textContent?: string;
@@ -7,19 +7,22 @@ interface CreateElementProps {
   innerHTML?: string;
 }
 
-export function createStyledElement({
+export function createStyledElement<T extends keyof HTMLElementTagNameMap>({
   tag,
   id,
   className,
   textContent,
   value,
   innerHTML,
-}: CreateElementProps): HTMLElement {
+}: CreateElementProps<T>): HTMLElementTagNameMap[T] {
   const element = document.createElement(tag);
 
   if (id) element.id = id;
   if (className) element.className = className;
   if (tag === 'option' && value) {
+    (element as HTMLOptionElement).value = value as string;
+  }
+  if (tag === 'select' && value) {
     (element as HTMLSelectElement).value = value as string;
   }
   if (textContent) element.textContent = textContent;
