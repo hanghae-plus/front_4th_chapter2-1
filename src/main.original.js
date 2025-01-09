@@ -16,12 +16,32 @@ const LIGHTNING_SALE_DISCOUNT = 0.2;
 const SUGGESTION_DISCOUNT = 0.05;
 const POINT_CONVERSION = 1000;
 
-// 상태 변수
-let productList = [],
-  lastSelected = null,
-  bonusPoints = 0,
-  totalAmount = 0,
-  itemCount = 0;
+// 초기 상품 데이터
+const initialProductList = [
+  { id: 'p1', name: '상품1', price: 10000, stock: 50 },
+  { id: 'p2', name: '상품2', price: 20000, stock: 30 },
+  { id: 'p3', name: '상품3', price: 30000, stock: 20 },
+  { id: 'p4', name: '상품4', price: 15000, stock: 0 },
+  { id: 'p5', name: '상품5', price: 25000, stock: 10 },
+];
+
+// 상태 관리 유틸리티
+const initialState = {
+  productList: [],
+  lastSelected: null,
+  bonusPoints: 0,
+  totalAmount: 0,
+  itemCount: 0,
+};
+
+const state = { ...initialState };
+
+const setState = (updates) => {
+  const newState = { ...state, ...updates };
+  Object.assign(state, newState);
+};
+
+const getState = () => ({ ...state });
 
 const elements = {};
 
@@ -34,13 +54,7 @@ const main = () => {
 };
 
 const initProductList = () => {
-  productList = [
-    { id: 'p1', name: '상품1', price: 10000, stock: 50 },
-    { id: 'p2', name: '상품2', price: 20000, stock: 30 },
-    { id: 'p3', name: '상품3', price: 30000, stock: 20 },
-    { id: 'p4', name: '상품4', price: 15000, stock: 0 },
-    { id: 'p5', name: '상품5', price: 25000, stock: 10 },
-  ];
+  setState({ productList: initialProductList });
 };
 
 const initDOMElements = () => {
@@ -54,7 +68,10 @@ const initDOMElements = () => {
     textContent: '장바구니',
   });
   elements.cartItems = createElement('div', { id: 'cart-items' });
-  elements.total = createElement('div', { id: 'cart-total', className: 'text-xl font-bold my-4' });
+  elements.cartTotal = createElement('div', {
+    id: 'cart-total',
+    className: 'text-xl font-bold my-4',
+  });
   elements.productSelect = createElement('select', {
     id: 'product-select',
     className: 'border rounded p-2 mr-2',
@@ -75,7 +92,7 @@ const renderUI = () => {
   elements.wrapper.append(
     elements.title,
     elements.cartItems,
-    elements.total,
+    elements.cartTotal,
     elements.productSelect,
     elements.addToCartButton,
     elements.stockStatus
@@ -92,6 +109,7 @@ const initializeEventListeners = () => {
 
 const updateProductOptions = () => {
   elements.productSelect.innerHTML = '';
+  const { productList } = getState();
   productList.forEach(({ id, name, price, stock }) => {
     const option = createElement('option', {
       value: id,
@@ -103,17 +121,17 @@ const updateProductOptions = () => {
 };
 
 const calculateCart = () => {
-  totalAmount = 0;
-  itemCount = 0;
-  const cartItems = Array.from(elements.cartItems.children);
+  setState({ totalAmount: 0, itemCount: 0 });
+  elements.cartTotal.textContent = '';
+
   let subTotal = 0;
   let maxDiscountRate = 0;
-
-  elements.total.textContent = '';
+  const cartItems = Array.from(elements.cartItems.children);
 
   cartItems.forEach((item) => {
     const productId = item.id;
     const quantity = parseInt(item.querySelector('span').textContent.split('x ')[1]);
+    const { itemCount, productList, totalAmount } = getState();
     const product = productList.find((p) => p.id === productId);
 
     const itemTotal = product.price * quantity;
@@ -121,13 +139,13 @@ const calculateCart = () => {
 
     if (quantity >= 10) {
       discount = DISCOUNTS.PRODUCT[productId] || 0;
-      totalAmount += itemTotal * (1 - discount);
+      setState({ totalAmount: totalAmount + itemTotal * (1 - discount) });
     } else {
-      totalAmount += itemTotal;
+      setState({ totalAmount: totalAmount + itemTotal });
     }
 
     maxDiscountRate = Math.max(maxDiscountRate, discount);
-    itemCount += quantity;
+    setState({ itemCount: itemCount + quantity });
     subTotal += itemTotal;
   });
 
@@ -137,13 +155,14 @@ const calculateCart = () => {
 
 const applyBulkAndSpecialDiscounts = (subTotal, maxDiscountRate) => {
   let discountRate = maxDiscountRate;
+  const { itemCount, totalAmount } = getState();
 
   if (itemCount >= 30) {
     const bulkDiscount = subTotal * DISCOUNTS.BULK;
     const itemDiscount = subTotal - totalAmount;
 
     if (bulkDiscount > itemDiscount) {
-      totalAmount = subTotal * (1 - DISCOUNTS.BULK);
+      setState({ totalAmount: subTotal * (1 - DISCOUNTS.BULK) });
       discountRate = DISCOUNTS.BULK;
     } else {
       discountRate = itemDiscount / subTotal;
@@ -151,23 +170,24 @@ const applyBulkAndSpecialDiscounts = (subTotal, maxDiscountRate) => {
   }
 
   if (new Date().getDay() === 2) {
-    totalAmount *= 1 - DISCOUNTS.TUESDAY;
+    setState({ totalAmount: totalAmount * (1 - DISCOUNTS.TUESDAY) });
     discountRate = Math.max(discountRate, DISCOUNTS.TUESDAY);
   }
 
-  elements.total.textContent = `총액: ${Math.round(totalAmount)}원`;
+  elements.cartTotal.textContent = `총액: ${Math.round(totalAmount)}원`;
   if (discountRate > 0) {
     const discountInfo = createElement('span', {
       className: 'text-green-500 ml-2',
       textContent: `(${(discountRate * 100).toFixed(1)}% 할인 적용)`,
     });
-    elements.total.appendChild(discountInfo);
+    elements.cartTotal.appendChild(discountInfo);
   }
   updateStockInfo();
   updateBonusPoints();
 };
 
 const updateCartSummary = (subTotal) => {
+  const { itemCount } = getState();
   const summaryText = `총 ${itemCount}개 상품, 소계: ${Math.round(subTotal)}원`;
   const summaryElement = createElement('div', {
     id: 'cart-summary',
@@ -179,12 +199,15 @@ const updateCartSummary = (subTotal) => {
   if (existingSummary) {
     existingSummary.replaceWith(summaryElement);
   } else {
-    elements.total.insertAdjacentElement('afterend', summaryElement);
+    elements.cartTotal.insertAdjacentElement('afterend', summaryElement);
   }
 };
 
 const updateBonusPoints = () => {
-  bonusPoints = Math.floor(totalAmount / POINT_CONVERSION);
+  const { totalAmount, bonusPoints } = getState();
+  const newBonusPoints = Math.floor(totalAmount / POINT_CONVERSION);
+  setState({ bonusPoints: newBonusPoints });
+
   let pointsTag = document.getElementById('loyalty-points');
 
   if (!pointsTag) {
@@ -192,13 +215,14 @@ const updateBonusPoints = () => {
       id: 'loyalty-points',
       className: 'text-blue-500 ml-2',
     });
-    elements.total.appendChild(pointsTag);
+    elements.cartTotal.appendChild(pointsTag);
   }
 
-  pointsTag.textContent = `(포인트: ${bonusPoints})`;
+  pointsTag.textContent = `(포인트: ${newBonusPoints})`;
 };
 
 const updateStockInfo = () => {
+  const { productList } = getState();
   const infoMessages = productList
     .filter(({ stock }) => stock < 5)
     .map(({ name, stock }) => `${name}: ${stock > 0 ? `재고 부족 (${stock}개 남음)` : '품절'}`);
@@ -207,6 +231,7 @@ const updateStockInfo = () => {
 };
 
 const addToCart = () => {
+  const { productList } = getState();
   const selectedId = elements.productSelect.value;
   const selectedProduct = productList.find((p) => p.id === selectedId);
 
@@ -228,13 +253,14 @@ const addToCart = () => {
     }
 
     calculateCart();
-    lastSelected = selectedId;
+    setState({ lastSelected: selectedId });
   }
 };
 
 const handleCartActions = (event) => {
   const target = event.target;
   const productId = target.dataset.productId;
+  const { productList } = getState();
   const product = productList.find((p) => p.id === productId);
   const itemElement = document.getElementById(productId);
 
@@ -286,6 +312,7 @@ const updateCartItem = (itemElement, product, quantity) => {
 const applyDynamicSales = () => {
   setInterval(() => {
     if (Math.random() < LIGHTNING_SALE_PROB) {
+      const { productList } = getState();
       const saleProduct = productList.find((p) => p.stock > 0);
 
       if (saleProduct) {
@@ -299,6 +326,7 @@ const applyDynamicSales = () => {
   }, 30000);
 
   setInterval(() => {
+    const { lastSelected, productList } = getState();
     if (lastSelected) {
       const suggestion = productList.find((p) => p.id !== lastSelected && p.stock > 0);
 
