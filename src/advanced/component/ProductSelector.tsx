@@ -17,9 +17,9 @@ export const ProductSelector = ({
         setSelectedProduct(selectedProduct ?? null);
       }}
     >
-      <option value={''}>상품을 선택하세요</option>
+      <option value={'placeholder'}>상품을 선택하세요</option>
       {products.map((product) => (
-        <option key={product.id} value={product.id}>
+        <option key={product.id} value={product.id} disabled={product.quantity === 0}>
           {product.name} - {product.price}원
         </option>
       ))}
