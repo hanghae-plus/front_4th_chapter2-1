@@ -41,9 +41,10 @@ function main() {
   calcCart();
   setTimeout(function () {
     setInterval(function () {
-      var luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
-      if (Math.random() < 0.3 && luckyItem.q > 0) {
-        luckyItem.val = Math.round(luckyItem.val * 0.8);
+      var luckyItem =
+        PRODUCT_LIST[Math.floor(Math.random() * PRODUCT_LIST.length)];
+      if (Math.random() < 0.3 && luckyItem.stock > 0) {
+        luckyItem.cost = Math.round(luckyItem.cost * 0.8);
         alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
         updateSelOpts();
       }
@@ -52,14 +53,14 @@ function main() {
   setTimeout(function () {
     setInterval(function () {
       if (lastSel) {
-        var suggest = prodList.find(function (item) {
-          return item.id !== lastSel && item.q > 0;
+        var suggest = PRODUCT_LIST.find(function (item) {
+          return item.id !== lastSel && item.stock > 0;
         });
         if (suggest) {
           alert(
             suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!"
           );
-          suggest.val = Math.round(suggest.val * 0.95);
+          suggest.cost = Math.round(suggest.cost * 0.95);
           updateSelOpts();
         }
       }
