@@ -8,6 +8,7 @@ interface CartContextType {
   addCartItem: (item: Product) => void;
   clearCartItem: (id: string) => void;
   removeCartItem: (id: string) => void;
+  getTotalAmount: () => number;
 }
 
 export const cartContext = createContext<CartContextType | undefined>(undefined);
@@ -42,6 +43,14 @@ export const useClearCartItem = () => {
     throw new Error('useClearCartItem must be used within an CartProvider');
   }
   return context.clearCartItem;
+};
+
+export const useGetTotalAmount = () => {
+  const context = useContext(cartContext);
+  if (context === undefined) {
+    throw new Error('useGetTotalAmount must be used within an CartProvider');
+  }
+  return context.getTotalAmount();
 };
 
 export const CartProvider = ({ children }: PropsWithChildren) => {
@@ -101,14 +110,19 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
     [cartList, clearCartItem, getMatchedCartItemById],
   );
 
+  const getTotalAmount = useCallback(() => {
+    return cartList.reduce((sum, cart) => sum + cart.amount * cart.quantity, 0);
+  }, [cartList]);
+
   const contextValue = useMemo(() => {
     return {
       addCartItem,
       clearCartItem,
       removeCartItem,
+      getTotalAmount,
       cartList,
     };
-  }, [addCartItem, clearCartItem, removeCartItem, cartList]);
+  }, [addCartItem, clearCartItem, removeCartItem, getTotalAmount, cartList]);
 
   return <cartContext.Provider value={contextValue}>{children}</cartContext.Provider>;
 };

@@ -1,9 +1,12 @@
+import { useGetTotalAmount } from '../../contexts/cart-context/CartProvider';
+
 // dummy
-const totalAmount = 1000;
 const point = 0;
 const totalDiscountRate = 0.1;
 
 export const TotalPrice = () => {
+  const totalAmount = useGetTotalAmount();
+
   const isShowDiscount = totalDiscountRate > 0;
 
   return (
