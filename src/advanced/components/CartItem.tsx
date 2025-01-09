@@ -1,5 +1,12 @@
 
-const CartItem = ({ id, name, price, quantity }) => {
+interface CartItemProps {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+const CartItem = ({ id, name, price, quantity }:CartItemProps) => {
   return (
     <div id={id} className="flex justify-between items-center mb-2">
       <span>{name} - {price}원 x {quantity}</span>
