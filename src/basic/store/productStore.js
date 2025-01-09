@@ -10,7 +10,7 @@ export const productStore = (() => {
       { id: "p5", name: "상품5", price: 25000, stock: 10 },
     ],
     selectedProductId: null,
-    discountInfo: {
+    discountInformation: {
       isFlashSale: false,
       flashSaleProductId: null,
       suggestedProductId: null,
