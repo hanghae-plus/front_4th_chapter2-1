@@ -5,7 +5,7 @@ import { Item } from '../../types';
 import { calculateCartSummary } from '../../utils/calculateCartSummary';
 
 function ProductSelector() {
-  const { productList, cartList, updateProductList, updateCartList, updateTotalAmount, updateDiscountRate } = useCartContext();
+  const { productList, cartList, updateProductList, updateCartList, updateTotalAmount, updateDiscountRate, setCurrentSelect } = useCartContext();
 
   const [selectedId, setSelectedId] = useState<string>(productList[0]?.id || '');
 
@@ -18,6 +18,7 @@ function ProductSelector() {
       return;
     }
 
+    setCurrentSelect(selectedId);
     updateProductStock(product);
     updateCartItems(product);
   };

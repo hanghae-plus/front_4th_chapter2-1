@@ -2,13 +2,13 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 import { Item } from '../types';
 
 interface CartContextProps {
-  lastSel: string | null;
+  currentSelect: string | null;
   totalAmount: number;
   discountRate: number;
   itemCount: number;
   productList: Item[];
   cartList: Item[];
-  setLastSel: (id: string | null) => void;
+  setCurrentSelect: (id: string | null) => void;
   updateTotalAmount: (amount: number) => void;
   updateDiscountRate: (rate: number) => void;
   updateItemCount: (count: number) => void;
@@ -19,7 +19,7 @@ interface CartContextProps {
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [lastSel, setLastSel] = useState<string | null>(null);
+  const [currentSelect, setCurrentSelect] = useState<string | null>(null);
   const [totalAmount, setTotalAmount] = useState(0);
   const [discountRate, setDiscountRate] = useState(0);
   const [itemCount, setItemCount] = useState(0);
@@ -33,13 +33,13 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [cartList, setCartList] = useState<Item[]>([]);
 
   const value = {
-    lastSel,
+    currentSelect,
     totalAmount,
     discountRate,
     itemCount,
     productList,
     cartList,
-    setLastSel,
+    setCurrentSelect,
     updateTotalAmount: setTotalAmount,
     updateDiscountRate: setDiscountRate,
     updateItemCount: setItemCount,
