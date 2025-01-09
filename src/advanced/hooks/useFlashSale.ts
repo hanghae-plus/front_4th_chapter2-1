@@ -15,13 +15,14 @@ const getRandomItemWithStock = (items: Product[]) => {
   return items[Math.floor(Math.random() * items.length)];
 };
 
-function shouldTriggerFlashSale() {
+const shouldTriggerFlashSale = () => {
   return Math.random() < FLASH_SALE.TRIGGER_PROBABILITY;
-}
+};
 
-function applyDiscount(item: Product) {
+// 원본 데이터를 직접 수정하고 있어서 좋지 않음
+const applyDiscount = (item: Product) => {
   item.originalPrice = Math.round(item.originalPrice * FLASH_SALE.DISCOUNT_RATE);
-}
+};
 
 export const useFlashSale = () => {
   const {
