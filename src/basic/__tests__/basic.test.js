@@ -21,7 +21,7 @@ describe('basic test', () => {
     });
 
     beforeEach(() => {
-      // vi.useRealTimers()
+      // vi.useRealTimers();
       vi.useFakeTimers();
       const mockDate = new Date('2025-1-6');
       vi.setSystemTime(mockDate);
