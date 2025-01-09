@@ -34,12 +34,16 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
       const matchedCartItem = cartList.find((cartItem) => cartItem.id === item.id);
 
       if (matchedCartItem) {
+        console.log('catch!');
         const newCartList = cartList.map((cartItem) =>
           cartItem.id === matchedCartItem.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem,
         );
 
         setCartList(newCartList);
+        return;
       }
+
+      setCartList((cartList) => [...cartList, { ...item, quantity: 1 }]);
     },
     [cartList],
   );
