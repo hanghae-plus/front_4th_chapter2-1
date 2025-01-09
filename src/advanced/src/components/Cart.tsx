@@ -11,7 +11,7 @@ const Cart = () => {
 
   return (
     <div>
-      <div>
+      <div id="cart-items">
         {[...items.entries()].map(([id, { quantity }], i) => (
           <CartItem key={i} id={id} quantity={quantity} />
         ))}
