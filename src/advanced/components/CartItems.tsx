@@ -47,6 +47,7 @@ export const CartItems = () => {
     <div id='cart-items'>
       {cartItems.map((cartItem) => (
         <CartItem
+          key={cartItem.id}
           cartItem={cartItem}
           onIncreaseClick={handleIncreaseClick(cartItem)}
           onDecreaseClick={handleDecreaseClick(cartItem)}
