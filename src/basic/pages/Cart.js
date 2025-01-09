@@ -7,7 +7,7 @@ import {
   CartItem,
 } from "../components/Cart";
 import { cartStore, productStore } from "../store";
-import { combineStyles } from "../utils";
+import { calculateCart, combineStyles } from "../utils";
 
 export const Cart = () => {
   // Q. return 될 때 리터럴, DOM 노드를 반환 어느 것을 선택해야할까 ?
@@ -15,18 +15,29 @@ export const Cart = () => {
   // 어떤것을 선택해야할지 질문이 필요할 것 같다.
 
   const $cartContainer = document.createElement("div");
-  const cartContainerStyles = combineStyles("bg-gray-100 p-8");
-  $cartContainer.className = cartContainerStyles;
-
   const $cartWrapper = document.createElement("div");
-  $cartWrapper.className =
-    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
+
+  const cartContainerStyles = combineStyles("bg-gray-100", "p-8");
+  const cartWrapperStyles = combineStyles(
+    "max-w-md",
+    "mx-auto",
+    "bg-white",
+    "rounded-xl",
+    "shadow-md",
+    "overflow-hidden",
+    "md:max-w-2xl",
+    "p-8",
+  );
+
+  $cartContainer.className = cartContainerStyles;
+  $cartWrapper.className = cartWrapperStyles;
 
   // 컴포넌트 생성 및 참조 저장
   const $header = CartHeader();
   const $cartItems = CartItem();
   const $cartSummary = CartSummary();
-  const $productSelect = ProductSelect();
+  const { $productSelect, initialize: productSelectInitialize } =
+    ProductSelect();
   const $addButton = ProductAddButton();
   const $stockInfo = StockInformation();
 
@@ -39,34 +50,14 @@ export const Cart = () => {
   $cartWrapper.appendChild($stockInfo);
   $cartContainer.appendChild($cartWrapper);
 
-  // initialize 함수 호출
-  const productList = productStore.getProducts();
-  const { itemCnt, totalAmt, bonusPts } = cartStore.getCartState();
+  // 초기화
+  productSelectInitialize();
+  calculateCart();
 
-  const updateSelOpts = () => {
-    $productSelect.innerHTML = "";
-    productList.forEach(function (item) {
-      const $productOption = document.createElement("option");
-      $productOption.value = item.id;
-      $productOption.textContent = item.name + " - " + item.val + "원";
-      if (item.q === 0) $productOption.disabled = true;
-      $productSelect.appendChild($productOption);
-    });
-  };
-
-  const updateStockInfo = () => {
-    var infoMsg = "";
-    productList.forEach(function (item) {
-      if (item.q < 5) {
-        infoMsg +=
-          item.name +
-          ": " +
-          (item.q > 0 ? "재고 부족 (" + item.q + "개 남음)" : "품절") +
-          "\n";
-      }
-    });
-    $stockInfo.textContent = infoMsg;
-  };
+  /**
+   *
+   * 여기까지
+   */
 
   const renderBonusPts = () => {
     const { totalAmt, itemCnt } = cartStore.getCartState();
