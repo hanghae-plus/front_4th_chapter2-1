@@ -13,16 +13,22 @@ export function useProducts() {
   ];
 
   let products = [...initialProducts];
+  let lastSelectedId = products.length ? products[0].id : null;
   let subscribers = new Set();
 
   const notifySubscribers = () => {
     subscribers.forEach((callback) => callback(products));
   };
 
+  const selectProduct = (productId) => {
+    lastSelectedId = productId;
+  };
+
   const updateProductPrice = (productId, newPrice) => {
     products = products.map((product) =>
       product.id === productId ? { ...product, price: newPrice } : product,
     );
+    console.log(productId, newPrice, products);
     notifySubscribers();
   };
 
@@ -41,10 +47,12 @@ export function useProducts() {
   };
 
   instance = {
+    lastSelectedId,
     getProducts: () => [...products],
     updatePrice: updateProductPrice,
     updateQuantity: updateProductQuantity,
     subscribeProduct: subscribe,
+    selectProduct,
   };
 
   return instance;

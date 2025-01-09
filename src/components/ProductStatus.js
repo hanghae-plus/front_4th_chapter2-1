@@ -1,8 +1,13 @@
-function ProductStatus({ products }) {
+import { useProducts } from '../hooks/useProduct.js';
+
+function ProductStatus() {
   const element = document.createElement('div');
   element.className = 'text-sm text-gray-500 mt-2';
 
   const render = () => {
+    const { getProducts } = useProducts();
+    const products = getProducts();
+
     element.innerHTML = products
       .filter((product) => product.quantity === 0)
       .map((product) => `<span>${product.id}: 품절</span>`)

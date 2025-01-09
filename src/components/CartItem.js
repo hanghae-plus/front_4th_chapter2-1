@@ -1,4 +1,4 @@
-import { useCart } from '../state/useCart.js';
+import { useCart } from '../hooks/useCart.js';
 
 export function CartItem({ product, quantity }) {
   const element = document.createElement('div');

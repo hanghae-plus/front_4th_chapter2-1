@@ -1,11 +1,16 @@
-export function CartSummary({ cartItems }) {
+import { useCart } from '../hooks/useCart.js';
+
+export function CartSummary() {
   const element = document.createElement('div');
   element.className = 'text-xl font-bold my-4';
 
+  const { getCart } = useCart();
+
   const calSummary = () => {
+    const cart = getCart();
     let total = 0;
 
-    cartItems.forEach(({ product, quantity }) => {
+    cart.forEach(({ product, quantity }) => {
       const itemTotal = product.price * quantity;
       const discount = 0;
       total += itemTotal * (1 - discount);

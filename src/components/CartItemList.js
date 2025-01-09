@@ -1,12 +1,16 @@
 import { CartItem } from './CartItem.js';
+import { useCart } from '../hooks/useCart.js';
 
-export function CartItemList({ cartItems }) {
+export function CartItemList() {
   const element = document.createElement('ul');
 
   const render = () => {
+    const { getCart } = useCart();
+    const cart = getCart();
+
     element.innerHTML = '';
 
-    cartItems.forEach((item) => {
+    cart.forEach((item) => {
       const cartItem = CartItem({
         product: item.product,
         quantity: item.quantity,
