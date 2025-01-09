@@ -1,5 +1,5 @@
-import { addToCartClickHandler, alertLastSelEvent, alertSaleEvent, cartItemsClickHandler } from "./events";
 import MainPage from "./pages/MainPage";
+import { addToCartClickHandler, alertLastSelEvent, alertSaleEvent, cartItemsClickHandler } from "./events";
 import { renderToElement, scheduleInterval, calcCart, updateSelectOptions } from "./utils";
 
 let lastSel = 0;
