@@ -14,13 +14,20 @@ export const AddToCartButton = ({
 }) => {
   const product = products.find((p) => p.id === selectedProduct?.id);
   const handleAddToCart = () => {
-    if (!product) return;
+    if (!product || !selectedProduct) return;
     if (product.quantity <= 0) {
       alert('재고가 없습니다.');
       return;
     }
-    if (selectedProduct && selectedProduct.quantity > 0) {
-      setCartItems((prev) => [...prev, selectedProduct]);
+    if (product.quantity > 0) {
+      setCartItems((prev) => {
+        if (prev.some((p) => p.id === selectedProduct.id)) {
+          return prev.map((p) =>
+            p.id === selectedProduct.id ? { ...p, quantity: p.quantity + 1 } : p,
+          );
+        }
+        return [...prev, selectedProduct];
+      });
       setProducts((prev) =>
         prev.map((p) => (p.id === selectedProduct.id ? { ...p, quantity: p.quantity - 1 } : p)),
       );
