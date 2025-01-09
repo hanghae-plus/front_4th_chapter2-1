@@ -77,7 +77,7 @@ function updateSelOpts() {
   });
 }
 function calcCart() {
-  totalAmount = 0;
+  let totalAmount = 0;
   const cartItems = Array.from(cartDisp.children);
   const { subTotal, totalDiscount, itemCount, discountRate } =
     calculateCartTotals(cartItems);
@@ -90,8 +90,6 @@ function calcCart() {
   totalAmount *= 1 - finalDiscountRate;
 
   updateSummaryUI(totalAmount, finalDiscountRate);
-  updateStockInfo();
-  renderBonusPts();
 }
 
 const updateSummaryUI = (totalAmount, finalDiscountRate) => {
@@ -103,8 +101,10 @@ const updateSummaryUI = (totalAmount, finalDiscountRate) => {
     span.textContent = `(${(finalDiscountRate * 100).toFixed(1)}% 할인 적용)`;
     sum.appendChild(span);
   }
+  updateStockInfo();
+  renderBonusPts(totalAmount);
 };
-const renderBonusPts = () => {
+const renderBonusPts = (totalAmount) => {
   bonusPoints = Math.floor(totalAmount / 1000);
   var pointTag = document.getElementById("loyalty-points");
   if (!pointTag) {
