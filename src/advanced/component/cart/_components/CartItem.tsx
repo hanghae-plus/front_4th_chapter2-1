@@ -1,3 +1,4 @@
+import { QuantityControlButton } from './QuantityControlButton';
 import { useAddCartItem, useClearCartItem, useRemoveCartItem } from '../../../contexts/cart-context/CartProvider';
 
 import type { Product } from '../../../types/product';
@@ -31,22 +32,8 @@ export const CartItem = ({ item }: CartItemProps) => {
         {name} - {amount}원 x {quantity}
       </span>
       <div>
-        <button
-          className="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1"
-          data-product-id="${id}"
-          data-change="-1"
-          onClick={handleRemoveButtonClick}
-        >
-          -
-        </button>
-        <button
-          className="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1"
-          data-product-id="${id}"
-          data-change="1"
-          onClick={handleAddButtonClick}
-        >
-          +
-        </button>
+        <QuantityControlButton onClick={handleRemoveButtonClick}>-</QuantityControlButton>
+        <QuantityControlButton onClick={handleAddButtonClick}>+</QuantityControlButton>
         <button
           className="remove-item bg-red-500 text-white px-2 py-1 rounded"
           data-product-id={id}
