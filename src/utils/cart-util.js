@@ -10,8 +10,8 @@ import { createChildElement, createStyledElement } from './element-util';
 export function cartService() {
   // 장바구니 총액 계산 함수
   function calculateCartTotal(cart) {
-    cart.totalAmount = 0;
-    cart.itemCount = 0;
+    cart.totalAmt = 0;
+    cart.itemCnt = 0;
 
     const cartItems = Array.from(cart.cartDisplay.children);
     let subTotal = 0;
@@ -20,28 +20,28 @@ export function cartService() {
       const currentProduct = productList.find(
         (product) => product.id === item.id
       );
-      const cartItemQuantity = parseInt(
+      const cartItemQty = parseInt(
         item.querySelector('span').textContent.split('x ')[1]
       );
 
-      const itemTotal = currentProduct.price * cartItemQuantity;
+      const itemTotal = currentProduct.price * cartItemQty;
       let discountRate = 0;
-      cart.itemCount += cartItemQuantity;
+      cart.itemCnt += cartItemQty;
       subTotal += itemTotal;
 
-      if (cartItemQuantity >= 10) {
+      if (cartItemQty >= 10) {
         discountRate = discountRates[currentProduct.id];
       }
 
-      cart.totalAmount += itemTotal * (1 - discountRate);
+      cart.totalAmt += itemTotal * (1 - discountRate);
     });
 
     const totalDiscountRate = calculateDiscountRate(subTotal, cart);
 
-    const { totalAmount: finalAmount, totalDiscountRate: finalDiscountRate } =
-      applyWeeklyDiscount(cart.totalAmount, totalDiscountRate);
+    const { totalAmt: finalAmt, totalDiscountRate: finalDiscountRate } =
+      applyWeeklyDiscount(cart.totalAmt, totalDiscountRate);
 
-    cart.cartTotalPrice.textContent = '총액: ' + Math.round(finalAmount) + '원';
+    cart.cartTotalPrice.textContent = '총액: ' + Math.round(finalAmt) + '원';
 
     if (finalDiscountRate > 0) {
       const span = createStyledElement({
@@ -60,30 +60,30 @@ export function cartService() {
 
   // 대량 구매 할인 적용 함수
   function calculateDiscountRate(subTotal, cart) {
-    if (cart.itemCount >= 30) {
-      const bulkPurchaseDiscount = cart.totalAmount * BULK_DISCOUNT_RATE;
-      const itemSpecificDiscount = subTotal - cart.totalAmount;
+    if (cart.itemCnt >= 30) {
+      const bulkPurchaseDiscount = cart.totalAmt * BULK_DISCOUNT_RATE;
+      const itemSpecificDiscount = subTotal - cart.totalAmt;
       if (bulkPurchaseDiscount > itemSpecificDiscount) {
-        cart.totalAmount = subTotal * (1 - BULK_DISCOUNT_RATE);
+        cart.totalAmt = subTotal * (1 - BULK_DISCOUNT_RATE);
         return BULK_DISCOUNT_RATE;
       }
-      return (subTotal - cart.totalAmount) / subTotal;
+      return (subTotal - cart.totalAmt) / subTotal;
     }
-    return (subTotal - cart.totalAmount) / subTotal;
+    return (subTotal - cart.totalAmt) / subTotal;
   }
 
   // 화요일 추가 할인 적용 함수
-  function applyWeeklyDiscount(cartAmount, totalDiscountRate) {
+  function applyWeeklyDiscount(cartAmt, totalDiscountRate) {
     if (new Date().getDay() === TUESDAY) {
-      cartAmount *= 1 - 0.1;
+      cartAmt *= 1 - 0.1;
       totalDiscountRate = Math.max(totalDiscountRate, 0.1);
     }
-    return { totalAmount: cartAmount, totalDiscountRate };
+    return { totalAmt: cartAmt, totalDiscountRate };
   }
 
   // 보너스 포인트 렌더 함수
   function renderBonusPoints(cart) {
-    cart.bonusPoints = Math.floor(cart.totalAmount / POINT_RATE);
+    cart.bonusPoints = Math.floor(cart.totalAmt / POINT_RATE);
     let loyaltyPointsElement = document.getElementById('loyalty-points');
 
     if (!loyaltyPointsElement) {
@@ -103,12 +103,12 @@ export function cartService() {
     let stockStatusMessage = '';
 
     productList.forEach(function (product) {
-      if (product.quantity < 5) {
+      if (product.qty < 5) {
         stockStatusMessage +=
           product.name +
           ': ' +
-          (product.quantity > 0
-            ? '재고 부족 (' + product.quantity + '개 남음)'
+          (product.qty > 0
+            ? '재고 부족 (' + product.qty + '개 남음)'
             : '품절') +
           '\n';
       }
@@ -122,7 +122,7 @@ export function cartService() {
     const existingItem = document.getElementById(product.id);
 
     if (existingItem) {
-      updateCartProductQuantity(existingItem, cart, product);
+      updateCartProductQty(existingItem, product);
     } else {
       addNewCartProduct(cart, product);
     }
@@ -130,14 +130,13 @@ export function cartService() {
   }
 
   // 장바구니에 있는 제품의 수량을 업데이트하는 함수
-  function updateCartProductQuantity(existingItem, cart, product) {
-    const quantityElement = existingItem.querySelector('span');
-    const newQuantity =
-      parseInt(quantityElement.textContent.split('x ')[1]) + 1;
+  function updateCartProductQty(existingItem, product) {
+    const qtyElement = existingItem.querySelector('span');
+    const newQty = parseInt(qtyElement.textContent.split('x ')[1]) + 1;
 
-    if (newQuantity <= product.quantity) {
-      quantityElement.textContent = `${product.name} - ${product.price}원 x ${newQuantity}`;
-      product.quantity--;
+    if (newQty <= product.qty) {
+      qtyElement.textContent = `${product.name} - ${product.price}원 x ${newQty}`;
+      product.qty--;
       return;
     }
 
@@ -160,14 +159,18 @@ export function cartService() {
       `,
     });
     createChildElement(cart.cartDisplay, newItem);
-    product.quantity--;
+    product.qty--;
   }
 
   function updateCartTotal(cart) {
-    const totalAmount = cart.totalAmount;
+    const totalAmt = cart.totalAmt;
     const bonusPoints = cart.bonusPoints;
-    cart.cartTotalPrice.textContent = `Total: ${totalAmount}원 (Bonus: ${bonusPoints} Points)`;
+    cart.cartTotalPrice.textContent = `Total: ${totalAmt}원 (Bonus: ${bonusPoints} Points)`;
   }
 
-  return { updateCartTotal, addCartProduct, calculateCartTotal };
+  return {
+    updateCartTotal,
+    addCartProduct,
+    calculateCartTotal,
+  };
 }
