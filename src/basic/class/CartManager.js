@@ -18,6 +18,19 @@ export default class CartManager {
     this.initializePromotions();
   }
 
+  createCartItemElement(product, item) {
+    const divElement = document.createElement('div');
+    divElement.id = product.id;
+    divElement.className = 'flex justify-between items-center mb-2';
+    divElement.innerHTML = `<span>${product.name} - ${product.price}원 x ${item.quantity}</span><div>
+        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="-1">-</button>
+        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="1">+</button>
+        <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${product.id}">삭제</button>
+      </div>`;
+
+    return divElement;
+  }
+
   initializeElements() {
     this.productSelectElement = document.getElementById('product-select');
     this.addToCartButtonElement = document.getElementById('add-to-cart');
@@ -39,6 +52,46 @@ export default class CartManager {
     setTimeout(() => {
       setInterval(() => this.handleWowSaleAlert(), 30000);
     }, Math.random() * 10000);
+  }
+
+  handleRecommendedSaleAlert() {
+    if (!this.lastSelectedProduct) return;
+
+    const recommendedProduct = this.productList.find(
+      (product) => product.id !== this.lastSelectedProduct && product.stockQuantity > 0,
+    );
+
+    if (recommendedProduct) {
+      recommendedProduct.price = Math.round(
+        recommendedProduct.price * DISCOUNT_RATE.RECOMMEND_DISCOUNT,
+      );
+      alert(`${recommendedProduct.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
+      this.createProductSelectOptions();
+    }
+  }
+
+  createProductSelectOptions() {
+    this.productSelectElement.innerHTML = '';
+
+    this.productList.forEach((product) => {
+      const optionElement = document.createElement('option');
+
+      optionElement.value = product.id;
+      optionElement.textContent = `${product.name} - ${product.price}원`;
+      optionElement.disabled = product.stockQuantity === 0;
+
+      this.productSelectElement.appendChild(optionElement);
+    });
+  }
+
+  handleWowSaleAlert() {
+    const randomProduct = this.productList[Math.floor(Math.random() * this.productList.length)];
+
+    if (Math.random() < 0.3 && randomProduct.stockQuantity > 0) {
+      randomProduct.price = Math.round(randomProduct.price * DISCOUNT_RATE.WOW_DISCOUNT);
+      alert(`번개세일! ${randomProduct.name}이(가) 20%할인 중입니다!`);
+      this.createProductSelectOptions();
+    }
   }
 
   handleAddToCart() {
@@ -97,9 +150,8 @@ export default class CartManager {
       else {
         cartItem.quantity = newQuantity;
         product.stockQuantity -= quantityChange;
-        itemElement.querySelector(
-          'span',
-        ).textContent = `${product.name} - ${product.price}원 x ${newQuantity}`;
+        itemElement.querySelector('span').textContent =
+          `${product.name} - ${product.price}원 x ${newQuantity}`;
       }
     }
     // 상품을 삭제하는 경우
@@ -282,33 +334,6 @@ export default class CartManager {
     return Math.max(individualDiscount, tuesdayDiscount, bulkDiscount);
   }
 
-  createProductSelectOptions() {
-    this.productSelectElement.innerHTML = '';
-
-    this.productList.forEach((product) => {
-      const optionElement = document.createElement('option');
-
-      optionElement.value = product.id;
-      optionElement.textContent = `${product.name} - ${product.price}원`;
-      optionElement.disabled = product.stockQuantity === 0;
-
-      this.productSelectElement.appendChild(optionElement);
-    });
-  }
-
-  createCartItemElement(product, item) {
-    const divElement = document.createElement('div');
-    divElement.id = product.id;
-    divElement.className = 'flex justify-between items-center mb-2';
-    divElement.innerHTML = `<span>${product.name} - ${product.price}원 x ${item.quantity}</span><div>
-        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="-1">-</button>
-        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${product.id}" data-change="1">+</button>
-        <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${product.id}">삭제</button>
-      </div>`;
-
-    return divElement;
-  }
-
   createRootElement() {
     const rootElement = document.getElementById('app');
 
@@ -327,29 +352,5 @@ export default class CartManager {
     `;
 
     rootElement.appendChild(containerElement);
-  }
-
-  handleRecommendedSaleAlert() {
-    if (!this.lastSelectedProduct) return;
-
-    const recommendedProduct = this.productList.find(
-      (product) => product.id !== this.lastSelectedProduct && product.stockQuantity > 0,
-    );
-
-    if (recommendedProduct) {
-      recommendedProduct.price = Math.round(recommendedProduct.price * 0.95);
-      alert(`${recommendedProduct.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
-      this.createProductSelectOptions();
-    }
-  }
-
-  handleWowSaleAlert() {
-    const randomProduct = this.productList[Math.floor(Math.random() * this.productList.length)];
-
-    if (Math.random() < 0.3 && randomProduct.stockQuantity > 0) {
-      randomProduct.price = Math.round(randomProduct.price * 0.8);
-      alert(`번개세일! ${randomProduct.name}이(가) 20%할인 중입니다!`);
-      this.createProductSelectOptions();
-    }
   }
 }
