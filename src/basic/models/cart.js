@@ -45,45 +45,27 @@ export function calculateCart() {
 	let itemCount = 0; // 아이템 개수
 	let totalBeforeDiscount = 0; // 할인 금액 적용 전 총합
 
-	const cartItems = $cartContainer.children;
-
-	for (const cartItem of cartItems) {
+	Array.from($cartContainer.children).forEach((cartItem) => {
 		const currentItem = PRODUCTS.find((product) => product.id === cartItem.id);
+		if (!currentItem) return;
 
 		const quantity = getItemQuantity(cartItem);
 		const itemTotal = currentItem.price * quantity; // 아이템 별 금액 총합
-		itemCount += quantity;
 
+		itemCount += quantity;
 		totalBeforeDiscount += itemTotal;
 
-		let discount = 0;
-
 		// 10개 이상 주문 시 할인
-		if (quantity >= 10) {
-			discount = DISCOUNT_PER_PRODUCTS[currentItem.id];
-		}
+		const discount = quantity >= 10 ? (discount = DISCOUNT_PER_PRODUCTS[currentItem.id]) : 0;
 		totalAmount += itemTotal * (1 - discount);
-	}
+	});
 
-	let discountRate = 0; // 할인율
-
-	if (itemCount >= 30) {
-		var bulkDisc = totalAmount * 0.25;
-		var itemDisc = totalBeforeDiscount - totalAmount;
-
-		if (bulkDisc > itemDisc) {
-			totalAmount = totalBeforeDiscount * (1 - 0.25);
-			discountRate = 0.25;
-		} else {
-			discountRate = (totalBeforeDiscount - totalAmount) / totalBeforeDiscount;
-		}
-	} else {
-		discountRate = (totalBeforeDiscount - totalAmount) / totalBeforeDiscount;
-	}
-	if (new Date().getDay() === 2) {
-		totalAmount *= 1 - 0.1;
-		discountRate = Math.max(discountRate, 0.1);
-	}
+	let discountRate = applyDiscounts(
+		itemCount,
+		totalAmount,
+		totalBeforeDiscount,
+		new Date().getDay(),
+	); // 할인율 계산
 
 	$sum.textContent = `총액: ${Math.round(totalAmount)}원`;
 
@@ -93,21 +75,46 @@ export function calculateCart() {
 	renderPoints(totalAmount, $sum);
 }
 
+function applyDiscounts(totalQuantity, totalAmount, totalBeforeDiscount, day) {
+	let discountRate = 0;
+
+	if (totalQuantity >= 30) {
+		// 30 개 이상이면 할인
+		const TWENTYFIVE_DISCOUNT = 1 - DISCOUNT_RATE.TWENTYFIVE_PERCENT;
+
+		const bulkDiscountAmount = totalAmount * TWENTYFIVE_DISCOUNT; // 대량 구매 시 할인 금액
+		const itemDiscountTotal = totalBeforeDiscount - totalAmount; // 아이템 별 할인 후 적용 금액
+
+		if (bulkDiscountAmount > itemDiscountTotal) {
+			totalAmount = totalBeforeDiscount * (1 - TWENTYFIVE_DISCOUNT);
+			discountRate = TWENTYFIVE_DISCOUNT;
+		} else {
+			discountRate = (totalBeforeDiscount - totalAmount) / totalBeforeDiscount;
+		}
+	} else {
+		discountRate = (totalBeforeDiscount - totalAmount) / totalBeforeDiscount;
+	}
+
+	if (day === 2) {
+		totalAmount *= DISCOUNT_RATE.TEN_PERCENT;
+		discountRate = Math.max(discountRate, 0.1);
+	}
+
+	return discountRate;
+}
+
 /**
  * 재고 업데이트
  */
 function updateStockInfo() {
 	const $stockStatus = document.getElementById(DOM_ID.STOCK_STATUS);
-	let infoMessage = '';
-
-	PRODUCTS.forEach((item) => {
-		if (item.quantity < STOCK_ALERT_THRESHOLDS.ALMOST_OUT) {
-			infoMessage +=
-				(item.quantity > STOCK_ALERT_THRESHOLDS.OUT_OF_STOCK
-					? `${item.name}: 재고 부족 (${item.quantity})개 남음`
-					: `${item.name}: 품절`) + '\n';
-		}
-	});
+	let infoMessage = PRODUCTS.filter((item) => item.quantity < STOCK_ALERT_THRESHOLDS.ALMOST_OUT)
+		.map((item) =>
+			item.quantity > STOCK_ALERT_THRESHOLDS.OUT_OF_STOCK
+				? `${item.name}: 재고 부족 (${item.quantity})개 남음`
+				: `${item.name}: 품절`,
+		)
+		.join('\n');
 
 	$stockStatus.textContent = infoMessage;
 }
@@ -116,10 +123,10 @@ function updateStockInfo() {
  * 포인트 section 렌더링
  */
 function renderPoints(total) {
-	const numPoint = Math.floor(total / 1000);
+	const pointsValue = Math.floor(total / 1000);
 	const $points = document.getElementById(DOM_ID.POINTS) ?? createPoints();
 
-	$points.textContent = `(포인트: ${numPoint})`;
+	$points.textContent = `(포인트: ${pointsValue})`;
 }
 
 /**
