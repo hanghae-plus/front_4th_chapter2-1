@@ -50,7 +50,7 @@ if (new Date().getDay() === 2) {
 }
 */
 const applySpecialDayDiscount = (amount, currentRate) => {
-  const isSpecialDiscountDay = new Date().getDay === SPECIAL_DISCOUNT_DAY;
+  const isSpecialDiscountDay = new Date().getDay() === SPECIAL_DISCOUNT_DAY;
   if (!isSpecialDiscountDay) return { amount, rate: currentRate };
 
   return {
@@ -84,6 +84,10 @@ export const calculateCart = ($cartItems) => {
     calculation.itemCount += quantity;
     calculation.subtotal += productTotalPrice;
     calculation.totalAmount += productTotalPrice * (1 - quantityDiscountRate);
+    calculation.discountRate = Math.max(
+      calculation.discountRate,
+      quantityDiscountRate,
+    );
   });
 
   // 대량 구매 할인 적용
@@ -93,7 +97,10 @@ export const calculateCart = ($cartItems) => {
     calculation.itemCount,
   );
   calculation.totalAmount = volumeDiscount.amount;
-  calculation.discountRate = volumeDiscount.rate;
+  calculation.discountRate = Math.max(
+    calculation.discountRate,
+    volumeDiscount.rate,
+  );
 
   // 특별 할인일 할인 적용
   const specialDayDiscount = applySpecialDayDiscount(
@@ -101,15 +108,24 @@ export const calculateCart = ($cartItems) => {
     calculation.discountRate,
   );
   calculation.totalAmount = specialDayDiscount.amount;
-  calculation.discountRate = specialDayDiscount.rate;
+  calculation.discountRate = Math.max(
+    calculation.discountRate,
+    specialDayDiscount.rate,
+  );
 
   const result = {
     totalAmount: Math.round(calculation.totalAmount),
     itemCount: calculation.itemCount,
     discountRate: calculation.discountRate,
     points: Math.floor(calculation.totalAmount / 1000),
+    lastSelected: cartStore.get("cartState")?.lastSelected,
   };
 
-  cartStore.set("cartState", result);
+  // 이전 상태와 비교 후 업데이트
+  const prevState = cartStore.get("cartState");
+  if (!prevState || JSON.stringify(prevState) !== JSON.stringify(result)) {
+    cartStore.set("cartState", result);
+  }
+
   return result;
 };
