@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { Cart } from './pages/Cart';
+import { CartPage } from './pages/CartPage';
 
 ReactDOM.createRoot(document.getElementById('app')!).render(
   <React.StrictMode>
-    <Cart />
+    <CartPage />
   </React.StrictMode>
 );
