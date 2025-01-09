@@ -1,0 +1,6 @@
+export const FLASH_SALE_INTERVAL = 30000;
+export const SUGGESTION_INTERVAL = 60000;
+export const FLASH_SALE_DISCOUNT = 0.8; // 20% 할인
+export const SUGGESTION_DISCOUNT = 0.95; // 5% 할인
+export const FLASH_SALE_INITIAL_DELAY = 10000;
+export const SUGGESTION_INITIAL_DELAY = 20000;
