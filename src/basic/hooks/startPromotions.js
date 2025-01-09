@@ -1,6 +1,6 @@
 import { PRODUCT_LIST } from '../datas/productList.js';
-import { getLastSelectedItem } from '../main.basic.js';
 import { updateProductOptions } from './updateProductOptions.js';
+import { getLastSelectedItem } from '../main.basic.js';
 
 export function startPromotions() {
   setTimeout(function () {

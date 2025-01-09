@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const App = () => {
   const initialProducts = [
@@ -25,7 +25,9 @@ const App = () => {
   const handleAddToCart = () => {
     if (!selectedProductId) return;
 
-    const selectedProduct = products.find((item) => item.id === selectedProductId);
+    const selectedProduct = products.find(
+      (item) => item.id === selectedProductId,
+    );
 
     if (selectedProduct.q === 0) {
       alert('재고가 부족합니다.');
@@ -34,11 +36,15 @@ const App = () => {
 
     setLastSelectedProduct(selectedProduct.id);
 
-    const existingCartItem = cart.find((item) => item.id === selectedProduct.id);
+    const existingCartItem = cart.find(
+      (item) => item.id === selectedProduct.id,
+    );
 
     if (existingCartItem) {
       const updatedCart = cart.map((item) =>
-        item.id === selectedProduct.id ? { ...item, quantity: item.quantity + 1 } : item,
+        item.id === selectedProduct.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item,
       );
       setCart(updatedCart);
     } else {
@@ -105,11 +111,14 @@ const App = () => {
   useEffect(() => {
     const salesInterval = setInterval(() => {
       const eligibleProducts = products.filter((item) => item.q > 0);
-      const randomProduct = eligibleProducts[Math.floor(Math.random() * eligibleProducts.length)];
+      const randomProduct =
+        eligibleProducts[Math.floor(Math.random() * eligibleProducts.length)];
 
       if (randomProduct) {
         const updatedProducts = products.map((item) =>
-          item.id === randomProduct.id ? { ...item, val: Math.round(item.val * 0.8) } : item,
+          item.id === randomProduct.id
+            ? { ...item, val: Math.round(item.val * 0.8) }
+            : item,
         );
         setProducts(updatedProducts);
         alert(`번개세일! ${randomProduct.name}이(가) 20% 할인 중입니다!`);
@@ -123,15 +132,21 @@ const App = () => {
   useEffect(() => {
     const recommendInterval = setInterval(() => {
       if (lastSelectedProduct) {
-        const recommendedProduct = products.find((item) => item.id !== lastSelectedProduct && item.q > 0);
+        const recommendedProduct = products.find(
+          (item) => item.id !== lastSelectedProduct && item.q > 0,
+        );
 
         if (recommendedProduct) {
           const updatedProducts = products.map((item) =>
-            item.id === recommendedProduct.id ? { ...item, val: Math.round(item.val * 0.95) } : item,
+            item.id === recommendedProduct.id
+              ? { ...item, val: Math.round(item.val * 0.95) }
+              : item,
           );
           setProducts(updatedProducts);
 
-          alert(`${recommendedProduct.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
+          alert(
+            `${recommendedProduct.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`,
+          );
         }
       }
     }, 60000);
@@ -145,28 +160,46 @@ const App = () => {
         <h1 className="text-2xl font-bold mb-4">장바구니</h1>
 
         {/* 상품 선택 및 추가 */}
-        <select value={selectedProductId} onChange={handleProductSelect} className="border rounded p-2 mr-2">
+        <select
+          value={selectedProductId}
+          onChange={handleProductSelect}
+          className="border rounded p-2 mr-2"
+        >
           <option value="" disabled>
             상품 선택
           </option>
           {products.map((product) => (
-            <option key={product.id} value={product.id} disabled={product.q === 0}>
-              {product.name} - {product.val.toLocaleString()}원 ({product.q > 0 ? `재고: ${product.q}` : '품절'})
+            <option
+              key={product.id}
+              value={product.id}
+              disabled={product.q === 0}
+            >
+              {product.name} - {product.val.toLocaleString()}원 (
+              {product.q > 0 ? `재고: ${product.q}` : '품절'})
             </option>
           ))}
         </select>
-        <button onClick={handleAddToCart} className="bg-blue-500 text-white px-4 py-2 rounded">
+        <button
+          onClick={handleAddToCart}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
           추가
         </button>
 
         {/* 장바구니 */}
         <div id="cart-items" className="mt-4">
           {cart.map((item) => (
-            <div key={item.id} className="flex justify-between items-center mb-2">
+            <div
+              key={item.id}
+              className="flex justify-between items-center mb-2"
+            >
               <span>
                 {item.name} - {item.val.toLocaleString()}원 x {item.quantity}
               </span>
-              <button onClick={() => handleRemoveFromCart(item.id)} className="text-red-500">
+              <button
+                onClick={() => handleRemoveFromCart(item.id)}
+                className="text-red-500"
+              >
                 삭제
               </button>
             </div>
@@ -180,7 +213,8 @@ const App = () => {
 
         {/* 재고 상태 */}
         <div id="stock-status" className="text-sm text-gray-500 mt-2">
-          상품 상태: {products.some((product) => product.q > 0) ? '충분' : '품절'}
+          상품 상태:{' '}
+          {products.some((product) => product.q > 0) ? '충분' : '품절'}
         </div>
       </div>
     </div>
