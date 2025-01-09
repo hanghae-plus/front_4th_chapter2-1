@@ -6,19 +6,12 @@ import {
   ID_BY_COMPONENT,
   ITEM_DISC_MIN_QTY,
 } from '../const';
-import { CartItem, Product } from '../type';
+import { useGlobalContext } from '../context';
 
-interface SumProps {
-  productList: Product[];
-  cartItemList: CartItem[];
-  randomDiscRateByProduct: Record<string, number>;
-}
+const Sum: React.FC = () => {
+  const { values } = useGlobalContext();
+  const { productList, cartItemList, randomDiscRateByProduct } = values;
 
-const Sum: React.FC<SumProps> = ({
-  productList,
-  cartItemList,
-  randomDiscRateByProduct,
-}) => {
   const { priceWithDisc, discRate } = useMemo(() => {
     let totalPrice = 0;
     let priceWithDisc = 0;
@@ -67,9 +60,11 @@ const Sum: React.FC<SumProps> = ({
       <div id={ID_BY_COMPONENT.SUM_ID} className="text-xl font-bold my-4">
         총액: {Math.round(priceWithDisc)}
         {CURRENCY}
-        <span className="text-green-500 ml-2">
-          ({(discRate * 100).toFixed(1)}% 할인 적용)
-        </span>
+        {discRate > 0 && (
+          <span className="text-green-500 ml-2">
+            ({(discRate * 100).toFixed(1)}% 할인 적용)
+          </span>
+        )}
         <span id={ID_BY_COMPONENT.PTS_TAG_ID} className="text-blue-500 ml-2">
           (포인트: {Math.floor(priceWithDisc / 1000)})
         </span>

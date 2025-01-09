@@ -1,70 +1,30 @@
-import React, { useCallback } from 'react';
-import { CartItem, Product } from '../type';
+import React from 'react';
 import { CURRENCY, ID_BY_COMPONENT } from '../const';
+import { useGlobalContext } from '../context';
 
-interface CartProps {
-  productList: Product[];
-  cartItemList: CartItem[];
-  setCartItemList: (prev: CartItem[]) => void;
-  randomDiscRateByProduct: Record<string, number>;
-}
+const Cart: React.FC = () => {
+  const { values, actions } = useGlobalContext();
+  const { productList, cartItemList, randomDiscRateByProduct } = values;
+  const { removeCartItem, editCartItem } = actions;
 
-const Cart: React.FC<CartProps> = ({
-  productList,
-  cartItemList,
-  setCartItemList,
-  randomDiscRateByProduct,
-}) => {
-  const handleClickQtyChangeBtn = useCallback(
-    (id: string, qtyChange: number) => {
-      const cartItem = cartItemList.find((item) => item.id === id);
-      const product = productList.find((product) => product.id === id);
+  const handleClickQtyChangeBtn = (id: string, qtyChange: number) => {
+    const cartItem = cartItemList.find((item) => item.id === id);
 
-      if (!cartItem) {
-        throw Error('Selected cart item is not valid.');
-      }
-      if (!product) {
-        throw Error('Selected cart item is not in the product list.');
-      }
+    if (!cartItem) {
+      throw Error('Selected cart item is not valid.');
+    }
 
-      const curQty = cartItem.qty;
-      const newQty = curQty + qtyChange;
+    const curQty = cartItem.qty;
+    const newQty = curQty + qtyChange;
 
-      // 변경될 수량이 0보다 큰 경우
-      if (newQty > 0 && newQty <= product.qty + curQty) {
-        const newCartItemList = cartItemList.map((item) =>
-          item.id === id ? { id: id, qty: newQty } : item,
-        );
-        setCartItemList(newCartItemList);
-        return;
-      }
+    if (newQty > 0) {
+      editCartItem(id, newQty);
+    } else {
+      removeCartItem(id);
+    }
+  };
 
-      // 변경될 수량이 0인 경우
-      if (newQty <= 0) {
-        const newCartItemList = cartItemList.filter((item) => item.id !== id);
-        setCartItemList(newCartItemList);
-        return;
-      }
-
-      // 변경될 수량이 0보다 작은 경우
-      alert('재고가 부족합니다.');
-    },
-    [cartItemList],
-  );
-
-  const handleClickRemoveItemBtn = useCallback(
-    (id: string) => {
-      const cartItem = cartItemList.find((item) => item.id === id);
-
-      if (!cartItem) {
-        throw Error('Selected cart item is not valid.');
-      }
-
-      const newCartItemList = cartItemList.filter((item) => item.id !== id);
-      setCartItemList(newCartItemList);
-    },
-    [cartItemList],
-  );
+  const handleClickRemoveItemBtn = (id: string) => removeCartItem(id);
 
   return (
     <div id={ID_BY_COMPONENT.CART_ID}>

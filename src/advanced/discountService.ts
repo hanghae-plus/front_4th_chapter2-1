@@ -16,10 +16,7 @@ const DISC_MSG = Object.freeze({
 const discountAlertProcessor = (
   product: Product,
   type: Discount,
-  randomDiscRateByProduct: Record<string, number>,
-  setRandomDiscRateByProduct: (
-    randomDiscRateByProduct: Record<string, number>,
-  ) => void,
+  setRandomDiscRateByProduct: (productId: string, rate: number) => void,
 ) => {
   if (type !== 'LUCKY_DISC' && type !== 'ADDITIONAL_DISC') {
     throw Error(`${type} is not a supported discount type to alert.`);
@@ -27,28 +24,23 @@ const discountAlertProcessor = (
 
   if (Math.random() >= DISC_PROB[type] || product.qty <= 0) return;
 
-  const newRandomDiscRateByProduct = { ...randomDiscRateByProduct };
-  newRandomDiscRateByProduct[product.id] = DISC_RATES[type];
-  setRandomDiscRateByProduct(newRandomDiscRateByProduct);
+  setRandomDiscRateByProduct(product.id, DISC_RATES[type]);
 
   alert(DISC_MSG[type](product.name, DISC_RATES[type] * 100));
 };
 
 export const setLuckyDiscAlert = (
   productList: Product[],
-  randomDiscRateByProduct: Record<string, number>,
-  setRandomDiscRateByProduct: (
-    randomDiscRateByProduct: Record<string, number>,
-  ) => void,
+  setRandomDiscRateByProduct: (productId: string, rate: number) => void,
 ) => {
   setTimeout(() => {
     setInterval(() => {
       const luckyItem =
         productList[Math.floor(Math.random() * productList.length)];
+
       discountAlertProcessor(
         luckyItem,
         'LUCKY_DISC',
-        randomDiscRateByProduct,
         setRandomDiscRateByProduct,
       );
     }, DISC_INTERVALS.LUCKY_DISC);
@@ -58,10 +50,7 @@ export const setLuckyDiscAlert = (
 export const setAdditionalDiscAlert = (
   productList: Product[],
   lastSelId: string | null,
-  randomDiscRateByProduct: Record<string, number>,
-  setRandomDiscRateByProduct: (
-    randomDiscRateByProduct: Record<string, number>,
-  ) => void,
+  setRandomDiscRateByProduct: (productId: string, rate: number) => void,
 ) => {
   setTimeout(() => {
     setInterval(() => {
@@ -70,12 +59,12 @@ export const setAdditionalDiscAlert = (
       const suggestedProduct = productList.find(
         (item) => item.id !== lastSelId,
       );
+
       if (!suggestedProduct) return;
 
       discountAlertProcessor(
         suggestedProduct,
         'ADDITIONAL_DISC',
-        randomDiscRateByProduct,
         setRandomDiscRateByProduct,
       );
     }, DISC_INTERVALS.ADDITIONAL_DISC);

@@ -1,13 +1,11 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { ID_BY_COMPONENT } from '../const';
-import { CartItem, Product } from '../type';
+import { useGlobalContext } from '../context';
 
-interface StockInfoProps {
-  productList: Product[];
-  cartItemList: CartItem[];
-}
+const StockInfo: React.FC = () => {
+  const { values } = useGlobalContext();
+  const { productList, cartItemList } = values;
 
-const StockInfo: React.FC<StockInfoProps> = ({ productList, cartItemList }) => {
   return (
     <div
       id={ID_BY_COMPONENT.STOCK_INFO_ID}

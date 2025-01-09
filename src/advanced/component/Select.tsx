@@ -1,16 +1,11 @@
 import React from 'react';
-import { Product } from '../type';
 import { CURRENCY, ID_BY_COMPONENT } from '../const';
+import { useGlobalContext } from '../context';
 
-interface SelectProps {
-  productList: Product[];
-  randomDiscRateByProduct: Record<string, number>;
-}
+const Select: React.FC = () => {
+  const { values } = useGlobalContext();
+  const { productList, randomDiscRateByProduct } = values;
 
-const Select: React.FC<SelectProps> = ({
-  productList,
-  randomDiscRateByProduct,
-}) => {
   return (
     <select
       id={ID_BY_COMPONENT.SELECT_ID}

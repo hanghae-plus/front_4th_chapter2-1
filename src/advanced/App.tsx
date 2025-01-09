@@ -1,75 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { setAdditionalDiscAlert, setLuckyDiscAlert } from './discountService';
-
-import { CartItem, Product } from './type';
-import { AddBtn, Cart, Select, StockInfo, Sum } from './component';
+import React from 'react';
+import { GlobalContextProvider } from './context';
+import AppContent from './AppContent';
 
 export const App = () => {
-  const productList: Product[] = [
-    { id: 'p1', name: '상품1', val: 10000, qty: 50 },
-    { id: 'p2', name: '상품2', val: 20000, qty: 30 },
-    { id: 'p3', name: '상품3', val: 30000, qty: 20 },
-    { id: 'p4', name: '상품4', val: 15000, qty: 0 },
-    { id: 'p5', name: '상품5', val: 25000, qty: 10 },
-  ];
-
-  const [randomDiscRateByProduct, setRandomDiscRateByProduct] = useState<
-    Record<string, number>
-  >({
-    p1: 0,
-    p2: 0,
-    p3: 0,
-    p4: 0,
-    p5: 0,
-  });
-
-  const [cartItemList, setCartItemList] = useState<CartItem[]>([]);
-
-  const lastSelId = useRef<string | null>(null);
-
-  useEffect(() => {
-    setLuckyDiscAlert(
-      productList,
-      randomDiscRateByProduct,
-      setRandomDiscRateByProduct,
-    );
-    setAdditionalDiscAlert(
-      productList,
-      lastSelId.current,
-      randomDiscRateByProduct,
-      setRandomDiscRateByProduct,
-    );
-  }, []);
-
   return (
-    <div className="bg-gray-100 p-8">
-      <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
-        <h1 className="text-2xl font-bold mb-4">장바구니</h1>
-        <Cart
-          productList={productList}
-          cartItemList={cartItemList}
-          setCartItemList={setCartItemList}
-          randomDiscRateByProduct={randomDiscRateByProduct}
-        />
-        <Sum
-          productList={productList}
-          cartItemList={cartItemList}
-          randomDiscRateByProduct={randomDiscRateByProduct}
-        />
-        <form>
-          <Select
-            productList={productList}
-            randomDiscRateByProduct={randomDiscRateByProduct}
-          />
-          <AddBtn
-            productList={productList}
-            cartItemList={cartItemList}
-            setCartItemList={setCartItemList}
-            lastSelId={lastSelId}
-          />
-        </form>
-        <StockInfo productList={productList} cartItemList={cartItemList} />
-      </div>
-    </div>
+    <GlobalContextProvider>
+      <AppContent />
+    </GlobalContextProvider>
   );
 };
