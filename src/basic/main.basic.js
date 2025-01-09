@@ -9,11 +9,11 @@ export const ID_BY_COMPONENT = Object.freeze({
 
 let appState = {
   productList: [
-    { id: "p1", name: "상품1", val: 10000, q: 50 },
-    { id: "p2", name: "상품2", val: 20000, q: 30 },
-    { id: "p3", name: "상품3", val: 30000, q: 20 },
-    { id: "p4", name: "상품4", val: 15000, q: 0 },
-    { id: "p5", name: "상품5", val: 25000, q: 10 },
+    { id: "p1", name: "상품1", val: 10000, qty: 50 },
+    { id: "p2", name: "상품2", val: 20000, qty: 30 },
+    { id: "p3", name: "상품3", val: 30000, qty: 20 },
+    { id: "p4", name: "상품4", val: 15000, qty: 0 },
+    { id: "p5", name: "상품5", val: 25000, qty: 10 },
   ],
   lastSel: null,
   bonusPts: 0,
@@ -68,17 +68,17 @@ const getCalcCartItem = (cartItem) => {
 
   if (!curItem) {
     console.warn(`Product with ID ${cartItem.id} not found`);
-    return { itemTot: 0, q: 0, disc: 0 };
+    return { itemTot: 0, qty: 0, disc: 0 };
   }
 
-  let q = parseInt(
+  let qty = parseInt(
     cartItem.querySelector("span").textContent.split("x ")[1]
   );
-  let itemTot = curItem.val * q;
+  let itemTot = curItem.val * qty;
   console.log('itemTot', itemTot)
   let disc = 0;
 
-  if (q >= 10) {
+  if (qty >= 10) {
     if (curItem.id === "p1") disc = 0.1;
     else if (curItem.id === "p2") disc = 0.15;
     else if (curItem.id === "p3") disc = 0.2;
@@ -139,7 +139,7 @@ const updateTotalAmt = (discRate) => {
 /**
  * 보너스 포인트 표기
  */
-const renderBonusPts = () => {
+const updateBonusPts = () => {
   const sum = document.querySelector(`#${ID_BY_COMPONENT.SUM_ID}`);
   appState.bonusPts = Math.floor(appState.totalAmt / 1000);
   let ptsTag = document.getElementById("loyalty-points");
@@ -237,16 +237,16 @@ addBtn.addEventListener("click", function () {
     return p.id === selectItem;
   });
 
-  if (itemToAdd && itemToAdd.q > 0) {
+  if (itemToAdd && itemToAdd.qty > 0) {
     let item = document.getElementById(itemToAdd.id);
     if (item) {
       let newQty =
         parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
 
-      if (newQty <= itemToAdd.q) {
+      if (newQty <= itemToAdd.qty) {
         item.querySelector("span").textContent =
           itemToAdd.name + " - " + itemToAdd.val + "원 x " + newQty;
-        itemToAdd.q--;
+        itemToAdd.qty--;
       } else {
         alert("재고가 부족합니다.");
       }
@@ -270,7 +270,7 @@ addBtn.addEventListener("click", function () {
         itemToAdd.id +
         '">삭제</button></div>';
       cart.appendChild(newItem);
-      itemToAdd.q--;
+      itemToAdd.qty--;
     }
     updateCart();
     appState.lastSel = selectItem;
@@ -297,17 +297,17 @@ cart.addEventListener("click", function (event) {
       if (
         newQty > 0 &&
         newQty <=
-        prod.q +
+        prod.qty +
         parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
       ) {
         itemElem.querySelector("span").textContent =
           itemElem.querySelector("span").textContent.split("x ")[0] +
           "x " +
           newQty;
-        prod.q -= qtyChange;
+        prod.qty -= qtyChange;
       } else if (newQty <= 0) {
         itemElem.remove();
-        prod.q -= qtyChange;
+        prod.qty -= qtyChange;
       } else {
         alert("재고가 부족합니다.");
       }
@@ -315,7 +315,7 @@ cart.addEventListener("click", function (event) {
       let remQty = parseInt(
         itemElem.querySelector("span").textContent.split("x ")[1]
       );
-      prod.q += remQty;
+      prod.qty += remQty;
       itemElem.remove();
     }
     updateCart();
