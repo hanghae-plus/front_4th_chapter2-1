@@ -119,7 +119,7 @@ const calcCart = () => {
   // UI 업데이트
   renderCartTotal(finalAmount, totalDiscountRate);
   renderStockStatus();
-  renderPoints();
+  renderPoint();
 };
 
 const renderCartTotal = (amount, discountRate) => {
@@ -136,8 +136,8 @@ const renderCartTotal = (amount, discountRate) => {
   }
 };
 
-const renderPoints = () => {
-  productStore.setPoints(Math.floor(productStore.getAmount() / 1000));
+const renderPoint = () => {
+  productStore.setPoint(Math.floor(productStore.getAmount() / 1000));
 
   if (!getPointElement()) {
     getCartTotalElement().insertAdjacentHTML(
@@ -148,7 +148,7 @@ const renderPoints = () => {
     );
   }
 
-  getPointElement().textContent = `(포인트: ${productStore.getPoints()})`;
+  getPointElement().textContent = `(포인트: ${productStore.getPoint()})`;
 };
 
 const renderStockStatus = () => {

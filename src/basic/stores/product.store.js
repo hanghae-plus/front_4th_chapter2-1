@@ -1,6 +1,6 @@
 class ProductStore {
   constructor() {
-    this.points = 0;
+    this.point = 0;
     this.amount = 0;
     this.itemCount = 0;
     this.lastSelectedProduct = null;
@@ -10,12 +10,12 @@ class ProductStore {
     return new ProductStore();
   }
 
-  getPoints() {
-    return this.points;
+  getPoint() {
+    return this.point;
   }
 
-  setPoints(value) {
-    this.points = value;
+  setPoint(value) {
+    this.point = value;
   }
 
   getAmount() {
@@ -43,7 +43,7 @@ class ProductStore {
   }
 
   destroyInstance() {
-    this.points = 0;
+    this.point = 0;
     this.amount = 0;
     this.itemCount = 0;
     this.lastSelectedProduct = null;
