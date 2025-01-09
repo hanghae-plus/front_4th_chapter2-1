@@ -1,7 +1,7 @@
-import { Cart } from './component/cart/Cart';
-import { ProductSelector } from './component/product-selector/ProductSelector';
-import { StockInfo } from './component/stock-info/StockInfo';
-import { TotalPrice } from './component/total-price/TotalPrice';
+import { Cart } from './components/cart/Cart';
+import { ProductSelector } from './components/product-selector/ProductSelector';
+import { StockInfo } from './components/stock-info/StockInfo';
+import { TotalPrice } from './components/total-price/TotalPrice';
 import { CartProvider } from './contexts/cart-context/CartProvider';
 import { ProductProvider } from './contexts/product-context/ProductProvider';
 
