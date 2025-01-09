@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es5",                // ECMAScript 5로 컴파일
-    "jsx": "react",                 // JSX 변환을 React 16 이하 방식으로 설정
+    "target": "es2015",
+    "lib": ["es2015", "dom"],
     "module": "commonjs",           // CommonJS 모듈 시스템 사용
     "strict": true,                 // TypeScript의 모든 엄격한 타입 검사 활성화
     "esModuleInterop": true,        // CommonJS 모듈과의 호환성 설정
     "skipLibCheck": true,           // 라이브러리 파일의 타입 검사를 건너뜁니다.
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "allowJs": false // .js 파일 사용 비활성화
   }
 }

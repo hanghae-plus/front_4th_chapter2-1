@@ -41,6 +41,7 @@
     "vitest": "^2.1.1"
   },
   "dependencies": {
+    "@testing-library/react": "^16.1.0",
     "@vitejs/plugin-react": "^4.3.4",
     "pnpm": "^9.15.3",
     "react": "^19.0.0",

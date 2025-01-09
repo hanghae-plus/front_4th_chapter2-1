@@ -28,7 +28,7 @@ const calculateCartTotal = (cartItems, productList) => {
         const product = productList.find((p) => p.id === itemId);
 
         if (product) {
-            const itemTotal = product.val * quantity;
+            const itemTotal = product.price * quantity;
             const discount = calculateDiscount(product.id, quantity);
             totalQuantity += quantity;
             subTotal += itemTotal;

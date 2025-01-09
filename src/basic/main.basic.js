@@ -34,11 +34,11 @@ const App = () => {
 
   wrap.append(
     Header(), 
-    ProductSelect(),
+    CartDisplay(),
+    CartTotal(),
+    ProductSelect(), 
     AddButton(), 
     StockInfo(), 
-    CartDisplay(), 
-    CartTotal()
   );
   container.appendChild(wrap);
 
@@ -51,8 +51,8 @@ const handleAddtoCart = () => {
   const selectItem = $select.value;
   const itemToAdd = productList.find((p) => p.id === selectItem);
 
-  if (!itemToAdd || itemToAdd.q <= 0) {
-    alert('재고가 부족합니다. case1');
+  if (!itemToAdd || itemToAdd.stock <= 0) {
+    alert('재고가 부족합니다.');
     return;
   }
 
@@ -60,9 +60,9 @@ const handleAddtoCart = () => {
   if (existingItem) {
     const qtySpan = existingItem.querySelector('span');
     const newQty = parseInt(qtySpan.textContent.split('x ')[1], 10) + 1;
-    if (newQty <= itemToAdd.q) {
-      qtySpan.textContent = `${itemToAdd.name} - ${itemToAdd.val}원 x ${newQty}`;
-      itemToAdd.q--;
+    if (newQty <= itemToAdd.stock) {
+      qtySpan.textContent = `${itemToAdd.name} - ${itemToAdd.price}원 x ${newQty}`;
+      itemToAdd.stock--;
     } else {
       alert('재고가 부족합니다.');
     }
@@ -71,7 +71,7 @@ const handleAddtoCart = () => {
     newItem.id = itemToAdd.id;
     newItem.className = 'flex justify-between items-center mb-2';
     newItem.innerHTML = `
-      <span>${itemToAdd.name} - ${itemToAdd.val}원 x 1</span>
+      <span>${itemToAdd.name} - ${itemToAdd.price}원 x 1</span>
       <div>
         <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>
         <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>
@@ -82,7 +82,7 @@ const handleAddtoCart = () => {
       cartItems.appendChild(newItem);
       handleCartControll(cartItems);
     }
-    itemToAdd.q--;
+    itemToAdd.stock--;
   }
 
   cartCalculator();
@@ -105,9 +105,9 @@ const handleCartControll = (cartItems) => {
   
     if (tgt.classList.contains('quantity-change')) {
       const qtyChange = parseInt(tgt.dataset.change);
-      $item && updateQuantity($item, product, qtyChange);
+      updateQuantity($item, product, qtyChange);
     } else if (tgt.classList.contains('remove-item')) {
-      $item && removeItem($item, product);
+      removeItem($item, product);
     }
   
     cartCalculator(); // 장바구니 총합 계산
@@ -116,7 +116,7 @@ const handleCartControll = (cartItems) => {
   // 아이템 삭제 함수
   const removeItem = ($item, prod) => {
     const currentQty = parseInt($item.querySelector('span').textContent.split('x ')[1]);
-    prod.q += currentQty;
+    prod.stock += currentQty;
     $item.remove();
   }
 
@@ -127,10 +127,10 @@ const handleCartControll = (cartItems) => {
   
     if (newQty <= 0) {
       $item.remove();
-      prod.q += currentQty;
-    } else if (newQty <= prod.q + currentQty) {
-      $item.querySelector('span').textContent = `${prod.name} - ${prod.val}원 x ${newQty}`;
-      prod.q -= qtyChange;
+      prod.stock += currentQty;
+    } else if (newQty <= prod.stock + currentQty) {
+      $item.querySelector('span').textContent = `${prod.name} - ${prod.price}원 x ${newQty}`;
+      prod.stock -= qtyChange;
     } else {
       alert('재고가 부족합니다.');
     }
@@ -153,12 +153,12 @@ const carculateLogic = () => {
   // 콜백 구조로 랜덤 할인 알림 실행
   initRandomAlert({
     onFlashSale: luckyItem => {
-      luckyItem.val = Math.round(luckyItem.val * 0.8); // 20% 할인
+      luckyItem.price = Math.round(luckyItem.price * 0.8); // 20% 할인
       alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
       updateSelectOptions();
     },
     onSuggestion: suggestItem => {
-      suggestItem.val = Math.round(suggestItem.val * 0.95); // 5% 할인
+      suggestItem.price = Math.round(suggestItem.price * 0.95); // 5% 할인
       alert(`${suggestItem.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
       updateSelectOptions();
     }
@@ -180,7 +180,7 @@ const initRandomAlert = ({ onFlashSale, onSuggestion }) => {
     setInterval(() => {
       if(lastSelected) {
         let suggestItem = productList.find(
-          item => item.id !== lastSelected && item.q > 0
+          item => item.id !== lastSelected && item.stock > 0
         );
         
         if (suggestItem) {
@@ -193,7 +193,7 @@ const initRandomAlert = ({ onFlashSale, onSuggestion }) => {
 
 // 콜백 구조로 랜덤 할인 알림 실행 : 랜덤 아이템을 Stock으로 부터 승선 시킴
 const getRandomItem = () => {
-  const availableItems = productList.filter(item => item.q > 0);
+  const availableItems = productList.filter(item => item.stock > 0);
   return availableItems.length > 0 
     ? availableItems[Math.floor(Math.random() * productList.length)]
     : null;
@@ -206,8 +206,8 @@ const updateSelectOptions = () => {
   productList.forEach(item => {
     let $option = document.createElement('option');
     $option.value = item.id;
-    $option.textContent = `${item.name} - ${item.val}원`;
-    if(item.q === 0) $option.disabled = true;
+    $option.textContent = `${item.name} - ${item.price}원`;
+    if(item.stock === 0) $option.disabled = true;
     $select && $select.appendChild($option);
   });
 }
@@ -239,10 +239,10 @@ const updateBonusPts=() => {
 function updateStockInfo() {
   const $stockInfo = document.getElementById('stock-status');
   let infoMsg = 
-    productList.filter(item => item.q < 5)
+    productList.filter(item => item.stock < 5)
       .map(item => 
-        `${item.name}: ${item.q > 0
-          ? '재고 부족 (' + item.q + '개 남음)'
+        `${item.name}: ${item.stock > 0
+          ? '재고 부족 (' + item.stock + '개 남음)'
           : '품절'}`)
       .join('\n');
 
