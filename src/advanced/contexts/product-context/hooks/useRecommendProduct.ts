@@ -3,6 +3,8 @@ import { useEffect, useCallback } from 'react';
 import type { Product } from '../../../types/product';
 
 const RECOMMEND_DISCOUNT_RATE = 0.95;
+const INITIAL_RECOMMENDATION_DELAY = 20000;
+const RECOMMENDATION_INTERVAL = 60000;
 
 export const useRecommendProduct = (
   productList: Product[],
@@ -12,23 +14,23 @@ export const useRecommendProduct = (
   const recommendProduct = useCallback(() => {
     if (!lastSaleItem) return;
 
-    const suggestion = productList.find((item) => item.id !== lastSaleItem.id && item.quantity > 0);
+    const recommendedProduct = productList.find((item) => item.id !== lastSaleItem.id && item.quantity > 0);
 
-    if (suggestion) {
-      alert(`${suggestion.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
+    if (recommendedProduct) {
+      alert(`${recommendedProduct.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
 
-      const discountedAmount = Math.round(suggestion.amount * RECOMMEND_DISCOUNT_RATE);
-      const newProductList = productList.map((product) =>
-        product.id === suggestion.id ? { ...product, amount: discountedAmount } : product,
+      const discountedAmount = Math.round(recommendedProduct.amount * RECOMMEND_DISCOUNT_RATE);
+      const updatedProductList = productList.map((product) =>
+        product.id === recommendedProduct.id ? { ...product, amount: discountedAmount } : product,
       );
 
-      setProductList(newProductList);
+      setProductList(updatedProductList);
     }
   }, [lastSaleItem, productList, setProductList]);
 
   useEffect(() => {
-    const initialDelay = Math.random() * 20000;
-    const recommendationInterval = 60000;
+    const initialDelay = Math.random() * INITIAL_RECOMMENDATION_DELAY;
+    const recommendationInterval = RECOMMENDATION_INTERVAL;
 
     const timeoutId = setTimeout(() => {
       const intervalId = setInterval(recommendProduct, recommendationInterval);
