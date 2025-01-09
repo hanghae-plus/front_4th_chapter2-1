@@ -1,4 +1,4 @@
-import { useGetProductList } from '../contexts/product-context/ProductProvider';
+import { useGetProductList } from '../contexts/product-context/ProductContext';
 
 import type { Product } from '../types/product';
 
