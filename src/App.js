@@ -4,10 +4,11 @@ import { useCart } from './state/useCart.js';
 import { useProducts } from './state/useProduct.js';
 import { AddButton } from './components/AddButton.js';
 import { CartItemList } from './components/CartItemList.js';
+import ProductStatus from './components/ProductStatus.js';
 
 function App(rootElement) {
-  const { getCart, addToCart, removeFromCart, subscribeCart, updateItemQuantity } = useCart();
-  const { getProducts, updateQuantity, updatePrice, subscribeProduct } = useProducts();
+  const { getCart, addToCart, subscribeCart } = useCart();
+  const { getProducts, subscribeProduct } = useProducts();
 
   const cart = getCart();
   const products = getProducts();
@@ -32,6 +33,8 @@ function App(rootElement) {
     },
   });
 
+  const productStatus = ProductStatus({ products });
+
   const container = document.createElement('div');
   container.className = `bg-gray-100 p-8`;
   container.innerHTML = `
@@ -39,18 +42,22 @@ function App(rootElement) {
       <h1 class="text-2xl font-bold mb-4">장바구니</h1>
       <div id="cart-items"></div>
       <div id="product-selection" class="flex items-center"></div>
+      <div id="product-status"></div>
     </div>`;
 
   const cartItemsContainer = container.querySelector('#cart-items');
   const productSelectionContainer = container.querySelector('#product-selection');
+  const productStatusContainer = container.querySelector('#product-status');
 
   productSelectionContainer.appendChild(productSelect.getElement());
   productSelectionContainer.appendChild(addButton.getElement());
   cartItemsContainer.before(cartSummary.getElement());
   cartItemsContainer.appendChild(cartItemList.getElement());
+  productStatusContainer.appendChild(productStatus.getElement());
 
   subscribeProduct(() => {
     productSelect.render();
+    productStatus.render();
   });
 
   subscribeCart(() => {
@@ -62,6 +69,8 @@ function App(rootElement) {
   productSelect.render();
   cartSummary.render();
   cartItemList.render();
+  productStatus.render();
+  addButton.render();
 
   rootElement.appendChild(container);
 }

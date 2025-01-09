@@ -6,7 +6,7 @@ export function ProductSelect({ products }) {
     element.innerHTML = products
       .map(
         (product) => `
-      <option value="${product.id}" ${product.quality === 0 ? 'disabled' : ''}>${product.name} - ${product.price}원</option>
+      <option value="${product.id}" ${product.quantity === 0 ? 'disabled' : ''}>${product.name} - ${product.price}원</option>
     `,
       )
       .join('');
