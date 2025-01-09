@@ -11,7 +11,7 @@
     "start:advanced": "vite serve --open ./index.advanced.html",
     "test": "vitest",
     "test:basic": "vitest basic.test.js",
-    "test:advanced": "vitest advanced.test.js",
+    "test:advanced": "vitest advanced.test.tsx",
     "test:ui": "vitest --ui"
   },
   "devDependencies": {
