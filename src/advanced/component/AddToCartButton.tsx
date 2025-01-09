@@ -1,7 +1,7 @@
 import React from 'react';
 import { Product } from '../type/type';
 
-export const AddToCart = ({
+export const AddToCartButton = ({
   selectedProduct,
   setCartItems,
   setProducts,
