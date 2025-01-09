@@ -1,6 +1,6 @@
 import { STOCKS } from "advanced/constants";
-import { useCartContext } from "advanced/contexts/CartProvider";
-import { productList } from "advanced/store/productList";
+import { useCartContext } from "advanced/hooks/useCartContext";
+import { productList } from "advanced/constants/productList";
 
 export const StockStatus = () => {
   const { cartState } = useCartContext();

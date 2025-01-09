@@ -2,9 +2,9 @@ import { CartTotal } from "./components/CartTotal";
 import { NewItem } from "./components/NewItem";
 import { ProductOptions } from "./components/ProductOptions";
 import { StockStatus } from "./components/StockStatus";
-import { useCartContext } from "./contexts/CartProvider";
+import { useCartContext } from "./hooks/useCartContext";
 
-function MainAdvanced() {
+function Main() {
   const { cartState } = useCartContext();
 
   return (
@@ -22,4 +22,4 @@ function MainAdvanced() {
   );
 }
 
-export default MainAdvanced;
+export default Main;

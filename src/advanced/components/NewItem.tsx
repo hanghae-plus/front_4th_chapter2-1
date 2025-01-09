@@ -1,6 +1,6 @@
 import { DOM_IDS } from "advanced/constants";
-import { CartItem, useCart } from "advanced/contexts/CartContext";
-import { useCartContext } from "advanced/contexts/CartProvider";
+import { CartItem } from "advanced/state/cartReducer";
+import { useCartContext } from "advanced/hooks/useCartContext";
 
 interface NewItemProps {
   product: CartItem;

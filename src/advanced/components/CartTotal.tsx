@@ -4,7 +4,7 @@ import {
   ITEMS_REQUIRED_FOR_DISCOUNT,
   TUESDAY,
 } from "advanced/constants";
-import { useCartContext } from "advanced/contexts/CartProvider";
+import { useCartContext } from "advanced/hooks/useCartContext";
 
 // 10개 이상 구매시 할인율
 const getDiscountRate = (productID: string): number => {
