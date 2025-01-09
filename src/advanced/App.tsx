@@ -1,6 +1,6 @@
 import Cart from './components/cart';
 import CartAddButton from './components/cart-add-button/CartAddButton';
-import CartTotal from './components/cart-total/CartTotal';
+import CartTotal from './components/cart-total';
 import Container from './components/Container';
 import ContentWrapper from './components/ContentWrapper';
 import Header from './components/Header';
