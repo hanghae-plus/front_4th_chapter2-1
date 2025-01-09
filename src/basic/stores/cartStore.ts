@@ -3,7 +3,6 @@ import { createState } from '@/utils/createStore';
 
 export const cartStore = createState<Cart>({
   lastSaleItem: null,
-  point: 0,
   totalAmount: 0,
   itemCount: 0,
   discountRate: 0,
