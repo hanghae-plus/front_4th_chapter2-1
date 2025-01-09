@@ -52,20 +52,9 @@ const main = (callbackFn) => {
   callbackFn();
 };
 
-const clearProductSelectElementChildren = () => {
-  getProductSelectElement().innerHTML = '';
-};
-
 const updateProductList = () => {
-  clearProductSelectElementChildren();
-  products.forEach(({ id, name, price, quantity }) => {
-    getProductSelectElement().insertAdjacentHTML(
-      'beforeend',
-      /* html */ `
-      <option value="${id}" ${quantity === 0 ? 'disabled' : null}>${`${name} - ${price}원`}</option>
-    `,
-    );
-  });
+  const selectElement = getProductSelectElement();
+  selectElement.innerHTML = ProductSelect({ products });
 };
 
 const calculateTotalPrice = (cartItems) => {
