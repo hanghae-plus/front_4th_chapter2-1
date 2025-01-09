@@ -52,7 +52,7 @@ export const ProductSelector = () => {
           productListState.map((product) => {
             const isDisabled = product.quantity === 0 ? 'disabled' : '';
 
-            return `<option id="${product.id}" value="${product.id}" ${isDisabled}>${product.name} - ${product.amount}원</option>`;
+            return `<option id="${product.id}" value="${product.id}" ${isDisabled}>${product.name} - ${product.price}원</option>`;
           })
         }
         </select>

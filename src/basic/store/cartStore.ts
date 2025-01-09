@@ -1,17 +1,17 @@
 import { ProductStore } from './productStore';
+import { calculateCartPrice } from '../utils/cart/calculateCart';
 import { createStore } from '../utils/createStore';
-import { calculateCartPrice } from './utils/cart/calculateCartPrice';
 
 export interface Product {
   id: string;
   name: string;
-  amount: number;
+  price: number;
   quantity: number;
 }
 
 interface CartState {
   cartList: Product[];
-  totalAmount: number;
+  totalPrice: number;
   totalDiscountRate: number;
   point: number;
 }
@@ -20,7 +20,7 @@ interface CartActions {
   getCartList: () => Product[];
   addCartItem: (item: Product) => void;
   removeCartItem: (id: string) => void;
-  getTotalAmount: () => number;
+  getTotalPrice: () => number;
   getTotalDiscountRate: () => number;
   getPoint: () => number;
   clearCartItem: (id: string) => void;
@@ -29,7 +29,7 @@ interface CartActions {
 export const CartStore = createStore<CartState, CartActions>(
   {
     cartList: [],
-    totalAmount: 0,
+    totalPrice: 0,
     totalDiscountRate: 0,
     point: 0,
   },
@@ -39,9 +39,9 @@ export const CartStore = createStore<CartState, CartActions>(
     const updateCartList = (cartList: Product[]) => {
       state.cartList = cartList;
 
-      const { finalAmount, finalDiscountRate, point } = calculateCartPrice(cartList);
+      const { finalPrice, finalDiscountRate, point } = calculateCartPrice(cartList);
 
-      state.totalAmount = finalAmount;
+      state.totalPrice = finalPrice;
       state.totalDiscountRate = finalDiscountRate;
       state.point = point;
     };
@@ -65,8 +65,8 @@ export const CartStore = createStore<CartState, CartActions>(
       getCartList: () => {
         return state.cartList;
       },
-      getTotalAmount: () => {
-        return state.totalAmount;
+      getTotalPrice: () => {
+        return state.totalPrice;
       },
       getTotalDiscountRate: () => {
         return state.totalDiscountRate;

@@ -10,7 +10,7 @@ interface CartItemProps {
 }
 
 export const CartItem = ({ item }: CartItemProps) => {
-  const { name, id, amount, quantity } = item;
+  const { name, id, price, quantity } = item;
 
   const { isQuantityCountOver } = useQuantityCountChecker();
 
@@ -42,7 +42,7 @@ export const CartItem = ({ item }: CartItemProps) => {
   return (
     <div id={id} className="flex justify-between items-center mb-2">
       <span>
-        {name} - {amount}원 x {quantity}
+        {name} - {price}원 x {quantity}
       </span>
       <div>
         <QuantityControlButton onClick={handleRemoveButtonClick}>-</QuantityControlButton>

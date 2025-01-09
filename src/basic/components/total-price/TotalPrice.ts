@@ -3,7 +3,7 @@ import { CartStore } from '../../store/cartStore';
 export const TotalPrice = () => {
   const { actions } = CartStore;
 
-  const totalAmount = actions.getTotalAmount();
+  const totalPrice = actions.getTotalPrice();
   const totalDiscountRate = actions.getTotalDiscountRate();
   const point = actions.getPoint();
 
@@ -11,7 +11,7 @@ export const TotalPrice = () => {
 
   const render = `
   <div id="cart-total" class="text-xl font-bold my-4">
-  총액: ${Math.round(totalAmount)}원<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${point})</span>
+  총액: ${Math.round(totalPrice)}원<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${point})</span>
   ${
     isShowDiscount
       ? `<span class="text-green-500 ml-2">

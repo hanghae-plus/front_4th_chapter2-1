@@ -6,7 +6,7 @@ import type { Product } from '../../types/product';
 
 interface CartContextType {
   cartList: Product[];
-  totalAmount: number;
+  totalPrice: number;
   totalDiscountRate: number;
   point: number;
   addCartItem: (item: Product) => void;
@@ -18,8 +18,7 @@ export const cartContext = createContext<CartContextType | undefined>(undefined)
 
 export const useGetCartList = () => useCreateCartContext(cartContext, 'useGetCartList', 'cartProvider').cartList;
 
-export const useGetTotalAmount = () =>
-  useCreateCartContext(cartContext, 'useGetTotalAmount', 'cartProvider').totalAmount;
+export const useGetTotalPrice = () => useCreateCartContext(cartContext, 'useGetTotalPrice', 'cartProvider').totalPrice;
 
 export const useGetPoint = () => useCreateCartContext(cartContext, 'useGetPoint', 'cartProvider').point;
 

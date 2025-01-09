@@ -9,7 +9,7 @@ import type { PropsWithChildren } from 'react';
 
 export const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartList, setCartList] = useState<Product[]>([]);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
   const [point, setPoint] = useState(0);
   const [totalDiscountRate, setTotalDiscountRate] = useState(0);
 
@@ -20,9 +20,9 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
   const updateCartList = (cartList: Product[]) => {
     setCartList(cartList);
 
-    const { finalAmount, finalDiscountRate, point } = calculateCartPrice(cartList);
+    const { finalPrice, finalDiscountRate, point } = calculateCartPrice(cartList);
 
-    setTotalAmount(finalAmount);
+    setTotalPrice(finalPrice);
     setTotalDiscountRate(finalDiscountRate);
     setPoint(point);
   };
@@ -95,12 +95,12 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
       addCartItem,
       clearCartItem,
       removeCartItem,
-      totalAmount,
+      totalPrice,
       totalDiscountRate,
       cartList,
       point,
     };
-  }, [addCartItem, clearCartItem, removeCartItem, totalAmount, totalDiscountRate, cartList, point]);
+  }, [addCartItem, clearCartItem, removeCartItem, totalPrice, totalDiscountRate, cartList, point]);
 
   return <cartContext.Provider value={contextValue}>{children}</cartContext.Provider>;
 };

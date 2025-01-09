@@ -5,7 +5,7 @@ import { isQuantityCountOver } from '../../hooks/useQuantityChecker';
 interface CartItemProps {
   id: string;
   name: string;
-  amount: number;
+  price: number;
   quantity: number;
 }
 
@@ -15,7 +15,7 @@ const eventHandlers = {
 };
 
 export const CartItem = (item: CartItemProps) => {
-  const { id, name, amount, quantity } = item;
+  const { id, name, price, quantity } = item;
 
   const { actions: productActions } = ProductStore;
   const { actions: cartActions } = CartStore;
@@ -66,7 +66,7 @@ export const CartItem = (item: CartItemProps) => {
   const render = `
         <div id=${id} class="flex justify-between items-center mb-2">
             <span>
-             ${name} - ${amount}원 x ${quantity}
+             ${name} - ${price}원 x ${quantity}
             </span>
             <div>
             <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${id}" data-change="-1">-</button>

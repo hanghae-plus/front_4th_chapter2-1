@@ -19,9 +19,9 @@ export const useFlashSale = ({ productList, setProductList }: UseFlashSaleProps)
   };
 
   const applyFlashSale = (product: Product) => {
-    const discountedAmout = Math.round(product.amount * FLASH_SALE_DISCOUNT_RATE);
+    const discountedPrice = Math.round(product.price * FLASH_SALE_DISCOUNT_RATE);
     const updatedProductList = productList.map((product) =>
-      product.id === product.id ? { ...product, amount: discountedAmout } : product,
+      product.id === product.id ? { ...product, price: discountedPrice } : product,
     );
 
     setProductList(updatedProductList);

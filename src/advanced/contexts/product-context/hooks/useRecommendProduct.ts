@@ -22,9 +22,9 @@ export const useRecommendProduct = ({ productList, setProductList, lastSaleItem 
     if (recommendedProduct) {
       alert(`${recommendedProduct.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
 
-      const discountedAmount = Math.round(recommendedProduct.amount * RECOMMEND_DISCOUNT_RATE);
+      const discountedPrice = Math.round(recommendedProduct.price * RECOMMEND_DISCOUNT_RATE);
       const updatedProductList = productList.map((product) =>
-        product.id === recommendedProduct.id ? { ...product, amount: discountedAmount } : product,
+        product.id === recommendedProduct.id ? { ...product, price: discountedPrice } : product,
       );
 
       setProductList(updatedProductList);

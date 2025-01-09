@@ -20,28 +20,28 @@ export const QUANTITY_THRESHOLDS = {
 export const calculateCartPrice = (cartList: Product[]) => {
   const totals = calculateCartTotals(cartList);
   const bulkDiscount = calculateBulkDiscount(totals);
-  const { finalAmount, finalDiscountRate } = applyTuesdayDiscount(bulkDiscount);
+  const { finalPrice, finalDiscountRate } = applyTuesdayDiscount(bulkDiscount);
 
-  const point = getBonusPoint(finalAmount);
+  const point = getBonusPoint(finalPrice);
 
-  return { finalAmount, finalDiscountRate, point };
+  return { finalPrice, finalDiscountRate, point };
 };
 
 // 장바구니 토탈 가격 및 재고 계산
 const calculateCartTotals = (cartList: Product[]) => {
   return cartList.reduce(
     (acc, item) => {
-      const itemTotal = item.amount * item.quantity;
+      const itemTotal = item.price * item.quantity;
       const discountRate = calculateTotalDiscountRate(item);
-      const discountedAmount = itemTotal * (1 - discountRate);
+      const discountedPrice = itemTotal * (1 - discountRate);
 
       return {
         totalQuantity: acc.totalQuantity + item.quantity,
-        totalAmount: acc.totalAmount + itemTotal,
-        totalDiscountedAmount: acc.totalDiscountedAmount + discountedAmount,
+        totalPrice: acc.totalPrice + itemTotal,
+        totalDiscountedPrice: acc.totalDiscountedPrice + discountedPrice,
       };
     },
-    { totalQuantity: 0, totalAmount: 0, totalDiscountedAmount: 0 },
+    { totalQuantity: 0, totalPrice: 0, totalDiscountedPrice: 0 },
   );
 };
 
@@ -50,61 +50,61 @@ function calculateTotalDiscountRate(item: Product) {
   return PRODUCT_DISCOUNT_RATES[item.id as ProductId] ?? 0;
 }
 
-const calculateRegularDiscount = (totalAmount: number, totalDiscountedAmount: number) => {
+const calculateRegularDiscount = (totalPrice: number, totalDiscountedPrice: number) => {
   return {
-    discountRate: (totalAmount - totalDiscountedAmount) / totalAmount,
-    finalDiscountedAmount: totalDiscountedAmount,
+    discountRate: (totalPrice - totalDiscountedPrice) / totalPrice,
+    finalDiscountedPrice: totalDiscountedPrice,
   };
 };
 
 // 대량 구매 할인
 function calculateBulkDiscount(totals: ReturnType<typeof calculateCartTotals>) {
-  const { totalQuantity, totalAmount, totalDiscountedAmount } = totals;
+  const { totalQuantity, totalPrice, totalDiscountedPrice } = totals;
 
   if (totalQuantity <= QUANTITY_THRESHOLDS.BULK_PURCHASE) {
-    return calculateRegularDiscount(totalAmount, totalDiscountedAmount);
+    return calculateRegularDiscount(totalPrice, totalDiscountedPrice);
   }
 
   if (totalQuantity >= QUANTITY_THRESHOLDS.BULK_PURCHASE) {
-    const bulkDiscountAmount = totalAmount * DISCOUNT_RATES.TWENTY_FIVE_PERCENT;
-    const discountAmount = totalAmount - totalDiscountedAmount;
+    const bulkDiscountPrice = totalPrice * DISCOUNT_RATES.TWENTY_FIVE_PERCENT;
+    const discountPrice = totalPrice - totalDiscountedPrice;
 
-    return bulkDiscountAmount > discountAmount
+    return bulkDiscountPrice > discountPrice
       ? {
           discountRate: DISCOUNT_RATES.TWENTY_FIVE_PERCENT,
-          finalDiscountedAmount: totalAmount * (1 - DISCOUNT_RATES.TWENTY_FIVE_PERCENT),
+          finalDiscountedPrice: totalPrice * (1 - DISCOUNT_RATES.TWENTY_FIVE_PERCENT),
         }
-      : calculateRegularDiscount(totalAmount, totalDiscountedAmount);
+      : calculateRegularDiscount(totalPrice, totalDiscountedPrice);
   }
 
   return {
     discountRate: 0,
-    finalDiscountedAmount: totalDiscountedAmount,
+    finalDiscountedPrice: totalDiscountedPrice,
   };
 }
 
 // 화요일 할인
 function applyTuesdayDiscount(total: ReturnType<typeof calculateBulkDiscount>) {
-  let { discountRate, finalDiscountedAmount } = total;
+  let { discountRate, finalDiscountedPrice } = total;
 
   const isTuesday = new Date().getDay() === 2;
 
   if (!isTuesday) {
     return {
-      finalAmount: finalDiscountedAmount,
+      finalPrice: finalDiscountedPrice,
       finalDiscountRate: discountRate,
     };
   }
 
   return {
-    finalAmount: (finalDiscountedAmount *= 1 - DISCOUNT_RATES.TEN_PERCENT),
+    finalPrice: (finalDiscountedPrice *= 1 - DISCOUNT_RATES.TEN_PERCENT),
     finalDiscountRate: (discountRate = Math.max(discountRate, DISCOUNT_RATES.TEN_PERCENT)),
   };
 }
 
 // 포인트 계산
-function getBonusPoint(amount: number) {
-  const bonusPoint = Math.floor(amount / 1000);
+function getBonusPoint(price: number) {
+  const bonusPoint = Math.floor(price / 1000);
 
   return bonusPoint;
 }

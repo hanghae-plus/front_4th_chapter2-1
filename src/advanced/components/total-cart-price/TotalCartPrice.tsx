@@ -1,7 +1,7 @@
-import { useGetPoint, useGetTotalAmount, useGetTotalDiscountRate } from '../../contexts/cart-context/CartContext';
+import { useGetPoint, useGetTotalPrice, useGetTotalDiscountRate } from '../../contexts/cart-context/CartContext';
 
 export const TotalCartPrice = () => {
-  const totalAmount = useGetTotalAmount();
+  const totalPrice = useGetTotalPrice();
   const totalDiscountRate = useGetTotalDiscountRate();
   const point = useGetPoint();
 
@@ -9,7 +9,7 @@ export const TotalCartPrice = () => {
 
   return (
     <div id="cart-total" className="text-xl font-bold my-4">
-      총액: ${Math.round(totalAmount)}원
+      총액: ${Math.round(totalPrice)}원
       <span id="loyalty-points" className="text-blue-500 ml-2">
         (포인트: {point})
       </span>

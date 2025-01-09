@@ -1,7 +1,7 @@
 interface Product {
   id: string;
   name: string;
-  amount: number;
+  price: number;
   quantity: number;
 }
 
@@ -14,7 +14,7 @@ export const SelectOption = ({ product }: SelectOptionProps) => {
 
   return (
     <option id={product.id} value={product.id} disabled={isDisabled}>
-      {product.name} - {product.amount}원
+      {product.name} - {product.price}원
     </option>
   );
 };
