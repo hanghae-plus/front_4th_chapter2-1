@@ -22,8 +22,8 @@ jobs:
           node-version: 20
       - name: test basic
         run: |
-          npm install
-          npm run test:basic
+          pnpm install
+          pnpm run test:basic
   advacned:
     runs-on: ubuntu-latest
     steps:
@@ -36,5 +36,5 @@ jobs:
           node-version: 20
       - name: advanced-test
         run: |
-          npm install
-          npm run test:advanced
+          pnpm install
+          pnpm run test:advanced
