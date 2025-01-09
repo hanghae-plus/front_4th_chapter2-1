@@ -1,5 +1,5 @@
 import { Product } from "../models/Product";
-import { INITIAL_QTY } from "advanced/constants";
+import { ALERT_MESSAGES, INITIAL_QTY } from "advanced/constants";
 
 export type CartItem = Product & { qty: number };
 
@@ -23,6 +23,7 @@ export const cartReducer = (
         (item) => item.id === action.product.id
       );
 
+      // 최근 선택한 상품 설정
       state.lastSelectedItem = action.product.id;
 
       if (existingItem) {
@@ -53,7 +54,7 @@ export const cartReducer = (
           {
             ...action.product,
             qty: INITIAL_QTY,
-            remaining: action.product.remaining - INITIAL_QTY,
+            remaining: action.product.remaining - 1,
           },
         ],
       };
@@ -64,14 +65,15 @@ export const cartReducer = (
       if (!itemToChange) return state;
 
       if (action.change > 0 && itemToChange.remaining < action.change) {
-        alert("재고가 부족합니다.");
+        alert(ALERT_MESSAGES.OUT_OF_STOCK);
         return state;
       }
 
+      // 최근 선택한 상품 설정
       state.lastSelectedItem = action.id;
 
       // 장바구니 잔여 수량 1에서 1감소 시 장바구니에서 삭제
-      if (itemToChange.qty === 1 && action.change === -1) {
+      if (itemToChange.qty === INITIAL_QTY && action.change === -1) {
         return {
           ...state,
           items: state.items.filter((item) => item.id !== action.id),
@@ -93,6 +95,7 @@ export const cartReducer = (
     }
 
     case "REMOVE_ITEM": {
+      // 최근 선택한 상품 설정
       state.lastSelectedItem = action.id;
 
       return {
