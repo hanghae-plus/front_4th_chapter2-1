@@ -12,18 +12,6 @@ export const handleDecreaseQuantity = (productId) => {
   }
 };
 
-export const handleIncreaseQuantity = (productId, productModel) => {
-  const currentCartItem = cartStore.getCartItemByProductId(productId);
-
-  if (!canIncreaseQuantity(productModel, currentCartItem)) {
-    alert('재고가 부족합니다.');
-    return;
-  }
-
-  cartStore.addCartItem(productModel);
-  updateCartItem(productId, cartStore.getCartItemByProductId(productId));
-};
-
 export const canIncreaseQuantity = ({ product, cartItem }: { product: Product; cartItem?: Cart }) =>
   product.quantity > (cartItem?.quantity || 0);
 

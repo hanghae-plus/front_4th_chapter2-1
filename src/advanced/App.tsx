@@ -49,6 +49,38 @@ const App = () => {
     setCartItems((prevItems) => prevItems.filter((item) => item.id !== productId));
   };
 
+  const handleIncreaseQuantity = (productId: string) => {
+    const product = initialProducts.find((item) => item.id === productId);
+    if (!product) {
+      return;
+    }
+
+    const currentItem = cartItems.find((item) => item.id === productId);
+
+    if (!canIncreaseQuantity({ product, cartItem: currentItem })) {
+      alert('재고가 부족합니다.');
+      return;
+    }
+
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find((item) => item.id === productId);
+
+      if (existingItem) {
+        return prevItems.map((item) => (item.id === productId ? { ...item, quantity: item.quantity + 1 } : item));
+      }
+
+      return [
+        ...prevItems,
+        {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          quantity: 1,
+        },
+      ];
+    });
+  };
+
   const handleProductSelect = (productId: string) => {
     setSelectedProductId(productId);
   };
@@ -64,8 +96,8 @@ const App = () => {
             <CartItem
               key={item.id}
               cart={item}
-              onIncrease={() => handleQuantityChange(item.id, 1)}
-              onDecrease={() => handleQuantityChange(item.id, -1)}
+              onIncrease={() => handleIncreaseQuantity(item.id)}
+              onDecrease={() => handleQuantityChange(item.id)}
               onRemove={() => handleRemoveItem(item.id)}
             />
           ))}
