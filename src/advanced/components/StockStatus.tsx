@@ -1,26 +1,37 @@
 import { STOCKS } from "advanced/constants";
-import { Product } from "advanced/models/Product";
+import { useCartContext } from "advanced/contexts/CartProvider";
 import { productList } from "advanced/store/productList";
 
-function StockStatus() {
-  const handleStockMessage = ({ name, remaining }: Product) => {
-    const isOutOfStock = remaining <= STOCKS.OUT_OF_STOCK;
-    const isLowStock = remaining < STOCKS.LOW_STOCK_THRESHOLD;
+export const StockStatus = () => {
+  const { cartState } = useCartContext();
 
-    if (isOutOfStock) {
-      return `${name}: 품절`;
-    } else if (isLowStock) {
-      return `${name}: 재고 부족 (${remaining}개 남음)`;
-    } else {
-      return "";
-    }
-  };
-
-  // 재고 메시지
-  return productList
-    .map(handleStockMessage)
-    .filter((msg) => msg !== "")
+  const outOfStockMessage = productList
+    .filter((item) => item.remaining <= STOCKS.OUT_OF_STOCK)
+    .map((item) => `${item.name}: 품절`)
     .join("\n");
-}
 
-export default StockStatus;
+  const lowStockMessage = cartState.items
+    .map((item) => {
+      if (item.remaining < STOCKS.LOW_STOCK_THRESHOLD) {
+        const itemStockStatus =
+          item.remaining > STOCKS.OUT_OF_STOCK
+            ? `재고부족(${item.remaining}개 남음)`
+            : "품절";
+
+        return `${item.name}: ${itemStockStatus}`;
+      }
+    })
+    .join("\n");
+
+  const stockStatusMsg = `${outOfStockMessage}\n${lowStockMessage}`;
+
+  return (
+    <div
+      id="stock-status"
+      className="mt-2 text-sm text-gray-500"
+      style={{ whiteSpace: "pre-line" }}
+    >
+      {stockStatusMsg}
+    </div>
+  );
+};
