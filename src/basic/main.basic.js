@@ -27,98 +27,56 @@ let productList = [
   { id: 'p5', name: '상품5', price: 25000, count: 10 },
 ];
 
-// 요소 생성 함수
-function createElement(tag, options = {}) {
-  const element = document.createElement(tag);
-  if (options.id) element.id = options.id;
-  if (options.className) element.className = options.className;
-  if (options.textContent) element.textContent = options.textContent;
-  if (options.value) element.value = options.value;
-  return element;
-}
-
 // 행운 상품 가져오기
-function getLuckyItem() {
-  return productList[Math.floor(Math.random() * productList.length)];
-}
+const getLuckyItem = () =>
+  productList[Math.floor(Math.random() * productList.length)];
 
 // 추천 상품 가져오기기
-function getRecommendItem() {
-  return productList.find((item) => item.id !== lastSel && item.count > 0);
-}
+const getRecommendItem = () =>
+  productList.find((item) => item.id !== lastSel && item.count > 0);
 
 // 장바구니 항목의 수량 파싱
-function parseItemCount(textContent) {
-  return parseInt(textContent.split('x ')[1]);
-}
+const parseItemCount = (textContent) => parseInt(textContent.split('x ')[1]);
 
 // 오늘 요일 확인
-function isSpecificDay(dayNumber) {
-  return new Date().getDay() === dayNumber;
-}
+const isSpecificDay = (dayNumber) => new Date().getDay() === dayNumber;
 
 // 메인 함수
-function main() {
+const main = () => {
   const root = document.getElementById('app');
-  let cont = createElement('div', { className: 'bg-gray-100 p-8' });
-  let wrap = createElement('div', {
-    className:
-      'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8',
-  });
-  let hTxt = createElement('h1', {
-    className: 'text-2xl font-bold mb-4',
-    textContent: '장바구니',
-  });
 
-  cont.appendChild(wrap);
-  root.appendChild(cont);
-  wrap.appendChild(hTxt);
+  const contHTML = `
+    <div class="bg-gray-100 p-8">
+      <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
+        <h1 class="text-2xl font-bold mb-4">장바구니</h1>
+        <div id="cart-items"></div>
+        <div id="cart-total" class="text-xl font-bold my-4"></div>
+        <select id="product-select" class="border rounded p-2 mr-2"></select>
+        <button id="add-to-cart" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
+        <div id="stock-status" class="text-sm text-gray-500 mt-2"></div>
+      </div>
+    </div>
+  `;
 
-  cartList = createElement('div', { id: 'cart-items' });
-  wrap.appendChild(cartList);
+  root.innerHTML = contHTML;
 
-  cartTotal = createElement('div', {
-    id: 'cart-total',
-    className: 'text-xl font-bold my-4',
-  });
-  wrap.appendChild(cartTotal);
-
-  productSelectBox = createElement('select', {
-    id: 'product-select',
-    className: 'border rounded p-2 mr-2',
-  });
-  wrap.appendChild(productSelectBox);
-
-  cartAddBtn = createElement('button', {
-    id: 'add-to-cart',
-    className: 'bg-blue-500 text-white px-4 py-2 rounded',
-    textContent: '추가',
-  });
-  wrap.appendChild(cartAddBtn);
-
-  stockStatus = createElement('div', {
-    id: 'stock-status',
-    className: 'text-sm text-gray-500 mt-2',
-  });
-  wrap.appendChild(stockStatus);
-
-  updateProductOptions();
+  updateProductOptionsUI();
   calculateCart();
-
   initializeTimers();
-}
+};
 
 // 세일 이벤트 등록
-function initializeTimers() {
+const initializeTimers = () => {
   setTimeout(() => {
     setInterval(() => {
       let product = getLuckyItem();
 
-      const isProductOnSale = Math.random() < SALE_PROBABILITY && product.count > 0;
+      const isProductOnSale =
+        Math.random() < SALE_PROBABILITY && product.count > 0;
       if (isProductOnSale) {
         product.price = Math.round(product.price * LUCKY_SALE_DISCOUNT_RATE);
         alert('번개세일! ' + product.name + '이(가) 20% 할인 중입니다!');
-        updateProductOptions();
+        updateProductOptionsUI();
       }
     }, 30000);
   }, Math.random() * 10000);
@@ -132,28 +90,26 @@ function initializeTimers() {
         product.price = Math.round(
           product.price * RECOMMENDED_ITEM_DISCOUNT_RATE
         );
-        updateProductOptions();
+        updateProductOptionsUI();
       }
     }, 60000);
   }, Math.random() * 20000);
-}
+};
 
-// 상품 옵션 업데이트
-function updateProductOptions() {
-  productSelectBox.innerHTML = '';
+// 상품 옵션 UI 업데이트
+const updateProductOptionsUI = () => {
   productList.forEach((item) => {
-    let opt = createElement('option', {
-      value: item.id,
-      textContent: item.name + ' - ' + item.price + '원',
-    });
-
-    if (item.count === 0) opt.disabled = true;
-    productSelectBox.appendChild(opt);
+    let optionHTML = `
+      <option value="${item.id}" ${item.count === 0 ? 'disabled' : ''}>
+        ${item.name} - ${item.price}원
+      </option>
+    `;
+    productSelectBox.innerHTML += optionHTML;
   });
-}
+};
 
 // 장바구니 항목, 할인 총액 초기화
-function calculateSubTotals() {
+const calculateSubTotals = () => {
   let cartItemElements = Array.from(cartList.children);
   let subTot = 0;
 
@@ -170,10 +126,10 @@ function calculateSubTotals() {
   });
 
   return subTot;
-}
+};
 
 // 대량 구매 할인 적용
-function calculateBulkDiscount(subTotal, totalAmount, totalQuantity) {
+const calculateBulkDiscount = (subTotal, totalAmount, totalQuantity) => {
   if (totalQuantity >= BULK_DISCOUNT_THRESHOLD) {
     const bulkDiscountAmount = subTotal * BULK_DISCOUNT_RATE;
     const individualDiscountAmount = subTotal - totalAmount;
@@ -190,24 +146,22 @@ function calculateBulkDiscount(subTotal, totalAmount, totalQuantity) {
     finalAmount: totalAmount,
     discountRate: (subTotal - totalAmount) / subTotal,
   };
-}
+};
 
-// 카드 UI 업데이트
-function updateCartUI(discRate) {
+// 카트 UI 업데이트
+const updateCartUI = (discRate) => {
   cartTotal.textContent = '총액: ' + Math.round(totalAmt) + '원';
 
   // 할인율이 있을 경우 UI에 표시
   if (discRate > 0) {
-    let discountMsg = createElement('span', {
-      className: 'text-green-500 ml-2',
-      textContent: '(' + (discRate * 100).toFixed(1) + '% 할인 적용)',
-    });
-    cartTotal.appendChild(discountMsg);
+    cartTotal.innerHTML += `
+      <span class="text-green-500 ml-2">(${(discRate * 100).toFixed(1)}% 할인 적용)</span>
+    `;
   }
-}
+};
 
 // 장바구니 업데이트
-function calculateCart() {
+const calculateCart = () => {
   totalAmt = 0;
   itemCnt = 0;
 
@@ -233,29 +187,27 @@ function calculateCart() {
 
   // UI 업데이트
   updateCartUI(discRate);
-  updateStockInfo();
-  renderBonusPoints();
-}
+  updateStockInfoUI();
+  bonusPointsUI();
+};
 
 // 포인트 렌더링
-const renderBonusPoints = () => {
+const bonusPointsUI = () => {
   bonusPts = Math.floor(totalAmt / 1000);
 
   let pointsElement = document.getElementById('loyalty-points');
 
-  if (!pointsElement) {
-    pointsElement = createElement('span', {
-      id: 'loyalty-points',
-      className: 'text-blue-500 ml-2',
-    });
-    cartTotal.appendChild(pointsElement);
+  if (pointsElement) {
+    pointsElement.textContent = `(포인트: ${bonusPts})`;
+  } else {
+    cartTotal.innerHTML += `
+    <span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPts})</span>
+  `;
   }
-
-  pointsElement.textContent = '(포인트: ' + bonusPts + ')';
 };
 
 // 재고 정보 렌더링
-function updateStockInfo() {
+const updateStockInfoUI = () => {
   let infoMsg = '';
 
   productList.forEach((item) => {
@@ -265,7 +217,7 @@ function updateStockInfo() {
   });
 
   stockStatus.textContent = infoMsg;
-}
+};
 
 main();
 
@@ -279,7 +231,8 @@ cartAddBtn.addEventListener('click', () => {
 
     if (itemElement) {
       // 이미 장바구니에 있는 아이템의 수량 증가 처리
-      let newQty = parseItemCount(itemElement.querySelector('span').textContent) + 1;
+      let newQty =
+        parseItemCount(itemElement.querySelector('span').textContent) + 1;
 
       if (newQty <= itemToAdd.count) {
         itemElement.querySelector('span').textContent =
@@ -290,7 +243,7 @@ cartAddBtn.addEventListener('click', () => {
       }
     } else {
       // 새로 장바구니에 추가하는 아이템 처리
-      let newItem = createCartItem(itemToAdd);
+      let newItem = createCartItemUI(itemToAdd);
       cartList.appendChild(newItem);
       itemToAdd.count--;
     }
@@ -300,25 +253,21 @@ cartAddBtn.addEventListener('click', () => {
   }
 });
 
-// 장바구니 아이템 생성
-function createCartItem(itemToAdd) {
-  let newItem = document.createElement('div');
-  newItem.id = itemToAdd.id;
-  newItem.className = 'flex justify-between items-center mb-2';
-
-  newItem.innerHTML = `
-    <span>${itemToAdd.name} - ${itemToAdd.price}원 x 1</span>
-    <div>
-      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-              data-product-id="${itemToAdd.id}" data-change="-1">-</button>
-      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-              data-product-id="${itemToAdd.id}" data-change="1">+</button>
-      <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
-              data-product-id="${itemToAdd.id}">삭제</button>
+// 장바구니 아이템 UI 생성
+function createCartItemUI(itemToAdd) {
+  return `
+    <div id="${itemToAdd.id}" class="flex justify-between items-center mb-2">
+      <span>${itemToAdd.name} - ${itemToAdd.price}원 x 1</span>
+      <div>
+        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+                data-product-id="${itemToAdd.id}" data-change="-1">-</button>
+        <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+                data-product-id="${itemToAdd.id}" data-change="1">+</button>
+        <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
+                data-product-id="${itemToAdd.id}">삭제</button>
+      </div>
     </div>
   `;
-
-  return newItem;
 }
 
 // 장바구니 수량 변경 및 삭제 이벤트
@@ -343,10 +292,12 @@ cartList.addEventListener('click', (event) => {
 // 수량 변경 처리 함수
 function handleQuantityChange(target, itemElement, product) {
   var qtyChange = parseInt(target.dataset.change);
-  var currentQty = parseItemCount(itemElement.querySelector('span').textContent);
+  var currentQty = parseItemCount(
+    itemElement.querySelector('span').textContent
+  );
   var newQty = currentQty + qtyChange;
 
-  if (newQty <= 0 ) {
+  if (newQty <= 0) {
     itemElement.remove();
     product.count -= qtyChange;
   } else if (newQty <= product.count + currentQty) {
