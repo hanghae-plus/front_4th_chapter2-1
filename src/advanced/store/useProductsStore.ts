@@ -11,6 +11,7 @@ interface ProductsStore {
   products: ProductType[];
   increaseStock: (id: string, quantity?: number) => void;
   decreaseStock: (id: string) => void;
+  suggestPrice: (id: string) => void;
 }
 
 export const useProductsStore = create<ProductsStore>((set) => ({
@@ -34,6 +35,15 @@ export const useProductsStore = create<ProductsStore>((set) => ({
     set((state) => ({
       products: state.products.map((product) =>
         product.id === id ? { ...product, stock: product.stock - 1 } : product
+      ),
+    }));
+  },
+  suggestPrice: (id: string) => {
+    set((state) => ({
+      products: state.products.map((product) =>
+        product.id === id
+          ? { ...product, price: product.price * 0.95 }
+          : product
       ),
     }));
   },

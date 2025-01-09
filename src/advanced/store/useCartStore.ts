@@ -12,6 +12,7 @@ interface CartItemsStore {
   increaseQuantity: (id: string) => void;
   decreaseQuantity: (id: string) => void;
   removeItem: (id: string) => void;
+  addItem: (item: CartItemType) => void;
 }
 
 export const useCartItemsStore = create<CartItemsStore>((set) => ({
@@ -28,6 +29,11 @@ export const useCartItemsStore = create<CartItemsStore>((set) => ({
       cartItems: state.cartItems.map((item) =>
         item.id === id ? { ...item, quantity: item.quantity - 1 } : item
       ),
+    }));
+  },
+  addItem: (item: CartItemType) => {
+    set((state) => ({
+      cartItems: [...state.cartItems, item],
     }));
   },
   removeItem: (id: string) => {
