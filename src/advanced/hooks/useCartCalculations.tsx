@@ -61,8 +61,7 @@ const useCartCalculations = () => {
     handleClickIncreaseProductQuantity(productId);
   };
 
-  const {discountRate, price} = calculateFinalValues(cartList);
-
+  const { discountRate, price } = calculateFinalValues(cartList);
 
   useEffect(() => {
     setTimeout(() => {
@@ -78,7 +77,9 @@ const useCartCalculations = () => {
 
     setTimeout(() => {
       setInterval(() => {
-        const suggestedProduct = productList.find((product) => product.id !== selectedProductId && product.quantity > 0);
+        const suggestedProduct = productList.find(
+          (product) => product.id !== selectedProductId && product.quantity > 0,
+        );
         if (suggestedProduct) {
           alert(`${suggestedProduct.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
           handleRandomPromotion(suggestedProduct.id, 0.05);
@@ -87,8 +88,6 @@ const useCartCalculations = () => {
       }, 60000);
     }, Math.random() * 20000);
   }, []);
-
-
 
   return {
     price,
@@ -102,7 +101,6 @@ const useCartCalculations = () => {
     handleClickDecreaseQuantity,
     handleChangeSelectedProduct,
   };
-
 };
 
 export default useCartCalculations;

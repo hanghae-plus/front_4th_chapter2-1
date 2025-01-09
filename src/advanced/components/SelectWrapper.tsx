@@ -6,11 +6,11 @@ interface SelectProps {
   handleChangeSelectedProduct: (e: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
-const Select = ({productList, selectedProductId, handleChangeSelectedProduct}: SelectProps) => {
+const Select = ({ productList, selectedProductId, handleChangeSelectedProduct }: SelectProps) => {
   return (
     <select
-      id="product-select"
-      className="border rounded p-2 mr-2"
+      id='product-select'
+      className='border rounded p-2 mr-2'
       value={selectedProductId}
       onChange={handleChangeSelectedProduct}
     >

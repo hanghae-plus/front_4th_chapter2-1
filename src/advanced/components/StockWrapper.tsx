@@ -5,13 +5,12 @@ interface StockWrapperProps {
   productList: Product[];
 }
 
-
-const StockWrapper = ({productList}: StockWrapperProps) => {
-  const filteredProductList = productList.filter((product) => product.quantity === 0 || product.quantity < 5);
-
-  return (
-    <Stock productList={filteredProductList} />
+const StockWrapper = ({ productList }: StockWrapperProps) => {
+  const filteredProductList = productList.filter(
+    (product) => product.quantity === 0 || product.quantity < 5,
   );
+
+  return <Stock productList={filteredProductList} />;
 };
 
 export default StockWrapper;

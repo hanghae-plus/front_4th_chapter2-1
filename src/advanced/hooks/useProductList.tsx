@@ -33,14 +33,15 @@ const useProductList = () => {
   };
 
   const handleRandomPromotion = (productId: string, discountRate: number) => {
-    setProductList((prev) => prev.map((product) => {
-      if (product.id === productId) {
-        return { ...product, price: product.price * (1 - discountRate) };
-      }
-      return product;
-    }));
+    setProductList((prev) =>
+      prev.map((product) => {
+        if (product.id === productId) {
+          return { ...product, price: product.price * (1 - discountRate) };
+        }
+        return product;
+      }),
+    );
   };
-
 
   return {
     productList,
@@ -48,7 +49,6 @@ const useProductList = () => {
     handleClickIncreaseProductQuantity,
     handleRandomPromotion,
   };
-
 };
 
 export default useProductList;

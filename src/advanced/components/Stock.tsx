@@ -7,7 +7,7 @@ interface StockProps {
 
 const Stock = ({ productList }: StockProps) => {
   return (
-    <div id="stock-status" className="text-sm text-gray-500 mt-2">
+    <div id='stock-status' className='text-sm text-gray-500 mt-2'>
       {productList
         .map((product) => {
           return `${product.name}: ${formatMessage(product.quantity)}`;

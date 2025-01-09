@@ -12,7 +12,7 @@ const useSelectProduct = () => {
 
   const handleChangeSelectedProduct = (e: ChangeEvent<HTMLSelectElement>) => {
     setSelectedProductId(e.target.value);
-  }
+  };
 
   return {
     productList,
@@ -21,7 +21,7 @@ const useSelectProduct = () => {
     handleChangeSelectedProduct,
     handleClickIncreaseProductQuantity,
     handleClickDecreaseProductQuantity,
-  }
+  };
 };
 
 export default useSelectProduct;

@@ -46,14 +46,15 @@ const useCartList = () => {
   };
 
   const handleRandomPromotionFromCart = (productId: string, discountRate: number) => {
-    setCartList((prev) => prev.map((product) => {
-      if (product.id === productId) {
-        return { ...product, price: product.price * (1 - discountRate) };
-      }
-      return product;
-    }));
+    setCartList((prev) =>
+      prev.map((product) => {
+        if (product.id === productId) {
+          return { ...product, price: product.price * (1 - discountRate) };
+        }
+        return product;
+      }),
+    );
   };
-
 
   return {
     cartList,

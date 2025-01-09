@@ -1,11 +1,16 @@
 import Product from '../types/product.ts';
 import { isTuesday } from './utils.ts';
 
-export const getTotalQuantity = (productList: Product[]) => productList.reduce((acc, product) => acc + product.quantity, 0);
+export const getTotalQuantity = (productList: Product[]) =>
+  productList.reduce((acc, product) => acc + product.quantity, 0);
 
 export const calculateDiscount = (amount: number, total: number) => (total - amount) / total;
 
-export const calculateBulkDiscount = ({ cartList, subTotal, totalAmount }: {
+export const calculateBulkDiscount = ({
+  cartList,
+  subTotal,
+  totalAmount,
+}: {
   cartList: Product[];
   totalAmount: number;
   subTotal: number;
@@ -23,7 +28,6 @@ export const calculateBulkDiscount = ({ cartList, subTotal, totalAmount }: {
   }
 
   return itemDiscountRate;
-
 };
 
 export const calculateDiscountRateByDay = (discountRate: number) => {
@@ -46,12 +50,13 @@ const getDiscountRate = (product: Product) => {
 };
 
 export const calculateTotalAmount = (productList: Product[]) => {
-  return productList.map((product) => {
-    const discountRate = getDiscountRate(product);
-    return product.price * product.quantity * (1 - discountRate);
-  }).reduce((acc, price) => acc + price, 0);
+  return productList
+    .map((product) => {
+      const discountRate = getDiscountRate(product);
+      return product.price * product.quantity * (1 - discountRate);
+    })
+    .reduce((acc, price) => acc + price, 0);
 };
-
 
 export const calculateTotalAmountByDay = (productList: Product[]) => {
   const totalAmount = calculateTotalAmount(productList);
@@ -67,14 +72,15 @@ export const getTotalPrice = (productList: Product[]) => {
 export const calculateFinalValues = (productList: Product[]) => {
   const subTotal = getTotalPrice(productList);
   const totalAmount = calculateTotalAmountByDay(productList);
-  const discountRate = calculateDiscountRateByDay(calculateBulkDiscount({
-    cartList: productList,
-    subTotal,
-    totalAmount,
-  }));
+  const discountRate = calculateDiscountRateByDay(
+    calculateBulkDiscount({
+      cartList: productList,
+      subTotal,
+      totalAmount,
+    }),
+  );
 
   const finalPrice = subTotal * (1 - discountRate);
-
 
   return {
     discountRate,

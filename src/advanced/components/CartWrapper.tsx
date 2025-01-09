@@ -4,9 +4,7 @@ import Cart from './Cart.tsx';
 const CartWrapper = () => {
   const cartCalculations = useCartCalculations();
 
-  return (
-    <Cart {...cartCalculations} />
-  );
+  return <Cart {...cartCalculations} />;
 };
 
 export default CartWrapper;
