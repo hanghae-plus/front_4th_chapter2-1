@@ -18,6 +18,8 @@ export default [
         ...globals.es2021,
         ...globals.node,
         ...globals.browser,
+        cartStore: 'writable',
+        productStore: 'writable',
       },
       sourceType: 'module',
     },
