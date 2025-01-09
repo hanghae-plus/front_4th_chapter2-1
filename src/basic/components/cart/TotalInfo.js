@@ -1,9 +1,16 @@
 import { productStore } from '../../stores/productStore.js';
+import {
+  BONUS_POINT_DIVISOR,
+  DISCOUNT_RATES,
+  LOYALTY_DAY,
+  MIN_BULK_COUNT,
+  MIN_ITEM_COUNT_FOR_DISCOUNT,
+} from '../../constants/discount.js';
 
 export const TotalInfo = () => {
   const { totalPrice, discountRate } = calculateCart();
 
-  const bonusPoints = totalPrice / 1000;
+  const bonusPoints = totalPrice / BONUS_POINT_DIVISOR;
 
   return `<div id="cart-total" class="text-xl font-bold my-4">총액: ${totalPrice}원<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPoints})</span><span class="text-green-500 ml-2">
 ${
@@ -33,12 +40,8 @@ function calculateCart() {
     itemCount += currentItemCount;
 
     let discount = 0;
-    if (currentItemCount >= 10) {
-      if (product.id === 'p1') discount = 0.1;
-      else if (product.id === 'p2') discount = 0.15;
-      else if (product.id === 'p3') discount = 0.2;
-      else if (product.id === 'p4') discount = 0.05;
-      else if (product.id === 'p5') discount = 0.25;
+    if (currentItemCount >= MIN_ITEM_COUNT_FOR_DISCOUNT) {
+      discount = DISCOUNT_RATES.PRODUCT[product.id] || 0;
     }
 
     totalPrice += itemTotalPrice * (1 - discount);
@@ -46,13 +49,13 @@ function calculateCart() {
   });
 
   let discountRate;
-  if (itemCount >= 30) {
-    const bulkDisc = totalPrice * 0.25;
+  if (itemCount >= MIN_BULK_COUNT) {
+    const bulkDisc = totalPrice * DISCOUNT_RATES.BULK_PURCHASE;
     const itemDisc = totalTemp - totalPrice;
 
     if (bulkDisc > itemDisc) {
-      totalPrice = totalTemp * (1 - 0.25);
-      discountRate = 0.25;
+      totalPrice = totalTemp * (1 - DISCOUNT_RATES.BULK_PURCHASE);
+      discountRate = DISCOUNT_RATES.BULK_PURCHASE;
     } else {
       discountRate = (totalTemp - totalPrice) / totalTemp;
     }
@@ -60,9 +63,9 @@ function calculateCart() {
     discountRate = (totalTemp - totalPrice) / totalTemp;
   }
 
-  if (new Date().getDay() === 2) {
-    totalPrice *= 1 - 0.1;
-    discountRate = Math.max(discountRate, 0.1);
+  if (new Date().getDay() === LOYALTY_DAY) {
+    totalPrice *= 1 - DISCOUNT_RATES.LOYALTY_DAY;
+    discountRate = Math.max(discountRate, DISCOUNT_RATES.LOYALTY_DAY);
   }
 
   return {
