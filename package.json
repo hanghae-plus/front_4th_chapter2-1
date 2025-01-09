@@ -17,9 +17,19 @@
   "devDependencies": {
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/user-event": "^14.5.2",
+    "@types/react-dom": "^19.0.2",
     "@vitest/ui": "^2.1.1",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
     "jsdom": "^25.0.0",
+    "prettier": "^3.4.2",
     "vite": "^5.1.0",
     "vitest": "^2.1.1"
+  },
+  "dependencies": {
+    "@types/react": "^18.3.18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   }
 }
