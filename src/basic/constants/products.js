@@ -18,11 +18,30 @@ export const PRODUCTS = [
  * key : product_id
  * value : 할인율
  */
-
 export const DISCOUNT_PER_PRODUCTS = {
 	p1: 0.1,
 	p2: 0.15,
 	p3: 0.2,
 	p4: 0.05,
 	p5: 0.25,
+};
+
+/**
+ * 재고 알림 숫자
+ * ALMOST_OUT : 부족 알림 보낼 숫자 값
+ * OUT_OF_STOCK : 0
+ */
+export const STOCK_ALERT_THRESHOLDS = {
+	ALMOST_OUT: 5,
+	OUT_OF_STOCK: 0,
+};
+
+/**
+ * 할인율
+ */
+export const DISCOUNT_RATE = {
+	FIVE_PERCENT: 0.95,
+	TEN_PERCENT: 0.9,
+	FIFTEEN_PERCENT: 0.85,
+	TWENTY_PERCENT: 0.8,
 };
