@@ -83,6 +83,29 @@ const App = () => {
     });
   };
 
+  const handleDecreaseQuantity = (productId: string) => {
+    const product = initialProducts.find((p) => p.id === productId);
+    if (!product) {
+      return;
+    }
+
+    setCartItems((prevItems) => {
+      const cartItem = prevItems.find((item) => item.id === productId);
+
+      if (!cartItem) {
+        return prevItems;
+      }
+
+      const newQuantity = cartItem.quantity - 1;
+
+      if (newQuantity === 0) {
+        return prevItems.filter((item) => item.id !== productId);
+      }
+
+      return prevItems.map((item) => (item.id === productId ? { ...item, quantity: newQuantity } : item));
+    });
+  };
+
   const handleProductSelect = (productId: string) => {
     setSelectedProductId(productId);
   };
@@ -99,7 +122,7 @@ const App = () => {
               key={item.id}
               cart={item}
               onIncrease={() => handleIncreaseQuantity(item.id)}
-              onDecrease={() => handleQuantityChange(item.id)}
+              onDecrease={() => handleDecreaseQuantity(item.id)}
               onRemove={() => handleRemoveItem(item.id)}
             />
           ))}
