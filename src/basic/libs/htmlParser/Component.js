@@ -81,7 +81,7 @@ export class Component {
     }
   }
 
-  get({ target }) {
+  get(target) {
     if (target === 'children') {
       return this.getChildren();
     }
