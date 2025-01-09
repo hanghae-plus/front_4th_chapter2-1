@@ -1,4 +1,5 @@
 import CartItem from './components/CartItem';
+import ProductSelect from './components/ProductSelect';
 import { DAY_OF_WEEK } from './constants/day';
 import { ELEMENT_IDS } from './constants/element-id';
 import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './constants/policy';
@@ -38,7 +39,7 @@ const main = (callbackFn) => {
         <h1 class="text-2xl font-bold mb-4">장바구니</h1>
         <div id="${ELEMENT_IDS.CART_ITEMS}"></div>
         <div id="${ELEMENT_IDS.CART_TOTAL}" class="text-xl font-bold my-4"></div>
-        <select id="${ELEMENT_IDS.PRODUCT_SELECT}" class="border rounded p-2 mr-2" ></select>
+        ${ProductSelect({ products })}
         <button id="${ELEMENT_IDS.ADD_TO_CART}" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
         <div id="${ELEMENT_IDS.STOCK_STATUS}" class="text-sm text-gray-500 mt-2"></div>
       </div>
