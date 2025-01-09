@@ -30,6 +30,7 @@ export const ProductOptions = () => {
           id={DOM_IDS.PRODUCT_SELECT}
           className="mr-2 rounded border p-2"
           name="selectedProduct"
+          aria-label="상품 선택"
         >
           {productList.map((product) => (
             <option

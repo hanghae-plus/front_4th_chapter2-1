@@ -11,12 +11,12 @@
     "start:advanced": "vite serve --open ./index.advanced.html",
     "test": "vitest",
     "test:basic": "vitest basic.test.js",
-    "test:advanced": "vitest advanced.test.js",
+    "test:advanced": "vitest advanced.test.tsx",
     "test:ui": "vitest --ui"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
-    "@testing-library/jest-dom": "^6.5.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/user-event": "^14.5.2",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
@@ -35,16 +35,18 @@
     "eslint-plugin-react-refresh": "^0.4.16",
     "eslint-plugin-tailwindcss": "^3.17.5",
     "globals": "^15.14.0",
-    "jsdom": "^25.0.0",
+    "jsdom": "^25.0.1",
     "prettier": "^3.4.2",
     "prettier-plugin-tailwindcss": "^0.6.9",
     "typescript": "^5.7.2",
     "typescript-eslint": "^8.19.1",
     "vite": "^5.4.11",
-    "vitest": "^2.1.1"
+    "vitest": "^2.1.8"
   },
   "dependencies": {
+    "@testing-library/react": "^16.1.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "vite-tsconfig-paths": "^5.1.4"
   }
 }
