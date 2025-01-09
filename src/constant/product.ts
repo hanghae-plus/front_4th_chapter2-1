@@ -3,7 +3,6 @@ import { Product } from '../interface/cart';
 export const TUESDAY = 2;
 
 export const POINT_RATE = 1000;
-export const DISCOUNT_RATE = 0.8;
 export const BULK_DISCOUNT_RATE = 0.25;
 
 export const SALE_PROBABILITY = 0.3;
