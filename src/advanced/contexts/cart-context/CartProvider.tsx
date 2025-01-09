@@ -17,8 +17,11 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
   const addLastSaleItem = useAddLastSaleItem();
 
-  const calculateCart = (cartList: Product[]) => {
+  const updateCartList = (cartList: Product[]) => {
+    setCartList(cartList);
+
     const { finalAmount, finalDiscountRate, point } = calculateCartPrice(cartList);
+
     setTotalAmount(finalAmount);
     setTotalDiscountRate(finalDiscountRate);
     setPoint(point);
@@ -28,8 +31,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
     (id: string) => {
       const filterdCartList = cartList.filter((cartItem) => cartItem.id !== id);
 
-      setCartList(filterdCartList);
-      calculateCart(filterdCartList);
+      updateCartList(filterdCartList);
       resetQuantity(id);
     },
     [cartList, resetQuantity],
@@ -45,24 +47,22 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
   const addCartItem = useCallback(
     (item: Product) => {
       addLastSaleItem(item);
-      const matchedCartItem = cartList.find((cartItem) => cartItem.id === item.id);
+      const matchedCartItem = getMatchedCartItemById(item.id);
 
       if (matchedCartItem) {
-        const newCartList = cartList.map((cartItem) =>
+        const updatedCartList = cartList.map((cartItem) =>
           cartItem.id === matchedCartItem.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem,
         );
 
-        setCartList(newCartList);
-        calculateCart(newCartList);
+        updateCartList(updatedCartList);
         return;
       }
 
-      const newCartList = [...cartList, { ...item, quantity: 1 }];
-      setCartList(newCartList);
+      const updatedCartList = [...cartList, { ...item, quantity: 1 }];
 
-      calculateCart(newCartList);
+      updateCartList(updatedCartList);
     },
-    [addLastSaleItem, cartList],
+    [addLastSaleItem, cartList, getMatchedCartItemById],
   );
 
   const removeCartItem = useCallback(
@@ -76,12 +76,11 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
         return;
       }
 
-      const newCartList = cartList.map((cartItem) =>
+      const updatedCartList = cartList.map((cartItem) =>
         cartItem.id === matchedCartItem.id ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem,
       );
 
-      setCartList(newCartList);
-      calculateCart(newCartList);
+      updateCartList(updatedCartList);
     },
     [cartList, clearCartItem, getMatchedCartItemById],
   );
