@@ -1,7 +1,7 @@
 import { CartTotal } from "./components/CartTotal";
 import { NewItem } from "./components/NewItem";
 import { ProductOptions } from "./components/ProductOptions";
-import StockStatus from "./components/StockStatus";
+import { StockStatus } from "./components/StockStatus";
 import { useCartContext } from "./contexts/CartProvider";
 
 function MainAdvanced() {
