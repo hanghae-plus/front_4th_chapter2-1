@@ -7,6 +7,7 @@ interface CartContextType {
   cartList: Product[];
   addCartItem: (item: Product) => void;
   clearCartItem: (id: string) => void;
+  removeCartItem: (id: string) => void;
 }
 
 export const cartContext = createContext<CartContextType | undefined>(undefined);
@@ -25,6 +26,14 @@ export const useAddCartItem = () => {
     throw new Error('useAddCartItem must be used within an CartProvider');
   }
   return context.addCartItem;
+};
+
+export const useRemoveCartItem = () => {
+  const context = useContext(cartContext);
+  if (context === undefined) {
+    throw new Error('useRemoveCartItem must be used within an CartProvider');
+  }
+  return context.removeCartItem;
 };
 
 export const useClearCartItem = () => {
@@ -47,6 +56,13 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
     [cartList],
   );
 
+  const getMatchedCartItemById = useCallback(
+    (id: string) => {
+      return cartList.find((cartItem) => cartItem.id === id);
+    },
+    [cartList],
+  );
+
   const addCartItem = useCallback(
     (item: Product) => {
       const matchedCartItem = cartList.find((cartItem) => cartItem.id === item.id);
@@ -65,13 +81,34 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
     [cartList],
   );
 
+  const removeCartItem = useCallback(
+    (id: string) => {
+      const matchedCartItem = getMatchedCartItemById(id);
+
+      if (!matchedCartItem) return;
+
+      if (matchedCartItem.quantity === 1) {
+        clearCartItem(id);
+        return;
+      }
+
+      const newCartList = cartList.map((cartItem) =>
+        cartItem.id === matchedCartItem.id ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem,
+      );
+
+      setCartList(newCartList);
+    },
+    [cartList, clearCartItem, getMatchedCartItemById],
+  );
+
   const contextValue = useMemo(() => {
     return {
       addCartItem,
       clearCartItem,
+      removeCartItem,
       cartList,
     };
-  }, [addCartItem, clearCartItem, cartList]);
+  }, [addCartItem, clearCartItem, removeCartItem, cartList]);
 
   return <cartContext.Provider value={contextValue}>{children}</cartContext.Provider>;
 };
