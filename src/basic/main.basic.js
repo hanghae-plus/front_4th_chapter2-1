@@ -282,10 +282,12 @@ main(() => {
       calcCart();
     });
 
-    getRemoveButtonElement(productId).addEventListener('click', () => {
-      getProductItemElement(productId)?.remove();
-      cartStore.deleteCartItem(productId);
-      calcCart();
-    });
+    getRemoveButtonElement(productId).addEventListener('click', () => handleRemoveItem(productId));
+  };
+
+  const handleRemoveItem = (productId) => {
+    getProductItemElement(productId)?.remove();
+    cartStore.deleteCartItem(productId);
+    calcCart();
   };
 });
