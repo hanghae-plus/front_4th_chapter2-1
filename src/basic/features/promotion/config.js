@@ -1,0 +1,11 @@
+export const ENABLE_EVENT_THRESHOLD = Object.freeze(0.3);
+export const LUCKY_PROMOTION = Object.freeze({
+  TIMEOUT_DELAY: 10000,
+  INTERVAL_DELAY: 30000,
+  DISCOUNT_RATE: 0.2,
+});
+export const SUGGEST_PROMOTION = Object.freeze({
+  TIMEOUT_DELAY: 20000,
+  INTERVAL_DELAY: 60000,
+  DISCOUNT_RATE: 0.05,
+});

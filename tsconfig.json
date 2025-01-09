@@ -1,0 +1,55 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "lib": [
+      "es6",
+      "dom",
+      "dom.iterable",
+      "scripthost"
+    ],
+    "jsx": "react-jsx",
+    "rootDir": "./",
+    "module": "es2015", // module이 node에서 동작해야하는 경우(CommonJS인 경우)에는 moduleResolution의 값은 "node"로 자동 추론된다.
+    "moduleResolution": "bundler", // 모듈 해석 방식 지정
+    "baseUrl": "./",
+    "outDir": "./build",
+    "esModuleInterop": true, // CommonJS와 ES 모듈 간의 상호운용성을 위한 설정
+    "forceConsistentCasingInFileNames": true, // 대소문자 구분
+    "allowJs": true, // 점진적 고도화(js -> ts)를 위한기능
+    "checkJs": true, // js파일 에러 체크 설정
+    "noEmit": true, // 컴파일시 js 변환 파일을 생성하지 않게 하는 설정
+    "noEmitOnError": true, // 컴파일 에러 발생 시 js 컴파일을 막는다.
+    "sourceMap": true, // .js.map 파일 생성, ts로 작업 시 디버깅에 유용
+    "removeComments": true, // ts 파일에 적힌 주석 모두 제거된 js 파일 생성
+    "declaration": true, // ts -> js 컴파일 과정에서 타입만 따로 분리시켜 .d.ts라는 파일로 생성해줌
+    "strict": true, // ts의 타입체킹을 활성화 여부
+    // strict 옵셔널(strict가 true이면 적지 않아도 됨)
+    "noImplicitAny": false, // any 허용 여부
+    "suppressImplicitAnyIndexErrors": false, // 객체에 해당 키가 없는 경우 에러 발생을 무시 여부
+    "noImplicitThis": true, // 명시적 this 사용 여부
+    "strictNullChecks": true, // 명시적 null, undefined 사용 여부
+    "strictFunctionTypes": true, // 엄격한 함수 유형 검사 사용 여부
+    "strictPropertyInitialization": true, // 클래스의 속성 초기화에 대한 검사 사용 여부
+    "strictBindCallApply": true, // bind, call, apply의 엄격 검사 사용 여부
+    "alwaysStrict": true, // js로 컴파일 시 "use strict"를 사용하도록 명시
+
+    "noUnusedLocals": true, // 사용하지 않는 지역변수가 있다면 에러
+    "noUnusedParameters": true, // 사용하지 않는 파라미터가 있다면 에러
+    "noImplicitReturns": true, // 함수에 return이 없는 경우 에러
+    "noFallthroughCasesInSwitch": true, // Switch문이 이상하면 에러
+    "skipLibCheck": true, // 타입 체킹을 스킵
+    "allowImportingTsExtensions": true // ts 파일을 import 할 수 있게 해줌
+
+  },
+  "include": [
+    "src/advanced/**/*"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ]
+}
