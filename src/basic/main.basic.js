@@ -1,4 +1,5 @@
 import { products } from './data/products';
+import CartItem from './features/cart/components/Item';
 import { DAY_OF_WEEK } from './features/cart/constants/day';
 import { ELEMENT_IDS } from './features/cart/constants/\belement-id';
 import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './features/cart/constants/policy';
@@ -243,7 +244,7 @@ const handleAddToCart = () => {
   if (productItemElement) {
     updateCartItemText(cartItem.id, cartItem);
   } else {
-    getCartItemsElement().insertAdjacentHTML('beforeend', renderCartItem(cartItem));
+    getCartItemsElement().insertAdjacentHTML('beforeend', CartItem(cartItem));
     setupCartItemEvents(cartItem.id, selectedProductModel);
   }
 
@@ -283,33 +284,6 @@ const handleRemoveItem = (productId) => {
   cartStore.deleteCartItem(productId);
   calculateCart();
 };
-
-const renderCartItem = (cartItem) => /* html */ `
-<div id="${cartItem.id}" class="flex justify-between items-center mb-2">
-  <span>${cartItem.name} - ${cartItem.price}원 x ${cartItem.getQuantity()}</span>
-  <div>
-    <button 
-      class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-      data-product-id="${cartItem.id}" 
-      data-product-event-type="decrease"
-      data-change="-1"
-    >-</button>
-    
-    <button 
-      class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-      data-product-id="${cartItem.id}" 
-      data-product-event-type="increase"
-      data-change="1"
-    >+</button>
-
-    <button 
-      class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
-      data-product-id="${cartItem.id}"
-      data-product-event-type="remove"
-    >삭제</button>
-  </div>
-</div>
-`;
 
 const updateCartItemText = (productId, cartItem) => {
   getProductItemElement(productId).querySelector('span').textContent = formatCartItemText(cartItem);
