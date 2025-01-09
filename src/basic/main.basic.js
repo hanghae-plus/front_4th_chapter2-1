@@ -8,7 +8,7 @@ export const ID_BY_COMPONENT = Object.freeze({
 });
 
 let appState = {
-  prodList: [
+  productList: [
     { id: "p1", name: "상품1", val: 10000, q: 50 },
     { id: "p2", name: "상품2", val: 20000, q: 30 },
     { id: "p3", name: "상품3", val: 30000, q: 20 },
@@ -20,6 +20,18 @@ let appState = {
   totalAmt: 0,
   itemCnt: 0,
 };
+
+const updateSelectOption = () => {
+  const select = document.querySelector(`#${ID_BY_COMPONENT.SELECT_ID}`);
+  select.innerHTML = '';
+  appState.productList.forEach(function (item) {
+    let option = document.createElement("option");
+    option.value = item.id;
+    option.textContent = item.name + " - " + item.val + "원";
+    if (item.q === 0) opt.disabled = true;
+    select.appendChild(option);
+  });
+}
 
 function main() {
   const root = document.getElementById("app");
@@ -39,26 +51,26 @@ function main() {
 
   root.appendChild(contents);
 
-  updateSelOpts();
+  updateSelectOption();
 
   calcCart();
   setTimeout(function () {
     setInterval(function () {
       let luckyItem =
-        appState.appState.prodList[
-          Math.floor(Math.random() * appState.appState.prodList.length)
+        appState.productList[
+        Math.floor(Math.random() * appState.productList.length)
         ];
       if (Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val = Math.round(luckyItem.val * 0.8);
         alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
-        updateSelOpts();
+        updateSelectOption();
       }
     }, 30000);
   }, Math.random() * 10000);
   setTimeout(function () {
     setInterval(function () {
       if (appState.lastSel) {
-        let suggest = appState.appState.prodList.find(function (item) {
+        let suggest = appState.productList.find(function (item) {
           return item.id !== appState.lastSel && item.q > 0;
         });
         if (suggest) {
@@ -66,22 +78,13 @@ function main() {
             suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!"
           );
           suggest.val = Math.round(suggest.val * 0.95);
-          updateSelOpts();
+          updateSelectOption();
         }
       }
     }, 60000);
   }, Math.random() * 20000);
 }
-function updateSelOpts() {
-  sel.innerHTML = "";
-  appState.appState.prodList.forEach(function (item) {
-    let opt = document.createElement("option");
-    opt.value = item.id;
-    opt.textContent = item.name + " - " + item.val + "원";
-    if (item.q === 0) opt.disabled = true;
-    sel.appendChild(opt);
-  });
-}
+
 function calcCart() {
   appState.totalAmt = 0;
   appState.totalAmt = 0;
@@ -90,9 +93,9 @@ function calcCart() {
   for (let i = 0; i < cartItems.length; i++) {
     (function () {
       let curItem;
-      for (let j = 0; j < appState.appState.prodList.length; j++) {
-        if (appState.prodList[j].id === cartItems[i].id) {
-          curItem = appState.prodList[j];
+      for (let j = 0; j < appState.productList.length; j++) {
+        if (appState.productList[j].id === cartItems[i].id) {
+          curItem = appState.productList[j];
           break;
         }
       }
@@ -153,7 +156,7 @@ const renderBonusPts = () => {
 };
 function updateStockInfo() {
   let infoMsg = "";
-  appState.prodList.forEach(function (item) {
+  appState.productList.forEach(function (item) {
     if (item.q < 5) {
       infoMsg +=
         item.name +
@@ -167,7 +170,7 @@ function updateStockInfo() {
 main();
 addBtn.addEventListener("click", function () {
   let selItem = sel.value;
-  let itemToAdd = appState.prodList.find(function (p) {
+  let itemToAdd = appState.productList.find(function (p) {
     return p.id === selItem;
   });
   if (itemToAdd && itemToAdd.q > 0) {
@@ -216,7 +219,7 @@ cartDisp.addEventListener("click", function (event) {
   ) {
     let prodId = tgt.dataset.productId;
     let itemElem = document.getElementById(prodId);
-    let prod = appState.prodList.find(function (p) {
+    let prod = appState.productList.find(function (p) {
       return p.id === prodId;
     });
     if (tgt.classList.contains("quantity-change")) {
@@ -227,8 +230,8 @@ cartDisp.addEventListener("click", function (event) {
       if (
         newQty > 0 &&
         newQty <=
-          prod.q +
-            parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
+        prod.q +
+        parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
       ) {
         itemElem.querySelector("span").textContent =
           itemElem.querySelector("span").textContent.split("x ")[0] +
@@ -257,3 +260,5 @@ cartDisp.addEventListener("click", function (event) {
 
 //object freeze -> element id로 선언
 //amount , quantity
+
+// 추상화 수준 맞추기
