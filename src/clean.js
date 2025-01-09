@@ -1,8 +1,23 @@
+const BULK_DISCOUNT_THRESHOLD = 30;
+const BULK_DISCOUNT_RATE = 0.25;
+const TUESDAY_DISCOUNT_RATE = 0.1;
+const ITEM_DISCOUNT_RATES = {
+  p1: 0.1,
+  p2: 0.15,
+  p3: 0.2,
+  p4: 0.05,
+  p5: 0.25,
+};
+const LIGHTNING_SALE_RATE = 0.2;
+const ALTERNATE_ITEM_DISCOUNT_RATE = 0.05;
 
-let prodList, cart, lastSelectedItem;
-let bonusPoints = 0, totalAmount = 0, totalItems = 0;
-
-let root, container, cartDisplay, totalDisplay, stockInfo, productSelect, addButton;
+let productList = [];
+let cart = {};
+let bonusPoints = 0;
+let totalAmount = 0;
+let totalItems = 0;
+let lastSelectedItem = null;
+let dom = {};
 
 function main() {
   initializeProductList();
@@ -15,7 +30,7 @@ function main() {
 }
 
 function initializeProductList() {
-  prodList = [
+  productList = [
     { id: 'p1', name: '상품1', price: 10000, stock: 50 },
     { id: 'p2', name: '상품2', price: 20000, stock: 30 },
     { id: 'p3', name: '상품3', price: 30000, stock: 20 },
@@ -26,39 +41,61 @@ function initializeProductList() {
 }
 
 
-
 function initializeDOMElements() {
-  root = document.getElementById('app');
-  container = createElement('div', { class: 'bg-gray-100 p-8' });
-  cartDisplay = createElement('div', { id: 'cart-items' });
-  totalDisplay = createElement('div', { id: 'cart-total', class: 'text-xl font-bold my-4' });
-  stockInfo = createElement('div', { id: 'stock-status', class: 'text-sm text-gray-500 mt-2' });
-  productSelect = createElement('select', { id: 'product-select', class: 'border rounded p-2 mr-2' });
-  addButton = createElement('button', { 
-    id: 'add-to-cart', 
-    class: 'bg-blue-500 text-white px-4 py-2 rounded', 
-    text: '추가' 
-  });
+  dom = {
+    root: document.getElementById("app"),
+    container: createElement("div", { class: "bg-gray-100 p-8" }),
+    cartDisplay: createElement("div", { id: "cart-items" }),
+    totalDisplay: createElement("div", {
+      id: "cart-total",
+      class: "text-xl font-bold my-4",
+    }),
+    stockInfo: createElement("div", {
+      id: "stock-status",
+      class: "text-sm text-gray-500 mt-2",
+    }),
+    productSelect: createElement("select", {
+      id: "product-select",
+      class: "border rounded p-2 mr-2",
+    }),
+    addButton: createElement("button", {
+      id: "add-to-cart",
+      class: "bg-blue-500 text-white px-4 py-2 rounded",
+      text: "추가",
+    }),
+  };
 }
 
 
+
 function renderAppStructure() {
-  const title = createElement('h1', { class: 'text-2xl font-bold mb-4', text: '장바구니' });
-  const wrapper = createElement('div', { 
-    class: 'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8' 
+  const { root, container, cartDisplay, totalDisplay, productSelect, addButton, stockInfo } = dom;
+
+  const title = createElement("h1", {
+    class: "text-2xl font-bold mb-4",
+    text: "장바구니",
+  });
+  const wrapper = createElement("div", {
+    class: "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8",
   });
 
-  appendChildren(wrapper, [title, cartDisplay, totalDisplay, productSelect, addButton, stockInfo]);
+  appendChildren(wrapper, [
+    title,
+    cartDisplay,
+    totalDisplay,
+    productSelect,
+    addButton,
+    stockInfo,
+  ]);
   container.appendChild(wrapper);
   root.appendChild(container);
 }
 
-
-
 function updateProductOptions() {
-  productSelect.innerHTML = '';
-  prodList.forEach(product => {
-    const option = createElement('option', {
+  const { productSelect } = dom;
+  productSelect.innerHTML = "";
+  productList.forEach((product) => {
+    const option = createElement("option", {
       value: product.id,
       text: `${product.name} - ${product.price}원`,
       disabled: product.stock === 0,
@@ -68,86 +105,75 @@ function updateProductOptions() {
 }
 
 function calculateCart() {
+  const { cartDisplay } = dom;
   totalAmount = 0;
   totalItems = 0;
-  const cartItems = cartDisplay.children;
   let subTotal = 0;
 
-  for (let i = 0; i < cartItems.length; i++) {
-    const itemId = cartItems[i].id;
-    const product = prodList.find(p => p.id === itemId);
-    const quantity = parseInt(cartItems[i].querySelector('span').textContent.split('x ')[1]);
+  Array.from(cartDisplay.children).forEach((cartItem) => {
+    const itemId = cartItem.id;
+    const product = productList.find((p) => p.id === itemId);
+    const quantity = parseInt(
+      cartItem.querySelector("span").textContent.split("x ")[1]
+    );
     const itemTotal = product.price * quantity;
-    let discount = 0;
+    const discountedTotal = applyItemDiscount(product.id, quantity, itemTotal);
 
     totalItems += quantity;
     subTotal += itemTotal;
+    totalAmount += discountedTotal;
+  });
 
-    // Apply quantity-based discounts
-    if (quantity >= 10) {
-      if (product.id === 'p1') discount = 0.1;
-      else if (product.id === 'p2') discount = 0.15;
-      else if (product.id === 'p3') discount = 0.2;
-      else if (product.id === 'p4') discount = 0.05;
-      else if (product.id === 'p5') discount = 0.25;
-    }
-
-    totalAmount += itemTotal * (1 - discount);
-  }
-
-  // Apply bulk discount if applicable
-  let discountRate = 0;
-  if (totalItems >= 30) {
-    const bulkDiscount = totalAmount * 0.25;
-    const itemDiscount = subTotal - totalAmount;
-    
-    if (bulkDiscount > itemDiscount) {
-      totalAmount = subTotal * (1 - 0.25);
-      discountRate = 0.25;
-    } else {
-      discountRate = (subTotal - totalAmount) / subTotal;
-    }
-  } else {
-    discountRate = (subTotal - totalAmount) / subTotal;
-  }
-
-  // Apply Tuesday discount
-  if (new Date().getDay() === 2) {
-    totalAmount *= (1 - 0.1);
-    discountRate = Math.max(discountRate, 0.1);
-  }
-
+  const discountRate = calculateTotalDiscountRate(subTotal);
   updateTotalDisplay(discountRate);
   updateStockInfo();
   renderBonusPoints();
 }
 
-// Update the total display section
+
+function calculateTotalDiscountRate(subTotal) {
+  let discountRate = 0;
+  if (totalItems >= BULK_DISCOUNT_THRESHOLD) {
+    const bulkDiscount = subTotal * BULK_DISCOUNT_RATE;
+    const itemDiscount = subTotal - totalAmount;
+    if (bulkDiscount > itemDiscount) {
+      totalAmount = subTotal * (1 - BULK_DISCOUNT_RATE);
+      discountRate = BULK_DISCOUNT_RATE;
+    } else {
+      discountRate = itemDiscount / subTotal;
+    }
+  } else {
+    discountRate = (subTotal - totalAmount) / subTotal;
+  }
+
+  if (new Date().getDay() === 2) {
+    totalAmount *= 1 - TUESDAY_DISCOUNT_RATE;
+    discountRate = Math.max(discountRate, TUESDAY_DISCOUNT_RATE);
+  }
+  return discountRate;
+}
+
+function applyItemDiscount(productId, quantity, itemTotal) {
+  const discountRate =
+    quantity >= 10 ? ITEM_DISCOUNT_RATES[productId] || 0 : 0;
+  return itemTotal * (1 - discountRate);
+}
+
 function updateTotalDisplay(discountRate) {
+  const { totalDisplay } = dom;
   totalDisplay.textContent = `총액: ${Math.round(totalAmount)}원`;
-  
+
   if (discountRate > 0) {
-    const discountSpan = createElement('span', {
-      class: 'text-green-500 ml-2',
+    const discountSpan = createElement("span", {
+      class: "text-green-500 ml-2",
       text: `(${(discountRate * 100).toFixed(1)}% 할인 적용)`
     });
     totalDisplay.appendChild(discountSpan);
   }
 }
 
-function applyDiscounts(product, quantity, itemTotal) {
-  let discount = 0;
-
-  if (quantity >= 10) {
-    const discountRates = { p1: 0.1, p2: 0.15, p3: 0.2, p4: 0.05, p5: 0.25 };
-    discount = discountRates[product.id] || 0;
-  }
-
-  return itemTotal * (1 - discount);
-}
-
-
 function renderBonusPoints() {
+const { totalDisplay } = dom;
   bonusPoints = Math.floor(totalAmount / 1000);
   const pointsDisplay = document.getElementById('loyalty-points') ||
     createElement('span', { id: 'loyalty-points', class: 'text-blue-500 ml-2' });
@@ -157,20 +183,23 @@ function renderBonusPoints() {
 }
 
 function updateStockInfo() {
-  stockInfo.textContent = prodList
+const { stockInfo } = dom;
+  stockInfo.textContent = productList
     .filter(product => product.stock < 5)
     .map(product => `${product.name}: ${product.stock > 0 ? `재고 부족 (${product.stock})` : '품절'}`)
     .join('\n');
 }
 
 function setupEventListeners() {
+  const { addButton, cartDisplay } = dom;
   addButton.addEventListener('click', handleAddToCart);
   cartDisplay.addEventListener('click', handleCartActions);
 }
 
 function handleAddToCart() {
+  const { productSelect, cartDisplay } = dom;
   const selectedProductId = productSelect.value;
-  const selectedProduct = prodList.find(product => product.id === selectedProductId);
+  const selectedProduct = productList.find(product => product.id === selectedProductId);
 
   if (!selectedProduct || selectedProduct.stock === 0) return;
 
@@ -202,7 +231,7 @@ function handleCartActions(event) {
 
   const productId = target.dataset.productId;
   const itemElement = document.getElementById(productId);
-  const product = prodList.find(p => p.id === productId);
+  const product = productList.find(p => p.id === productId);
 
   if (target.classList.contains('quantity-change')) {
     const quantityChange = parseInt(target.dataset.change);
@@ -246,7 +275,7 @@ function renderCartItem(product, quantity) {
 function startDiscountTimers() {
   setTimeout(() => {
     setInterval(() => {
-      const luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
+      const luckyItem = productList[Math.floor(Math.random() * productList.length)];
       if (Math.random() < 0.3 && luckyItem.stock > 0) {
         luckyItem.price = Math.round(luckyItem.price * 0.8);
         alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
@@ -258,7 +287,7 @@ function startDiscountTimers() {
   setTimeout(() => {
     setInterval(() => {
       if (lastSelectedItem) {
-        const suggestion = prodList.find(item => 
+        const suggestion = productList.find(item => 
           item.id !== lastSelectedItem && item.stock > 0
         );
         if (suggestion) {
@@ -272,7 +301,7 @@ function startDiscountTimers() {
 }
 
 function suggestSaleItem() {
-  const eligibleItems = prodList.filter(item => item.stock > 0);
+  const eligibleItems = productList.filter(item => item.stock > 0);
   if (eligibleItems.length === 0) return;
 
   const luckyItem = eligibleItems[Math.floor(Math.random() * eligibleItems.length)];
@@ -283,7 +312,7 @@ function suggestSaleItem() {
 
 function suggestAlternateItem() {
   if (!lastSelectedItem) return;
-  const suggestion = prodList.find(item => item.id !== lastSelectedItem && item.stock > 0);
+  const suggestion = productList.find(item => item.id !== lastSelectedItem && item.stock > 0);
 
   if (suggestion) {
     suggestion.price = Math.round(suggestion.price * 0.95);
