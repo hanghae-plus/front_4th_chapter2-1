@@ -2,7 +2,7 @@ import { AddToCartButton } from './components/AddToCartButton';
 import { CartProductList } from './components/CartProductList';
 import { Header } from './components/Header';
 import { ProductSelect } from './components/ProductSelect';
-import { StockStatus } from './components/StockStatus';
+import { Stock } from './components/Stock';
 import { TotalPrice } from './components/TotalPrice';
 
 import type { Product } from './types/product.type';
@@ -21,10 +21,10 @@ const App = () => {
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <Header />
         <CartProductList cartItems={Products} />
-        <TotalPrice />
+        <TotalPrice totalAmount={0} discountRate={0} />
         <ProductSelect />
         <AddToCartButton />
-        <StockStatus />
+        <Stock stockStatus={[]} />
       </div>
     </div>
   );
