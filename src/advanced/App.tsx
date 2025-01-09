@@ -8,9 +8,11 @@ import { calculateCartTotals } from './services/calculator';
 import { canIncreaseQuantity } from './services/cart';
 import type { Cart } from './types/cart.type';
 
+const INITIAL_SELECTED_PRODUCT_ID = initialProducts[0].id;
+
 const App = () => {
   const [cartItems, setCartItems] = useState<Cart[]>([]);
-  const [selectedProductId, setSelectedProductId] = useState<string>('');
+  const [selectedProductId, setSelectedProductId] = useState<string>(INITIAL_SELECTED_PRODUCT_ID);
 
   const handleAddToCart = () => {
     const selectedProduct = initialProducts.find(({ id }) => id === selectedProductId);
