@@ -41,7 +41,7 @@ function main() {
   Wrapper.appendChild(StockInfoView);
   Container.appendChild(Wrapper);
   Root.appendChild(Container);
-  calculateCartItems();
+  calculateCartItems(CartItemsView.children, renderAfterDiscount);
 
   luckyAlert(productList, updateSelectedOptions);
 }
@@ -55,9 +55,11 @@ function updateSelectedOptions() {
   }, '');
   SelectView.innerHTML = Options;
 }
-function calculateCartItems() {
+const calculateCartItems = (
+  cartItems: HTMLDivElement[] = [],
+  callback: (finalPrice: number, discountRate: number) => void,
+) => {
   let finalPrice = 0;
-  const cartItems = CartItemsView.children as unknown as HTMLDivElement[];
   const { subTotalPrice, totalItemCount, totalPrice } =
     getTotalPriceBeforeSpecialOffer(cartItems, productList);
 
@@ -79,6 +81,15 @@ function calculateCartItems() {
     finalPrice *= 1 - 0.1;
     discountRate = Math.max(discountRate, 0.1);
   }
+  callback(finalPrice, discountRate);
+
+  return {
+    finalPrice,
+    discountRate,
+  };
+};
+
+const renderAfterDiscount = (finalPrice: number, discountRate: number) => {
   TotalCostView.textContent = '총액: ' + Math.round(finalPrice) + '원';
   if (discountRate > 0) {
     const DiscountText = document.createElement('span');
@@ -91,7 +102,7 @@ function calculateCartItems() {
   renderBonusPoints(finalPrice, (PointTag) => {
     TotalCostView.appendChild(PointTag);
   });
-}
+};
 
 main();
 AddToCartButton.addEventListener('click', function () {
@@ -120,8 +131,7 @@ AddToCartButton.addEventListener('click', function () {
       CartItemsView.appendChild(newItem);
       itemToAdd.quantity--;
     }
-    calculateCartItems();
-    lastSelectedItemValue = selectedItemId;
+    calculateCartItems(CartItemsView.children, renderAfterDiscount);
   }
 });
 CartItemsView.addEventListener('click', function (event) {
@@ -167,6 +177,6 @@ CartItemsView.addEventListener('click', function (event) {
       currentProduct.quantity += removeItemCounts;
       itemElement.remove();
     }
-    calculateCartItems();
+    calculateCartItems(CartItemsView.children, renderAfterDiscount);
   }
 });
