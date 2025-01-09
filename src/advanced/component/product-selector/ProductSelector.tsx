@@ -1,14 +1,19 @@
 import { useState } from 'react';
 
 import { SelectOption } from './_components/SelectOption';
-import { productList } from '../../constants/product';
 import { useAddCartItem } from '../../contexts/cart-context/CartProvider';
+import { useDecreaseQuantity, useGetProductList } from '../../contexts/product-context/ProductProvider';
+import { useQuantityCountChecker } from '../../hooks/useQuantityCountChecker';
 
 import type { Product } from '../../types/product';
 import type { ChangeEvent } from 'react';
 
 export const ProductSelector = () => {
   const addCartItem = useAddCartItem();
+  const productList = useGetProductList();
+  const decreaseQuantity = useDecreaseQuantity();
+
+  const { isQuantityCountOver } = useQuantityCountChecker();
 
   const [selectedItem, setSelectedItem] = useState<Product>(productList[0]);
 
@@ -23,7 +28,12 @@ export const ProductSelector = () => {
   };
 
   const handleAddButtonClick = () => {
+    if (isQuantityCountOver(selectedItem)) {
+      return;
+    }
+
     addCartItem(selectedItem);
+    decreaseQuantity(selectedItem.id);
   };
 
   return (

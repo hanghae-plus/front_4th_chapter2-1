@@ -1,5 +1,7 @@
 import { QuantityControlButton } from './QuantityControlButton';
 import { useAddCartItem, useClearCartItem, useRemoveCartItem } from '../../../contexts/cart-context/CartProvider';
+import { useDecreaseQuantity, useIncreaseQuantity } from '../../../contexts/product-context/ProductProvider';
+import { useQuantityCountChecker } from '../../../hooks/useQuantityCountChecker';
 
 import type { Product } from '../../../types/product';
 
@@ -10,20 +12,31 @@ interface CartItemProps {
 export const CartItem = ({ item }: CartItemProps) => {
   const { name, id, amount, quantity } = item;
 
+  const { isQuantityCountOver } = useQuantityCountChecker();
+
   const clearCartItem = useClearCartItem();
   const removeCartItem = useRemoveCartItem();
   const addCartItem = useAddCartItem();
+
+  const increaseQuantity = useIncreaseQuantity();
+  const decreaseQuantity = useDecreaseQuantity();
 
   const handleClearButtonClick = () => {
     clearCartItem(id);
   };
 
   const handleAddButtonClick = () => {
+    if (isQuantityCountOver(item)) {
+      return;
+    }
+
+    decreaseQuantity(item.id);
     addCartItem(item);
   };
 
   const handleRemoveButtonClick = () => {
     removeCartItem(id);
+    increaseQuantity(id);
   };
 
   return (

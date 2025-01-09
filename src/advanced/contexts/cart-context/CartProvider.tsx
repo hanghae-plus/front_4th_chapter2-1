@@ -19,14 +19,20 @@ interface CartContextType {
 export const cartContext = createContext<CartContextType | undefined>(undefined);
 
 export const useGetCartList = () => useCreateCartContext(cartContext, 'useGetCartList', 'cartProvider').cartList;
+
 export const useGetTotalAmount = () =>
   useCreateCartContext(cartContext, 'useGetTotalAmount', 'cartProvider').totalAmount;
+
 export const useGetPoint = () => useCreateCartContext(cartContext, 'useGetPoint', 'cartProvider').point;
+
 export const useGetTotalDiscountRate = () =>
   useCreateCartContext(cartContext, 'useGetTotalDiscountRate', 'cartProvider').totalDiscountRate;
+
 export const useAddCartItem = () => useCreateCartContext(cartContext, 'useAddCartItem', 'cartProvider').addCartItem;
+
 export const useRemoveCartItem = () =>
   useCreateCartContext(cartContext, 'useRemoveCartItem', 'cartProvider').removeCartItem;
+
 export const useClearCartItem = () =>
   useCreateCartContext(cartContext, 'useClearCartItem', 'cartProvider').clearCartItem;
 
