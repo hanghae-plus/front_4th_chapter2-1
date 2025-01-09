@@ -28,6 +28,12 @@ const getIncreaseButtonElement = (id) =>
 const getRemoveButtonElement = (id) =>
   document.querySelector(`button[data-product-id="${id}"][data-product-event-type="remove"]`);
 
+const canUpdateQuantity = (productModel, cartItem) => productModel.quantity > (cartItem?.getQuantity() || 0);
+
+const calculatePoint = (amount) => Math.floor(amount / 1000);
+
+const formatCartItemText = (item) => `${item.name} - ${item.price}원 x ${item.getQuantity()}`;
+
 const main = (callbackFn) => {
   const root = document.getElementById('app');
   root.innerHTML = /* html */ `
@@ -137,7 +143,7 @@ const renderCartTotal = (amount, discountRate) => {
 };
 
 const renderPoint = () => {
-  productStore.setPoint(Math.floor(productStore.getAmount() / 1000));
+  productStore.setPoint(calculatePoint(productStore.getAmount()));
 
   if (!getPointElement()) {
     getCartTotalElement().insertAdjacentHTML(
@@ -306,10 +312,6 @@ const renderCartItem = (cartItem) => /* html */ `
   </div>
 </div>
 `;
-
-const canUpdateQuantity = (productModel, cartItem) => productModel.quantity > (cartItem?.getQuantity() || 0);
-
-const formatCartItemText = (item) => `${item.name} - ${item.price}원 x ${item.getQuantity()}`;
 
 const updateCartItemText = (productId, cartItem) => {
   getProductItemElement(productId).querySelector('span').textContent = formatCartItemText(cartItem);
