@@ -3,10 +3,10 @@ import { getTotalPriceBeforeSpecialOffer } from './getTotalPriceBeforeSpecialOff
 
 const calculateCartItems = (
   {
-    cartItems = [],
+    cartItems,
     productList,
   }: {
-    cartItems: HTMLDivElement[];
+    cartItems: HTMLCollection;
     productList: Product[];
   },
   callback: (finalPrice: number, discountRate: number) => void,

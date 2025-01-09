@@ -3,7 +3,7 @@ import { DISCOUNT_RATE } from '../../../shared/constant/discountRate';
 import { Product } from '../../../shared/entity/model/Product';
 
 const getTotalPriceBeforeSpecialOffer = (
-  cartItems: HTMLDivElement[],
+  cartItems: HTMLCollection,
   productList: Product[],
 ): {
   totalPrice: number;
@@ -18,9 +18,15 @@ const getTotalPriceBeforeSpecialOffer = (
       const currentItem = productList.find(
         (product) => product.id === cartItems[i].id,
       );
-      const currentQuantity = parseInt(
-        cartItems[i].querySelector('span').textContent.split('x ')[1],
-      );
+      if (!currentItem) return;
+
+      const itemElement = document.getElementById(currentItem.id);
+      const cartItemInfoSpan = itemElement?.querySelector('span');
+      const cartItemSelectedCount =
+        cartItemInfoSpan?.textContent?.split('x ')[1];
+      if (!currentItem || !cartItemInfoSpan || !cartItemSelectedCount) return;
+
+      const currentQuantity = parseInt(cartItemSelectedCount);
       const itemTotalPrice = currentItem.price * currentQuantity;
       let discountRate = 0;
       totalItemCount += currentQuantity;

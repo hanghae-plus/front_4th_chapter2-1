@@ -6,63 +6,11 @@ import { luckyAlert } from './features/product/actions/luckyAlert';
 import ProductOption from './features/product/views/ProductOption';
 import { productList } from './shared/entity/data/productList';
 
-let SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
-
-function main() {
-  const Root = document.getElementById('app');
-  const Container = document.createElement('div');
-  const Wrapper = document.createElement('div');
-  const LargeHeading = () =>
-    `<h1 class="text-2xl font-bold mb-4">장바구니</h1>`;
-  CartItemsView = document.createElement('div');
-  TotalCostView = document.createElement('div');
-  SelectView = document.createElement('select');
-  AddToCartButton = document.createElement('button');
-  StockInfoView = document.createElement('div');
-  CartItemsView.id = 'cart-items';
-  TotalCostView.id = 'cart-total';
-  SelectView.id = 'product-select';
-  AddToCartButton.id = 'add-to-cart';
-  StockInfoView.id = 'stock-status';
-  Container.className = 'bg-gray-100 p-8';
-  Wrapper.className =
-    'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  TotalCostView.className = 'text-xl font-bold my-4';
-  SelectView.className = 'border rounded p-2 mr-2';
-  AddToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
-  StockInfoView.className = 'text-sm text-gray-500 mt-2';
-  AddToCartButton.textContent = '추가';
-  updateSelectedOptions();
-  Wrapper.innerHTML = LargeHeading();
-  Wrapper.appendChild(CartItemsView);
-  Wrapper.appendChild(TotalCostView);
-  Wrapper.appendChild(SelectView);
-  Wrapper.appendChild(AddToCartButton);
-  Wrapper.appendChild(StockInfoView);
-  Container.appendChild(Wrapper);
-  Root?.appendChild(Container);
-  calculateCartItems(
-    {
-      cartItems: CartItemsView.children,
-      productList,
-    },
-    renderAfterDiscount,
-  );
-
-  luckyAlert(productList, updateSelectedOptions);
-}
-function updateSelectedOptions() {
-  SelectView.innerHTML = '';
-  const Options = productList.reduce((template, item) => {
-    const OptionView = ProductOption({
-      product: item,
-    });
-    return template + OptionView.view;
-  }, '');
-  SelectView.innerHTML = Options;
-}
-
 const renderAfterDiscount = (finalPrice: number, discountRate: number) => {
+  const TotalCostView = document.getElementById('cart-total');
+  const StockInfoView = document.getElementById('stock-status');
+  if (!TotalCostView || !StockInfoView) return;
+
   TotalCostView.textContent = '총액: ' + Math.round(finalPrice) + '원';
   if (discountRate > 0) {
     const DiscountText = document.createElement('span');
@@ -77,8 +25,56 @@ const renderAfterDiscount = (finalPrice: number, discountRate: number) => {
   });
 };
 
+function main() {
+  const Root = document.getElementById('app');
+  if (!Root) return;
+  Root.innerHTML = `
+  <div class="bg-gray-100 p-8">
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
+      <h1 class="text-2xl font-bold mb-4">장바구니</h1>
+      <div id="cart-items"></div>
+      <div id="cart-total" class="text-xl font-bold my-4"></div>
+      <select id="product-select" class="border rounded p-2 mr-2"></select>
+      <button id="add-to-cart" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
+      <div id="stock-status" class="text-sm text-gray-500 mt-2"></div>
+    </div>
+  `;
+  updateSelectedOptions();
+  calculateCartItems(
+    {
+      cartItems:
+        document.getElementById('cart-items')?.children || new HTMLCollection(),
+      productList,
+    },
+    renderAfterDiscount,
+  );
+
+  luckyAlert(productList, updateSelectedOptions);
+}
+
+function updateSelectedOptions() {
+  const SelectView = document.getElementById('product-select');
+  if (!SelectView) return;
+
+  SelectView.innerHTML = '';
+  const Options = productList.reduce((template, item) => {
+    const OptionView = ProductOption({
+      product: item,
+    });
+    return template + OptionView.view;
+  }, '');
+  SelectView.innerHTML = Options;
+}
 main();
-AddToCartButton.addEventListener('click', function () {
+
+const AddToCartButton = document.getElementById('add-to-cart');
+
+AddToCartButton?.addEventListener('click', function () {
+  const CartItemsView = document.getElementById('cart-items');
+  const SelectView = document.getElementById(
+    'product-select',
+  ) as HTMLSelectElement;
+  if (!CartItemsView || !SelectView) return;
   const selectedItemId = SelectView.value;
   const itemToAdd = productList.find(function (p) {
     return p.id === selectedItemId;
@@ -114,7 +110,9 @@ AddToCartButton.addEventListener('click', function () {
     );
   }
 });
-CartItemsView.addEventListener('click', function (event: MouseEvent) {
+
+const CartItemsView = document.getElementById('cart-items');
+CartItemsView?.addEventListener('click', function (event: MouseEvent) {
   const targetElement = event.target as HTMLElement | null;
 
   if (!targetElement) return;
