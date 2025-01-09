@@ -9,7 +9,7 @@ export const TotalInfo = () => {
   const bonusPoints = totalPrice / BONUS_POINT_DIVISOR;
 
   return (
-    <div id="cart-total" className="text-xl font-bold my-4">
+    <div data-testid="cart-total" className="text-xl font-bold my-4">
       총액: {totalPrice}원
       <span id="loyalty-points" className="text-blue-500 ml-2">
         (포인트: {bonusPoints})

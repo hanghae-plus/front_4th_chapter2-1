@@ -6,7 +6,7 @@ export const StockStatus = () => {
   const { productList } = useCartStore((state) => state);
 
   return (
-    <div id="stock-status" className="text-sm text-gray-500 mt-2">
+    <div data-testid="stock-status" className="text-sm text-gray-500 mt-2">
       {productList.map((product: Product) => {
         let message = '';
         if (product.quantity < 5) {

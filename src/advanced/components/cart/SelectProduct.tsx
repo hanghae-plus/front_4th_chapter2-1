@@ -23,7 +23,7 @@ export const SelectProduct = () => {
   return (
     <div>
       <select
-        id="product-select"
+        data-testid="product-select"
         className="border rounded p-2 mr-2"
         value={selectedProductId}
         onChange={handleSelectChange}
@@ -39,7 +39,7 @@ export const SelectProduct = () => {
         ))}
       </select>
       <button
-        id="add-to-cart"
+        data-testid="add-to-cart-button"
         className="bg-blue-500 text-white px-4 py-2 rounded"
         onClick={handleAddToCart}
       >
