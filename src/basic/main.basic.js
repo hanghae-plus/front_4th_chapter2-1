@@ -52,7 +52,7 @@ const updateCart = () => {
   const discRate = getAdditionalDiscountRate(subTot);
   updateTotalAmt(discRate);
   updateStockInfo();
-  renderBonusPts();
+  updateBonusPts();
 }
 
 
