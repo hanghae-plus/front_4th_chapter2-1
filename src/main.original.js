@@ -59,7 +59,7 @@ function main() {
 }
 
 function executeThunderSale({ sel, prodList }) {
-  var luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
+  const luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
   if (Math.random() < 0.3 && luckyItem.q > 0) {
     luckyItem.val = Math.round(luckyItem.val * 0.8);
     alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
@@ -69,7 +69,7 @@ function executeThunderSale({ sel, prodList }) {
 
 function executeSuggestion({ sel, prodList, state }) {
   if (state.lastSel) {
-    var suggest = prodList.find(function (item) {
+    const suggest = prodList.find(function (item) {
       return item.id != state.lastSel && item.q > 0;
     });
     if (suggest) {
@@ -83,7 +83,7 @@ function executeSuggestion({ sel, prodList, state }) {
 function updateSelOpts({ sel, prodList }) {
   sel.innerHTML = '';
   prodList.forEach(function (item) {
-    var opt = document.createElement('option');
+    const opt = document.createElement('option');
     opt.value = item.id;
     opt.textContent = item.name + ' - ' + item.val + '원';
     if (item.q === 0) opt.disabled = true;
@@ -99,23 +99,23 @@ function calcCart({
   itemCnt = 0,
   stockInfo,
 } = {}) {
-  var cartItems = cartDisp.children;
-  var subTot = 0;
+  const cartItems = cartDisp.children;
+  let subTot = 0;
 
-  for (var i = 0; i < cartItems.length; i++) {
+  for (let i = 0; i < cartItems.length; i++) {
     (function () {
-      var curItem;
-      for (var j = 0; j < prodList.length; j++) {
+      let curItem;
+      for (let j = 0; j < prodList.length; j++) {
         if (prodList[j].id === cartItems[i].id) {
           curItem = prodList[j];
           break;
         }
       }
-      var q = parseInt(
+      const q = parseInt(
         cartItems[i].querySelector('span').textContent.split('x ')[1],
       );
-      var itemTot = curItem.val * q;
-      var disc = 0;
+      const itemTot = curItem.val * q;
+      let disc = 0;
       itemCnt += q;
       subTot += itemTot;
       if (q >= 10) {
@@ -131,8 +131,8 @@ function calcCart({
 
   let discRate = 0;
   if (itemCnt >= 30) {
-    var bulkDisc = totalAmt * 0.25;
-    var itemDisc = subTot - totalAmt;
+    const bulkDisc = totalAmt * 0.25;
+    const itemDisc = subTot - totalAmt;
     if (bulkDisc > itemDisc) {
       totalAmt = subTot * (1 - 0.25);
       discRate = 0.25;
@@ -148,7 +148,7 @@ function calcCart({
   }
   sum.textContent = '총액: ' + Math.round(totalAmt) + '원';
   if (discRate > 0) {
-    var span = document.createElement('span');
+    const span = document.createElement('span');
     span.className = 'text-green-500 ml-2';
     span.textContent = '(' + (discRate * 100).toFixed(1) + '% 할인 적용)';
     sum.appendChild(span);
@@ -159,7 +159,7 @@ function calcCart({
 
 const renderBonusPts = ({ sum, totalAmt }) => {
   const bonusPts = Math.floor(totalAmt / 1000);
-  var ptsTag = document.getElementById('loyalty-points');
+  let ptsTag = document.getElementById('loyalty-points');
   if (!ptsTag) {
     ptsTag = document.createElement('span');
     ptsTag.id = 'loyalty-points';
@@ -170,7 +170,7 @@ const renderBonusPts = ({ sum, totalAmt }) => {
 };
 
 function updateStockInfo({ prodList = [], stockInfo }) {
-  var infoMsg = '';
+  let infoMsg = '';
   prodList.forEach(function (item) {
     if (item.q < 5) {
       infoMsg +=
