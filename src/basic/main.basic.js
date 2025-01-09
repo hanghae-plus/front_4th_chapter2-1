@@ -186,22 +186,31 @@ const handleLightningSale = () => {
   }
 };
 
+const setupRecommendationTimer = () => {
+  setTimeout(() => {
+    setInterval(handleRecommendation, TIMER_POLICY.PRODUCT_RECOMMENDATION_INTERVAL);
+  }, Math.random() * 20000);
+};
+
+const handleRecommendation = () => {
+  if (!productStore.getLastSelectedProduct()) {
+    return;
+  }
+
+  const suggest = products.find((item) => item.id !== productStore.getLastSelectedProduct() && item.quantity > 0);
+
+  if (suggest) {
+    alert(`${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
+    suggest.price = Math.round(suggest.price * (1 - DISCOUNT_POLICY.RECOMMENDATION_DISCOUNT_RATE));
+    updateProductList();
+  }
+};
+
 main(() => {
   updateProductList();
   calcCart();
   setupLightningSaleTimer();
-  setTimeout(() => {
-    setInterval(() => {
-      if (productStore.getLastSelectedProduct()) {
-        const suggest = products.find((item) => item.id !== productStore.getLastSelectedProduct() && item.quantity > 0);
-        if (suggest) {
-          alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
-          suggest.price = Math.round(suggest.price * (1 - DISCOUNT_POLICY.RECOMMENDATION_DISCOUNT_RATE));
-          updateProductList();
-        }
-      }
-    }, TIMER_POLICY.PRODUCT_RECOMMENDATION_INTERVAL);
-  }, Math.random() * 20000);
+  setupRecommendationTimer();
 
   const handleAddToCart = () => {
     const selectedProductId = getProductSelectElement().value;
