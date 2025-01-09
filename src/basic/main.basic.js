@@ -10,7 +10,7 @@ import { ProductSelect } from "./components/ProductSelect";
 import { StockStatus } from "./components/StockStatus";
 import { Wrap } from "./components/Wrap";
 import { PRODUCTS } from "./constant/products";
-import Cart from "./domain/cart/Cart";
+import Cart from "./domain/cart/cart";
 import Item from "./domain/item/item";
 import { startCommercialSale } from "./domain/sale/commercial-sale";
 import { startLuckySale } from "./domain/sale/lucky-sale";
