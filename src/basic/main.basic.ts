@@ -1,4 +1,4 @@
-import { getTotalPriceBeforeSpecialOffer } from './features/cart/actions/getTotalPriceBeforeSpecialOffer';
+import { calculateCartItems } from './features/cart/actions/calculateCartItems';
 import { renderBonusPoints } from './features/cart/actions/renderBonusPoint';
 import { NewCartItem } from './features/cart/views/NewCartItem';
 import { getStockInfo } from './features/product/actions/getStockInfo';
@@ -41,7 +41,13 @@ function main() {
   Wrapper.appendChild(StockInfoView);
   Container.appendChild(Wrapper);
   Root.appendChild(Container);
-  calculateCartItems(CartItemsView.children, renderAfterDiscount);
+  calculateCartItems(
+    {
+      cartItems: CartItemsView.children,
+      productList,
+    },
+    renderAfterDiscount,
+  );
 
   luckyAlert(productList, updateSelectedOptions);
 }
@@ -55,39 +61,6 @@ function updateSelectedOptions() {
   }, '');
   SelectView.innerHTML = Options;
 }
-const calculateCartItems = (
-  cartItems: HTMLDivElement[] = [],
-  callback: (finalPrice: number, discountRate: number) => void,
-) => {
-  let finalPrice = 0;
-  const { subTotalPrice, totalItemCount, totalPrice } =
-    getTotalPriceBeforeSpecialOffer(cartItems, productList);
-
-  finalPrice = totalPrice;
-  let discountRate = 0;
-  if (totalItemCount >= 30) {
-    const bulkDiscount = totalPrice * 0.25;
-    const itemDiscount = subTotalPrice - totalPrice;
-    if (bulkDiscount > itemDiscount) {
-      finalPrice = subTotalPrice * (1 - 0.25);
-      discountRate = 0.25;
-    } else {
-      discountRate = (subTotalPrice - finalPrice) / subTotalPrice;
-    }
-  } else {
-    discountRate = (subTotalPrice - finalPrice) / subTotalPrice;
-  }
-  if (new Date().getDay() === 2) {
-    finalPrice *= 1 - 0.1;
-    discountRate = Math.max(discountRate, 0.1);
-  }
-  callback(finalPrice, discountRate);
-
-  return {
-    finalPrice,
-    discountRate,
-  };
-};
 
 const renderAfterDiscount = (finalPrice: number, discountRate: number) => {
   TotalCostView.textContent = '총액: ' + Math.round(finalPrice) + '원';
@@ -131,7 +104,13 @@ AddToCartButton.addEventListener('click', function () {
       CartItemsView.appendChild(newItem);
       itemToAdd.quantity--;
     }
-    calculateCartItems(CartItemsView.children, renderAfterDiscount);
+    calculateCartItems(
+      {
+        cartItems: CartItemsView.children,
+        productList,
+      },
+      renderAfterDiscount,
+    );
   }
 });
 CartItemsView.addEventListener('click', function (event) {
@@ -177,6 +156,12 @@ CartItemsView.addEventListener('click', function (event) {
       currentProduct.quantity += removeItemCounts;
       itemElement.remove();
     }
-    calculateCartItems(CartItemsView.children, renderAfterDiscount);
+    calculateCartItems(
+      {
+        cartItems: CartItemsView.children,
+        productList,
+      },
+      renderAfterDiscount,
+    );
   }
 });
