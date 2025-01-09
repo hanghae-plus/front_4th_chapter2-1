@@ -44,15 +44,22 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
     [cartList],
   );
 
+  const getUpdatedCartListWithQuantity = useCallback(
+    (item: Product, delta: number) => {
+      return cartList.map((cartItem) =>
+        cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + delta } : cartItem,
+      );
+    },
+    [cartList],
+  );
+
   const addCartItem = useCallback(
     (item: Product) => {
       addLastSaleItem(item);
       const matchedCartItem = getMatchedCartItemById(item.id);
 
       if (matchedCartItem) {
-        const updatedCartList = cartList.map((cartItem) =>
-          cartItem.id === matchedCartItem.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem,
-        );
+        const updatedCartList = getUpdatedCartListWithQuantity(matchedCartItem, 1);
 
         updateCartList(updatedCartList);
         return;
@@ -62,7 +69,7 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
 
       updateCartList(updatedCartList);
     },
-    [addLastSaleItem, cartList, getMatchedCartItemById],
+    [addLastSaleItem, cartList, getMatchedCartItemById, getUpdatedCartListWithQuantity],
   );
 
   const removeCartItem = useCallback(
@@ -76,13 +83,11 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
         return;
       }
 
-      const updatedCartList = cartList.map((cartItem) =>
-        cartItem.id === matchedCartItem.id ? { ...cartItem, quantity: cartItem.quantity - 1 } : cartItem,
-      );
+      const updatedCartList = getUpdatedCartListWithQuantity(matchedCartItem, -1);
 
       updateCartList(updatedCartList);
     },
-    [cartList, clearCartItem, getMatchedCartItemById],
+    [clearCartItem, getMatchedCartItemById, getUpdatedCartListWithQuantity],
   );
 
   const contextValue = useMemo(() => {
