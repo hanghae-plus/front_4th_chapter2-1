@@ -1,6 +1,6 @@
 import { QuantityControlButton } from './QuantityControlButton';
-import { useAddCartItem, useClearCartItem, useRemoveCartItem } from '../../../contexts/cart-context/CartProvider';
-import { useDecreaseQuantity, useIncreaseQuantity } from '../../../contexts/product-context/ProductProvider';
+import { useAddCartItem, useClearCartItem, useRemoveCartItem } from '../../../contexts/cart-context/CartContext';
+import { useDecreaseQuantity, useIncreaseQuantity } from '../../../contexts/product-context/ProductContext';
 import { useQuantityCountChecker } from '../../../hooks/useQuantityCountChecker';
 
 import type { Product } from '../../../types/product';

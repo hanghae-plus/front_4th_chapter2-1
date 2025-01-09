@@ -1,5 +1,5 @@
 import { CartItem } from './_components/CartItem';
-import { useGetCartList } from '../../contexts/cart-context/CartProvider';
+import { useGetCartList } from '../../contexts/cart-context/CartContext';
 
 export const Cart = () => {
   const cartList = useGetCartList();

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
 import { SelectOption } from './_components/SelectOption';
-import { useAddCartItem, useGetCartList } from '../../contexts/cart-context/CartProvider';
-import { useDecreaseQuantity, useGetProductList } from '../../contexts/product-context/ProductProvider';
+import { useAddCartItem, useGetCartList } from '../../contexts/cart-context/CartContext';
+import { useDecreaseQuantity, useGetProductList } from '../../contexts/product-context/ProductContext';
 import { useQuantityCountChecker } from '../../hooks/useQuantityCountChecker';
 
 import type { Product } from '../../types/product';

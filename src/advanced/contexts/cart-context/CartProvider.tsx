@@ -1,41 +1,11 @@
-import { useCallback, useState, createContext, useMemo } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 
+import { cartContext } from './CartContext';
 import { calculateCartPrice } from '../../utils/cart/calculateCart';
-import { useAddLastSaleItem, useResetQuantity } from '../product-context/ProductProvider';
-import { useCreateCartContext } from '../utils/createContext';
+import { useAddLastSaleItem, useResetQuantity } from '../product-context/ProductContext';
 
 import type { Product } from '../../types/product';
 import type { PropsWithChildren } from 'react';
-
-interface CartContextType {
-  cartList: Product[];
-  totalAmount: number;
-  totalDiscountRate: number;
-  point: number;
-  addCartItem: (item: Product) => void;
-  clearCartItem: (id: string) => void;
-  removeCartItem: (id: string) => void;
-}
-
-export const cartContext = createContext<CartContextType | undefined>(undefined);
-
-export const useGetCartList = () => useCreateCartContext(cartContext, 'useGetCartList', 'cartProvider').cartList;
-
-export const useGetTotalAmount = () =>
-  useCreateCartContext(cartContext, 'useGetTotalAmount', 'cartProvider').totalAmount;
-
-export const useGetPoint = () => useCreateCartContext(cartContext, 'useGetPoint', 'cartProvider').point;
-
-export const useGetTotalDiscountRate = () =>
-  useCreateCartContext(cartContext, 'useGetTotalDiscountRate', 'cartProvider').totalDiscountRate;
-
-export const useAddCartItem = () => useCreateCartContext(cartContext, 'useAddCartItem', 'cartProvider').addCartItem;
-
-export const useRemoveCartItem = () =>
-  useCreateCartContext(cartContext, 'useRemoveCartItem', 'cartProvider').removeCartItem;
-
-export const useClearCartItem = () =>
-  useCreateCartContext(cartContext, 'useClearCartItem', 'cartProvider').clearCartItem;
 
 export const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartList, setCartList] = useState<Product[]>([]);

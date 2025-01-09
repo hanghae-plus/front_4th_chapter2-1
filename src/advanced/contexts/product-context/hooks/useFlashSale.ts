@@ -8,10 +8,12 @@ const FLASH_SALE_PROBABILITY = 0.3;
 const INITIAL_FLASH_SALE_DELAY = 10000;
 const FLASH_SALE_INTERVAL = 30000;
 
-export const useFlashSale = (
-  productList: Product[],
-  setProductList: React.Dispatch<React.SetStateAction<Product[]>>,
-) => {
+interface UseFlashSaleProps {
+  productList: Product[];
+  setProductList: React.Dispatch<React.SetStateAction<Product[]>>;
+}
+
+export const useFlashSale = ({ productList, setProductList }: UseFlashSaleProps) => {
   const notifyFlashSale = (product: Product) => {
     alert(`번개세일! ${product.name}이(가) 20% 할인 중입니다!`);
   };

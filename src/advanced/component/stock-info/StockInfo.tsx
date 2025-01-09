@@ -1,4 +1,4 @@
-import { useGetProductList } from '../../contexts/product-context/ProductProvider';
+import { useGetProductList } from '../../contexts/product-context/ProductContext';
 
 const LOW_STOCK = 5;
 const OUT_OF_STOCK = 0;

@@ -7,11 +7,13 @@ import type { Product } from '../../../types/product';
 const INITIAL_RECOMMENDATION_DELAY = 20000;
 const RECOMMENDATION_INTERVAL = 60000;
 
-export const useRecommendProduct = (
-  productList: Product[],
-  setProductList: React.Dispatch<React.SetStateAction<Product[]>>,
-  lastSaleItem: Product | null,
-) => {
+interface UseRecommendProductProps {
+  productList: Product[];
+  setProductList: React.Dispatch<React.SetStateAction<Product[]>>;
+  lastSaleItem: Product | null;
+}
+
+export const useRecommendProduct = ({ productList, setProductList, lastSaleItem }: UseRecommendProductProps) => {
   const recommendProduct = useCallback(() => {
     if (!lastSaleItem) return;
 
