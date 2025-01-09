@@ -14,7 +14,6 @@ const getAddCartButtonElement = () => document.getElementById(ELEMENT_IDS.ADD_TO
 const getProductSelectElement = () => document.getElementById(ELEMENT_IDS.PRODUCT_SELECT);
 const getCartTotalElement = () => document.getElementById(ELEMENT_IDS.CART_TOTAL);
 const getCartItemsElement = () => document.getElementById(ELEMENT_IDS.CART_ITEMS);
-const getPointElement = () => document.getElementById(ELEMENT_IDS.POINT);
 const getProductItemElement = (id) => document.getElementById(id);
 
 const getDecreaseButtonElement = (id) =>
@@ -118,27 +117,11 @@ const calculateCart = () => {
   // UI 업데이트
   renderCartTotal({ amount: finalAmount, discountRate: totalDiscountRate, point: productStore.getPoint() });
   renderStockStatus();
-  renderPoint();
 };
 
 const renderCartTotal = ({ amount, discountRate, point }) => {
   const cartTotal = getCartTotalElement();
   cartTotal.innerHTML = CartTotal({ amount, discountRate, point });
-};
-
-const renderPoint = () => {
-  productStore.setPoint(calculatePoint(productStore.getAmount()));
-
-  if (!getPointElement()) {
-    getCartTotalElement().insertAdjacentHTML(
-      'beforeend',
-      /* html */ `
-      <span id="${ELEMENT_IDS.POINT}" class="text-blue-500 ml-2"></span>
-    `.trim(),
-    );
-  }
-
-  getPointElement().textContent = `(포인트: ${productStore.getPoint()})`;
 };
 
 const renderStockStatus = () => {
