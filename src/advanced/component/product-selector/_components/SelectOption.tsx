@@ -1,8 +1,8 @@
 interface Product {
   id: string;
   name: string;
-  val: number;
-  q: number;
+  amount: number;
+  quantity: number;
 }
 
 interface SelectOptionProps {
@@ -10,11 +10,11 @@ interface SelectOptionProps {
 }
 
 export const SelectOption = ({ product }: SelectOptionProps) => {
-  const isDisabled = product.q === 0;
+  const isDisabled = product.quantity === 0;
 
   return (
     <option id={product.id} value={product.id} disabled={isDisabled}>
-      {product.name} - {product.val}원
+      {product.name} - {product.amount}원
     </option>
   );
 };
