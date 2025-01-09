@@ -51,10 +51,10 @@ function main() {
   addProductButton.textContent = '추가';
   section.appendChild(addProductButton);
 
-  stockInfo = document.createElement('div');
-  stockInfo.id = 'stock-status';
-  stockInfo.className = 'text-sm text-gray-500 mt-2';
-  section.appendChild(stockInfo);
+  stockInfomation = document.createElement('div');
+  stockInfomation.id = 'stock-status';
+  stockInfomation.className = 'text-sm text-gray-500 mt-2';
+  section.appendChild(stockInfomation);
 
   const container = document.createElement('div');
   container.className = 'bg-gray-100 p-8';
@@ -219,7 +219,7 @@ function updateStockInfo() {
       infoMsg += product.name + ': ' + (product.quantity > 0 ? '재고 부족 (' + product.quantity + '개 남음)' : '품절') + '\n';
     }
   });
-  stockInfo.textContent = infoMsg;
+  stockInfomation.textContent = infoMsg;
 }
 
 main();
