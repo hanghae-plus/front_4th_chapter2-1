@@ -66,14 +66,15 @@ export const CartItem = ({
 
       <div className='flex items-center'>
         <button
-          className='quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1'
+          className={`quantity-decrease-${addedItem.id} bg-blue-500 text-white px-2 py-1 rounded mr-1`}
           onClick={handleMinusButton}
         >
           -
         </button>
         <button
-          className='quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1'
+          data-testid={`quantity-increase-${addedItem.id}`}
           onClick={handleAddButton}
+          className={`quantity-increase-${addedItem.id} bg-blue-500 text-white px-2 py-1 rounded mr-1`}
         >
           +
         </button>

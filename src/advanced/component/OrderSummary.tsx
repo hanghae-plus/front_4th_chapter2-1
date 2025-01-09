@@ -43,9 +43,11 @@ export const OrderSummary = ({ cartItems }: { cartItems: Product[] }) => {
 
   return (
     <div id='cart-total' className='text-xl font-bold my-4'>
-      <span id='cart-total-amount'>총액: {total}원</span>
-      <span id='loyalty-points' className='text-blue-500 ml-2'>
-        (포인트: {Math.floor(total * POINT_RATE)}원)
+      <span id='cart-total-amount' data-testid={`cart-total-amount`}>
+        총액: {total}원
+      </span>
+      <span id='loyalty-points' data-testid={`loyalty-points`} className='text-blue-500 ml-2'>
+        (포인트: {Math.floor(total * POINT_RATE)})
       </span>
       <span id='discount-info' className='text-green-500 ml-2'>
         {discountInfo}

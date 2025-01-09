@@ -47,7 +47,7 @@ export const App = () => {
             setProducts={setProducts}
           />
           <LowStockWarning products={products} />
-          <div id='cart-items'>
+          <div id='cart-items' data-testid={`cart-items`}>
             {cartItems.length > 0 ? (
               cartItems.map((addedItem) => (
                 <CartItem
