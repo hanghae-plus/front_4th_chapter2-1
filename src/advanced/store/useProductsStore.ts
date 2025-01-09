@@ -12,7 +12,11 @@ interface ProductsStore {
   increaseStock: (id: string, quantity?: number) => void;
   decreaseStock: (id: string) => void;
   suggestPrice: (id: string) => void;
+  luckySale: (id: string) => void;
 }
+
+const SUGGEST_DISCOUNT_RATE = 0.95;
+const LUCKY_SALE_RATE = 0.8;
 
 export const useProductsStore = create<ProductsStore>((set) => ({
   products: [
@@ -42,7 +46,16 @@ export const useProductsStore = create<ProductsStore>((set) => ({
     set((state) => ({
       products: state.products.map((product) =>
         product.id === id
-          ? { ...product, price: product.price * 0.95 }
+          ? { ...product, price: product.price * SUGGEST_DISCOUNT_RATE }
+          : product
+      ),
+    }));
+  },
+  luckySale: (id: string) => {
+    set((state) => ({
+      products: state.products.map((product) =>
+        product.id === id
+          ? { ...product, price: product.price * LUCKY_SALE_RATE }
           : product
       ),
     }));
