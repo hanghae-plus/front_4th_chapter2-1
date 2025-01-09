@@ -1,3 +1,12 @@
+export const ID_BY_COMPONENT = Object.freeze({
+  CART_ID: "cart-items",
+  SUM_ID: "cart-total",
+  SELECT_ID: "product-select",
+  ADD_BTN_ID: "add-to-cart",
+  STOCK_INFO_ID: "stock-status",
+  PTS_TAG_ID: "loyalty-points",
+});
+
 let appState = {
   prodList: [
     { id: "p1", name: "상품1", val: 10000, q: 50 },
@@ -12,59 +21,32 @@ let appState = {
   itemCnt: 0,
 };
 
-function initGlobalElements() {
-  const elements = {
-    root: document.getElementById("app"),
-    cartDisp: document.createElement("div"),
-    sum: document.createElement("div"),
-    sel: document.createElement("select"),
-    addBtn: document.createElement("button"),
-    stockInfo: document.createElement("div"),
-  };
-
-  elements.cartDisp.id = "cart-items";
-  elements.sum.id = "cart-total";
-  elements.sel.id = "product-select";
-  elements.addBtn.id = "add-to-cart";
-  elements.stockInfo.id = "stock-status";
-
-
-  elements.cont.className = "bg-gray-100 p-8";
-  elements.wrap.className =
-    "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8";
-  elements.hTxt.className = "text-2xl font-bold mb-4";
-  elements.sum.className = "text-xl font-bold my-4";
-  elements.sel.className = "border rounded p-2 mr-2";
-  elements.addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded";
-  elements.stockInfo.className = "text-sm text-gray-500 mt-2";
-  elements.hTxt.textContent = "장바구니";
-  elements.addBtn.textContent = "추가";
-
-}
-
 function main() {
-  let cont = document.createElement("div");
-  let wrap = document.createElement("div");
-  let hTxt = document.createElement("h1");
+  const root = document.getElementById("app");
 
-  const { root, cartDisp, sum, sel, addBtn, stockInfo } = initGlobalElements();
+  const contents = document.createElement("div");
+  contents.className = "bg-gray-100 p-8";
+  contents.innerHTML = `
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
+      <h1 class="text-2xl font-bold mb-4">장바구니</h1>
+      <div id="${ID_BY_COMPONENT.CART_ID}"></div>
+      <div id="${ID_BY_COMPONENT.SUM_ID}" class="text-xl font-bold my-4"></div>
+      <select id="${ID_BY_COMPONENT.SELECT_ID}" class="border rounded p-2 mr-2"></select>
+      <button id="${ID_BY_COMPONENT.ADD_BTN_ID}" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
+      <div id="${ID_BY_COMPONENT.STOCK_INFO_ID}" class="text-sm text-gray-500 mt-2"></div>
+    </div>
+  `;
 
+  root.appendChild(contents);
 
   updateSelOpts();
-  wrap.appendChild(hTxt);
-  wrap.appendChild(cartDisp);
-  wrap.appendChild(sum);
-  wrap.appendChild(sel);
-  wrap.appendChild(addBtn);
-  wrap.appendChild(stockInfo);
-  cont.appendChild(wrap);
-  root.appendChild(cont);
+
   calcCart();
   setTimeout(function () {
     setInterval(function () {
       let luckyItem =
         appState.appState.prodList[
-        Math.floor(Math.random() * appState.appState.prodList.length)
+          Math.floor(Math.random() * appState.appState.prodList.length)
         ];
       if (Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val = Math.round(luckyItem.val * 0.8);
@@ -245,8 +227,8 @@ cartDisp.addEventListener("click", function (event) {
       if (
         newQty > 0 &&
         newQty <=
-        prod.q +
-        parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
+          prod.q +
+            parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
       ) {
         itemElem.querySelector("span").textContent =
           itemElem.querySelector("span").textContent.split("x ")[0] +
@@ -269,7 +251,6 @@ cartDisp.addEventListener("click", function (event) {
     calcCart();
   }
 });
-
 
 /// 껍데기만 create로 만들고 나머지는 innerhtml로 만들기 -> react랑 닮게 만들기
 // var 호이스팅
