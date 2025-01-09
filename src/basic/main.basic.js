@@ -24,9 +24,9 @@ const main = () => `
         ${prodList
           .map(
             (item) => `
-            <option value="${item.id}" ${item.q === 0 ? 'disabled' : ''}>
-              ${item.name} - ${item.val} 원
-            </option>
+            <option value="${item.id}" ${item.q === 0 ? 'disabled' : ''}>${
+              item.name
+            } - ${item.val}원</option>
           `
           )
           .join('')}
@@ -44,30 +44,30 @@ const handleAddCartItem = () => {
 
   addToCartButton.addEventListener('click', () => {
     const selectedProductId = productSelect.value;
-    const addProduct = prodList.find((item) => item.id === selectedProductId);
+    const addedProduct = prodList.find((item) => item.id === selectedProductId);
 
-    if (addProduct && addProduct.q > 0) {
-      const cartItem = document.getElementById(addProduct.id);
+    if (addedProduct && addedProduct.q > 0) {
+      const cartItem = document.getElementById(addedProduct.id);
 
       if (cartItem) {
         const itemQty =
           parseInt(cartItem.querySelector('span').textContent.split('x ')[1]) +
           1;
-        if (itemQty <= addProduct.q) {
-          const updateText = `${addProduct.name} - ${addProduct.val}원 x ${itemQty}`;
+        if (itemQty <= addedProduct.q) {
+          const updateText = `${addedProduct.name} - ${addedProduct.val}원 x ${itemQty}`;
           cartItem.querySelector('span').textContent = updateText;
 
-          addProduct.q--;
-          console.log(`수량: ${itemQty}, 남은 재고: ${addProduct.q}`);
+          addedProduct.q--;
+          console.log(`수량: ${itemQty}, 남은 재고: ${addedProduct.q}`);
         } else {
           alert('재고가 부족합니다.');
         }
       } else {
         cartItems.insertAdjacentHTML(
           'beforeend',
-          createNewCartItem(addProduct)
+          createNewCartItem(addedProduct)
         );
-        addProduct.q--;
+        addedProduct.q--;
       }
     }
     calculateCartItem();
@@ -186,11 +186,7 @@ const updateStockInfo = () => {
   stockStatusElem.textContent = infoMessage;
 };
 
-const init = () => {
-  const root = document.getElementById('app');
-  root.innerHTML = main();
-  handleAddCartItem();
-  handleCartItemQuantity();
-};
-
-document.addEventListener('DOMContentLoaded', init);
+const root = document.getElementById('app');
+root.innerHTML = main();
+handleAddCartItem();
+handleCartItemQuantity();
