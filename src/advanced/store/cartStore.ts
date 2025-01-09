@@ -6,12 +6,14 @@ interface ICartStore {
 	addCartItem: (item: IPRODUCT) => void;
 	updateCartItem: (item: IPRODUCT) => void;
 	removeCartItem: (item: IPRODUCT) => void;
+
 	lastSelectedItemId: string | null;
 	setLastSelectedItemId: (id: string) => void;
 }
 
 export const CartStore = create<ICartStore>((set) => ({
 	cart: [],
+
 	addCartItem: (item: IPRODUCT) => {
 		set((prev) => ({
 			cart: [...prev.cart, item],
