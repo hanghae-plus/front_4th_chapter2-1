@@ -10,7 +10,7 @@ export const Cart = () => {
       <div>
           <h1 class="text-2xl font-bold mb-4">장바구니</h1>
           <div id="cart-items">
-          ${cartList?.map((item) => CartItem(item).render)}
+          ${cartList && cartList.map((item) => CartItem(item).render)}
           </div>
       </div>
       `;

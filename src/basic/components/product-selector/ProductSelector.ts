@@ -4,8 +4,6 @@ import { ProductStore } from '../../store/productStore';
 import { addEventListener } from '../../utils/eventUtil';
 import { isQuantityCountOver } from '../hooks/useQuantityChecker';
 
-let isEventListenerAdded = false;
-
 export const ProductSelector = () => {
   const { actions: ProductActions } = ProductStore;
   const { actions: CartActions } = CartStore;
@@ -14,49 +12,38 @@ export const ProductSelector = () => {
 
   const productListState = ProductActions.getProductList();
   const cartList = CartActions.getCartList();
+  addEventListener('click', (event: Event) => {
+    // addBtn 클릭인지 확인해야함
 
-  // INFO: "추가" 버튼 클릭 핸들러
-  if (!isEventListenerAdded) {
-    addEventListener('click', function (event: MouseEvent) {
-      // addBtn 클릭인지 확인해야함
+    if (!(event.target instanceof HTMLButtonElement) || event.target.id !== 'add-to-cart') return;
 
-      if (!(event.target instanceof HTMLButtonElement) || event.target.id !== 'add-to-cart') return;
+    const matchedCartItem = cartList.find((item) => item.id === selectedItem.id);
 
-      const matchedCartItem = cartList.find((item) => item.id === selectedItem.id);
+    if (matchedCartItem && isQuantityCountOver(selectedItem, matchedCartItem.quantity, productListState)) {
+      return;
+    }
 
-      if (matchedCartItem && isQuantityCountOver(selectedItem, matchedCartItem.quantity)) {
-        return;
-      }
+    const productItem = productListState.find((item) => item.id === selectedItem.id);
 
-      const productItem = productListState.find((item) => item.id === selectedItem.id);
+    if (productItem) {
+      CartActions.addCartItem(productItem);
+      ProductActions.decreaseQuantity(selectedItem.id);
+    }
+  });
 
-      if (productItem) {
-        CartActions.addCartItem(productItem);
-        ProductActions.decreaseQuantity(selectedItem.id);
-      }
-    });
+  addEventListener('change', (event: Event) => {
+    // addBtn 클릭인지 확인해야함
 
-    isEventListenerAdded = true;
-  }
+    if (!(event.target instanceof HTMLSelectElement) || event.target.id !== 'product-select') return;
 
-  // INFO: "추가" 버튼 클릭 핸들러
-  if (!isEventListenerAdded) {
-    addEventListener('change', function (event: MouseEvent) {
-      // addBtn 클릭인지 확인해야함
+    const selectedId = event.target.value;
 
-      if (!(event.target instanceof HTMLSelectElement) || event.target.id !== 'product-select') return;
+    const targetItem = productListState.find((product) => product.id === selectedId);
 
-      const selectedId = event.target.value;
+    if (!targetItem) return;
 
-      const targetItem = productListState.find((product) => product.id === selectedId);
-
-      if (!targetItem) return;
-
-      selectedItem = targetItem;
-    });
-
-    isEventListenerAdded = true;
-  }
+    selectedItem = targetItem;
+  });
 
   const render = `
         <select id="product-select" class="border rounded p-2 mr-2" >

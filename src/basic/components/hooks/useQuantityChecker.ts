@@ -1,12 +1,6 @@
-import { ProductStore } from '../../store/productStore';
-
 import type { Product } from '../../types/product';
 
-export const isQuantityCountOver = (product: Product, compareTarget: number) => {
-  const { actions } = ProductStore;
-
-  const productList = actions.getProductList();
-
+export const isQuantityCountOver = (product: Product, compareTarget: number, productList: Product[]) => {
   const matchedItem = productList.find((item) => item.id === product.id);
 
   if (!matchedItem) return false;

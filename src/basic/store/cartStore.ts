@@ -1,3 +1,4 @@
+import { ProductStore } from './productStore';
 import { createStore } from '../utils/createStore';
 import { calculateCartPrice } from './utils/cart/calculateCartPrice';
 
@@ -17,7 +18,6 @@ interface CartState {
 
 interface CartActions {
   getCartList: () => Product[];
-  getCartItem: (id: string) => Product | undefined;
   addCartItem: (item: Product) => void;
   removeCartItem: (id: string) => void;
   getTotalAmount: () => number;
@@ -34,6 +34,8 @@ export const CartStore = createStore<CartState, CartActions>(
     point: 0,
   },
   (state, notify) => {
+    const { actions } = ProductStore;
+
     const updateCartList = (cartList: Product[]) => {
       state.cartList = cartList;
 
@@ -63,9 +65,6 @@ export const CartStore = createStore<CartState, CartActions>(
       getCartList: () => {
         return state.cartList;
       },
-      getCartItem: (id: string) => {
-        return state.cartList?.find((item) => item.id === id);
-      },
       getTotalAmount: () => {
         return state.totalAmount;
       },
@@ -77,10 +76,12 @@ export const CartStore = createStore<CartState, CartActions>(
       },
       clearCartItem: (id: string) => {
         clearCartItemById(id);
-        // resetQuantity(id);
+        actions.resetQuantity(id);
+
+        notify();
       },
       addCartItem: (item: Product) => {
-        // addLastSaleItem(item);
+        actions.addLastSaleItem(item);
 
         const matchedCartItem = getMatchedCartItemById(item.id);
 

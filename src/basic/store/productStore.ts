@@ -13,6 +13,7 @@ interface Actions {
   decreaseQuantity: (id: string) => void;
   increaseQuantity: (id: string) => void;
   resetQuantity: (id: string) => void;
+  addLastSaleItem: (item: Product) => void;
 }
 
 export const ProductStore = createStore<State, Actions>(
@@ -53,9 +54,13 @@ export const ProductStore = createStore<State, Actions>(
         );
 
         state.productList = newProductList;
+
+        notify();
       },
       addLastSaleItem: (item: Product) => {
         state.lastSaleItem = item;
+
+        notify();
       },
     };
   },
