@@ -4,7 +4,6 @@ import prettier from 'eslint-config-prettier';
 import compat from 'eslint-plugin-compat';
 import jest from 'eslint-plugin-jest';
 import node from 'eslint-plugin-node';
-import eslintPluginPrettier from 'eslint-plugin-prettier';
 import react from 'eslint-plugin-react';
 import reactHooks from 'eslint-plugin-react-hooks';
 import security from 'eslint-plugin-security';
@@ -56,7 +55,7 @@ export default [
     rules: {
       // 구성된 규칙이 포함된 객체, files가 지정되면 포함된 파일만 검사
       // Prettier 통합 규칙
-      'prettier/prettier': 'error', // Prettier 포맷팅 오류를 ESLint 에러로 표시
+      // 'prettier/prettier': 'error', // Prettier 포맷팅 오류를 ESLint 에러로 표시
 
       // React 관련 규칙
       'react/prop-types': 'off', // TypeScript 사용 시 prop-types 검사를 비활성화
