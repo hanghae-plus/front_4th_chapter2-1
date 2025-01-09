@@ -309,11 +309,11 @@ const handleAddToCart = () => {
   const itemToAdd = productList.find((product) => product.id === selectedID);
 
   if (itemToAdd.remaining > 0) {
-    const inCartItem = document.getElementById(itemToAdd.id);
+    const itemInCart = document.getElementById(itemToAdd.id);
 
     // 기존에 장바구니에 추가되어있을 때
-    if (inCartItem) {
-      const quantitySpan = inCartItem.querySelector("span");
+    if (itemInCart) {
+      const quantitySpan = itemInCart.querySelector("span");
 
       const currentQuantity = extractQuantity(quantitySpan) + 1;
 
