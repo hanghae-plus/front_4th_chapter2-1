@@ -20,10 +20,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - uses: pnpm/action-setup@v2 # pnpm 설정 추가
+        with:
+          version: 8
       - name: test basic
         run: |
-          npm install
-          npm run test:basic
+          pnpm install
+          pnpm run test:basic
   advacned:
     runs-on: ubuntu-latest
     steps:
@@ -34,7 +37,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - uses: pnpm/action-setup@v2 # pnpm 설정 추가
+        with:
+          version: 8
       - name: advanced-test
         run: |
-          npm install
-          npm run test:advanced
+          pnpm install
+          pnpm run test:advanced
