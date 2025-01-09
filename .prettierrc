@@ -1,9 +1,11 @@
 {
   "singleQuote": false,
-  "parser": "babel",
+  "parser": "typescript",
   "semi": true,
   "useTabs": false,
   "tabWidth": 2,
   "printWidth": 80,
-  "arrowParens": "always"
+  "arrowParens": "always",
+  "trailingComma": "es5",
+  "endOfLine": "auto"
 }
