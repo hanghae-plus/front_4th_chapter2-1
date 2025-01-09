@@ -1,16 +1,10 @@
+import { PRODUCT_LIST } from "./data/prodList";
 var prodList, sel, addBtn, cartDisp, sum, stockInfo;
 var lastSel,
-  bonusPts = 0,
-  totalAmt = 0,
-  itemCnt = 0;
+  bonusPoints = 0,
+  totalAmount = 0,
+  itemCount = 0;
 function main() {
-  prodList = [
-    { id: "p1", name: "상품1", val: 10000, q: 50 },
-    { id: "p2", name: "상품2", val: 20000, q: 30 },
-    { id: "p3", name: "상품3", val: 30000, q: 20 },
-    { id: "p4", name: "상품4", val: 15000, q: 0 },
-    { id: "p5", name: "상품5", val: 25000, q: 10 },
-  ];
   var root = document.getElementById("app");
   let cont = document.createElement("div");
   var wrap = document.createElement("div");
@@ -74,91 +68,91 @@ function main() {
 }
 function updateSelOpts() {
   sel.innerHTML = "";
-  prodList.forEach(function (item) {
+  PRODUCT_LIST.forEach(function (item) {
     var opt = document.createElement("option");
     opt.value = item.id;
-    opt.textContent = item.name + " - " + item.val + "원";
+    opt.textContent = item.name + " - " + item.cost + "원";
     if (item.q === 0) opt.disabled = true;
     sel.appendChild(opt);
   });
 }
 function calcCart() {
-  totalAmt = 0;
-  itemCnt = 0;
+  totalAmount = 0;
+  itemCount = 0;
   var cartItems = cartDisp.children;
   var subTot = 0;
   for (var i = 0; i < cartItems.length; i++) {
     (function () {
       var curItem;
-      for (var j = 0; j < prodList.length; j++) {
-        if (prodList[j].id === cartItems[i].id) {
-          curItem = prodList[j];
+      for (var j = 0; j < PRODUCT_LIST.length; j++) {
+        if (PRODUCT_LIST[j].id === cartItems[i].id) {
+          curItem = PRODUCT_LIST[j];
           break;
         }
       }
-      var q = parseInt(
+      var amount = parseInt(
         cartItems[i].querySelector("span").textContent.split("x ")[1]
       );
-      var itemTot = curItem.val * q;
-      var disc = 0;
-      itemCnt += q;
-      subTot += itemTot;
-      if (q >= 10) {
-        if (curItem.id === "p1") disc = 0.1;
-        else if (curItem.id === "p2") disc = 0.15;
-        else if (curItem.id === "p3") disc = 0.2;
-        else if (curItem.id === "p4") disc = 0.05;
-        else if (curItem.id === "p5") disc = 0.25;
+      var itemTotalCost = curItem.cost * amount;
+      var discountRate = 0;
+      itemCount += amount;
+      subTot += itemTotalCost;
+      if (amount >= 10) {
+        if (curItem.id === "p1") discountRate = 0.1;
+        else if (curItem.id === "p2") discountRate = 0.15;
+        else if (curItem.id === "p3") discountRate = 0.2;
+        else if (curItem.id === "p4") discountRate = 0.05;
+        else if (curItem.id === "p5") discountRate = 0.25;
       }
-      totalAmt += itemTot * (1 - disc);
+      totalAmount += itemTotalCost * (1 - discountRate);
     })();
   }
-  let discRate = 0;
-  if (itemCnt >= 30) {
-    var bulkDisc = totalAmt * 0.25;
-    var itemDisc = subTot - totalAmt;
+  let discountRate = 0;
+  if (itemCount >= 30) {
+    var bulkDisc = totalAmount * 0.25;
+    var itemDisc = subTot - totalAmount;
     if (bulkDisc > itemDisc) {
       totalAmt = subTot * (1 - 0.25);
-      discRate = 0.25;
+      discountRate = 0.25;
     } else {
-      discRate = (subTot - totalAmt) / subTot;
+      discountRate = (subTot - totalAmount) / subTot;
     }
   } else {
-    discRate = (subTot - totalAmt) / subTot;
+    discountRate = (subTot - totalAmount) / subTot;
   }
   if (new Date().getDay() === 2) {
-    totalAmt *= 1 - 0.1;
-    discRate = Math.max(discRate, 0.1);
+    totalAmount *= 1 - 0.1;
+    discountRate = Math.max(discountRate, 0.1);
   }
-  sum.textContent = "총액: " + Math.round(totalAmt) + "원";
-  if (discRate > 0) {
+  sum.textContent = "총액: " + Math.round(totalAmount) + "원";
+  if (discountRate > 0) {
     var span = document.createElement("span");
     span.className = "text-green-500 ml-2";
-    span.textContent = "(" + (discRate * 100).toFixed(1) + "% 할인 적용)";
+    span.textContent = "(" + (discountRate * 100).toFixed(1) + "% 할인 적용)";
     sum.appendChild(span);
   }
   updateStockInfo();
   renderBonusPts();
 }
 const renderBonusPts = () => {
-  bonusPts = Math.floor(totalAmt / 1000);
-  var ptsTag = document.getElementById("loyalty-points");
-  if (!ptsTag) {
-    ptsTag = document.createElement("span");
-    ptsTag.id = "loyalty-points";
-    ptsTag.className = "text-blue-500 ml-2";
-    sum.appendChild(ptsTag);
+  bonusPoints = Math.floor(totalAmount / 1000);
+  var pointTag = document.getElementById("loyalty-points");
+  if (!pointTag) {
+    pointTag = document.createElement("span");
+    pointTag.id = "loyalty-points";
+    pointTag.className = "text-blue-500 ml-2";
+    sum.appendChild(pointTag);
   }
-  ptsTag.textContent = "(포인트: " + bonusPts + ")";
+  pointTag.textContent = "(포인트: " + bonusPoints + ")";
 };
 function updateStockInfo() {
   var infoMsg = "";
-  prodList.forEach(function (item) {
-    if (item.q < 5) {
+  PRODUCT_LIST.forEach(function (item) {
+    if (item.stock < 5) {
       infoMsg +=
         item.name +
         ": " +
-        (item.q > 0 ? "재고 부족 (" + item.q + "개 남음)" : "품절") +
+        (item.stock > 0 ? "재고 부족 (" + item.stock + "개 남음)" : "품절") +
         "\n";
     }
   });
@@ -167,18 +161,18 @@ function updateStockInfo() {
 main();
 addBtn.addEventListener("click", function () {
   var selItem = sel.value;
-  var itemToAdd = prodList.find(function (p) {
+  var itemToAdd = PRODUCT_LIST.find(function (p) {
     return p.id === selItem;
   });
-  if (itemToAdd && itemToAdd.q > 0) {
+  if (itemToAdd && itemToAdd.stock > 0) {
     var item = document.getElementById(itemToAdd.id);
     if (item) {
       var newQty =
         parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
-      if (newQty <= itemToAdd.q) {
+      if (newQty <= itemToAdd.stock) {
         item.querySelector("span").textContent =
-          itemToAdd.name + " - " + itemToAdd.val + "원 x " + newQty;
-        itemToAdd.q--;
+          itemToAdd.name + " - " + itemToAdd.cost + "원 x " + newQty;
+        itemToAdd.stock--;
       } else {
         alert("재고가 부족합니다.");
       }
@@ -216,7 +210,7 @@ cartDisp.addEventListener("click", function (event) {
   ) {
     var prodId = tgt.dataset.productId;
     var itemElem = document.getElementById(prodId);
-    var prod = prodList.find(function (p) {
+    var prod = PRODUCT_LIST.find(function (p) {
       return p.id === prodId;
     });
     if (tgt.classList.contains("quantity-change")) {
