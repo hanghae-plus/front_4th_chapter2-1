@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import { CartPage } from "@advanced/pages/cart";
 
 if (process.env.NODE_ENV === "development") {
   // eslint-disable-next-line import/no-internal-modules
@@ -9,6 +10,6 @@ if (process.env.NODE_ENV === "development") {
 
 createRoot(document.getElementById("app")!).render(
   <StrictMode>
-    <div>asd</div>
+    <CartPage />
   </StrictMode>
 );
