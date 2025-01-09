@@ -9,6 +9,7 @@ import { products } from './data/products';
 import CartStore from './stores/cart.store';
 import ProductStore from './stores/product.store';
 import { applyDiscount } from './utils/applyDiscount';
+import { calculatePoint, canUpdateQuantity, getTotalQuantity } from './utils/cart';
 
 const getStockStatusElement = () => document.getElementById(ELEMENT_IDS.STOCK_STATUS);
 const getAddCartButtonElement = () => document.getElementById(ELEMENT_IDS.ADD_TO_CART);
@@ -23,12 +24,6 @@ const getIncreaseButtonElement = (id) =>
   document.querySelector(`button[data-product-id="${id}"][data-product-event-type="increase"]`);
 const getRemoveButtonElement = (id) =>
   document.querySelector(`button[data-product-id="${id}"][data-product-event-type="remove"]`);
-
-const canUpdateQuantity = (productModel, cartItem) => productModel.quantity > (cartItem?.getQuantity() || 0);
-
-const getTotalQuantity = (cartItems) => cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
-const calculatePoint = (amount) => Math.floor(amount / 1000);
 
 const main = (callbackFn) => {
   const root = document.getElementById('app');
