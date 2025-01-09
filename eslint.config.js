@@ -14,27 +14,29 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['**/node_modules/**', 'dist/**'],
+    ignores: ['**/node_modules/**', 'dist/**'], // 구성 개체가 적용되지 않아야 하는 파일을 나타내는 glob패턴, 지정하지 않으면 모든 파일에 적용
   },
   sonarjs.configs.recommended,
   {
-    files: ['**/*.{js,jsx,ts,tsx}'],
+    files: ['**/*.{js,jsx,ts,tsx}'], // 구성 개체가 적용되어야 하는 피일을 나타는 glob패턴, 지정하지 않으면 모든 파일에 적용
     languageOptions: {
-      ecmaVersion: 'latest',
-      sourceType: 'module',
+      ecmaVersion: 'latest', // 지원할 ECMAScript 버전 기본 값은 'latest'
+      sourceType: 'module', // js 소스코드의 유형, ECMAScript의 모듈일 경우 'module', Commonjs인 경우 'commonjs'
       globals: {
+        // linting 중 전역 범위에 추가되어야하는 추가 개체를 지정
         ...globals.browser,
         ...globals.es2021,
       },
-      parser: typescriptParser,
+      parser: typescriptParser, // parse() 또는 parseForESLint() 메서드를 포함하는 객체, 기본 값은 'espree', 추가적으로 레거시 프로젝트에서는 babel로 되어있는 parser일 수 있음
       parserOptions: {
+        // parse() 또는 parseForESLint() 메서드에 직접 전달되는 추가 옵션을 지정
         ecmaFeatures: {
           jsx: true,
         },
-        // project: './tsconfig.json',
       },
     },
     plugins: {
+      // 플러그인 개체를 매핑
       prettier: eslintPluginPrettier,
       react,
       'react-hooks': reactHooks,
@@ -46,11 +48,13 @@ export default [
       node,
     },
     settings: {
+      // 모든 규칙에 사용할 수 있는 정보의 key-value 쌍이 포함된 객체
       react: {
         version: 'detect',
       },
     },
     rules: {
+      // 구성된 규칙이 포함된 객체, files가 지정되면 포함된 파일만 검사
       // Prettier 통합 규칙
       'prettier/prettier': 'error', // Prettier 포맷팅 오류를 ESLint 에러로 표시
 
