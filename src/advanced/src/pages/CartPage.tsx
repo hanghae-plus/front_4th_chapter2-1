@@ -26,15 +26,15 @@ export default function CartPage() {
 
     // Add product to cart
     setCartItems((prev) => {
-      const existingItem = prev.find((item) => item.productId === productId);
+      const existingItem = prev.find((item) => item.product.id === productId);
       if (existingItem) {
         return prev.map((item) =>
-          item.productId === productId
-            ? { ...item, quantity: item.quantity + 1 }
+          item.product.id === productId
+            ? { ...item, product: { ...item.product, quantity: item.product.quantity - 1 }, quantity: item.quantity + 1 }
             : item
         );
       }
-      return [...prev, { productId, name: product.name, price: product.price, quantity: 1 }];
+      return [...prev, { product, quantity: 1 }];
     });
 
     // Decrease product stock
@@ -49,7 +49,7 @@ export default function CartPage() {
     setCartItems((prev) =>
       prev
         .map((item) =>
-          item.productId === productId
+          item.product.id === productId
             ? { ...item, quantity: item.quantity + change }
             : item
         )
@@ -66,7 +66,7 @@ export default function CartPage() {
   };
 
   const handleRemoveItem = (productId: string) => {
-    const removedItem = cartItems.find((item) => item.productId === productId);
+    const removedItem = cartItems.find((item) => item.product.id === productId);
     if (removedItem) {
       setProducts((prev) =>
         prev.map((p) =>
@@ -76,7 +76,7 @@ export default function CartPage() {
         )
       );
     }
-    setCartItems((prev) => prev.filter((item) => item.productId !== productId));
+    setCartItems((prev) => prev.filter((item) => item.product.id !== productId));
   };
 
   const { totalAmount, discountRate, loyaltyPoints } = calculateCart(cartItems, products);
