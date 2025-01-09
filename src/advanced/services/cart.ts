@@ -1,0 +1,37 @@
+import type { Cart } from '../types/cart.type';
+import type { Product } from '../types/product.type';
+
+export const handleDecreaseQuantity = (productId) => {
+  cartStore.removeCartItem(productId);
+  const cartItem = cartStore.getCartItemByProductId(productId);
+
+  if (cartItem?.getQuantity() === 0) {
+    getProductItemElement(productId)?.remove();
+  } else {
+    updateCartItem(productId, cartItem);
+  }
+};
+
+export const handleIncreaseQuantity = (productId, productModel) => {
+  const currentCartItem = cartStore.getCartItemByProductId(productId);
+
+  if (!canIncreaseQuantity(productModel, currentCartItem)) {
+    alert('재고가 부족합니다.');
+    return;
+  }
+
+  cartStore.addCartItem(productModel);
+  updateCartItem(productId, cartStore.getCartItemByProductId(productId));
+};
+
+export const handleRemoveItem = (productId) => {
+  getProductItemElement(productId)?.remove();
+  cartStore.deleteCartItem(productId);
+};
+
+export const canIncreaseQuantity = ({ product, cartItem }: { product: Product; cartItem?: Cart }) =>
+  product.quantity > (cartItem?.quantity || 0);
+
+export const getTotalQuantity = (cartItems: Cart[]) => cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
+export const calculatePoint = (amount: number) => Math.floor(amount / 1000);

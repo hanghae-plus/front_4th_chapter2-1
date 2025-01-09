@@ -4,6 +4,7 @@ import CartTotal from './components/CartTotal';
 import ProductSelect from './components/ProductSelect';
 import { products as initialProducts } from './data/products';
 import { calculateCartTotals } from './services/calculator';
+import { canIncreaseQuantity } from './services/cart';
 import type { Cart } from './types/cart.type';
 
 const App = () => {
@@ -12,8 +13,13 @@ const App = () => {
 
   const handleAddToCart = () => {
     const selectedProduct = initialProducts.find(({ id }) => id === selectedProductId);
+    const cartItem = cartItems.find((item) => item.id === selectedProductId);
 
-    if (!selectedProduct || selectedProduct.quantity <= 0) {
+    if (!selectedProduct) {
+      return;
+    }
+
+    if (!canIncreaseQuantity({ product: selectedProduct, cartItem })) {
       alert('재고가 부족합니다.');
       return;
     }
@@ -38,6 +44,10 @@ const App = () => {
     });
   };
 
+  const handleProductSelect = (productId: string) => {
+    setSelectedProductId(productId);
+  };
+
   const { finalAmount: amount, discountRate, point } = calculateCartTotals(cartItems);
 
   return (
@@ -48,7 +58,11 @@ const App = () => {
         <div id="${ELEMENT_IDS.CART_TOTAL}" className="text-xl font-bold my-4">
           <CartTotal amount={amount} discountRate={discountRate} point={point} />
         </div>
-        <ProductSelect products={initialProducts} />
+        <ProductSelect
+          products={initialProducts}
+          onSelect={handleProductSelect}
+          selectedProductId={selectedProductId}
+        />
         <button
           id="${ELEMENT_IDS.ADD_TO_CART}"
           className="bg-blue-500 text-white px-4 py-2 rounded"

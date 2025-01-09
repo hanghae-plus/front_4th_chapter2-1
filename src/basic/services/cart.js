@@ -10,7 +10,7 @@ export const handleAddToCart = () => {
   const selectedProductModel = products.find(({ id }) => id === selectedProductId);
   let cartItem = cartStore.getCartItemByProductId(selectedProductId);
 
-  if (!canUpdateQuantity(selectedProductModel, cartItem)) {
+  if (!canIncreaseQuantity(selectedProductModel, cartItem)) {
     alert('재고가 부족합니다.');
     return;
   }
@@ -48,7 +48,7 @@ export const handleDecreaseQuantity = (productId) => {
 export const handleIncreaseQuantity = (productId, productModel) => {
   const currentCartItem = cartStore.getCartItemByProductId(productId);
 
-  if (!canUpdateQuantity(productModel, currentCartItem)) {
+  if (!canIncreaseQuantity(productModel, currentCartItem)) {
     alert('재고가 부족합니다.');
     return;
   }
@@ -64,7 +64,7 @@ export const handleRemoveItem = (productId) => {
   calculateCart((updatedTotals) => updateCartUI(updatedTotals));
 };
 
-export const canUpdateQuantity = (productModel, cartItem) => productModel.quantity > (cartItem?.getQuantity() || 0);
+export const canIncreaseQuantity = (productModel, cartItem) => productModel.quantity > (cartItem?.getQuantity() || 0);
 
 export const getTotalQuantity = (cartItems) => cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
