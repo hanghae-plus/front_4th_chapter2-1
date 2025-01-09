@@ -1,10 +1,29 @@
-import { handleDecreaseQuantity, handleIncreaseQuantity, handleRemoveItem } from '../services/cart';
-import { getDecreaseButtonElement, getIncreaseButtonElement, getRemoveButtonElement } from './dom';
+import { handleAddToCart, handleDecreaseQuantity, handleIncreaseQuantity, handleRemoveItem } from '../services/cart';
+import {
+  getAddCartButtonElement,
+  getDecreaseButtonElement,
+  getIncreaseButtonElement,
+  getRemoveButtonElement,
+} from './dom';
 
-export const setupCartItemEvents = (productId, productModel) => {
-  getDecreaseButtonElement(productId).addEventListener('click', () => handleDecreaseQuantity(productId));
+class EventManager {
+  registerClickEventAddCartButton() {
+    getAddCartButtonElement().addEventListener('click', handleAddToCart);
+  }
 
-  getIncreaseButtonElement(productId).addEventListener('click', () => handleIncreaseQuantity(productId, productModel));
+  registerClickEventProductQuantityDecreaseButton(productId) {
+    getDecreaseButtonElement(productId).addEventListener('click', () => handleDecreaseQuantity(productId));
+  }
 
-  getRemoveButtonElement(productId).addEventListener('click', () => handleRemoveItem(productId));
-};
+  registerClickEventProductQuantityIncreaseButton(productId, productModel) {
+    getIncreaseButtonElement(productId).addEventListener('click', () =>
+      handleIncreaseQuantity(productId, productModel),
+    );
+  }
+
+  registerClickEventProductRemoveButton(productId) {
+    getRemoveButtonElement(productId).addEventListener('click', () => handleRemoveItem(productId));
+  }
+}
+
+export default new EventManager();

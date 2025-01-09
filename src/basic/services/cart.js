@@ -3,7 +3,7 @@ import CartItem, { updateCartItem } from '../components/CartItem';
 import { products } from '../data/products';
 import { canUpdateQuantity } from '../utils/cart';
 import { getCartItemsElement, getProductItemElement, getProductSelectElement } from '../utils/dom';
-import { setupCartItemEvents } from '../utils/events';
+import eventManager from '../utils/events';
 import { calculateCart } from './calculator';
 
 export const handleAddToCart = () => {
@@ -25,7 +25,9 @@ export const handleAddToCart = () => {
     updateCartItem(cartItem.id, cartItem);
   } else {
     getCartItemsElement().insertAdjacentHTML('beforeend', CartItem(cartItem));
-    setupCartItemEvents(cartItem.id, selectedProductModel);
+    eventManager.registerClickEventProductQuantityDecreaseButton(cartItem.id);
+    eventManager.registerClickEventProductQuantityIncreaseButton(cartItem.id, selectedProductModel);
+    eventManager.registerClickEventProductRemoveButton(cartItem.id);
   }
 
   calculateCart((updatedTotals) => updateCartUI(updatedTotals));

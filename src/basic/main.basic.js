@@ -4,11 +4,10 @@ import ProductSelect, { updateProductSelect } from './components/ProductSelect';
 import { ELEMENT_IDS } from './constants/element-id';
 import { products } from './data/products';
 import { calculateCart } from './services/calculator';
-import { handleAddToCart } from './services/cart';
 import { setupLightningSaleTimer, setupRecommendationTimer } from './services/promotion';
 import CartStore from './stores/cart.store';
 import ProductStore from './stores/product.store';
-import { getAddCartButtonElement } from './utils/dom';
+import eventManager from './utils/events';
 
 const main = (callbackFn) => {
   const root = document.getElementById('app');
@@ -38,5 +37,5 @@ main(() => {
   calculateCart((updatedTotals) => updateCartUI(updatedTotals));
   setupLightningSaleTimer();
   setupRecommendationTimer();
-  getAddCartButtonElement().addEventListener('click', handleAddToCart);
+  eventManager.registerClickEventAddCartButton();
 });
