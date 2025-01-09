@@ -204,6 +204,69 @@ const setSuggestDiscountedProductAlert = () => {
   }, Math.random() * 20000);
 }
 
+/** 장바구니에 존재하는 상품 수량 변경  */
+const updateExistingCartItem = (item, itemToAdd) => {
+  let newQty =
+    parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
+
+  if (newQty <= itemToAdd.qty) {
+    item.querySelector("span").textContent =
+      `${itemToAdd.name} - ${itemToAdd.val}원 x ${newQty}`;
+    itemToAdd.qty--;
+  } else {
+    showOutOfStockAlert();
+  }
+}
+
+/** 장바구니에 새로운 상품 추가 */
+const addNewCartItem = (cart, itemToAdd) => {
+  let newItem = document.createElement("div");
+  newItem.id = itemToAdd.id;
+  newItem.className = "flex justify-between items-center mb-2";
+  newItem.innerHTML = `
+    <span>${itemToAdd.name} - ${itemToAdd.val}원 x 1</span>
+    <div>
+      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+              data-product-id="${itemToAdd.id}" data-change="-1">-</button>
+      <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+              data-product-id="${itemToAdd.id}" data-change="1">+</button>
+      <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
+              data-product-id="${itemToAdd.id}">삭제</button>
+    </div>`;
+  cart.appendChild(newItem);
+  itemToAdd.qty--;
+}
+
+/** 재고부족 알람 */
+const showOutOfStockAlert = () => {
+  alert("재고가 부족합니다.");
+}
+
+
+/** 상품 추가 후 상태 업데이트 */
+const updateAppStateAfterAdd = (selectItem) => {
+  appState.lastSel = selectItem;
+  updateCart();
+}
+
+/** 추가버튼 핸들러 */
+const handleClickAddBtn = () => {
+  const cart = document.querySelector(`#${ID_BY_COMPONENT.CART_ID}`);
+  const selectItem = document.querySelector(`#${ID_BY_COMPONENT.SELECT_ID}`).value;
+  const itemToAdd = appState.productList.find((p) => p.id === selectItem);
+
+  if (itemToAdd && itemToAdd.qty > 0) {
+    let item = document.getElementById(itemToAdd.id);
+    if (item) {
+      updateExistingCartItem(item, itemToAdd);
+    } else {
+      addNewCartItem(cart, itemToAdd);
+    }
+    updateAppStateAfterAdd(selectItem);
+  }
+}
+
+
 function main() {
   const root = document.getElementById("app");
 
@@ -229,59 +292,12 @@ function main() {
   setSuggestDiscountedProductAlert()
 }
 
-
-
-
 main();
 
-
+//addbtn 이벤트리스너
 const addBtn = document.querySelector(`#${ID_BY_COMPONENT.ADD_BTN_ID}`);
-addBtn.addEventListener("click", function () {
-  const cart = document.querySelector(`#${ID_BY_COMPONENT.CART_ID}`);
-  const selectItem = document.querySelector(`#${ID_BY_COMPONENT.SELECT_ID}`).value;
-  const itemToAdd = appState.productList.find(function (p) {
-    return p.id === selectItem;
-  });
+addBtn.addEventListener("click", handleClickAddBtn);
 
-  if (itemToAdd && itemToAdd.qty > 0) {
-    let item = document.getElementById(itemToAdd.id);
-    if (item) {
-      let newQty =
-        parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
-
-      if (newQty <= itemToAdd.qty) {
-        item.querySelector("span").textContent =
-          itemToAdd.name + " - " + itemToAdd.val + "원 x " + newQty;
-        itemToAdd.qty--;
-      } else {
-        alert("재고가 부족합니다.");
-      }
-    } else {
-      let newItem = document.createElement("div");
-      newItem.id = itemToAdd.id;
-      newItem.className = "flex justify-between items-center mb-2";
-      newItem.innerHTML =
-        "<span>" +
-        itemToAdd.name +
-        " - " +
-        itemToAdd.val +
-        "원 x 1</span><div>" +
-        '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-        itemToAdd.id +
-        '" data-change="-1">-</button>' +
-        '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-        itemToAdd.id +
-        '" data-change="1">+</button>' +
-        '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' +
-        itemToAdd.id +
-        '">삭제</button></div>';
-      cart.appendChild(newItem);
-      itemToAdd.qty--;
-    }
-    updateCart();
-    appState.lastSel = selectItem;
-  }
-});
 
 const cart = document.querySelector(`#${ID_BY_COMPONENT.CART_ID}`);
 cart.addEventListener("click", function (event) {
