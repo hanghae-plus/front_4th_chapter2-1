@@ -1,6 +1,7 @@
 export * from './SelectedProd.js';
 export * from './CartDisplay.js';
 export * from './Container.js';
+export * from './CartItem.js';
 export * from './Title.js';
 export * from './Wrapper.js';
 export * from './AddButton.js';

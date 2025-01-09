@@ -27,10 +27,7 @@ export class Component {
 
     if (this.children) {
       this.children.forEach(child => {
-        const childElement =
-          child instanceof Component
-            ? child.render()
-            : document.createTextNode(child);
+        const childElement = child instanceof Component ? child.render() : document.createTextNode(child);
 
         this.element.appendChild(childElement);
       });
@@ -52,10 +49,7 @@ export class Component {
       }
       // 새로운 자식 요소 추가
       this.children.forEach(child => {
-        const childElement =
-          child instanceof Component
-            ? child.render()
-            : document.createTextNode(child);
+        const childElement = child instanceof Component ? child.render() : document.createTextNode(child);
 
         this.element.appendChild(childElement);
       });

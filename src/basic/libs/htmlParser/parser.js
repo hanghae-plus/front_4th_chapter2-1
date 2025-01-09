@@ -61,7 +61,7 @@ export const parseElementToComponent = (element, parentComponent = null) => {
   return component;
 };
 
-export const getComponentById = id => {
+export const parseComponentById = id => {
   // 엘리먼트 검색
   const element = document.getElementById(id);
   if (!element) {
