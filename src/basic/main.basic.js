@@ -1,15 +1,15 @@
-import { createAddToCartButton } from './components/addToCartButton.js';
+import { PRODUCT_LIST } from './datas/productList.js';
 import { createCartDisplay } from './components/cartDisplay.js';
 import { createCartTotal } from './components/cartTotal.js';
-import { createHeaderTitle } from './components/headerTitle.js';
 import { createProductSelector } from './components/productSelector.js';
+import { createAddToCartButton } from './components/addToCartButton.js';
 import { createProductStockInfo } from './components/productStockInfo.js';
-import { PRODUCT_LIST } from './datas/productList.js';
+import { createHeaderTitle } from './components/headerTitle.js';
 import { startLuckySales } from './hooks/startLuckySales.js';
+import { useState } from './hooks/useState.js';
 import { startPromotions } from './hooks/startPromotions.js';
 import { updateProductOptions } from './hooks/updateProductOptions.js';
 import { updateStockInfo } from './hooks/updateStockInfo.js';
-import { useState } from './hooks/useState.js';
 
 export const [getLastSelectedItem, setLastSelectedItem] = useState(null);
 
