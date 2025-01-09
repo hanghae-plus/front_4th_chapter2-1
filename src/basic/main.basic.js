@@ -2,9 +2,7 @@ import { PRODUCT_LIST } from "./data/prodList";
 import { calculateCartTotals } from "./util/calculate";
 var prodList, sel, addBtn, cartDisp, sum, stockInfo;
 var lastSel,
-  bonusPoints = 0,
-  totalAmount = 0,
-  itemCount = 0;
+  bonusPoints = 0;
 function main() {
   var root = document.getElementById("app");
   let cont = document.createElement("div");
