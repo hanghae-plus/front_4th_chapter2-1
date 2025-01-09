@@ -137,7 +137,7 @@ function calcCart() {
     span.textContent = "(" + (discRate * 100).toFixed(1) + "% 할인 적용)";
     sum.appendChild(span);
   }
-  updatfeatkInfo();
+  updateStockInfo();
   renderBonusPts();
 }
 const renderBonusPts = () => {
