@@ -1,7 +1,7 @@
-import { IproductList } from '../type/product';
+import { IProduct } from '../type/product';
 
 interface CartSelectProps {
-	products: IproductList[];
+	products: IProduct[];
 	addToCart: (productId: string) => void;
 }
 
