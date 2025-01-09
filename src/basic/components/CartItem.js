@@ -1,3 +1,6 @@
+import { getProductItemElement } from '../utils/dom';
+import { setupCartItemEvents } from '../utils/events';
+
 const CartItem = ({ id, name, price, quantity }) => /* html */ `
   <div id="${id}" class="flex justify-between items-center mb-2">
     <span>${name} - ${price}원 x ${quantity}</span>
@@ -26,3 +29,12 @@ const CartItem = ({ id, name, price, quantity }) => /* html */ `
 `;
 
 export default CartItem;
+
+export const updateCartItem = (productId, cartItem) => {
+  const container = document.createElement('div');
+  container.innerHTML = CartItem(cartItem);
+
+  const oldElement = getProductItemElement(productId);
+  oldElement.replaceWith(container.firstElementChild);
+  setupCartItemEvents(productId, cartItem);
+};
