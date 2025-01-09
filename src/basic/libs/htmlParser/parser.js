@@ -13,24 +13,16 @@ export const html = (strings, ...expressions) => {
   return lexer(combinedString, placeholders, expressions);
 };
 
-export function parseElementToComponent(element, parentComponent = null, eventHandlerMapping = {}) {
+export const parseElementToComponent = (element, parentComponent = null) => {
   // 속성(attributes)을 props로 변환
   const props = {};
 
   Array.from(element.attributes).forEach(attr => {
     const { name, value } = attr;
 
-    if (name.startsWith('on')) {
-      // 이벤트 핸들러 속성 (예: onClick, onChange)
-      const eventName = name.slice(2).toLowerCase(); // 'click', 'change' 등
-      const componentType = element.tagName.toLowerCase();
-
-      // 매핑된 이벤트 핸들러 함수가 있는지 확인
-      if (eventHandlerMapping[componentType] && eventHandlerMapping[componentType][eventName]) {
-        props[name] = eventHandlerMapping[componentType][eventName];
-      } else {
-        console.warn(`No event handler mapped for ${name} on <${componentType}>`);
-      }
+    if (name.startsWith('on') && typeof element[name] === 'function') {
+      // 이벤트 핸들러 속성 (예: onClick)
+      props[name] = element[name].bind(element);
     } else if (value === '') {
       // 불리언 속성: 값이 없으면 true로 간주
       props[name] = true;
@@ -53,7 +45,7 @@ export function parseElementToComponent(element, parentComponent = null, eventHa
     .map(child => {
       if (child.nodeType === Node.ELEMENT_NODE) {
         // 자식이 HTMLElement인 경우 재귀적으로 변환
-        return parseElementToComponent(child, component, eventHandlerMapping);
+        return parseElementToComponent(child, component);
       } else if (child.nodeType === Node.TEXT_NODE) {
         // 자식이 텍스트 노드인 경우 텍스트 내용 반환
         const text = child.textContent.trim();
@@ -67,4 +59,18 @@ export function parseElementToComponent(element, parentComponent = null, eventHa
   component.setChildren(children);
 
   return component;
-}
+};
+
+export const getComponentById = id => {
+  // 엘리먼트 검색
+  const element = document.getElementById(id);
+  if (!element) {
+    console.error(`Element with id "${id}" not found.`);
+    return null;
+  }
+
+  // 파서 함수를 사용하여 Component로 변환
+  const component = parseElementToComponent(element, null);
+
+  return component;
+};
