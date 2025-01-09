@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 
-const products = [
+export const products = [
   { id: "p1", name: "상품1", cost: 10000, quantity: 50 },
   { id: "p2", name: "상품2", cost: 20000, quantity: 30 },
   { id: "p3", name: "상품3", cost: 30000, quantity: 20 },

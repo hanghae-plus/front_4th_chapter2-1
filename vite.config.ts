@@ -6,6 +6,7 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      "@mocks": path.resolve(__dirname, "./src/mocks"),
       "@basic": path.resolve(__dirname, "./src/basic"),
       "@advanced": path.resolve(__dirname, "./src/advanced")
     }
@@ -13,6 +14,6 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: "./src/setupTests.js"
+    setupFiles: "./src/setupTests.ts"
   }
 });
