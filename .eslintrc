@@ -41,37 +41,72 @@
     "boundaries/elements": [
       {
         "type": "app",
-        "pattern": ["@basic/app/**", "src/basic/app/**"],
+        "pattern": [
+          "@basic/app/**",
+          "src/basic/app/**",
+          "@advanced/app/**",
+          "src/advanced/app/**"
+        ],
         "mode": "file"
       },
       {
         "type": "processes",
-        "pattern": ["@basic/processes/**", "src/basic/processes/**"],
+        "pattern": [
+          "@basic/processes/**",
+          "src/basic/processes/**",
+          "@advanced/processes/**",
+          "src/advanced/processes/**"
+        ],
         "mode": "file"
       },
       {
         "type": "pages",
-        "pattern": ["@basic/pages/**", "src/basic/pages/**"],
+        "pattern": [
+          "@basic/pages/**",
+          "src/basic/pages/**",
+          "@advanced/pages/**",
+          "src/advanced/pages/**"
+        ],
         "mode": "file"
       },
       {
         "type": "widgets",
-        "pattern": ["@basic/widgets/**", "src/basic/widgets/**"],
+        "pattern": [
+          "@basic/widgets/**",
+          "src/basic/widgets/**",
+          "@advanced/widgets/**",
+          "src/advanced/widgets/**"
+        ],
         "mode": "file"
       },
       {
         "type": "features",
-        "pattern": ["@basic/features/**", "src/basic/features/**"],
+        "pattern": [
+          "@basic/features/**",
+          "src/basic/features/**",
+          "@advanced/features/**",
+          "src/advanced/features/**"
+        ],
         "mode": "file"
       },
       {
         "type": "entities",
-        "pattern": ["@basic/entities/**", "src/basic/entities/**"],
+        "pattern": [
+          "@basic/entities/**",
+          "src/basic/entities/**",
+          "@advanced/entities/**",
+          "src/advanced/entities/**"
+        ],
         "mode": "file"
       },
       {
         "type": "shared",
-        "pattern": ["@basic/shared/**", "src/basic/shared/**"],
+        "pattern": [
+          "@basic/shared/**",
+          "src/basic/shared/**",
+          "@advanced/shared/**",
+          "src/advanced/shared/**"
+        ],
         "mode": "file"
       }
     ],

@@ -23,8 +23,11 @@
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/node": "^22.10.5",
+    "@types/react": "^19.0.3",
+    "@types/react-dom": "^19.0.2",
     "@typescript-eslint/eslint-plugin": "^8.19.1",
     "@typescript-eslint/parser": "^8.19.0",
+    "@vitejs/plugin-react-swc": "^3.7.2",
     "@vitest/ui": "^2.1.1",
     "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
@@ -36,5 +39,9 @@
     "prettier": "^3.4.2",
     "vite": "^5.1.0",
     "vitest": "^2.1.1"
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   }
 }
