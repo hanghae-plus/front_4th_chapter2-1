@@ -1,11 +1,14 @@
 import ShoppingCart from './components/ShoppingCart.tsx';
-import { ProductListProvider } from './providers/ProductListProvider.tsx';
+import { InStockProductListProvider } from './providers/InStockProductListProvider.tsx';
+import ShoppingCartProvider from './providers/ShoppingCartProvider.tsx';
 
 const App = () => {
   return (
-    <ProductListProvider>
-      <ShoppingCart />
-    </ProductListProvider>
+    <InStockProductListProvider>
+      <ShoppingCartProvider>
+        <ShoppingCart />
+      </ShoppingCartProvider>
+    </InStockProductListProvider>
   );
 };
 
