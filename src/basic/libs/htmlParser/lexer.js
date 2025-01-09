@@ -1,6 +1,6 @@
-import { ERROR } from '../../constants';
-import { Component } from './Component';
-import { parseAttributes } from './parseAttributes';
+import { ERROR } from '../../constants/index.js';
+import { Component } from './Component.js';
+import { parseAttributes } from './parseAttributes.js';
 
 /*
  * HTML을 분석해서, 태그토큰과 텍스트 토큰을 생성
@@ -120,12 +120,14 @@ export const lexer = (htmlString, placeholders, expressions) => {
         }
       } else {
         // 일반 텍스트
-        const textComponent = new Component({
-          type: 'text',
-          props: { value: text },
-          children: [],
-        });
-        stack[stack.length - 1].children.push(textComponent);
+        // const textComponent = new Component({
+        //   type: 'text',
+        //   props: { value: text },
+        //   children: [],
+        // });
+        // stack[stack.length - 1].children.push(textComponent);
+        // 일반 텍스트는 그대로 문자열로 추가
+        stack[stack.length - 1].children.push(text);
       }
     }
   });
