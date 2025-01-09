@@ -211,103 +211,101 @@ main(() => {
   calcCart();
   setupLightningSaleTimer();
   setupRecommendationTimer();
-
-  const handleAddToCart = () => {
-    const selectedProductId = getProductSelectElement().value;
-    const selectedProductModel = products.find(({ id }) => id === selectedProductId);
-    let cartItem = cartStore.getCartItem(selectedProductId);
-
-    if (!canUpdateQuantity(selectedProductModel, cartItem)) {
-      alert('재고가 부족합니다.');
-      return;
-    }
-
-    cartStore.addCartItem(selectedProductModel);
-    cartItem = cartStore.getCartItem(selectedProductId);
-
-    const productItemElement = getProductItemElement(cartItem.id);
-
-    if (productItemElement) {
-      updateCartItemText(cartItem.id, cartItem);
-    } else {
-      getCartItemsElement().insertAdjacentHTML('beforeend', renderCartItem(cartItem));
-      setupCartItemEvents(cartItem.id, selectedProductModel);
-    }
-
-    calcCart();
-    productStore.setLastSelectedProduct(selectedProductId);
-  };
-
-  getAddCartButtonElement().addEventListener('click', handleAddToCart);
-
-  const renderCartItem = (cartItem) => /* html */ `
-  <div id="${cartItem.id}" class="flex justify-between items-center mb-2">
-    <span>${cartItem.name} - ${cartItem.price}원 x ${cartItem.getQuantity()}</span>
-    <div>
-      <button 
-        class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-        data-product-id="${cartItem.id}" 
-        data-product-event-type="decrease"
-        data-change="-1"
-      >-</button>
-      
-      <button 
-        class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
-        data-product-id="${cartItem.id}" 
-        data-product-event-type="increase"
-        data-change="1"
-      >+</button>
-
-      <button 
-        class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
-        data-product-id="${cartItem.id}"
-        data-product-event-type="remove"
-      >삭제</button>
-    </div>
-  </div>
-`;
-
-  const setupCartItemEvents = (productId, productModel) => {
-    getDecreaseButtonElement(productId).addEventListener('click', () => handleDecreaseQuantity(productId));
-
-    getIncreaseButtonElement(productId).addEventListener('click', () =>
-      handleIncreaseQuantity(productId, productModel),
-    );
-
-    getRemoveButtonElement(productId).addEventListener('click', () => handleRemoveItem(productId));
-  };
-
-  const handleDecreaseQuantity = (productId) => {
-    cartStore.removeCartItem(productId);
-    const cartItem = cartStore.getCartItem(productId);
-
-    if (cartItem?.getQuantity() === 0) {
-      getProductItemElement(productId)?.remove();
-    } else {
-      updateCartItemText(productId, cartItem);
-    }
-    calcCart();
-  };
-
-  const handleIncreaseQuantity = (productId, productModel) => {
-    const currentCartItem = cartStore.getCartItem(productId);
-
-    if (!canUpdateQuantity(productModel, currentCartItem)) {
-      alert('재고가 부족합니다.');
-      return;
-    }
-
-    cartStore.addCartItem(productModel);
-    updateCartItemText(productId, cartStore.getCartItem(productId));
-    calcCart();
-  };
-
-  const handleRemoveItem = (productId) => {
-    getProductItemElement(productId)?.remove();
-    cartStore.deleteCartItem(productId);
-    calcCart();
-  };
 });
+
+const setupCartItemEvents = (productId, productModel) => {
+  getDecreaseButtonElement(productId).addEventListener('click', () => handleDecreaseQuantity(productId));
+
+  getIncreaseButtonElement(productId).addEventListener('click', () => handleIncreaseQuantity(productId, productModel));
+
+  getRemoveButtonElement(productId).addEventListener('click', () => handleRemoveItem(productId));
+};
+
+const handleAddToCart = () => {
+  const selectedProductId = getProductSelectElement().value;
+  const selectedProductModel = products.find(({ id }) => id === selectedProductId);
+  let cartItem = cartStore.getCartItem(selectedProductId);
+
+  if (!canUpdateQuantity(selectedProductModel, cartItem)) {
+    alert('재고가 부족합니다.');
+    return;
+  }
+
+  cartStore.addCartItem(selectedProductModel);
+  cartItem = cartStore.getCartItem(selectedProductId);
+
+  const productItemElement = getProductItemElement(cartItem.id);
+
+  if (productItemElement) {
+    updateCartItemText(cartItem.id, cartItem);
+  } else {
+    getCartItemsElement().insertAdjacentHTML('beforeend', renderCartItem(cartItem));
+    setupCartItemEvents(cartItem.id, selectedProductModel);
+  }
+
+  calcCart();
+  productStore.setLastSelectedProduct(selectedProductId);
+};
+
+getAddCartButtonElement().addEventListener('click', handleAddToCart);
+
+const handleDecreaseQuantity = (productId) => {
+  cartStore.removeCartItem(productId);
+  const cartItem = cartStore.getCartItem(productId);
+
+  if (cartItem?.getQuantity() === 0) {
+    getProductItemElement(productId)?.remove();
+  } else {
+    updateCartItemText(productId, cartItem);
+  }
+  calcCart();
+};
+
+const handleIncreaseQuantity = (productId, productModel) => {
+  const currentCartItem = cartStore.getCartItem(productId);
+
+  if (!canUpdateQuantity(productModel, currentCartItem)) {
+    alert('재고가 부족합니다.');
+    return;
+  }
+
+  cartStore.addCartItem(productModel);
+  updateCartItemText(productId, cartStore.getCartItem(productId));
+  calcCart();
+};
+
+const handleRemoveItem = (productId) => {
+  getProductItemElement(productId)?.remove();
+  cartStore.deleteCartItem(productId);
+  calcCart();
+};
+
+const renderCartItem = (cartItem) => /* html */ `
+<div id="${cartItem.id}" class="flex justify-between items-center mb-2">
+  <span>${cartItem.name} - ${cartItem.price}원 x ${cartItem.getQuantity()}</span>
+  <div>
+    <button 
+      class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+      data-product-id="${cartItem.id}" 
+      data-product-event-type="decrease"
+      data-change="-1"
+    >-</button>
+    
+    <button 
+      class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" 
+      data-product-id="${cartItem.id}" 
+      data-product-event-type="increase"
+      data-change="1"
+    >+</button>
+
+    <button 
+      class="remove-item bg-red-500 text-white px-2 py-1 rounded" 
+      data-product-id="${cartItem.id}"
+      data-product-event-type="remove"
+    >삭제</button>
+  </div>
+</div>
+`;
 
 const canUpdateQuantity = (productModel, cartItem) => productModel.quantity > (cartItem?.getQuantity() || 0);
 
