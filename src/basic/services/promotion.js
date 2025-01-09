@@ -4,7 +4,7 @@ import { products } from '../data/products';
 
 export const setupLightningSaleTimer = () => {
   setTimeout(() => {
-    setInterval(handleLightningSale, TIMER_POLICY.LIGHTNING_SALE_RATE_INTERVAL);
+    setInterval(handleLightningSale, TIMER_POLICY.LIGHTNING_SALE_INTERVAL);
   }, Math.random() * 10000);
 };
 

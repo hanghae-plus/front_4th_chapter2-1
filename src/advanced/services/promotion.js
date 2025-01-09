@@ -4,7 +4,7 @@ import { products } from '../data/products';
 
 export const setupLightningSaleTimer = () => {
   setTimeout(() => {
-    setInterval(handleLightningSale, TIMER_POLICY.LIGHTNING_SALE_RATE_INTERVAL);
+    setInterval(handleLightningSale, TIMER_POLICY.LIGHTNING_SALE_INTERVAL);
   }, Math.random() * 10000);
 };
 
@@ -16,7 +16,7 @@ export const setupRecommendationTimer = () => {
 
 const handleLightningSale = () => {
   const luckyItem = products[Math.floor(Math.random() * products.length)];
-  if (Math.random() < DISCOUNT_POLICY.LIGHTNING_SALE_RATE_PROBABILITY && luckyItem.quantity > 0) {
+  if (Math.random() < DISCOUNT_POLICY.LIGHTNING_SALE_PROBABILITY && luckyItem.quantity > 0) {
     luckyItem.price = Math.round(luckyItem.price * (1 - DISCOUNT_POLICY.LIGHTNING_SALE_RATE));
     alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
     updateProductSelect();

@@ -12,9 +12,9 @@ const App = () => {
         <h1 className="text-2xl font-bold mb-4">장바구니</h1>
         <div id="${ELEMENT_IDS.CART_ITEMS}"></div>
         <div id="${ELEMENT_IDS.CART_TOTAL}" className="text-xl font-bold my-4">
-          ${CartTotal({ amount: 0, discountRate: 0, point: 0 })}
+          <CartTotal amount={0} discountRate={0} point={0} />
         </div>
-        ${ProductSelect({ products })}
+        <ProductSelect products={products} />
         <button id="${ELEMENT_IDS.ADD_TO_CART}" className="bg-blue-500 text-white px-4 py-2 rounded">
           추가
         </button>
