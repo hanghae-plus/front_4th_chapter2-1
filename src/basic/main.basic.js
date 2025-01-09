@@ -73,14 +73,8 @@ const updateProductList = () => {
   });
 };
 
-const calculateCart = () => {
-  const cartItems = cartStore.getCartItems();
-  const subTotal = cartStore.getAmount();
-  let finalAmount = subTotal;
-  let totalDiscountRate = 0;
-
-  // 각 상품별 할인 계산
-  finalAmount = cartItems.reduce((total, item) => {
+const calculateTotalPrice = (cartItems) => {
+  return cartItems.reduce((total, item) => {
     const itemAmount = item.price * item.quantity;
     let discountRate = 0;
 
@@ -90,7 +84,16 @@ const calculateCart = () => {
 
     return total + applyDiscount({ amount: itemAmount, discountRate });
   }, 0);
+};
 
+const calculateCart = () => {
+  const cartItems = cartStore.getCartItems();
+  const subTotal = cartStore.getAmount();
+  let finalAmount = subTotal;
+  let totalDiscountRate = 0;
+
+  // 각 상품별 할인 계산
+  finalAmount = calculateTotalPrice(cartItems);
   const totalItemCount = getTotalQuantity(cartItems);
 
   // 대량 구매 할인 계산
