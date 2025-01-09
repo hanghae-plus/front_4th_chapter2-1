@@ -10,6 +10,8 @@ export const DISCOUNT_RATES = {
   },
 };
 
+export type ProductId = keyof typeof DISCOUNT_RATES.PRODUCT;
+
 export const LOYALTY_DAY = 2; // 화요일
 export const BONUS_POINT_DIVISOR = 1000;
 export const MIN_ITEM_COUNT_FOR_DISCOUNT = 10;
