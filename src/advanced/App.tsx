@@ -1,5 +1,10 @@
+import { ProductListContextProvider } from "./contexts";
 import { MainPage } from "./pages/MainPage";
 
 export function App() {
-  return <MainPage />;
+  return (
+    <ProductListContextProvider>
+      <MainPage />
+    </ProductListContextProvider>
+  );
 }
