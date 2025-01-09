@@ -10,20 +10,15 @@ import CartStore from './stores/cart.store';
 import ProductStore from './stores/product.store';
 import { applyDiscount } from './utils/applyDiscount';
 import { calculatePoint, canUpdateQuantity, getTotalQuantity } from './utils/cart';
-
-const getStockStatusElement = () => document.getElementById(ELEMENT_IDS.STOCK_STATUS);
-const getAddCartButtonElement = () => document.getElementById(ELEMENT_IDS.ADD_TO_CART);
-const getProductSelectElement = () => document.getElementById(ELEMENT_IDS.PRODUCT_SELECT);
-const getCartTotalElement = () => document.getElementById(ELEMENT_IDS.CART_TOTAL);
-const getCartItemsElement = () => document.getElementById(ELEMENT_IDS.CART_ITEMS);
-const getProductItemElement = (id) => document.getElementById(id);
-
-const getDecreaseButtonElement = (id) =>
-  document.querySelector(`button[data-product-id="${id}"][data-product-event-type="decrease"]`);
-const getIncreaseButtonElement = (id) =>
-  document.querySelector(`button[data-product-id="${id}"][data-product-event-type="increase"]`);
-const getRemoveButtonElement = (id) =>
-  document.querySelector(`button[data-product-id="${id}"][data-product-event-type="remove"]`);
+import {
+  getAddCartButtonElement,
+  getCartItemsElement,
+  getDecreaseButtonElement,
+  getIncreaseButtonElement,
+  getProductItemElement,
+  getProductSelectElement,
+  getRemoveButtonElement,
+} from './utils/dom';
 
 const main = (callbackFn) => {
   const root = document.getElementById('app');
