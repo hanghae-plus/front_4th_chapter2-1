@@ -1,10 +1,13 @@
-import { createCartDisp } from "./components/cartDisp";
-import { createAddBtn } from "./components/addBtn";
-function main() {
-  const state = {
-    lastSel: undefined,
-  };
+import { createCartDisp } from './components/cartDisp';
+import { createAddBtn } from './components/addBtn';
+import { createSum } from './components/sum';
+import { createApp } from './components/app';
+import { createHTxt } from './components/hTxt';
+import { createSel } from './components/sel';
+import { createStockInfo } from './components/stockInfo';
 
+function main() {
+  const state = { lastSel: undefined };
   const prodList = [
     { id: 'p1', name: '상품1', val: 10000, q: 50 },
     { id: 'p2', name: '상품2', val: 20000, q: 30 },
@@ -13,36 +16,35 @@ function main() {
     { id: 'p5', name: '상품5', val: 25000, q: 10 },
   ];
 
-  const root = document.getElementById('app');
-  const cont = document.createElement('div');
-  const wrap = document.createElement('div');
-  const hTxt = document.createElement('h1');
-  const sum = document.createElement('div');
-  const sel = document.createElement('select');
-  const stockInfo = document.createElement('div');
+  const app = createApp();
+  const sum = createSum();
+  const sel = createSel();
+  const hTxt = createHTxt();
+
+  const stockInfo = createStockInfo();
   const cartDisp = createCartDisp({ prodList, sum, stockInfo, calcCart });
-  const addBtn = createAddBtn({ sel, prodList, cartDisp, calcCart, stockInfo, state, sum });
-  sum.id = 'cart-total';
-  sel.id = 'product-select';
-  stockInfo.id = 'stock-status';
-  cont.className = 'bg-gray-100 p-8';
-  wrap.className =
-    'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  hTxt.className = 'text-2xl font-bold mb-4';
-  sum.className = 'text-xl font-bold my-4';
-  sel.className = 'border rounded p-2 mr-2';
-  stockInfo.className = 'text-sm text-gray-500 mt-2';
-  hTxt.textContent = '장바구니';
-  updateSelOpts({ sel, prodList });
+  const addBtn = createAddBtn({
+    sel,
+    prodList,
+    cartDisp,
+    stockInfo,
+    state,
+    sum,
+    calcCart,
+  });
+
+  const wrap = app.childNodes[0].childNodes[0];
   wrap.appendChild(hTxt);
   wrap.appendChild(cartDisp);
   wrap.appendChild(sum);
   wrap.appendChild(sel);
   wrap.appendChild(addBtn);
   wrap.appendChild(stockInfo);
-  cont.appendChild(wrap);
-  root.appendChild(cont);
+
+  updateSelOpts({ sel, prodList });
+
   calcCart({ sum, cartDisp, prodList, stockInfo });
+
   setTimeout(function () {
     setInterval(function () {
       var luckyItem = prodList[Math.floor(Math.random() * prodList.length)];
@@ -53,6 +55,7 @@ function main() {
       }
     }, 30000);
   }, Math.random() * 10000);
+
   setTimeout(function () {
     setInterval(function () {
       if (state.lastSel) {
@@ -81,9 +84,18 @@ function updateSelOpts({ sel, prodList }) {
     sel.appendChild(opt);
   });
 }
-function calcCart({ sum, cartDisp, prodList, totalAmt = 0, itemCnt = 0, stockInfo } = {}) {
+
+function calcCart({
+  sum,
+  cartDisp,
+  prodList,
+  totalAmt = 0,
+  itemCnt = 0,
+  stockInfo,
+} = {}) {
   var cartItems = cartDisp.children;
   var subTot = 0;
+
   for (var i = 0; i < cartItems.length; i++) {
     (function () {
       var curItem;
@@ -110,6 +122,7 @@ function calcCart({ sum, cartDisp, prodList, totalAmt = 0, itemCnt = 0, stockInf
       totalAmt += itemTot * (1 - disc);
     })();
   }
+
   let discRate = 0;
   if (itemCnt >= 30) {
     var bulkDisc = totalAmt * 0.25;
@@ -137,6 +150,7 @@ function calcCart({ sum, cartDisp, prodList, totalAmt = 0, itemCnt = 0, stockInf
   updateStockInfo({ prodList, stockInfo });
   renderBonusPts({ sum, totalAmt });
 }
+
 const renderBonusPts = ({ sum, totalAmt }) => {
   const bonusPts = Math.floor(totalAmt / 1000);
   var ptsTag = document.getElementById('loyalty-points');
