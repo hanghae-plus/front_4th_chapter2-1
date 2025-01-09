@@ -8,7 +8,7 @@ function createSelectOptions(products: Product[]): HTMLOptionElement[] {
     const opt = createElement<HTMLOptionElement>('option');
 
     opt.value = product.id;
-    opt.textContent = product.name + ' - ' + product.originalPrice + '원';
+    opt.textContent = `${product.name} - ${product.originalPrice}원`;
     if (product.quantity === 0) opt.disabled = true;
 
     return opt;
