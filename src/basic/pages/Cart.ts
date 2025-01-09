@@ -3,7 +3,7 @@ import ProductSelect from '@/components/ProductSelect';
 import Stock from '@/components/Stock';
 
 import AddToCartButton from '@components/AddToCartButton';
-import CartList from '@components/cart/CartList';
+import CartList from '@components/CartList';
 import Header from '@components/common/Header';
 import { additionalSale, randomSale } from '@utils/saleEvent';
 
