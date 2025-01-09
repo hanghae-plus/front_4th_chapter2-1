@@ -6,12 +6,12 @@ export class ProductModel {
     this.quantity = quantity;
   }
 
-  static createInstance(id, name, price, quantity) {
-    return new ProductModel(id, name, price, quantity);
-  }
-
   get isSoldOut() {
     return this.quantity === 0;
+  }
+
+  static createInstance(id, name, price, quantity) {
+    return new ProductModel(id, name, price, quantity);
   }
 
   getQuantity() {
