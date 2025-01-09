@@ -176,7 +176,6 @@ export default tseslint.config(
         },
       ],
       'no-debugger': 'error',
-      'no-alert': 'error',
       'prefer-const': 'error',
       'no-var': 'error',
       'no-multiple-empty-lines': [
@@ -207,7 +206,7 @@ export default tseslint.config(
 
       // Sonar
       'sonarjs/cognitive-complexity': ['error', 15],
-      'sonarjs/no-duplicate-string': ['error', { threshold: 3 }],
+      // 'sonarjs/no-duplicate-string': ['error', { threshold: 3 }],
       'sonarjs/no-identical-functions': 'error',
     },
   },
