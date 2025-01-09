@@ -1,4 +1,5 @@
 import { products } from './data/products';
+import { DAY_OF_WEEK } from './features/cart/constants/day';
 import { DISCOUNT_POLICY, STOCK_POLICY, TIMER_POLICY } from './features/cart/constants/policy';
 import { applyDiscount } from './features/cart/utils/discount';
 import CartStore from './stores/cart.store';
@@ -115,7 +116,7 @@ const calculateCart = () => {
   }
 
   // 화요일 할인 계산
-  if (new Date().getDay() === 2) {
+  if (new Date().getDay() === DAY_OF_WEEK.TUESDAY) {
     finalAmount = applyDiscount({
       amount: finalAmount,
       discountRate: DISCOUNT_POLICY.WEEKLY_DISCOUNT_RATES.tuesday,
