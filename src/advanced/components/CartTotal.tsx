@@ -6,7 +6,12 @@ import {
 } from "advanced/constants";
 import { useCartContext } from "advanced/hooks/useCartContext";
 
-// 10개 이상 구매시 할인율
+/**
+ * (10개 이상 구매시) 상품별 할인율 추출
+ *
+ * @param productID  - 할인율을 구할 상품ID
+ * @returns 품목별 할인율을 반환한다.
+ */
 const getDiscountRate = (productID: string): number => {
   const discountMapByItem: Record<string, number> = {
     p1: DISCOUNT_RATES.TEN_PERCENT,
@@ -19,7 +24,13 @@ const getDiscountRate = (productID: string): number => {
   return discountMapByItem[productID] || 0;
 };
 
-// 10개 구매 할인
+/**
+ * 품목별 10개 구매시 할인 적용
+ *
+ * @param cartOriginalPrice - 장바구니에 담겨있는 상품들의 가격
+ * @param items - 10개 구매 할인을 적용할 상품의 id, qty
+ * @returns 할인율을 적용한 가격과 할인율을 반환한다.
+ */
 const applyDiscount = (
   cartOriginalPrice: number,
   items: { id: string; qty: number }[]
@@ -40,7 +51,15 @@ const applyDiscount = (
   return { discountedPrice, discountedRate };
 };
 
-// 대량 구매 할인
+/**
+ * 품목 상관없이 30개 이상 구매 시 25% 할인
+ *
+ * @param cartTotalQty -
+ * @param cartOriginalPrice -
+ * @param finalPrice -
+ * @param discountRate
+ * @returns
+ */
 const applyBulkDiscount = (
   cartTotalQty: number,
   cartOriginalPrice: number,
@@ -62,7 +81,9 @@ const applyBulkDiscount = (
   return { bulkDiscountedPrice: finalPrice, bulkDiscountedRate: discountRate };
 };
 
-// 화요일 특별 할인
+/**
+ * 화요일 특별 (추가)할인
+ */
 const applyTuesdayDiscount = (
   finalPrice: number,
   discountRate: number
@@ -80,20 +101,26 @@ const applyTuesdayDiscount = (
   };
 };
 
-export const CartTotal = () => {
-  const { cartState } = useCartContext();
-
-  const cartOriginalPrice = cartState.items.reduce(
+/**
+ * 세 가지 할인 적용 후 최종 가격 및 할인율 구하기
+ *
+ * @param list - 할인 적용할 상품이 담긴 리스트
+ * @returns 세 가지 할인 적용 후 최종 가격 및 할인율
+ */
+const applyAllDiscounts = (
+  list: { id: string; price: number; qty: number }[]
+): { finalPrice: number; discountRate: number } => {
+  const cartOriginalPrice = list.reduce(
     (acc, cur) => acc + cur.price * cur.qty,
     0
   );
 
   const { discountedPrice, discountedRate } = applyDiscount(
     cartOriginalPrice,
-    cartState.items
+    list
   );
 
-  const cartTotalQty = cartState.items.reduce((acc, cur) => acc + cur.qty, 0);
+  const cartTotalQty = list.reduce((acc, cur) => acc + cur.qty, 0);
 
   const { bulkDiscountedPrice, bulkDiscountedRate } = applyBulkDiscount(
     cartTotalQty,
@@ -109,6 +136,13 @@ export const CartTotal = () => {
 
   const discountRate = finalDiscountRate || discountedRate;
 
+  return { finalPrice, discountRate };
+};
+
+export const CartTotal = () => {
+  const { cartState } = useCartContext();
+
+  const { finalPrice, discountRate } = applyAllDiscounts(cartState.items);
   // 포인트
   const point = Math.floor(finalPrice / 1000);
 
