@@ -1,4 +1,4 @@
-import { PRODUCT_LIST } from './const/constance.js';
+import { PRODUCT_LIST } from './datas/productList.js';
 import { createCartDisplay } from './components/cartDisplay.js';
 import { createCartTotal } from './components/cartTotal.js';
 import { createProductSelector } from './components/productSelector.js';
@@ -176,7 +176,6 @@ addToCartButton.addEventListener('click', function () {
     setLastSelectedItem(selItem);
   }
 });
-
 getCartDisplay.addEventListener('click', function (event) {
   const target = event.target;
   if (

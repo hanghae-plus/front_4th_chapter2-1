@@ -1,4 +1,4 @@
-import { PRODUCT_LIST } from '../const/constance.js';
+import { PRODUCT_LIST } from '../datas/productList.js';
 import { updateProductOptions } from './updateProductOptions.js';
 import { getLastSelectedItem } from '../main.basic.js';
 

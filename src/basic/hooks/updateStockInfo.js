@@ -1,4 +1,4 @@
-import { PRODUCT_LIST } from '../const/constance.js';
+import { PRODUCT_LIST } from '../datas/productList.js';
 import { getProductStockInfo } from '../main.basic.js';
 
 export function updateStockInfo() {
