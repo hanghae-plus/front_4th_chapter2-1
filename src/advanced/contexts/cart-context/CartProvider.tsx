@@ -9,6 +9,7 @@ interface CartContextType {
   cartList: Product[];
   totalAmount: number;
   totalDiscountRate: number;
+  point: number;
   addCartItem: (item: Product) => void;
   clearCartItem: (id: string) => void;
   removeCartItem: (id: string) => void;
@@ -30,6 +31,14 @@ export const useGetTotalAmount = () => {
     throw new Error('useGetCartTotalAmount must be used within an CartProvider');
   }
   return context.totalAmount;
+};
+
+export const useGetPoint = () => {
+  const context = useContext(cartContext);
+  if (context === undefined) {
+    throw new Error('useGetPoint must be used within an CartProvider');
+  }
+  return context.point;
 };
 
 export const useGetTotalDiscountRate = () => {
@@ -67,12 +76,14 @@ export const useClearCartItem = () => {
 export const CartProvider = ({ children }: PropsWithChildren) => {
   const [cartList, setCartList] = useState<Product[]>([]);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [point, setPoint] = useState(0);
   const [totalDiscountRate, setTotalDiscountRate] = useState(0);
 
   const calculateCart = (cartList: Product[]) => {
-    const { finalAmount, finalDiscountRate } = calculateCartPrice(cartList);
+    const { finalAmount, finalDiscountRate, point } = calculateCartPrice(cartList);
     setTotalAmount(finalAmount);
     setTotalDiscountRate(finalDiscountRate);
+    setPoint(point);
   };
 
   const clearCartItem = useCallback(
@@ -143,8 +154,9 @@ export const CartProvider = ({ children }: PropsWithChildren) => {
       totalAmount,
       totalDiscountRate,
       cartList,
+      point,
     };
-  }, [addCartItem, clearCartItem, removeCartItem, totalAmount, totalDiscountRate, cartList]);
+  }, [addCartItem, clearCartItem, removeCartItem, totalAmount, totalDiscountRate, cartList, point]);
 
   return <cartContext.Provider value={contextValue}>{children}</cartContext.Provider>;
 };

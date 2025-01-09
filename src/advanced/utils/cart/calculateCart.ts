@@ -28,9 +28,9 @@ export const calculateCartPrice = (cartList: Product[]) => {
   // updateStockInfo();
 
   // 보너스 함수 호출
-  // renderBonusPts();
+  const point = getBonusPoint(finalAmount);
 
-  return { finalAmount, finalDiscountRate };
+  return { finalAmount, finalDiscountRate, point };
 };
 
 const calculateCartTotals = (cartList: Product[]) => {
@@ -105,4 +105,10 @@ function applyTuesdayDiscount(total: ReturnType<typeof calculateBulkDiscount>) {
     finalAmount: (finalDiscountedAmount *= 1 - 0.1),
     finalDiscountRate: (discountRate = Math.max(discountRate, 0.1)),
   };
+}
+
+function getBonusPoint(amount: number) {
+  const bonusPoint = Math.floor(amount / 1000);
+
+  return bonusPoint;
 }
