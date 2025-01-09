@@ -137,6 +137,7 @@ function calcCart(cartState, productStore) {
     currentItemCount += quantity;
     subTot += itemTotal;
 
+    // 개별 상품 할인 계산
     if (quantity >= 10) {
       discount = DISCOUNTS.PRODUCT_SPECIFIC[curItem.id] || 0;
     }
@@ -145,6 +146,7 @@ function calcCart(cartState, productStore) {
 
   let discountRate = 0;
 
+  // 대량 구매 할인 계산
   if (currentItemCount >= 30) {
     let bulkDiscount = currentTotal * DISCOUNTS.BULK;
     let itemDiscount = subTot - currentTotal;
@@ -158,11 +160,13 @@ function calcCart(cartState, productStore) {
     discountRate = (subTot - currentTotal) / subTot || 0;
   }
 
+  // 화요일 할인 계산
   if (new Date().getDay() === 2) {
     currentTotal *= 1 - DISCOUNTS.TUESDAY;
     discountRate = Math.max(discountRate, DISCOUNTS.TUESDAY);
   }
 
+  // 포인트 계산 로직
   cartState.set({
     totalAmount: currentTotal,
     itemCount: currentItemCount,
@@ -217,6 +221,8 @@ function setupEventListeners(cartState, productStore) {
       let item = document.getElementById(itemToAdd.id);
       if (item) {
         let newQty = parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
+
+        // 재고 확인
         if (newQty <= itemToAdd.quantity) {
           item.querySelector('span').textContent =
             itemToAdd.name + ' - ' + itemToAdd.price + '원 x ' + newQty;
@@ -255,6 +261,7 @@ function setupEventListeners(cartState, productStore) {
         itemToAdd.quantity--;
       }
 
+      // 재고 업데이트
       cartState.set({ lastSelectedProductId: selItem });
       calcCart(cartState, productStore);
     }
@@ -307,6 +314,7 @@ function main() {
   ]);
 
   const cartState = createCartState();
+  const discountService = createDiscountService();
 
   updateSelOpts(productStore);
 
