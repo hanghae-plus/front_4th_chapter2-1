@@ -1,7 +1,7 @@
 import { cartStore } from '@/stores/cartStore';
 import { createElement } from '@/utils/createElement';
 
-import { calcCart } from '@utils/calcCart';
+import { calcCart } from '@hooks/calcCart';
 
 const AddToCartButton = (): HTMLButtonElement => {
   const addToCartButton = createElement(

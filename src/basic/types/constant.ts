@@ -5,3 +5,5 @@ export const DISCOUNT_RATES: { [key: string]: number } = {
   p4: 0.05,
   p5: 0.25,
 };
+
+export const SALE_DAY = 2;
