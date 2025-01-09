@@ -71,9 +71,9 @@ export const applyTuesdayDiscount = (amount, currentRate) => {
   if (isTuesday()) {
     const tuesdayDiscountedAmount = amount * (1 - DISCOUNT_RATE.TUESDAY);
     const newRate = Math.max(currentRate, DISCOUNT_RATE.TUESDAY);
-    return { amount: tuesdayDiscountedAmount, discountRate: newRate };
+    return { totalAmount: tuesdayDiscountedAmount, discountRate: newRate };
   }
-  return { amount, discountRate: currentRate };
+  return { totalAmount: amount, discountRate: currentRate };
 };
 
 // 장바구니에 있는 데이터 기반으로 총액 계산
@@ -96,5 +96,5 @@ export const calculateCart = ({ cartDisplayComponent, prodList }) => {
   // 화요일 할인 적용
   const { amount, discountRate } = applyTuesdayDiscount(bulkDiscountedAmount, bulkDiscountRate);
 
-  return { amount, discountRate };
+  return { totalAmount, discountRate };
 };
