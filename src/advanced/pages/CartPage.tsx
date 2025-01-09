@@ -3,14 +3,14 @@ import { useState } from 'react';
 import { CartItems } from '../components/CartItems';
 import { Layout } from '../layout/Layout';
 
-export interface Product {
+export interface ProductType {
   id: string;
   name: string;
   price: number;
   stock: number;
 }
 
-export interface CartItem {
+export interface CartItemType {
   id: string;
   name: string;
   price: number;
@@ -18,7 +18,7 @@ export interface CartItem {
 }
 
 export const CartPage = () => {
-  const [productList, setProductList] = useState<Product[]>([
+  const [productList, setProductList] = useState<ProductType[]>([
     { id: 'p1', name: '상품1', price: 10000, stock: 50 },
     { id: 'p2', name: '상품2', price: 20000, stock: 30 },
     { id: 'p3', name: '상품3', price: 30000, stock: 20 },
@@ -26,7 +26,7 @@ export const CartPage = () => {
     { id: 'p5', name: '상품5', price: 25000, stock: 10 },
   ]);
 
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
 
   return (
     <Layout title='장바구니'>
