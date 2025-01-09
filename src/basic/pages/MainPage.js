@@ -1,7 +1,7 @@
 export default function MainPage() {
   return `
       <div id="cont" class="bg-gray-100 p-8">
-        <div id="wrap class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
+        <div id="wrap" class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
           <h1 class="text-2xl font-bold mb-4">장바구니</h1>
           <div id="cart-items"></div>
           <div id="cart-total" class="text-xl font-bold my-4"></div>
