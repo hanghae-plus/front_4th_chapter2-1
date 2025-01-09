@@ -1,5 +1,6 @@
 import { useState } from 'react';
 
+import CartItem from './components/CartItem';
 import CartTotal from './components/CartTotal';
 import ProductSelect from './components/ProductSelect';
 import { products as initialProducts } from './data/products';
@@ -44,6 +45,10 @@ const App = () => {
     });
   };
 
+  const handleRemoveItem = (productId: string) => {
+    setCartItems((prevItems) => prevItems.filter((item) => item.id !== productId));
+  };
+
   const handleProductSelect = (productId: string) => {
     setSelectedProductId(productId);
   };
@@ -54,7 +59,17 @@ const App = () => {
     <div className="bg-gray-100 p-8">
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
         <h1 className="text-2xl font-bold mb-4">장바구니</h1>
-        <div id="${ELEMENT_IDS.CART_ITEMS}"></div>
+        <div id="${ELEMENT_IDS.CART_ITEMS}">
+          {cartItems.map((item) => (
+            <CartItem
+              key={item.id}
+              cart={item}
+              onIncrease={() => handleQuantityChange(item.id, 1)}
+              onDecrease={() => handleQuantityChange(item.id, -1)}
+              onRemove={() => handleRemoveItem(item.id)}
+            />
+          ))}
+        </div>
         <div id="${ELEMENT_IDS.CART_TOTAL}" className="text-xl font-bold my-4">
           <CartTotal amount={amount} discountRate={discountRate} point={point} />
         </div>

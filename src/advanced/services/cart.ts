@@ -24,11 +24,6 @@ export const handleIncreaseQuantity = (productId, productModel) => {
   updateCartItem(productId, cartStore.getCartItemByProductId(productId));
 };
 
-export const handleRemoveItem = (productId) => {
-  getProductItemElement(productId)?.remove();
-  cartStore.deleteCartItem(productId);
-};
-
 export const canIncreaseQuantity = ({ product, cartItem }: { product: Product; cartItem?: Cart }) =>
   product.quantity > (cartItem?.quantity || 0);
 
