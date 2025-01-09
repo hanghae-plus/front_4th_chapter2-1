@@ -1,5 +1,5 @@
 // 요일
-export const WEEKDAY = {
+export const WEEKDAY = Object.freeze({
   SUNDAY: 0,
   MONDAY: 1,
   TUESDAY: 2,
@@ -7,4 +7,4 @@ export const WEEKDAY = {
   THURSDAY: 4,
   FRIDAY: 5,
   SATURDAY: 6,
-};
+});
