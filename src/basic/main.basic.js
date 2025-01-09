@@ -72,7 +72,7 @@ function updateSelOpts() {
     var opt = document.createElement("option");
     opt.value = item.id;
     opt.textContent = item.name + " - " + item.cost + "원";
-    if (item.q === 0) opt.disabled = true;
+    if (item.stock === 0) opt.disabled = true;
     sel.appendChild(opt);
   });
 }
@@ -184,7 +184,7 @@ addBtn.addEventListener("click", function () {
         "<span>" +
         itemToAdd.name +
         " - " +
-        itemToAdd.val +
+        itemToAdd.cost +
         "원 x 1</span><div>" +
         '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
         itemToAdd.id +
@@ -196,7 +196,7 @@ addBtn.addEventListener("click", function () {
         itemToAdd.id +
         '">삭제</button></div>';
       cartDisp.appendChild(newItem);
-      itemToAdd.q--;
+      itemToAdd.stock--;
     }
     calcCart();
     lastSel = selItem;
@@ -221,17 +221,17 @@ cartDisp.addEventListener("click", function (event) {
       if (
         newQty > 0 &&
         newQty <=
-          prod.q +
+          prod.stock +
             parseInt(itemElem.querySelector("span").textContent.split("x ")[1])
       ) {
         itemElem.querySelector("span").textContent =
           itemElem.querySelector("span").textContent.split("x ")[0] +
           "x " +
           newQty;
-        prod.q -= qtyChange;
+        prod.stock -= qtyChange;
       } else if (newQty <= 0) {
         itemElem.remove();
-        prod.q -= qtyChange;
+        prod.stock -= qtyChange;
       } else {
         alert("재고가 부족합니다.");
       }
@@ -239,7 +239,7 @@ cartDisp.addEventListener("click", function (event) {
       var remQty = parseInt(
         itemElem.querySelector("span").textContent.split("x ")[1]
       );
-      prod.q += remQty;
+      prod.stock += remQty;
       itemElem.remove();
     }
     calcCart();
