@@ -1,10 +1,11 @@
 import { Product } from '../type/type';
 
 export const CartItem = ({ addedItem }: { addedItem: Product }) => {
+  console.log(addedItem);
   return (
     <div id='cart-item' className='flex justify-between items-center mb-2'>
       <span>
-        {addedItem.name} - {addedItem.price}원 x 1
+        {addedItem.name} - {addedItem.price}원 x {addedItem.quantity}
       </span>
 
       <div className='flex items-center'>

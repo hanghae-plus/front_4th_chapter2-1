@@ -4,15 +4,18 @@ import { Product } from '../type/type';
 export const AddToCartButton = ({
   products,
   selectedProduct,
+
   setCartItems,
   setProducts,
 }: {
   products: Product[];
   selectedProduct: Product | null;
+
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
   setCartItems: React.Dispatch<React.SetStateAction<Product[]>>;
 }) => {
   const product = products.find((p) => p.id === selectedProduct?.id);
+
   const handleAddToCart = () => {
     if (!product || !selectedProduct) return;
     if (product.quantity <= 0) {
@@ -21,12 +24,14 @@ export const AddToCartButton = ({
     }
     if (product.quantity > 0) {
       setCartItems((prev) => {
-        if (prev.some((p) => p.id === selectedProduct.id)) {
+        //장바구니에 이미 상품이 있는 경우
+        const cartItem = prev.find((p) => p.id === selectedProduct.id);
+        if (cartItem) {
           return prev.map((p) =>
-            p.id === selectedProduct.id ? { ...p, quantity: p.quantity + 1 } : p,
+            p.id === selectedProduct.id ? { ...p, quantity: cartItem.quantity + 1 } : p,
           );
         }
-        return [...prev, selectedProduct];
+        return [...prev, { ...selectedProduct, quantity: 1 }];
       });
       setProducts((prev) =>
         prev.map((p) => (p.id === selectedProduct.id ? { ...p, quantity: p.quantity - 1 } : p)),

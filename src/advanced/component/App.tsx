@@ -1,4 +1,3 @@
-import React from 'react';
 import { CartItem } from './CartItem';
 import { ProductSelector } from './ProductSelector';
 import { AddToCartButton } from './AddToCartButton';
@@ -27,8 +26,8 @@ export const App = () => {
           />
           <LowStockWarning products={products} />
           <div id='cart-items'>
-            {cartItems.map((product) => (
-              <CartItem addedItem={product} />
+            {cartItems.map((addedItem) => (
+              <CartItem addedItem={addedItem} key={addedItem.id} />
             ))}
           </div>
           <OrderSummary cartItems={cartItems} />
