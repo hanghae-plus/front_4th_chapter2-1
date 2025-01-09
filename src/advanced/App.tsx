@@ -1,7 +1,7 @@
 import { Cart } from './components/cart/Cart';
 import { ProductSelector } from './components/product-selector/ProductSelector';
 import { StockInfo } from './components/stock-info/StockInfo';
-import { TotalPrice } from './components/total-price/TotalPrice';
+import { TotalCartPrice } from './components/total-cart-price/TotalCartPrice';
 import { CartProvider } from './contexts/cart-context/CartProvider';
 import { ProductProvider } from './contexts/product-context/ProductProvider';
 
@@ -12,7 +12,7 @@ const App = () => {
         <ProductProvider>
           <CartProvider>
             <Cart />
-            <TotalPrice />
+            <TotalCartPrice />
             <ProductSelector />
             <StockInfo />
           </CartProvider>
