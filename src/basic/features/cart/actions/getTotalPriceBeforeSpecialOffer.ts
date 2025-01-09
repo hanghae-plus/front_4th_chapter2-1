@@ -5,7 +5,6 @@ import { Product } from '../../../shared/entity/model/Product';
 const getTotalPriceBeforeSpecialOffer = (
   cartItems: HTMLDivElement[],
   productList: Product[],
-  totalItemCount: number,
 ): {
   totalPrice: number;
   totalItemCount: number;
@@ -13,6 +12,7 @@ const getTotalPriceBeforeSpecialOffer = (
 } => {
   let totalPrice = 0;
   let subTotalPrice = 0;
+  let totalItemCount = 0;
   for (let i = 0; i < cartItems.length; i++) {
     (function () {
       const currentItem = productList.find(

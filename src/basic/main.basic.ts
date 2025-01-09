@@ -6,15 +6,13 @@ import ProductOption from './features/product/views/ProductOption';
 import { productList } from './shared/entity/data/productList';
 
 let SelectView, AddToCartButton, CartItemsView, TotalCostView, StockInfoView;
-let lastSelectedItemValue,
-  bonusPoints = 0,
-  totalAmount = 0,
-  itemCount = 0;
+let bonusPoints = 0;
 function main() {
   const Root = document.getElementById('app');
   const Container = document.createElement('div');
   const Wrapper = document.createElement('div');
-  const LargeHeading = document.createElement('h1');
+  const LargeHeading = () =>
+    `<h1 class="text-2xl font-bold mb-4">장바구니</h1>`;
   CartItemsView = document.createElement('div');
   TotalCostView = document.createElement('div');
   SelectView = document.createElement('select');
@@ -28,15 +26,13 @@ function main() {
   Container.className = 'bg-gray-100 p-8';
   Wrapper.className =
     'max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8';
-  LargeHeading.className = 'text-2xl font-bold mb-4';
   TotalCostView.className = 'text-xl font-bold my-4';
   SelectView.className = 'border rounded p-2 mr-2';
   AddToCartButton.className = 'bg-blue-500 text-white px-4 py-2 rounded';
   StockInfoView.className = 'text-sm text-gray-500 mt-2';
-  LargeHeading.textContent = '장바구니';
   AddToCartButton.textContent = '추가';
   updateSelectedOptions();
-  Wrapper.appendChild(LargeHeading);
+  Wrapper.innerHTML = LargeHeading();
   Wrapper.appendChild(CartItemsView);
   Wrapper.appendChild(TotalCostView);
   Wrapper.appendChild(SelectView);
@@ -59,31 +55,30 @@ function updateSelectedOptions() {
   SelectView.innerHTML = Options;
 }
 function calculateCartItems() {
-  totalAmount = 0;
-  itemCount = 0;
+  let finalPrice = 0;
   const cartItems = CartItemsView.children as unknown as HTMLDivElement[];
   const { subTotalPrice, totalItemCount, totalPrice } =
-    getTotalPriceBeforeSpecialOffer(cartItems, productList, itemCount);
-  totalAmount = totalPrice;
-  itemCount = totalItemCount;
+    getTotalPriceBeforeSpecialOffer(cartItems, productList);
+
+  finalPrice = totalPrice;
   let discountRate = 0;
-  if (itemCount >= 30) {
-    const bulkDiscount = totalAmount * 0.25;
-    const itemDiscount = subTotalPrice - totalAmount;
+  if (totalItemCount >= 30) {
+    const bulkDiscount = totalPrice * 0.25;
+    const itemDiscount = subTotalPrice - totalPrice;
     if (bulkDiscount > itemDiscount) {
-      totalAmount = subTotalPrice * (1 - 0.25);
+      finalPrice = subTotalPrice * (1 - 0.25);
       discountRate = 0.25;
     } else {
-      discountRate = (subTotalPrice - totalAmount) / subTotalPrice;
+      discountRate = (subTotalPrice - finalPrice) / subTotalPrice;
     }
   } else {
-    discountRate = (subTotalPrice - totalAmount) / subTotalPrice;
+    discountRate = (subTotalPrice - finalPrice) / subTotalPrice;
   }
   if (new Date().getDay() === 2) {
-    totalAmount *= 1 - 0.1;
+    finalPrice *= 1 - 0.1;
     discountRate = Math.max(discountRate, 0.1);
   }
-  TotalCostView.textContent = '총액: ' + Math.round(totalAmount) + '원';
+  TotalCostView.textContent = '총액: ' + Math.round(finalPrice) + '원';
   if (discountRate > 0) {
     const DiscountText = document.createElement('span');
     DiscountText.className = 'text-green-500 ml-2';
@@ -92,10 +87,10 @@ function calculateCartItems() {
     TotalCostView.appendChild(DiscountText);
   }
   StockInfoView.textContent = getStockInfo(productList);
-  renderBonusPoints();
+  renderBonusPoints(finalPrice);
 }
-const renderBonusPoints = () => {
-  bonusPoints = Math.floor(totalAmount / 1000);
+const renderBonusPoints = (finalPrice: number) => {
+  bonusPoints = Math.floor(finalPrice / 1000);
   let PointsTag = document.getElementById('loyalty-points');
   if (!PointsTag) {
     PointsTag = document.createElement('span');
