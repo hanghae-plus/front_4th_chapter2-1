@@ -4,6 +4,14 @@ export const AddToCart = () => {
   element.className = "bg-blue-500 text-white px-4 py-2 rounded";
   element.textContent = "추가";
 
+  const render = (parentElement) => {
+    const element = document.createElement("button");
+    element.id = "add-to-cart";
+    element.className = "bg-blue-500 text-white px-4 py-2 rounded";
+    element.textContent = "추가";
+    parentElement.appendChild(element);
+  };
+
   const onClick = (handler) => {
     const reference = (event) => handler(event);
 
@@ -15,5 +23,6 @@ export const AddToCart = () => {
   return {
     element,
     onClick,
+    render,
   };
 };

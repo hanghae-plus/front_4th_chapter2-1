@@ -5,22 +5,28 @@ import { CartTotal } from "./components/CartTotal";
 import { Content } from "./components/Content";
 import { DiscountRate } from "./components/DiscountRate";
 import { Heading } from "./components/Heading";
-import { NewCartItem } from "./components/NewCartItem";
 import { ProductOption } from "./components/ProductOption";
 import { ProductSelect } from "./components/ProductSelect";
 import { StockStatus } from "./components/StockStatus";
 import { Wrap } from "./components/Wrap";
 import { PRODUCTS } from "./constant/products";
 import Cart from "./domain/cart/Cart";
-import CartItem from "./domain/cart/cart-item";
 import Item from "./domain/item/item";
 import { startCommercialSale } from "./domain/sale/commercial-sale";
 import { startLuckySale } from "./domain/sale/lucky-sale";
 import Stock from "./domain/stock/stock";
+import { handleExistingCartItem, handleNewCartItem, isItemAvailable } from "./events-utils/add-button";
+import {
+  handleQuantityChange,
+  handleRemoveAction,
+  isCartAction,
+  isQuantityChangeAction,
+  isRemoveAction,
+} from "./events-utils/cart-item-display";
 
 // ! 나름의 그라데이션 사고, 데이터, 추상화적 사고 적용
-// ! 근데 ui 는 어떻게 추상화 + 흐름을 가져가야할지 모르겠다!
-// ! 이대로 괜찮은가?
+// ! 근데 ui 는 어떻게 추상화 + 흐름을 가져가야할지 모르겠다! => 조사해보니 MVC 등장 이유를 알겠다.. 근데 이 코드에 어떻게 적용할지는 모르겠다. ui 쪽은 좀 더 생각해보고 구현할 걸...
+// ! 통일성 부족..
 
 // 유저가 셀렉트에서 아이템을 선택해 추가한다 -> 총액을 표시한다. 상품수를 표시한다. 포인트를 표시한다.
 // 유저가 +,-, 삭제 버튼을 누른다. -> 총액을 표시한다. 상품 수를 표시한다. 포인트를 표시한다.
@@ -31,76 +37,20 @@ import Stock from "./domain/stock/stock";
 // 어디서부터 손대야 할지 모르겟음... => 일단 침착하고 용감하게, 가장 거슬리면서도 가장 바꾸기 쉬운 것부터 리팩토링하니까 길이 보이더라..
 // 변수 이름도 좀 더 통일성을 가져야함
 
-// * 필요한 변수 선언 (전역으로...;;;;;)
-let select, addButton, cartItemDisplay, sum, stock;
-let lastSelectedProduct;
-
-const cartItems = new Cart(); // 현재 장바구니에 담은 아이템의 정보를 담을 배열
-const stockItems = new Stock(PRODUCTS.map((p) => new Item({ ...p })));
-
 function main() {
-  // 필요한 ui 만들기
-  render();
-  calculateCart();
+  let lastSelectedProduct;
+  const cartItems = new Cart();
+  const stockItems = new Stock(PRODUCTS.map((p) => new Item({ ...p })));
 
-  startLuckySale(stockItems.items, updateProductOption);
-  startCommercialSale(stockItems.items, lastSelectedProduct, updateProductOption);
-
-  // 추가 버튼에 이벤트 리스너 연결
-  addButton.onClick(() => {
-    const selectedItem = select.getValue();
-    const itemToAdd = stockItems.findById(selectedItem);
-
-    if (isItemAvailable(itemToAdd)) {
-      const cartItem = cartItems.findById(itemToAdd.id);
-      const itemElement = cartItemDisplay.findChildById(itemToAdd.id);
-
-      if (cartItem) {
-        handleExistingCartItem(cartItem, itemToAdd, itemElement);
-      } else {
-        handleNewCartItem(itemToAdd);
-      }
-
-      updateCart();
-      lastSelectedProduct = selectedItem;
-    }
-  });
-
-  // 상품 +,-,삭제 버튼에 이벤트 리스너 연결
-  cartItemDisplay.onClick((event) => {
-    const target = event.target;
-
-    if (isCartAction(target)) {
-      const productId = target.dataset.productId;
-      const itemElement = cartItemDisplay.findChildById(productId);
-      const product = stockItems.findById(productId);
-      const cartItem = cartItems.findById(productId);
-
-      if (isQuantityChangeAction(target)) {
-        handleQuantityChange(target, product, cartItem, itemElement);
-      } else if (isRemoveAction(target)) {
-        handleRemoveAction(product, cartItem, itemElement);
-      }
-
-      // Update the cart after any action
-      calculateCart();
-    }
-  });
-}
-
-// ! 이렇게 컴포넌트를 렌더링하는 건 렌더하는 측에서만 신경썼으면..
-function render() {
-  // ! ui를 좀 더 잘 구현하는 방법...
   const root = document.getElementById("app");
-
   const content = Content();
   const wrap = Wrap();
   const heading = Heading();
-  cartItemDisplay = CartItems();
-  sum = CartTotal();
-  select = ProductSelect(stockItems.items);
-  addButton = AddToCart();
-  stock = StockStatus();
+  const cartItemDisplay = CartItems();
+  const sum = CartTotal();
+  const select = ProductSelect(stockItems.items);
+  const addButton = AddToCart();
+  const stock = StockStatus();
 
   updateProductOption();
 
@@ -114,112 +64,70 @@ function render() {
   content.appendChild(wrap);
 
   root.appendChild(content.element);
-}
 
-function updateProductOption() {
-  select.handleUpdateProductOption(stockItems.items, ProductOption);
-}
+  addButton.onClick(handleClickAddButton);
+  cartItemDisplay.onClick(handleClickCartItemDisplay);
 
-// 총액 + 할인율 계산해서 표시하는 함수
-function calculateCart() {
-  // 총액 및 할인율 최종 표시
-  sum.handleChangeTextContent("총액: " + Math.round(cartItems.totalAmount) + "원");
-  if (cartItems.discountRate > 0) {
-    sum.appendChild(DiscountRate(cartItems.discountRate));
+  updateCartSummary();
+  updateStockInfoMessage();
+  startLuckySale(stockItems.items, updateProductOption);
+  startCommercialSale(stockItems.items, lastSelectedProduct, updateProductOption);
+
+  function handleClickAddButton() {
+    const selectedItem = select.getValue();
+    const itemToAdd = stockItems.findById(selectedItem);
+
+    if (isItemAvailable(itemToAdd)) {
+      const cartItem = cartItems.findById(itemToAdd.id);
+      const itemElement = cartItemDisplay.findChildById(itemToAdd.id);
+
+      if (cartItem) {
+        handleExistingCartItem(cartItem, itemToAdd, itemElement);
+      } else {
+        handleNewCartItem(itemToAdd, cartItemDisplay, cartItems);
+      }
+
+      updateCartSummary();
+      updateStockInfoMessage();
+      lastSelectedProduct = selectedItem;
+    }
   }
-  stock.handleChangeTextContent(stockItems.generateStockInfoMessage());
-  sum.appendChild(BonusPoints(cartItems.bonusPoints));
+
+  function handleClickCartItemDisplay(event) {
+    const target = event.target;
+
+    if (isCartAction(target)) {
+      const productId = target.dataset.productId;
+      const itemElement = cartItemDisplay.findChildById(productId);
+      const product = stockItems.findById(productId);
+      const cartItem = cartItems.findById(productId);
+
+      if (isQuantityChangeAction(target)) {
+        handleQuantityChange(target, product, cartItem, itemElement);
+      } else if (isRemoveAction(target)) {
+        handleRemoveAction(product, cartItem, itemElement, cartItems);
+      }
+
+      updateCartSummary();
+      updateStockInfoMessage();
+    }
+  }
+
+  function updateProductOption() {
+    select.handleUpdateProductOption(stockItems.items, ProductOption);
+  }
+
+  function updateCartSummary() {
+    sum.handleChangeTextContent("총액: " + Math.round(cartItems.totalAmount) + "원");
+    if (cartItems.discountRate > 0) {
+      sum.appendChild(DiscountRate(cartItems.discountRate));
+    }
+    sum.appendChild(BonusPoints(cartItems.bonusPoints));
+  }
+
+  function updateStockInfoMessage() {
+    stock.handleChangeTextContent(stockItems.generateStockInfoMessage());
+  }
 }
 
 main();
-
-// Helper Functions
-function isItemAvailable(item) {
-  if (!item || item.quantity <= 0) {
-    alert("선택한 상품이 없거나 재고가 없습니다.");
-    return false;
-  }
-  return true;
-}
-
-function handleExistingCartItem(cartItem, itemToAdd, itemElement) {
-  const newQuantity = cartItem.quantity + 1;
-
-  if (newQuantity <= itemToAdd.quantity) {
-    itemToAdd.decreaseQuantity();
-    cartItem.increaseQuantity();
-    updateCartItemElement(itemElement, itemToAdd, newQuantity);
-  } else {
-    alert("재고가 부족합니다.");
-  }
-}
-
-function handleNewCartItem(itemToAdd) {
-  const newItemElement = createNewCartItemElement(itemToAdd);
-  cartItemDisplay.appendChild(newItemElement);
-  itemToAdd.decreaseQuantity();
-  cartItems.push(
-    new CartItem({
-      id: itemToAdd.id,
-      quantity: 1,
-      value: itemToAdd.value,
-      name: itemToAdd.name,
-    }),
-  );
-}
-
-function updateCartItemElement(itemElement, itemToAdd, quantity) {
-  itemElement.handleChangeSpanTextContent(`${itemToAdd.name} - ${itemToAdd.value}원 x ${quantity}`);
-}
-
-function createNewCartItemElement(itemToAdd) {
-  return NewCartItem(itemToAdd); // 필요한 경우 NewCartItem의 내부를 확인해 개선 가능
-}
-
-function updateCart() {
-  calculateCart();
-}
-
-// Helper functions
-function isCartAction(target) {
-  return target.classList.contains("quantity-change") || target.classList.contains("remove-item");
-}
-
-function isQuantityChangeAction(target) {
-  return target.classList.contains("quantity-change");
-}
-
-function isRemoveAction(target) {
-  return target.classList.contains("remove-item");
-}
-
-function handleQuantityChange(target, product, cartItem, itemElement) {
-  const quantityChange = parseInt(target.dataset.change, 10);
-  const newQuantity = cartItem.quantity + quantityChange;
-
-  if (newQuantity > 0 && newQuantity <= product.quantity + cartItem.quantity) {
-    updateItemElement(itemElement, cartItem, newQuantity);
-    product.decreaseQuantity(quantityChange);
-    cartItem.increaseQuantity(quantityChange);
-  } else if (newQuantity <= 0) {
-    removeItemElement(itemElement, product, cartItem, quantityChange);
-  } else {
-    alert("재고가 부족합니다.");
-  }
-}
-
-function handleRemoveAction(product, cartItem, itemElement) {
-  product.increaseQuantity(cartItem.quantity);
-  itemElement.remove();
-  cartItems.removeItem(cartItem);
-}
-
-function updateItemElement(itemElement, cartItem, newQuantity) {
-  itemElement.handleChangeSpanTextContent(`상품${cartItem.id[1]} - ${cartItem.value}원 x ${newQuantity}`);
-}
-
-function removeItemElement(itemElement, product, cartItem, quantityChange) {
-  itemElement.remove();
-  product.decreaseQuantity(quantityChange);
-  cartItem.increaseQuantity(quantityChange);
-}
