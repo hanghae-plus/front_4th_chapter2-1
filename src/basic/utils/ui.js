@@ -37,7 +37,7 @@ export const updateStockInfoDisplay = ({ StockInfoComponent, prodList }) => {
 export const updateBonusPointsDisplay = ({ totalAmountComponent, totalAmount }) => {
   const bonusPoints = Math.floor(totalAmount / 1000);
 
-  const loyaltyPointsComponent = totalAmountComponent.get('children').find(child => child.id === 'loyalty-points');
+  let loyaltyPointsComponent = totalAmountComponent.get('children').find(child => child.id === 'loyalty-points');
 
   if (!loyaltyPointsComponent) {
     loyaltyPointsComponent = html`<span id="loyalty-points" class="text-blue-500 ml-2"></span>`;
