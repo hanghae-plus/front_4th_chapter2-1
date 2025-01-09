@@ -24,7 +24,7 @@ export default function CartPage() {
       return;
     }
 
-    // Add product to cart
+    // 장바구니에 상품 추가
     setCartItems((prev) => {
       const existingItem = prev.find((item) => item.product.id === productId);
       if (existingItem) {
@@ -37,7 +37,7 @@ export default function CartPage() {
       return [...prev, { product, quantity: 1 }];
     });
 
-    // Decrease product stock
+    // 재고 수량 업데이트
     setProducts((prev) =>
       prev.map((p) =>
         p.id === productId ? { ...p, quantity: p.quantity - 1 } : p
@@ -45,6 +45,7 @@ export default function CartPage() {
     );
   };
 
+  // 수량 변경
   const handleChangeQuantity = (productId: string, change: number) => {
     setCartItems((prev) =>
       prev
@@ -56,6 +57,7 @@ export default function CartPage() {
         .filter((item) => item.quantity > 0)
     );
 
+    // 재고 수량 업데이트
     setProducts((prev) =>
       prev.map((p) =>
         p.id === productId
@@ -65,6 +67,7 @@ export default function CartPage() {
     );
   };
 
+    // 상품 삭제
   const handleRemoveItem = (productId: string) => {
     const removedItem = cartItems.find((item) => item.product.id === productId);
     if (removedItem) {
