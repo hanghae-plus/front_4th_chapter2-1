@@ -1,9 +1,14 @@
+import { useCart } from '../stores/CartContext';
+
 import type { Product } from '../types/product.type';
 
-export const CartProductList = ({ cartItems }: { cartItems: Product[] }) => {
+export const CartProductList = () => {
+  const { state } = useCart();
+  const { items } = state;
+
   return (
     <div id="cart-items">
-      {cartItems.map((product) => (
+      {items.map((product) => (
         <CartProduct key={product.id} product={product} />
       ))}
     </div>
