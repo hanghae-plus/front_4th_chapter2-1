@@ -5,11 +5,8 @@
     "jsx": "react-jsx",
     "rootDir": "./",
     "module": "es2015", // module이 node에서 동작해야하는 경우(CommonJS인 경우)에는 moduleResolution의 값은 "node"로 자동 추론된다.
+    "moduleResolution": "bundler", // 모듈 해석 방식을 지정하는 옵션
     "baseUrl": "./",
-    "paths": {
-      // paths alias관련 설정은 아래에 작성
-      "@components/*": ["src/components/*"]
-    },
     "outDir": "./build",
     "esModuleInterop": true, // CommonJS와 ES 모듈 간의 상호운용성을 위한 설정
     "forceConsistentCasingInFileNames": true, // 대소문자 구분
@@ -37,6 +34,6 @@
     "noFallthroughCasesInSwitch": true, // Switch문이 이상하면 에러
     "skipLibCheck": true // 타입 체킹을 스킵
   },
-  "include": ["src/**/*"],
+  "include": ["src/advanced/**/*", "tsconfig.json"],
   "exclude": ["node_modules"]
 }
