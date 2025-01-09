@@ -28,5 +28,23 @@ export const NewCartItem = (itemToAdd) => {
   </div>
 `;
 
-  return element;
+  const handleChangeTextContent = (textContent) => {
+    element.textContent = textContent;
+  };
+
+  const handleChangeSpanTextContent = (textContent) => {
+    element.querySelector("span").textContent = textContent;
+  };
+
+  const remove = () => {
+    element.remove();
+  };
+
+  return {
+    id: itemToAdd.id,
+    element,
+    handleChangeTextContent,
+    handleChangeSpanTextContent,
+    remove,
+  };
 };

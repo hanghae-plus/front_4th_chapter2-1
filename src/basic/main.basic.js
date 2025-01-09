@@ -27,11 +27,11 @@ import Stock from "./domain/stock/stock";
 // 이벤트 타임이다 -> 상품의 가격이 변동된다.
 // 상태에 따라서 ui 표시 -> 유저 이벤트 감지 -> 상태 변경 -> ui에 반영
 // 상태: 장바구니에 담긴 아이템(수), 총액(할인율, 포인트) => 장바구니에 담긴 아이템의 종류와 수만 필요하지 않을까?
-// 여기저기서 꼬인 느낌... 하나의 책임을 하지 못함
+// 여기저기서 꼬인 느낌... 하나의 책임을 하지 못함 => 건드렸다가 와장창 무너지는 건 일단 맨 나중에 리팩토링..
 // 어디서부터 손대야 할지 모르겟음... => 일단 침착하고 용감하게, 가장 거슬리면서도 가장 바꾸기 쉬운 것부터 리팩토링하니까 길이 보이더라..
 // 변수 이름도 좀 더 통일성을 가져야함
 
-// * 필요한 변수 선언 (전역으로...)
+// * 필요한 변수 선언 (전역으로...;;;;;)
 let select, addButton, cartItemDisplay, sum, stock;
 let lastSelectedProduct;
 
@@ -44,11 +44,12 @@ function main() {
 
   calculateCart();
 
-  startLuckySale(PRODUCTS, updateProductOption);
+  startLuckySale(stockItems.items, updateProductOption);
 
-  startCommercialSale(PRODUCTS, lastSelectedProduct, updateProductOption);
+  startCommercialSale(stockItems.items, lastSelectedProduct, updateProductOption);
 }
 
+// ! 이렇게 컴포넌트를 렌더링하는 건 렌더하는 측에서만 신경썼으면..
 function render() {
   // ! ui를 좀 더 잘 구현하는 방법...
   const root = document.getElementById("app");
@@ -73,13 +74,13 @@ function render() {
 
   content.appendChild(wrap);
 
-  root.appendChild(content);
+  root.appendChild(content.element);
 }
 
 function updateProductOption() {
-  select.innerHTML = ``;
+  select.reset();
 
-  PRODUCTS.forEach((item) => {
+  stockItems.items.forEach((item) => {
     const option = ProductOption({ item });
     select.appendChild(option);
   });
@@ -88,7 +89,7 @@ function updateProductOption() {
 // 총액 + 할인율 계산해서 표시하는 함수
 function calculateCart() {
   // 총액 및 할인율 최종 표시
-  sum.textContent = "총액: " + Math.round(cartItems.totalAmount) + "원";
+  sum.handleChangeTextContent("총액: " + Math.round(cartItems.totalAmount) + "원");
   if (cartItems.discountRate > 0) {
     sum.appendChild(DiscountRate(cartItems.discountRate));
   }
@@ -98,21 +99,21 @@ function calculateCart() {
 
 // 재고 정보 업데이트하는 함수
 function updateStockInfo() {
-  stock.textContent = stockItems.generateStockInfoMessage();
+  stock.handleChangeTextContent(stockItems.generateStockInfoMessage());
 }
 
 main();
 
 // 추가 버튼에 이벤트 리스너 연결
-addButton.addEventListener("click", () => {
+addButton.onClick(() => {
   // 옵션으로 선택한 아이템 찾기
-  const selectedItem = select.value;
+  const selectedItem = select.getValue();
   const itemToAdd = stockItems.findById(selectedItem);
 
   // 아이템이 있는 아이템이고 재고가 남아있다면
   if (itemToAdd && itemToAdd.quantity > 0) {
     const cartItem = cartItems.findById(itemToAdd.id);
-    const item = document.getElementById(itemToAdd.id);
+    const item = cartItemDisplay.findChildById(itemToAdd.id);
 
     // 이미 한번 추가된 아이템이라면
     if (cartItem) {
@@ -120,7 +121,7 @@ addButton.addEventListener("click", () => {
 
       // 충분한 재고가 있다면
       if (newQuantity <= itemToAdd.quantity) {
-        item.querySelector("span").textContent = itemToAdd.name + " - " + itemToAdd.value + "원 x " + newQuantity;
+        item.handleChangeSpanTextContent(itemToAdd.name + " - " + itemToAdd.value + "원 x " + newQuantity);
         itemToAdd.decreaseQuantity();
         cartItem.increaseQuantity();
       } else {
@@ -142,19 +143,19 @@ addButton.addEventListener("click", () => {
     }
     // 카트 갱신
     calculateCart();
-
     lastSelectedProduct = selectedItem;
   }
 });
 
 // 상품 +,-,삭제 버튼에 이벤트 리스너 연결
-cartItemDisplay.addEventListener("click", (event) => {
+cartItemDisplay.onClick((event) => {
   const target = event.target;
 
   // 상품 +,-,삭제 버튼을 눌렀다면
   if (target.classList.contains("quantity-change") || target.classList.contains("remove-item")) {
     const productId = target.dataset.productId;
-    const itemElement = document.getElementById(productId);
+    const itemElement = cartItemDisplay.findChildById(productId);
+
     const product = stockItems.findById(productId);
     const cartItem = cartItems.findById(productId);
 
@@ -168,8 +169,7 @@ cartItemDisplay.addEventListener("click", (event) => {
 
       // 갱신된 선택한 아이템의 수가 0개 넘고 재고가 남아있다면
       if (newQuantity > 0 && newQuantity <= product.quantity + cartItem.quantity) {
-        itemElement.querySelector("span").textContent =
-          itemElement.querySelector("span").textContent.split("x ")[0] + "x " + newQuantity;
+        itemElement.handleChangeSpanTextContent(`상품${cartItem.id[1]} - ${cartItem.value}원 x ${newQuantity}`);
         product.decreaseQuantity(quantityChange);
         cartItem.increaseQuantity(quantityChange);
       } else if (newQuantity <= 0) {
@@ -181,8 +181,7 @@ cartItemDisplay.addEventListener("click", (event) => {
       }
     } else if (target.classList.contains("remove-item")) {
       // 삭제 버튼을 눌렀다면
-      const removeQuantity = parseInt(itemElement.querySelector("span").textContent.split("x ")[1]);
-      product.increaseQuantity(removeQuantity);
+      product.increaseQuantity(cartItem.quantity);
       itemElement.remove();
       cartItems.removeItem(cartItem);
     }

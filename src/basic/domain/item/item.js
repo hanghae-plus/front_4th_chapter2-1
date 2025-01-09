@@ -29,6 +29,8 @@ export default class Item {
   }
 
   decreaseQuantity(quantityChange = 1) {
+    if (quantityChange < 0) quantityChange *= -1;
+
     this.#quantity -= quantityChange;
   }
 

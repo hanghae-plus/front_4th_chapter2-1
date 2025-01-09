@@ -4,6 +4,10 @@ export default class Stock {
     this.#items = items;
   }
 
+  get items() {
+    return [...this.#items];
+  }
+
   findById(id) {
     return this.#items.find((i) => i.id === id);
   }

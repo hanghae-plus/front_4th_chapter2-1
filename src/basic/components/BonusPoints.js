@@ -9,5 +9,7 @@ export const BonusPoints = (bonusPoints) => {
 
   element.textContent = "(포인트: " + bonusPoints + ")";
 
-  return element;
+  return {
+    element,
+  };
 };

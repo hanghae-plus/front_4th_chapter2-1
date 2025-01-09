@@ -5,5 +5,7 @@ export const ProductOption = ({ item }) => {
   element.textContent = item.name + " - " + item.value + "원";
   if (item.quantity === 0) element.disabled = true;
 
-  return element;
+  return {
+    element,
+  };
 };
