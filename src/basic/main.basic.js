@@ -1,11 +1,21 @@
-let products, productSelect, addProductButton, cartContainer, cartTotalDisplay, stockInfo;
+let productList, productSelect, addProductButton, cartContainer, cartTotalDisplay, stockInfomation;
 let lastSelect,
   bonusPoints = 0,
   cartTotal = 0,
   itemCnt = 0;
 
+const ITEM_BY_DISCOUNT_RATE = {
+  p1: 0.1,
+  p2: 0.15,
+  p3: 0.2,
+  p4: 0.05,
+  p5: 0.25,
+};
+const TUESDAY_DISCOUNT_RATE = 0.1;
+const BULK_DISCOUNT_RATE = 0.25;
+
 function main() {
-  products = [
+  productList = [
     { id: 'p1', name: '상품1', price: 10000, quantity: 50 },
     { id: 'p2', name: '상품2', price: 20000, quantity: 30 },
     { id: 'p3', name: '상품3', price: 30000, quantity: 20 },
@@ -72,7 +82,7 @@ function main() {
 
 // 상품 목록 중 랜덤으로 하나를 선택하여 20% 할인
 function luckyDiscountAlert() {
-  const luckyItem = products[Math.floor(Math.random() * products.length)];
+  const luckyItem = productList[Math.floor(Math.random() * productList.length)];
   if (Math.random() < 0.8 && luckyItem.quantity > 0) {
     luckyItem.price = Math.round(luckyItem.price * 0.3);
     alert('번개세일! ' + luckyItem.name + '이(가) 20% 할인 중입니다!');
@@ -83,7 +93,7 @@ function luckyDiscountAlert() {
 // 마지막 선택한 상품을 기준으로 추천 상품을 5% 할인
 function recommendDiscountAlert() {
   if (lastSelect) {
-    const recommendedProduct = products.find(product => {
+    const recommendedProduct = productList.find(product => {
       return product.id !== lastSelect && product.quantity > 0;
     });
 
@@ -98,7 +108,7 @@ function recommendDiscountAlert() {
 // 상품 목록 option에서 할인된 가격으로 업데이트
 function updateProductPrice() {
   productSelect.innerHTML = '';
-  products.forEach(product => {
+  productList.forEach(product => {
     const updateOption = document.createElement('option');
     updateOption.value = product.id;
     updateOption.textContent = product.name + ' - ' + product.price + '원';
@@ -132,24 +142,16 @@ function calcCart() {
   renderBonusPoints();
 }
 
-const TUESDAY_DISCOUNT_RATE = 0.1;
 const calcTuesdayDiscount = (cartTotal, discountRate) => {
   cartTotal *= 1 - TUESDAY_DISCOUNT_RATE;
   discountRate = Math.max(discountRate, TUESDAY_DISCOUNT_RATE);
   return { cartTotal, discountRate };
 };
 
-const ITEM_BY_DISCOUNT_RATE = {
-  p1: 0.1,
-  p2: 0.15,
-  p3: 0.2,
-  p4: 0.05,
-  p5: 0.25,
-};
 const calcCartTotal = ({ cartTotal, itemCnt, originalTotal }) => {
   const cartItems = cartContainer.children;
   Array.from(cartItems).forEach(item => {
-    let currentItem = products.find(product => product.id === item.id);
+    let currentItem = productList.find(product => product.id === item.id);
     const currentItemQuantity = parseInt(item.querySelector('span').textContent.split('x ')[1]);
     const currentItemTotal = currentItem.price * currentItemQuantity;
     itemCnt += currentItemQuantity;
@@ -167,7 +169,6 @@ const calcCartTotal = ({ cartTotal, itemCnt, originalTotal }) => {
   return { cartTotal, itemCnt, originalTotal };
 };
 
-const BULK_DISCOUNT_RATE = 0.25;
 const calcBulkDiscount = ({ cartTotal, itemCnt, originalTotal, discountRate }) => {
   if (itemCnt >= 30) {
     let bulkDiscount = cartTotal * BULK_DISCOUNT_RATE; // 대량 구매 할인 총액
@@ -213,7 +214,7 @@ const renderBonusPoints = () => {
 // 상품의 재고 정보 알려주기
 function updateStockInfo() {
   let infoMsg = '';
-  products.forEach(product => {
+  productList.forEach(product => {
     if (product.quantity < 5) {
       infoMsg += product.name + ': ' + (product.quantity > 0 ? '재고 부족 (' + product.quantity + '개 남음)' : '품절') + '\n';
     }
@@ -227,7 +228,7 @@ main();
 addProductButton.addEventListener('click', function () {
   // 선택한 상품의 정보 찾기
   const selectedId = productSelect.value;
-  let selectedProduct = products.find(function (product) {
+  let selectedProduct = productList.find(function (product) {
     return product.id === selectedId;
   });
 
@@ -305,7 +306,7 @@ cartContainer.addEventListener('click', function (event) {
   // 선택한 상품 찾기
   const productId = target.dataset.productId;
   const $selectedProduct = document.getElementById(productId);
-  const selectedProduct = products.find(product => {
+  const selectedProduct = productList.find(product => {
     return product.id === productId;
   });
 
