@@ -2,6 +2,7 @@ import { useProducts } from '../hooks/useProduct.js';
 
 export function ProductSelect() {
   const element = document.createElement('select');
+  element.id = 'product-select';
   element.className = 'border rounded p-2 mr-2';
 
   element.addEventListener('change', (e) => {

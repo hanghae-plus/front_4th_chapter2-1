@@ -27,28 +27,24 @@ function App(rootElement) {
   container.innerHTML = `
 <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
       <h1 class="text-2xl font-bold mb-4">장바구니</h1>
-      <div id="cart-items"></div>
-      <div id="product-selection" class="flex items-center"></div>
-      <div id="product-status"></div>
+        <div id="inner-container"></div>
     </div>`;
 
-  const cartItemsContainer = container.querySelector('#cart-items');
-  const productSelectionContainer = container.querySelector('#product-selection');
-  const productStatusContainer = container.querySelector('#product-status');
-
-  productSelectionContainer.appendChild(productSelect.getElement());
-  productSelectionContainer.appendChild(addButton.getElement());
-  cartItemsContainer.before(cartSummary.getElement());
-  cartItemsContainer.appendChild(cartItemList.getElement());
-  productStatusContainer.appendChild(productStatus.getElement());
+  const innerContainer = container.querySelector('#inner-container');
+  innerContainer.appendChild(cartSummary.getElement());
+  innerContainer.appendChild(cartItemList.getElement());
+  innerContainer.appendChild(productSelect.getElement());
+  innerContainer.appendChild(addButton.getElement());
+  innerContainer.appendChild(productStatus.getElement());
 
   subscribeProduct(() => {
-    console.log('update');
+    console.log('product updated');
     productSelect.render();
     productStatus.render();
   });
 
   subscribeCart(() => {
+    console.log('cart updated');
     cartItemList.render();
     cartSummary.render();
   });

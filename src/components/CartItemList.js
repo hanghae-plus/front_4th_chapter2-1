@@ -3,6 +3,7 @@ import { useCart } from '../hooks/useCart.js';
 
 export function CartItemList() {
   const element = document.createElement('ul');
+  element.id = 'cart-items';
 
   const render = () => {
     const { getCart } = useCart();
