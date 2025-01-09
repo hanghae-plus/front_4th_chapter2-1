@@ -7,10 +7,20 @@ interface CartItem {
   quantity: number;
 }
 
+interface DiscountedProduct {
+  id: string;
+  discountRate: number;
+  originalAmount: number;
+  discountedAmount: number;
+}
+
 interface DiscountStatus {
   dayDiscountApplied: boolean;
   bulkDiscountApplied: boolean;
   quantityDiscount: boolean;
+  discountedProducts: DiscountedProduct[];
+  totalOriginalAmount: number;
+  totalDiscountedAmount: number;
 }
 
 const useCalculations = (cartItems: Record<string, CartItem>) => {
@@ -19,43 +29,70 @@ const useCalculations = (cartItems: Record<string, CartItem>) => {
   const [discountStatus, setDiscountStatus] = useState<DiscountStatus>({
     dayDiscountApplied: false,
     bulkDiscountApplied: false,
-    quantityDiscount: false
+    quantityDiscount: false,
+    discountedProducts: [],
+    totalOriginalAmount: 0,
+    totalDiscountedAmount: 0,
   });
 
   useEffect(() => {
     const calculateTotal = () => {
-      let subTotal = 0;
       let totalItems = 0;
-      let quantityDiscount = false;
-      let dayDiscountApplied = false;
-      let bulkDiscountApplied = false;
+      let totalOriginalAmount = 0;
+      let totalDiscountedAmount = 0;
+      const discountedProducts: DiscountedProduct[] = [];
 
-      Object.entries(cartItems).forEach(([id, item]) => {
-        const itemTotal = item.price * item.quantity;
-        let discountRate = 0;
-        
-        if (item.quantity >= 10) {
-          discountRate = CONSTANTS.DISCOUNT_RATES[id] || 0;
-          quantityDiscount = true;
-        }
+      Object.values(cartItems).forEach(item => {
         totalItems += item.quantity;
-        subTotal += itemTotal * (1 - discountRate);
       });
 
-      if (totalItems >= 30) {
-        subTotal *= (1 - CONSTANTS.BULK_DISCOUNT_RATE);
-        bulkDiscountApplied = true;
-      }
-
+      let effectDiscountRate = 0;
       const currentDay = new Date().getDay();
-      if (currentDay === CONSTANTS.DISCOUNT_DAY) {
-        subTotal *= (1 - CONSTANTS.DAY_DISCOUNT_RATE);
-        dayDiscountApplied = true;
+      const dayDiscount = currentDay === CONSTANTS.DAY_DISCOUNT_RATE;
+      const bulkDiscount = totalItems >= 30;
+
+      if (bulkDiscount) {
+        effectDiscountRate = CONSTANTS.BULK_DISCOUNT_RATE;
       }
 
-      setTotalAmount(Math.round(subTotal));
-      setBonusPoints(Math.floor(subTotal / CONSTANTS.BONUS_POINT_DIVISOR));
-      setDiscountStatus({ dayDiscountApplied, bulkDiscountApplied, quantityDiscount })
+      if (dayDiscount) {
+        effectDiscountRate = Math.max(effectDiscountRate, CONSTANTS.DAY_DISCOUNT_RATE);
+      }
+
+      Object.entries(cartItems).forEach(([id, item]) => {
+        const itemSubTotal = item.price * item.quantity;
+        let itemDiscountRate = effectDiscountRate;
+
+        if (item.quantity >= 10) {
+          const productDiscountRate = CONSTANTS.DISCOUNT_RATES[id] || 0;
+          itemDiscountRate = Math.max(itemDiscountRate, productDiscountRate);
+        }
+        
+        const itemDiscountedAmount = itemSubTotal * (1 - itemDiscountRate);
+
+        totalOriginalAmount += itemSubTotal;
+        totalDiscountedAmount += itemDiscountedAmount;
+
+        if (itemDiscountRate > 0) {
+          discountedProducts.push({
+            id,
+            discountRate: itemDiscountRate,
+            originalAmount: itemSubTotal,
+            discountedAmount: itemDiscountedAmount
+          });
+        }
+      });
+
+      setTotalAmount(Math.round(totalDiscountedAmount));
+      setBonusPoints(Math.floor(totalDiscountedAmount / CONSTANTS.BONUS_POINT_DIVISOR));
+      setDiscountStatus({ 
+        dayDiscountApplied: dayDiscount,
+        bulkDiscountApplied: bulkDiscount,
+        quantityDiscount: discountedProducts.some(p => p.discountRate > effectDiscountRate),
+        discountedProducts,
+        totalOriginalAmount,
+        totalDiscountedAmount,
+      });
     };
 
     calculateTotal();

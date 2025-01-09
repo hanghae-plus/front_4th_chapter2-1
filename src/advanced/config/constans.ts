@@ -13,7 +13,7 @@ export const CONSTANTS = {
     p3: 0.2,
     p4: 0.05,
     p5: 0.25,
-  },
+  } as Record<string, number>,
 };
 
 export const initialProductList = [

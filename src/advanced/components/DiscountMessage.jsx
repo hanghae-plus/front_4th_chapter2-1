@@ -1,15 +1,22 @@
-const DiscountMessage = ({ discountStatus }) => (
-  <div className="text-sm text-green-500 mt-1">
-    {discountStatus.dayDiscountApplied && (
-      <span className="mr-2">(화요일 10.0% 할인 적용)</span>
-    )}
-    {discountStatus.bulkDiscountApplied && (
-      <span className="mr-2">(25.0% 대량구매 할인 적용)</span>
-    )}
-    {discountStatus.quantityDiscount && (
-      <span>(개별상품 할인 적용)</span>
-    )}
-  </div>
-);
+import React from "react";
+
+const DiscountMessage = ({ discountStatus }) => {
+  if (!discountStatus) return null;
+
+  const { totalOriginalAmount, totalDiscountedAmount } = discountStatus;
+
+  // 전체 할인율 계산 (0으로 나누기 방지)
+  const effectiveDiscountRate = totalOriginalAmount > 0
+    ? ((totalOriginalAmount - totalDiscountedAmount) / totalOriginalAmount) * 100
+    : 0;
+
+  return (
+    <div className="text-sm text-green-500 mt-1">
+      <span className="font-bold">
+        ({effectiveDiscountRate.toFixed(1)}% 할인 적용)
+      </span>
+    </div>
+  );
+};
 
 export default DiscountMessage;
