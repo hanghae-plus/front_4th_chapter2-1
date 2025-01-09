@@ -1,4 +1,3 @@
-
 import { ICartItem } from '../type/product';
 
 interface ICartProps {
@@ -15,29 +14,29 @@ const Cart: React.FC<ICartProps> = ({ cartItems, onChangeQuantity, onRemoveItem 
       ) : (
         cartItems.map((item) => (
           <div
-            key={item.productId}
-            id={item.productId}
+            key={item.product.id}
+            id={item.product.id}
             className="flex justify-between items-center mb-2"
           >
             <span>
-              {item.name} - {item.price.toLocaleString()}원 x {item.quantity}
+              {item.product.name} - {item.product.price.toLocaleString()}원 x {item.quantity}
             </span>
             <div>
               <button
                 className="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1"
-                onClick={() => onChangeQuantity(item.productId, -1)}
+                onClick={() => onChangeQuantity(item.product.id, -1)}
               >
                 -
               </button>
               <button
                 className="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1"
-                onClick={() => onChangeQuantity(item.productId, 1)}
+                onClick={() => onChangeQuantity(item.product.id, 1)}
               >
                 +
               </button>
               <button
                 className="remove-item bg-red-500 text-white px-2 py-1 rounded"
-                onClick={() => onRemoveItem(item.productId)}
+                onClick={() => onRemoveItem(item.product.id)}
               >
                 삭제
               </button>
