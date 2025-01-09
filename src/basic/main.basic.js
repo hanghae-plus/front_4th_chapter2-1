@@ -141,6 +141,9 @@ function calcCart() {
 }
 const renderBonusPts = () => {
   bonusPts = Math.floor(totalAmt / 1000)
+  console.log('🚀 ~ renderBonusPts ~ totalAmt:', totalAmt)
+  console.log('🚀 ~ renderBonusPts ~ bonusPts:', bonusPts)
+
   var ptsTag = document.getElementById('loyalty-points')
   if (!ptsTag) {
     ptsTag = document.createElement('span')

@@ -54,10 +54,9 @@ function calculateCartTotal() {
   let totalAmount = 0
   let itemCount = 0
   let subtotal = 0
-  let discount = 0
+
   // 각 장바구니 아이템 순회
   Array.from($cartItems).forEach((cartItem) => {
-    // 현재 상품 정보 찾기
     const currentProduct = productList.find(
       (product) => product.id === cartItem.id,
     )
@@ -65,10 +64,12 @@ function calculateCartTotal() {
       cartItem.querySelector('span').textContent.split('x ')[1],
     )
     const itemTotal = currentProduct.value * quantity
+    let discount = 0
 
     itemCount += quantity
     subtotal += itemTotal
 
+    // 개별 상품 수량 할인
     if (quantity >= 10) {
       if (currentProduct.id === 'p1') discount = 0.1
       else if (currentProduct.id === 'p2') discount = 0.15
@@ -80,35 +81,40 @@ function calculateCartTotal() {
     totalAmount += itemTotal * (1 - discount)
   })
 
+  let discountRate = 0
+
   // 대량 구매 할인 적용 (30개 이상)
   if (itemCount >= 30) {
     const bulkDiscount = totalAmount * 0.25
     const itemDiscount = subtotal - totalAmount
 
     if (bulkDiscount > itemDiscount) {
-      totalAmount = subtotal * 0.75 // 25% 할인
-      discount = 0.25
+      totalAmount = subtotal * (1 - 0.25)
+      discountRate = 0.25
     } else {
-      discount = (subtotal - totalAmount) / subtotal
+      discountRate = (subtotal - totalAmount) / subtotal
     }
   } else {
-    discount = (subtotal - totalAmount) / subtotal
+    discountRate = (subtotal - totalAmount) / subtotal
   }
 
   // 화요일 추가 할인 (10%)
-  if (new Date().getDay() === 2) {
-    totalAmount *= 0.9
-    discount = Math.max(discount, 0.1)
+  const isTuesday = new Date().getDay() === 2
+  if (isTuesday) {
+    totalAmount *= 1 - 0.1
+    discountRate = Math.max(discountRate, 0.1)
   }
 
   $cartTotal.textContent = `총액: ${Math.round(totalAmount)}원`
 
-  if (discount > 0) {
+  if (discountRate > 0) {
     const span = document.createElement('span')
     span.className = 'text-green-500 ml-2'
-    span.textContent = `(${(discount * 100).toFixed(1)}% 할인 적용)`
+    span.textContent = `(${(discountRate * 100).toFixed(1)}% 할인 적용)`
     $cartTotal.appendChild(span)
   }
+
+  updateStockInfo()
   updateBonusPoints(totalAmount)
 }
 
@@ -116,23 +122,39 @@ function calculateCartTotal() {
  * 포인트 업데이트 함수
  */
 function updateBonusPoints(totalAmount) {
-  // 포인트 계산
   const points = Math.floor(totalAmount / 1000)
+  console.log('🚀 ~ updateBonusPoints ~ totalAmount:', totalAmount)
+  console.log('🚀 ~ updateBonusPoints ~ points:', points)
 
-  // 포인트 요소 찾기
   const $cartTotal = document.getElementById('cart-total')
   const $loyaltyPoints = document.getElementById('loyalty-points')
 
-  // 포인트 요소가 없으면 생성
   if (!$loyaltyPoints) {
     const pointsElement = document.createElement('span')
     pointsElement.id = 'loyalty-points'
     pointsElement.className = 'text-blue-500 ml-2'
-    pointsElement.textContent = `(포인트: ${points})`
     $cartTotal.appendChild(pointsElement)
-  } else {
-    $loyaltyPoints.textContent = `(포인트: ${points})`
   }
+
+  document.getElementById('loyalty-points').textContent = `(포인트: ${points})`
+}
+
+/**
+ * 재고 상태 업데이트 함수
+ */
+function updateStockInfo() {
+  const $stockStatus = document.getElementById('stock-status')
+  let infoMsg = ''
+  productList.forEach((product) => {
+    if (product.stock < 5) {
+      if (product.stock > 0) {
+        infoMsg += `${product.name}: 재고 부족 (${product.stock}개 남음)\n`
+      } else {
+        infoMsg += `${product.name}: 품절\n`
+      }
+    }
+  })
+  $stockStatus.textContent = infoMsg
 }
 
 /**
