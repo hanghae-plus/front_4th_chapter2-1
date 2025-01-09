@@ -30,6 +30,8 @@ const getRemoveButtonElement = (id) =>
 
 const canUpdateQuantity = (productModel, cartItem) => productModel.quantity > (cartItem?.getQuantity() || 0);
 
+const getTotalQuantity = (cartItems) => cartItems.reduce((sum, item) => sum + item.quantity, 0);
+
 const calculatePoint = (amount) => Math.floor(amount / 1000);
 
 const formatCartItemText = (item) => `${item.name} - ${item.price}원 x ${item.getQuantity()}`;
@@ -89,7 +91,7 @@ const calculateCart = () => {
     return total + applyDiscount({ amount: itemAmount, discountRate });
   }, 0);
 
-  const totalItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
+  const totalItemCount = getTotalQuantity(cartItems);
 
   // 대량 구매 할인 계산
   if (totalItemCount >= DISCOUNT_POLICY.BULK_PURCHASE_THRESHOLD) {
