@@ -202,7 +202,7 @@ main(() => {
     const selectedProductModel = products.find(({ id }) => id === selectedProductId);
     let cartItem = cartStore.getCartItem(selectedProductId);
 
-    if (selectedProductModel.quantity <= 0 || selectedProductModel.quantity <= (cartItem?.getQuantity() || 0)) {
+    if (!canUpdateQuantity(selectedProductModel, cartItem)) {
       alert('재고가 부족합니다.');
       return;
     }
@@ -280,7 +280,7 @@ main(() => {
   const handleIncreaseQuantity = (productId, productModel) => {
     const currentCartItem = cartStore.getCartItem(productId);
 
-    if (productModel.quantity <= (currentCartItem?.getQuantity() || 0)) {
+    if (!canUpdateQuantity(productModel, currentCartItem)) {
       alert('재고가 부족합니다.');
       return;
     }
