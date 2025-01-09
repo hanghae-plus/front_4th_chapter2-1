@@ -1,5 +1,5 @@
 import { updateProductState } from '../stores/product.store';
-import { calculatePoint, getTotalQuantity } from '../utils/cart';
+import { calculatePoint, getTotalQuantity } from './cart';
 import { calculateBulkDiscount, calculateItemDiscount, calculateWeeklyDiscount } from './discount';
 
 export const calculateCartTotals = (cartItems) => {
