@@ -1,44 +1,62 @@
 import { createStore } from '../utils/createStore';
 import { productList } from './constants/productList';
 
-export interface Product {
-  id: string;
-  name: string;
-  val: number;
-  q: number;
-}
+import type { Product } from '../types/product';
 
 interface State {
   productList: Product[];
+  lastSaleItem: Product | null;
 }
 
 interface Actions {
   getProductList: () => Product[];
-  getProductItem: (id: string) => Product | undefined;
-  decreaseQ: (id: string) => void;
-  increaseQ: (id: string) => void;
+  decreaseQuantity: (id: string) => void;
+  increaseQuantity: (id: string) => void;
+  resetQuantity: (id: string) => void;
 }
 
 export const ProductStore = createStore<State, Actions>(
   {
     productList,
+    lastSaleItem: null,
   },
-  (state, notify) => ({
-    getProductList: () => {
-      return state.productList;
-    },
-    getProductItem: (id: string) => {
-      return state.productList.find((item) => item.id === id);
-    },
-    decreaseQ: (id: string) => {
-      const newProductList = state.productList?.map((item) => (item.id === id ? { ...item, q: item.q - 1 } : item));
-      state.productList = newProductList || state.productList;
-      notify();
-    },
-    increaseQ: (id: string) => {
-      const newProductList = state.productList?.map((item) => (item.id === id ? { ...item, q: item.q + 1 } : item));
-      state.productList = newProductList || state.productList;
-      notify();
-    },
-  }),
+  (state, notify) => {
+    const calculateQuantity = (id: string, delta: number) => {
+      const newProductList = productList.map((item) =>
+        item.id === id ? { ...item, quantity: item.quantity + delta } : item,
+      );
+
+      state.productList = newProductList;
+    };
+
+    return {
+      getProductList: () => {
+        return state.productList;
+      },
+      decreaseQuantity: (id: string) => {
+        calculateQuantity(id, -1);
+        notify();
+      },
+      increaseQuantity: (id: string) => {
+        calculateQuantity(id, 1);
+        notify();
+      },
+      resetQuantity: (id: string) => {
+        const initialProductItem = productList.find((product) => product.id === id);
+
+        if (!initialProductItem) return;
+
+        const initialQuantity = initialProductItem.quantity;
+
+        const newProductList = productList.map((item) =>
+          item.id === id ? { ...item, quantity: initialQuantity } : item,
+        );
+
+        state.productList = newProductList;
+      },
+      addLastSaleItem: (item: Product) => {
+        state.lastSaleItem = item;
+      },
+    };
+  },
 );
