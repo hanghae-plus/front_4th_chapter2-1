@@ -2,13 +2,19 @@ import { DOM_IDS } from "advanced/constants";
 import { CartItem } from "advanced/state/cartReducer";
 import { useCartContext } from "advanced/hooks/useCartContext";
 
-interface NewItemProps {
+interface NewItem {
   product: CartItem;
 }
 
-export const NewItem: React.FC<NewItemProps> = ({ product }) => {
+export const CartNewItem: React.FC<NewItem> = ({ product }) => {
   const { removeItem, changeQty } = useCartContext();
 
+  /**
+   * 장바구니에 담긴 상품의 수량 변경 및 삭제
+   *
+   * @param event - 클릭한 버튼의 이벤트 객체
+   * @returns type CartItem
+   */
   const handleUpdateQty = (
     event: React.MouseEvent<HTMLElement, MouseEvent>
   ) => {
@@ -31,7 +37,7 @@ export const NewItem: React.FC<NewItemProps> = ({ product }) => {
           className="qty-change mr-1 rounded bg-blue-500 px-2 py-1 text-white"
           data-product-id={product.id}
           data-change="-1"
-          onClick={(e) => handleUpdateQty(e)}
+          onClick={(event) => handleUpdateQty(event)}
         >
           -
         </button>
@@ -39,7 +45,7 @@ export const NewItem: React.FC<NewItemProps> = ({ product }) => {
           className="qty-change mr-1 rounded bg-blue-500 px-2 py-1 text-white"
           data-product-id={product.id}
           data-change="1"
-          onClick={(e) => handleUpdateQty(e)}
+          onClick={(event) => handleUpdateQty(event)}
         >
           +
         </button>
