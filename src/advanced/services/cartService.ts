@@ -16,14 +16,14 @@ export const calcTotalList = (
     const product = productList.find((p) => p.id === item.id);
     if (!product) return totalList;
 
-    const itemSubTotal = product.price * item.quantity;
+    const itemSubTotal = product.price * item.qty;
     const discount = PRODUCT_DISCOUNT_LIST[item.id] || 0;
     const itemDiscount = itemSubTotal * discount;
 
     return {
       subTotal: totalList.subTotal + itemSubTotal,
       discount: totalList.discount + itemDiscount,
-      itemCnt: totalList.itemCnt + item.quantity,
+      itemCnt: totalList.itemCnt + item.qty,
       totalAmt: totalList.totalAmt + (itemSubTotal - itemDiscount),
     };
   }, initialTotalList);

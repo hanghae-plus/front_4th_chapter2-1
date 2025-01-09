@@ -4,13 +4,13 @@ import { Product, CartItem } from "../../types";
 interface CartItemListProps {
   itemList: CartItem[];
   productList: Product[];
-  handleUpdateQuantity: (productId: string, change: number) => void;
+  handleUpdateQty: (productId: string, change: number) => void;
 }
 
 const CartItemList: React.FC<CartItemListProps> = ({
   itemList,
   productList,
-  handleUpdateQuantity,
+  handleUpdateQty,
 }) => {
   return (
     <div className="space-y-2">
@@ -24,24 +24,24 @@ const CartItemList: React.FC<CartItemListProps> = ({
             className="flex justify-between items-center p-2 border rounded"
           >
             <span>
-              {product.name} - {product.price}원 x {item.quantity}
+              {product.name} - {product.price}원 x {item.qty}
             </span>
             <div className="space-x-2">
               <button
                 className="px-2 py-1 border rounded"
-                onClick={() => handleUpdateQuantity(item.id, -1)}
+                onClick={() => handleUpdateQty(item.id, -1)}
               >
                 -
               </button>
               <button
                 className="px-2 py-1 border rounded"
-                onClick={() => handleUpdateQuantity(item.id, 1)}
+                onClick={() => handleUpdateQty(item.id, 1)}
               >
                 +
               </button>
               <button
                 className="px-2 py-1 border rounded text-red-500"
-                onClick={() => handleUpdateQuantity(item.id, -item.quantity)}
+                onClick={() => handleUpdateQty(item.id, -item.qty)}
               >
                 삭제
               </button>
