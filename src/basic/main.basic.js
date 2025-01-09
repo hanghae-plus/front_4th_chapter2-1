@@ -122,7 +122,7 @@ function updateSelOpts(productStore) {
   });
 }
 
-function calculateCart(cartState, productStore, discountService) {
+function calculateCart(cartState, productStore, discountService, pointService) {
   let cartItems = cartDisplay.children;
   let subTot = 0;
   let currentItemCount = 0;
@@ -146,11 +146,12 @@ function calculateCart(cartState, productStore, discountService) {
     currentTotal,
   );
   const totalAmount = Math.max(0, subTot * (1 - finalDiscount));
+  const points = pointService.calculatePoints(totalAmount);
 
   cartState.set({
     totalAmount,
     itemCount: currentItemCount,
-    bonusPoints: Math.floor(totalAmount / 1000),
+    bonusPoints: points,
   });
 
   totalDisplay.textContent = '총액: ' + Math.round(totalAmount) + '원';
@@ -212,6 +213,17 @@ const renderBonusPoints = (cartState) => {
   ptsTag.textContent = '(포인트: ' + cartState.get().bonusPoints + ')';
 };
 
+// 포인트 계산 서비스
+const createPointService = () => {
+  const POINT_RATE = 1000; // 1000원당 1포인트
+
+  return {
+    calculatePoints: (totalAmount) => {
+      return Math.floor(totalAmount / POINT_RATE);
+    },
+  };
+};
+
 function updateStockInfo(productStore) {
   const infoMsg = productStore
     .getAll()
@@ -227,7 +239,7 @@ function updateStockInfo(productStore) {
   stockStatus.textContent = infoMsg;
 }
 
-function setupEventListeners(cartState, productStore, discountService) {
+function setupEventListeners(cartState, productStore, discountService, pointService) {
   addButton.addEventListener('click', function () {
     let selItem = productSelect.value;
     let itemToAdd = productStore.findProduct(selItem);
@@ -278,7 +290,7 @@ function setupEventListeners(cartState, productStore, discountService) {
 
       // 재고 업데이트
       cartState.set({ lastSelectedProductId: selItem });
-      calculateCart(cartState, productStore, discountService);
+      calculateCart(cartState, productStore, discountService, pointService);
     }
   });
 
@@ -311,7 +323,7 @@ function setupEventListeners(cartState, productStore, discountService) {
         product.quantity += remQty;
         itemElem.remove();
       }
-      calculateCart(cartState, productStore, discountService);
+      calculateCart(cartState, productStore, discountService, pointService);
     }
   });
 }
@@ -330,6 +342,7 @@ function main() {
 
   const cartState = createCartState();
   const discountService = createDiscountService();
+  const pointService = createPointService();
 
   updateSelOpts(productStore);
 
@@ -342,8 +355,8 @@ function main() {
   container.appendChild(wrapper);
   root.appendChild(container);
 
-  calculateCart(cartState, productStore, discountService);
-  setupEventListeners(cartState, productStore, discountService);
+  calculateCart(cartState, productStore, discountService, pointService);
+  setupEventListeners(cartState, productStore, discountService, pointService);
 
   // 번개 세일 이벤트
   setTimeout(function () {
