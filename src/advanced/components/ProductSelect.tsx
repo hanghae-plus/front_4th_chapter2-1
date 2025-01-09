@@ -1,4 +1,4 @@
-import { ELEMENT_IDS } from '../constants/element-id';
+import { ELEMENT_IDS } from "@/constants/element-id";
 
 const ProductSelect = ({ products }) => {
   return (
