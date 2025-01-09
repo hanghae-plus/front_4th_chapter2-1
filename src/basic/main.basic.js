@@ -36,7 +36,7 @@ const updateSelectOption = () => {
   });
 }
 
-// 장바구니 표기
+/** 장바구니 표기 */
 const updateCart = () => {
   const cartItems = document.querySelector(`#${ID_BY_COMPONENT.CART_ID}`).children;
   let subTot = 0;
@@ -170,6 +170,40 @@ const updateStockInfo = () => {
   stockInfo.textContent = infoMsg;
 }
 
+/** 번개 세일 alert */
+const setLuckySaleAlert = () => {
+  setTimeout(() => {
+    setInterval(() => {
+      let luckyItem = appState.productList[
+        Math.floor(Math.random() * appState.productList.length)
+      ];
+      if (Math.random() < 0.3 && luckyItem.q > 0) {
+        luckyItem.val = Math.round(luckyItem.val * 0.8);
+        alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
+        updateSelectOption();
+      }
+    }, 30000);
+  }, Math.random() * 10000);
+}
+
+/** 추천상품 세일 alert*/
+const setSuggestDiscountedProductAlert = () => {
+  setTimeout(() => {
+    setInterval(() => {
+      if (appState.lastSel) {
+        let suggest = appState.productList.find((item) => {
+          return item.id !== appState.lastSel && item.q > 0;
+        });
+        if (suggest) {
+          alert(`${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`);
+          suggest.val = Math.round(suggest.val * 0.95);
+          updateSelectOption();
+        }
+      }
+    }, 60000);
+  }, Math.random() * 20000);
+}
+
 function main() {
   const root = document.getElementById("app");
 
@@ -189,38 +223,10 @@ function main() {
   root.appendChild(contents);
 
   updateSelectOption();
-
   updateCart();
 
-  setTimeout(function () {
-    setInterval(function () {
-      let luckyItem =
-        appState.productList[
-        Math.floor(Math.random() * appState.productList.length)
-        ];
-      if (Math.random() < 0.3 && luckyItem.q > 0) {
-        luckyItem.val = Math.round(luckyItem.val * 0.8);
-        alert("번개세일! " + luckyItem.name + "이(가) 20% 할인 중입니다!");
-        updateSelectOption();
-      }
-    }, 30000);
-  }, Math.random() * 10000);
-  setTimeout(function () {
-    setInterval(function () {
-      if (appState.lastSel) {
-        let suggest = appState.productList.find(function (item) {
-          return item.id !== appState.lastSel && item.q > 0;
-        });
-        if (suggest) {
-          alert(
-            suggest.name + "은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!"
-          );
-          suggest.val = Math.round(suggest.val * 0.95);
-          updateSelectOption();
-        }
-      }
-    }, 60000);
-  }, Math.random() * 20000);
+  setLuckySaleAlert()
+  setSuggestDiscountedProductAlert()
 }
 
 
