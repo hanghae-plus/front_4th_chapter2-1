@@ -11,7 +11,7 @@ export const DISCOUNT_POLICY = {
     p3: 0.2,
     p4: 0.05,
     p5: 0.25,
-  },
+  } as Record<string, number>,
   RECOMMENDATION_DISCOUNT_RATE: 0.05, // NOTE: 상품 추천 할인 5%
   WEEKLY_DISCOUNT_RATES: {
     tuesday: 0.1, // NOTE: 매주 화요일 10% 할인
