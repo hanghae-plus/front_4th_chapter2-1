@@ -1,0 +1,11 @@
+node_modules
+dist
+build
+.cache
+*.lock
+
+README.md
+.github
+
+# 더티 코드 유지 
+main.original.js
