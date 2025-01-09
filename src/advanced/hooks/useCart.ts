@@ -1,9 +1,9 @@
-import { productList } from "advanced/constants/productList";
 import { useCallback, useEffect, useReducer } from "react";
 import {
   ALERT_MESSAGES,
   DISCOUNT_RATES,
   INITIAL_QTY,
+  PRODUCT_LIST,
 } from "advanced/constants";
 import { cartReducer } from "advanced/state/cartReducer";
 import { Product } from "advanced/models/Product";
@@ -17,7 +17,7 @@ export const useCart = () => {
   // 임의의 시간마다 깜짝세일 20%
   const setSurpriseSale = useCallback(() => {
     const luckyItem =
-      productList[Math.floor(Math.random() * productList.length)];
+      PRODUCT_LIST[Math.floor(Math.random() * PRODUCT_LIST.length)];
 
     if (
       Math.random() < DISCOUNT_RATES.SURPRISE_SALE &&
@@ -34,7 +34,7 @@ export const useCart = () => {
   // 추천세일 5%
   const setRecommendSale = useCallback(() => {
     if (cartState.lastSelectedItem) {
-      const suggest = productList.find(
+      const suggest = PRODUCT_LIST.find(
         (item) => item.id !== cartState.lastSelectedItem && item.remaining > 0
       );
 

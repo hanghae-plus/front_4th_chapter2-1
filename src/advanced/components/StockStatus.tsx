@@ -1,12 +1,12 @@
-import { STOCKS } from "advanced/constants";
+import { STOCKS, PRODUCT_LIST } from "advanced/constants";
 import { useCartContext } from "advanced/hooks/useCartContext";
-import { productList } from "advanced/constants/productList";
 
 export const StockStatus = () => {
   const { cartState } = useCartContext();
 
-  const outOfStockMessage = productList
-    .filter((item) => item.remaining <= STOCKS.OUT_OF_STOCK)
+  const outOfStockMessage = PRODUCT_LIST.filter(
+    (item) => item.remaining <= STOCKS.OUT_OF_STOCK
+  )
     .map((item) => `${item.name}: 품절`)
     .join("\n");
 

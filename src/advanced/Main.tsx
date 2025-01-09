@@ -1,7 +1,9 @@
-import { CartTotal } from "./components/CartTotal";
-import { CartNewItem } from "./components/CartNewItem";
-import { ProductOptions } from "./components/ProductOptions";
-import { StockStatus } from "./components/StockStatus";
+import {
+  CartTotal,
+  CartNewItem,
+  ProductOptions,
+  StockStatus,
+} from "./components";
 import { useCartContext } from "./hooks/useCartContext";
 
 function Main() {
