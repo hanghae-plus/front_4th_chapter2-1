@@ -65,7 +65,7 @@ const updateProductList = () => {
   });
 };
 
-const calcCart = () => {
+const calculateCart = () => {
   const cartItems = cartStore.getCartItems();
   const subTotal = cartStore.getAmount();
   let finalAmount = subTotal;
@@ -208,7 +208,7 @@ const handleRecommendation = () => {
 
 main(() => {
   updateProductList();
-  calcCart();
+  calculateCart();
   setupLightningSaleTimer();
   setupRecommendationTimer();
 });
@@ -243,7 +243,7 @@ const handleAddToCart = () => {
     setupCartItemEvents(cartItem.id, selectedProductModel);
   }
 
-  calcCart();
+  calculateCart();
   productStore.setLastSelectedProduct(selectedProductId);
 };
 
@@ -258,7 +258,7 @@ const handleDecreaseQuantity = (productId) => {
   } else {
     updateCartItemText(productId, cartItem);
   }
-  calcCart();
+  calculateCart();
 };
 
 const handleIncreaseQuantity = (productId, productModel) => {
@@ -271,13 +271,13 @@ const handleIncreaseQuantity = (productId, productModel) => {
 
   cartStore.addCartItem(productModel);
   updateCartItemText(productId, cartStore.getCartItem(productId));
-  calcCart();
+  calculateCart();
 };
 
 const handleRemoveItem = (productId) => {
   getProductItemElement(productId)?.remove();
   cartStore.deleteCartItem(productId);
-  calcCart();
+  calculateCart();
 };
 
 const renderCartItem = (cartItem) => /* html */ `
