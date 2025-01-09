@@ -1,4 +1,4 @@
-import { useState, useCallback, ChangeEvent } from "react";
+import { useState, useCallback, ChangeEvent, useEffect } from "react";
 
 export const useSelect = (initialValue = "") => {
   const [value, setValue] = useState(initialValue);
@@ -7,9 +7,14 @@ export const useSelect = (initialValue = "") => {
     setValue(event.target.value);
   }, []);
 
+  useEffect(() => {
+    if (initialValue) {
+      setValue(initialValue);
+    }
+  }, [initialValue]);
+
   return {
     value,
-    setValue,
     onChange: handleChange
   };
 };
