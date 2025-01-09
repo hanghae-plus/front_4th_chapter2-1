@@ -38,13 +38,11 @@ function App(rootElement) {
   innerContainer.appendChild(productStatus.getElement());
 
   subscribeProduct(() => {
-    console.log('product updated');
     productSelect.render();
     productStatus.render();
   });
 
   subscribeCart(() => {
-    console.log('cart updated');
     cartItemList.render();
     cartSummary.render();
   });

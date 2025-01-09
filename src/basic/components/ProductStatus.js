@@ -11,7 +11,7 @@ function ProductStatus() {
 
     element.innerHTML = products
       .filter((product) => product.quantity === 0)
-      .map((product) => `<span>${product.id}: 품절</span>`)
+      .map((product) => `<span>${product.name}: 품절</span>`)
       .join('');
   };
 

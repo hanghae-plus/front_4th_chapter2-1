@@ -2,7 +2,7 @@ import { CartItem } from './CartItem.js';
 import { useCart } from '../hooks/useCart.js';
 
 export function CartItemList() {
-  const element = document.createElement('ul');
+  const element = document.createElement('div');
   element.id = 'cart-items';
 
   const render = () => {

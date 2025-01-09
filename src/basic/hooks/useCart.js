@@ -29,18 +29,16 @@ export function useCart() {
       product,
       quantity: currentItem ? currentItem.quantity + 1 : 1,
     });
-    updateQuantity(productId, product.quantity - 1);
+    updateQuantity(productId, -1);
     lastSelectedId = productId;
     notifySubscribers();
   };
 
   const removeFromCart = (productId) => {
-    const { getProducts, updateQuantity } = useProducts();
-    const products = getProducts();
-    const product = products.find((p) => p.id === productId);
+    const { updateQuantity } = useProducts();
     const item = cart.get(productId);
 
-    updateQuantity(productId, product.quantity + item.quantity);
+    updateQuantity(productId, item.quantity);
     cart.delete(productId);
     notifySubscribers();
   };
@@ -52,14 +50,15 @@ export function useCart() {
     if (newQuantity <= 0) {
       removeFromCart(productId);
     } else {
-      const { getProducts } = useProducts();
+      const { getProducts, updateQuantity } = useProducts();
       const products = getProducts();
       const product = products.find((p) => p.id === productId);
-      if (product.quantity < newQuantity) {
+      if (product.quantity <= 0) {
         alert('재고가 부족합니다.');
         return;
       }
       cart.set(productId, { ...item, quantity: newQuantity });
+      updateQuantity(product.id, -1);
       notifySubscribers();
     }
   };

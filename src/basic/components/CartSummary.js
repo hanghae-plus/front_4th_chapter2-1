@@ -21,6 +21,8 @@ export function CartSummary() {
 
       if (quantity >= 10) {
         totalWithQuantityDiscount += itemTotal * (1 - product.discountRate);
+      } else {
+        totalWithQuantityDiscount += itemTotal;
       }
     });
 
@@ -56,11 +58,11 @@ export function CartSummary() {
   const render = () => {
     const { total, points, discountRate } = calSummary();
 
-    let html = `총액 : ${total.toLocaleString()}원`;
+    let html = `총액: ${total}원`;
     if (discountRate > 0) {
       html += `<span class="text-green-500 ml-2">(${(discountRate * 100).toFixed(1)}% 할인 적용)</span>`;
     }
-    html += `<span class="text-blue-500 ml-2">(포인트: ${points})</span>`;
+    html += `<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${points})</span>`;
 
     element.innerHTML = html;
   };

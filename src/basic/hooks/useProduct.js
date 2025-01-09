@@ -28,13 +28,12 @@ export function useProducts() {
     products = products.map((product) =>
       product.id === productId ? { ...product, price: newPrice } : product,
     );
-    console.log(productId, newPrice, products);
     notifySubscribers();
   };
 
   const updateProductQuantity = (productId, newQuantity) => {
     products = products.map((product) =>
-      product.id === productId ? { ...product, quantity: newQuantity } : product,
+      product.id === productId ? { ...product, quantity: product.quantity + newQuantity } : product,
     );
     notifySubscribers();
   };

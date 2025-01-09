@@ -6,7 +6,7 @@ import prettierPlugin from 'eslint-plugin-prettier';
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
-    ignores: ['src/main.legacy.js', 'src/basic/**', 'src/advanced/**'],
+    ignores: ['src/main.original.js', 'src/basic/**/__tests__/**', 'src/advanced/**/__tests__/**'],
   },
   { files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'] },
   {
