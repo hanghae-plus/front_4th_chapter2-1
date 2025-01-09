@@ -7,7 +7,7 @@ export const StockStatus = () => {
       {products.map((product) => {
         if (product.stock < 5) {
           return (
-            <div>
+            <div key={product.id}>
               {`${product.name}: ${product.stock > 0 ? '재고 부족 (' + product.stock + '개 남음)' : '품절'}`}
             </div>
           );
