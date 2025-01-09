@@ -266,23 +266,29 @@ main(() => {
       calcCart();
     });
 
-    getIncreaseButtonElement(productId).addEventListener('click', () => {
-      const currentCartItem = cartStore.getCartItem(productId);
-
-      if (productModel.quantity <= (currentCartItem?.getQuantity() || 0)) {
-        alert('재고가 부족합니다.');
-        return;
-      }
-
-      cartStore.addCartItem(productModel);
-      const updatedCartItem = cartStore.getCartItem(productId);
-
-      getProductItemElement(productId).querySelector('span').textContent =
-        `${updatedCartItem.name} - ${updatedCartItem.price}원 x ${updatedCartItem.getQuantity()}`;
-      calcCart();
-    });
+    getIncreaseButtonElement(productId).addEventListener('click', () =>
+      handleIncreaseQuantity(productId, productModel),
+    );
 
     getRemoveButtonElement(productId).addEventListener('click', () => handleRemoveItem(productId));
+  };
+
+  const handleDecreaseQuantity = (productId) => {};
+
+  const handleIncreaseQuantity = (productId, productModel) => {
+    const currentCartItem = cartStore.getCartItem(productId);
+
+    if (productModel.quantity <= (currentCartItem?.getQuantity() || 0)) {
+      alert('재고가 부족합니다.');
+      return;
+    }
+
+    cartStore.addCartItem(productModel);
+    const updatedCartItem = cartStore.getCartItem(productId);
+
+    getProductItemElement(productId).querySelector('span').textContent =
+      `${updatedCartItem.name} - ${updatedCartItem.price}원 x ${updatedCartItem.getQuantity()}`;
+    calcCart();
   };
 
   const handleRemoveItem = (productId) => {
