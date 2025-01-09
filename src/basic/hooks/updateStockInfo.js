@@ -1,9 +1,9 @@
-import { productList } from '../data/productList.js';
-import { productStockInfo } from '../main.basic.js';
+import { PRODUCT_LIST } from '../datas/productList.js';
+import { getProductStockInfo } from '../main.basic.js';
 
 export function updateStockInfo() {
   let infoMessage = '';
-  productList.forEach(function (item) {
+  PRODUCT_LIST.forEach(function (item) {
     if (item.quantity < 5) {
       infoMessage +=
         item.name +
@@ -14,5 +14,5 @@ export function updateStockInfo() {
         '\n';
     }
   });
-  productStockInfo.textContent = infoMessage;
+  getProductStockInfo.textContent = infoMessage;
 }

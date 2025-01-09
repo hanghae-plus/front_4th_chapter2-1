@@ -1,13 +1,13 @@
-import { selectedProduct } from '../main.basic.js';
-import { productList } from '../data/productList.js';
+import { PRODUCT_LIST } from '../datas/productList.js';
+import { getSelectedProduct } from '../main.basic.js';
 
 export function updateProductOptions() {
-  selectedProduct.innerHTML = '';
-  productList.forEach(function (item) {
+  getSelectedProduct.innerHTML = '';
+  PRODUCT_LIST.forEach(function (item) {
     const optionElement = document.createElement('option');
     optionElement.value = item.id;
     optionElement.textContent = item.name + ' - ' + item.price + '원';
     if (item.quantity === 0) optionElement.disabled = true;
-    selectedProduct.appendChild(optionElement);
+    getSelectedProduct.appendChild(optionElement);
   });
 }
