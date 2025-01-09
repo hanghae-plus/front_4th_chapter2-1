@@ -3,13 +3,21 @@ import CartItem from '../cart-item/CartItem';
 
 interface Props {
   productList: ProductListType;
-  handleClick: () => void;
+  handleIncrease: (productId: string, productQuantity: number) => void;
+  handleDecrease: (productId: string, productQuantity: number) => void;
+  handleRemove: (productId: string) => void;
 }
-export default function Cart({ productList, handleClick }: Props) {
+export default function Cart({ productList, handleIncrease, handleDecrease, handleRemove }: Props) {
   return (
-    <div id='cart-items' onClick={handleClick}>
+    <div id='cart-items'>
       {productList.map((product: ProductType) => (
-        <CartItem product={product} />
+        <CartItem
+          key={product.id}
+          product={product}
+          handleDecrease={handleDecrease}
+          handleIncrease={handleIncrease}
+          handleRemove={handleRemove}
+        />
       ))}
     </div>
   );
