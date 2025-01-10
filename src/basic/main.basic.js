@@ -269,7 +269,7 @@ const handleClickAddBtn = () => {
   }
 };
 
-// 수량 변경 처리
+/** 아이템 수량 변경 처리 */
 function quantityChange(target, itemElement, product) {
   const qtyChange = parseInt(target.dataset.change);
   const currentQty = parseInt(
@@ -291,7 +291,7 @@ function quantityChange(target, itemElement, product) {
   }
 }
 
-// 항목 삭제 처리
+/** 아이템 삭제 처리 */
 const removeItem = (itemElement, product) => {
   const remQty = parseInt(
     itemElement.querySelector("span").textContent.split("x ")[1]
@@ -300,7 +300,7 @@ const removeItem = (itemElement, product) => {
   itemElement.remove();
 };
 
-// 수량 변경 버튼 핸들러
+/**수량 변경 버튼 핸들러 */
 const handleClickQuantityChange = () => {
   const target = event.target;
   if (
@@ -352,13 +352,6 @@ main();
 const addBtn = document.querySelector(`#${ID_BY_COMPONENT.ADD_BTN_ID}`);
 addBtn.addEventListener("click", handleClickAddBtn);
 
+//수량변경 관련 이벤트 리스너너
 const cart = document.querySelector(`#${ID_BY_COMPONENT.CART_ID}`);
 cart.addEventListener("click", handleClickQuantityChange);
-
-/// 껍데기만 create로 만들고 나머지는 innerhtml로 만들기 -> react랑 닮게 만들기
-// var 호이스팅
-
-//object freeze -> element id로 선언
-//amount , quantity
-
-// 추상화 수준 맞추기
