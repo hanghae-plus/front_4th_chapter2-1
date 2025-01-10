@@ -34,5 +34,5 @@ export const useStock = () => {
     );
   };
 
-  return { stock, onUpdateQuantity: handleUpdateStockQuantity };
+  return { stock, handleUpdateStockQuantity };
 };

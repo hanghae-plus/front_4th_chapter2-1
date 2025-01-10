@@ -5,12 +5,12 @@ import { Cart } from "./types";
 
 export const useCart = () => {
   const [cart, setCart] = useState<Cart>([]);
-  const { stock, onUpdateQuantity } = useStock();
+  const { stock, handleUpdateStockQuantity } = useStock();
 
-  const handleAddItem = (product: Product) => {
+  const handleAddCartItem = (product: Product) => {
     const hasProduct = cart.some((item) => item.id === product.id);
 
-    onUpdateQuantity(product.id, -1);
+    handleUpdateStockQuantity(product.id, -1);
 
     if (hasProduct) {
       setCart((prev) =>
@@ -25,14 +25,14 @@ export const useCart = () => {
     }
   };
 
-  const handleRemoveItem = (productId: string) => {
+  const handleRemoveCartItem = (productId: string) => {
     const foundedItem = cart.find((item) => item.id === productId);
 
     if (!foundedItem) {
       throw Error();
     }
 
-    onUpdateQuantity(productId, 1);
+    handleUpdateStockQuantity(productId, 1);
 
     if (foundedItem.quantity > 1) {
       setCart((prev) =>
@@ -47,21 +47,21 @@ export const useCart = () => {
     }
   };
 
-  const handleDeleteItem = (productId: string) => {
+  const handleDeleteCartItem = (productId: string) => {
     const foundedItem = cart.find((item) => item.id === productId);
 
     if (!foundedItem) {
       throw Error();
     }
-    onUpdateQuantity(productId, foundedItem.quantity);
+    handleUpdateStockQuantity(productId, foundedItem.quantity);
     setCart((prev) => prev.filter((item) => item.id !== productId));
   };
 
   return {
     cart,
     stock,
-    onAdd: handleAddItem,
-    onRemove: handleRemoveItem,
-    onDelete: handleDeleteItem
+    handleAddCartItem,
+    handleRemoveCartItem,
+    handleDeleteCartItem
   };
 };

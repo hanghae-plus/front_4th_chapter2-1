@@ -30,9 +30,9 @@ describe("advanced test", () => {
     vi.mocked(useCart).mockReturnValue({
       cart: [],
       stock: products,
-      onAdd: mockOnAdd,
-      onRemove: vi.fn(),
-      onDelete: vi.fn()
+      handleAddCartItem: mockOnAdd,
+      handleRemoveCartItem: vi.fn(),
+      handleDeleteCartItem: vi.fn()
     });
 
     vi.mocked(useSelect).mockReturnValue({
