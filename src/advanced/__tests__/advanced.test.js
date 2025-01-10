@@ -1,5 +1,3 @@
-import {describe} from "vitest";
+import { describe } from "vitest";
 
-describe('advanced test', () => {
-
-});
+describe("advanced test", () => {});
