@@ -22,3 +22,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+<<<<<<< HEAD
+pnpm-lock.yaml
+=======
+pnpm-lock.yaml
+>>>>>>> fb519dcbd5af413ad9e82dcaf71045fbcf13b645

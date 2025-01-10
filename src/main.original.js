@@ -184,6 +184,7 @@ cartDisp.addEventListener('click', function (event) {
     var prod=prodList.find(function (p) { return p.id === prodId; });
     if(tgt.classList.contains('quantity-change')) {
       var qtyChange=parseInt(tgt.dataset.change);
+      console.log(qtyChange)
       var newQty=parseInt(itemElem.querySelector('span').textContent.split('x ')[1]) + qtyChange;
       if(newQty > 0 && newQty <= prod.q + parseInt(itemElem.querySelector('span').textContent.split('x ')[1])) {
         itemElem.querySelector('span').textContent=itemElem.querySelector('span').textContent.split('x ')[0] + 'x ' + newQty;
