@@ -1,3 +1,5 @@
+
+
 import { productList, SALE_PROBABILITY } from './constant/product';
 import { CartWithElements } from './interface/cart';
 import { cartService } from './utils/cart-util';
@@ -195,3 +197,4 @@ function setupEventListeners(cart: CartWithElements) {
 }
 
 initializeShoppingCart();
+

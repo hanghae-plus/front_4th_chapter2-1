@@ -10,8 +10,8 @@ import {
 
 describe('basic test', () => {
   describe.each([
-    { type: 'origin', loadFile: () => import('../../main.original.ts') },
-    { type: 'basic', loadFile: () => import('../main.basic.js') },
+    { type: 'origin', loadFile: () => import('../../main.original.js') },
+    { type: 'basic', loadFile: () => import('../main.basic.ts') },
   ])('$type 장바구니 시나리오 테스트', ({ loadFile }) => {
     let sel, addBtn, cartDisp, sum, stockInfo;
 
