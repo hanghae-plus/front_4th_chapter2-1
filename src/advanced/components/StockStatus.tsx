@@ -4,13 +4,13 @@ import { useCartContext } from "advanced/hooks/useCartContext";
 export const StockStatus = () => {
   const { cartState } = useCartContext();
 
-  const outOfStockMessage = PRODUCT_LIST.filter(
+  const renderOutOfStockMsg = PRODUCT_LIST.filter(
     (item) => item.remaining <= STOCKS.OUT_OF_STOCK
   )
     .map((item) => `${item.name}: 품절`)
     .join("\n");
 
-  const lowStockMessage = cartState.items
+  const renderLowStockMessage = cartState.items
     .map((item) => {
       if (item.remaining < STOCKS.LOW_STOCK_THRESHOLD) {
         const itemStockStatus =
@@ -23,7 +23,7 @@ export const StockStatus = () => {
     })
     .join("\n");
 
-  const stockStatusMsg = `${outOfStockMessage}\n${lowStockMessage}`;
+  const stockStatusMsg = `${renderOutOfStockMsg}\n${renderLowStockMessage}`;
 
   return (
     <div
