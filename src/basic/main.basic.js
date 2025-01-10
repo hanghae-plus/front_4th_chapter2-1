@@ -24,9 +24,16 @@ ES6+ 문법을 활용하여 코드를 더 간결하고 명확하게 작성했는
 - 복잡한 for문보다 find 등
 - render와 calc를 구분할 수 있도록 DOM처리와 비즈니스 로직 부분을 분리
 
-- 코드의 배치가 의존성과 실행 흐름에 따라 논리적으로 구성되어 있는가?
-- 연관된 코드를 의미 있는 함수나 모듈로 그룹화했는가?
-- 전역 상태와 부수 효과(side effects)를 최소화했는가?
+코드의 배치가 의존성과 실행 흐름에 따라 논리적으로 구성되어 있는가?
+연관된 코드를 의미 있는 함수나 모듈로 그룹화했는가?
+전역 상태와 부수 효과(side effects)를 최소화했는가?
+
+- DOM API를 template과 render함수로 변경
+- state를 만들고 render를 분리해서 동작할 수 있게
+- 가급적 전역변수를 제거하고 로컬 변수로 활용한 방안
+- let을 통한 데이터 변경을 최소화해서 const x = getX() 와 같이 한번에 받을 수 있도록
+-
+
 - 에러 처리와 예외 상황을 명확히 고려하고 처리했는가?
 - 코드 자체가 자기 문서화되어 있어, 주석 없이도 의도를 파악할 수 있는가?
 - 비즈니스 로직과 UI 로직이 적절히 분리되어 있는가?
@@ -43,7 +50,7 @@ const DISCOUNT_RATIO_번개세일 = 할인율(20)
 const DISCOUNT_RATIO_추천세일 = 할인율(5)
 const 화요일 = 2
 
-let sel, addBtn, cartDisp, sum, stockInfo
+let addBtn, cartDisp, stockInfo
 let lastSel,
   totalAmount = 0,
   itemCnt = 0
@@ -57,50 +64,38 @@ const productList = [
   { id: "p5", name: "상품5", val: 25000, q: 10, discount: 0.25 },
 ]
 
+const $ = (selector) => document.body.querySelector(selector)
+
+let state = {
+  cart: [],
+}
+
+function setState(newState) {
+  state = { ...state, ...newState }
+  render()
+}
+
 function main() {
   // View
   const root = document.getElementById("app")
-  const cont = document.createElement("div")
-  cont.className = "bg-gray-100 p-8"
+  root.innerHTML = `
+    <div class="bg-gray-100 p-8">
+      <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
+        <h1 id="title" class="text-2xl font-bold mb-4">장바구니</h1>
+        <div id="cart-items"></div>
+        <div id="cart-total" class="text-xl font-bold my-4"></div>
+        <select id="product-select" class="border rounded p-2 mr-2"></select>
+        <button id="add-to-cart" class="bg-blue-500 text-white px-4 py-2 rounded">추가</button>
+        <div id="stock-status" class="text-sm text-gray-500 mt-2"></div>
+      </div>
+    </div>
+  `
 
-  const wrap = document.createElement("div")
-  wrap.className = "max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8"
+  // 요소들을 querySelector로 가져오기
+  addBtn = root.querySelector("#add-to-cart")
+  stockInfo = cartDisp = root.querySelector("#cart-items")
 
-  const hTxt = document.createElement("h1")
-  hTxt.className = "text-2xl font-bold mb-4"
-  hTxt.textContent = "장바구니"
-
-  cartDisp = document.createElement("div")
-  cartDisp.id = "cart-items"
-
-  sel = document.createElement("select")
-  sel.id = "product-select"
-  sel.className = "border rounded p-2 mr-2"
-  renderSelOpts(productList)
-
-  addBtn = document.createElement("button")
-  addBtn.id = "add-to-cart"
-  addBtn.className = "bg-blue-500 text-white px-4 py-2 rounded"
-  addBtn.textContent = "추가"
-
-  stockInfo = document.createElement("div")
-  stockInfo.id = "stock-status"
-  stockInfo.className = "text-sm text-gray-500 mt-2"
-
-  sum = document.createElement("div")
-  sum.id = "cart-total"
-  sum.className = "text-xl font-bold my-4"
-
-  wrap.appendChild(hTxt)
-  wrap.appendChild(cartDisp)
-  wrap.appendChild(sum)
-  wrap.appendChild(sel)
-  wrap.appendChild(addBtn)
-  wrap.appendChild(stockInfo)
-  cont.appendChild(wrap)
-  root.appendChild(cont)
-
-  // 장바구니 계산
+  //
   calcCart()
 
   // 번개세일
@@ -110,7 +105,7 @@ function main() {
       const luckyItem = productList[Math.floor(Math.random() * productList.length)]
       if (Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val = Math.round(luckyItem.val * DISCOUNT_RATIO_번개세일)
-        renderSelOpts(productList)
+        render()
         alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`)
       }
     }, 30000)
@@ -124,7 +119,7 @@ function main() {
         const suggest = productList.find((item) => item.id !== lastSel && item.q > 0)
         if (suggest) {
           suggest.val = Math.round(suggest.val * DISCOUNT_RATIO_추천세일)
-          renderSelOpts(productList)
+          render()
           alert(`${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`)
         }
       }
@@ -136,17 +131,6 @@ function main() {
 function calcCart() {
   totalAmount = 0
   itemCnt = 0
-
-  function getDiscountFromProductOverBuy10(q, curItem) {
-    if (q >= 10) {
-      if (curItem.id === "p1") return 0.1
-      else if (curItem.id === "p2") return 0.15
-      else if (curItem.id === "p3") return 0.2
-      else if (curItem.id === "p4") return 0.05
-      else if (curItem.id === "p5") return 0.25
-    }
-    return 0
-  }
 
   // @TODO: subTot
   let subTot = 0
@@ -183,136 +167,133 @@ function calcCart() {
     discRate = Math.max(discRate, 0.1)
   }
 
-  renderTotalAmount(discRate)
-  renderStockInfo()
-  renderBonusPts()
+  render(discRate)
 }
 
-function renderSelOpts(productList) {
-  sel.innerHTML = ""
+function render(discRate) {
+  // 목록 출려
+  const sel = $("#product-select")
+  const v = sel.value
+  sel.innerHTML = productList.map(
+    (item) => `
+    <option value="${item.id}" ${item.q === 0 ? "disabled" : ""}>${item.name} - ${item.val}원</option>
+  `,
+  )
+  if (v) sel.value = v
 
-  productList.forEach((item) => {
-    const opt = document.createElement("option")
-    opt.value = item.id
-    opt.textContent = `${item.name} - ${item.val}원`
-    opt.disabled = item.q === 0
-    sel.appendChild(opt)
-  })
-}
-
-function renderTotalAmount(discRate) {
-  sum.textContent = `총액: ${Math.round(totalAmount)}원`
-
-  if (discRate > 0) {
-    const span = document.createElement("span")
-    span.className = "text-green-500 ml-2"
-    span.textContent = `(${(discRate * 100).toFixed(1)}% 할인 적용)`
-    sum.appendChild(span)
-  }
-}
-
-// 장바구니 재고 계산
-function renderStockInfo() {
-  const infoMsg = productList
-    .map((item) => {
-      if (item.q < 5) {
-        return `${item.name}: ${item.q > 0 ? `재고 부족 (${item.q}개 남음)` : "품절"}`
-      }
-    })
-    .join("")
-
-  stockInfo.textContent = infoMsg
-}
-
-// 장바구니 포인트 계산
-function renderBonusPts() {
+  // 장바구니 포인트 계산
   const bonusPoint = Math.floor(totalAmount / 1000)
 
-  let ptsTag = document.getElementById("loyalty-points")
-  if (!ptsTag) {
-    ptsTag = document.createElement("span")
-    ptsTag.id = "loyalty-points"
-    ptsTag.className = "text-blue-500 ml-2"
-    sum.appendChild(ptsTag)
-  }
-  ptsTag.textContent = `(포인트: ${bonusPoint})`
+  $("#cart-total").innerHTML =
+    `총액: ${Math.round(totalAmount)}원${discRate > 0 ? `<span class="text-green-500 ml-2">(${(discRate * 100).toFixed(1)}% 할인 적용)</span>` : ""}<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPoint})</span>`
+
+  // 재고 출력
+  $("#stock-status").textContent = productList
+    .map((item) => (item.q < 5 ? `${item.name}: ${item.q > 0 ? `재고 부족 (${item.q}개 남음)` : "품절"}` : ""))
+    .join("")
+
+  $("#cart-items").innerHTML = state.cart
+    .map(
+      (itemToAdd) => `
+<div id="${itemToAdd.id}" class="flex justify-between items-center mb-2">
+    <span>${itemToAdd.name} - ${itemToAdd.val}원 x ${itemToAdd.quantity}</span>
+  <div>
+    <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>
+    <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>
+    <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${itemToAdd.id}">삭제</button>
+  </div>
+</div>`,
+    )
+    .join("")
 }
 
 // 메인
 main()
 
 // 행동 - 장바구니에 상품 추가
-addBtn.addEventListener("click", () => {
-  const selItem = sel.value
+addBtn.addEventListener("click", handleAddProductToCart)
 
+function handleAddProductToCart() {
+  const selItem = $("#product-select").value
   const itemToAdd = productList.find((p) => p.id === selItem)
-
-  if (itemToAdd && itemToAdd.q > 0) {
-    const item = document.getElementById(itemToAdd.id)
-    if (item) {
-      const newQty = parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1
-      if (newQty <= itemToAdd.q) {
-        item.querySelector("span").textContent = `${itemToAdd.name} - ${itemToAdd.val}원 x ${newQty}`
-        itemToAdd.q--
-      } else {
-        alert("재고가 부족합니다.")
-      }
-    } else {
-      const newItem = document.createElement("div")
-      newItem.id = itemToAdd.id
-      newItem.className = "flex justify-between items-center mb-2"
-      newItem.innerHTML = `
-<span>${itemToAdd.name} - ${itemToAdd.val}원 x 1</span>
-<div>
-  <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>
-  <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>
-  <button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="${itemToAdd.id}">삭제</button>
-</div>`
-      cartDisp.appendChild(newItem)
-      itemToAdd.q--
-    }
-
-    calcCart()
-    lastSel = selItem
+  if (!itemToAdd || itemToAdd.q <= 0) {
+    // 재고부족
+    alert("재고가 부족합니다.")
+    return
   }
-})
+
+  const cartItem = state.cart.find((product) => product.id === selItem)
+  if (cartItem) {
+    // @TODO: 전역데이터 변경
+    itemToAdd.q--
+
+    setState({
+      cart: state.cart.map((p) => (p.id === selItem ? { ...p, quantity: p.quantity + 1 } : p)),
+    })
+  } else {
+    // @TODO: 전역데이터 변경
+    itemToAdd.q--
+
+    setState({
+      cart: [...state.cart, { ...itemToAdd, quantity: 1 }],
+    })
+  }
+
+  lastSel = selItem
+  calcCart()
+}
 
 // 행동 - 장바구니 수량 변경
-cartDisp.addEventListener("click", (event) => {
+cartDisp.addEventListener("click", handleChangeQty)
+cartDisp.addEventListener("click", handleRemoveItem)
+
+function handleChangeQty(event) {
   const target = event.target
-
-  if (target.classList.contains("quantity-change") || target.classList.contains("remove-item")) {
-    const productId = target.dataset.productId
-    const productElement = document.getElementById(productId)
-    const product = productList.find((p) => p.id === productId)
-
-    // 수량 변경
-    if (target.classList.contains("quantity-change")) {
-      const qtyChange = parseInt(target.dataset.change)
-      const newQty = parseInt(productElement.querySelector("span").textContent.split("x ")[1]) + qtyChange
-
-      if (
-        newQty > 0 &&
-        newQty <= product.q + parseInt(productElement.querySelector("span").textContent.split("x ")[1])
-      ) {
-        productElement.querySelector("span").textContent =
-          `${productElement.querySelector("span").textContent.split("x ")[0]}x ${newQty}`
-        product.q -= qtyChange
-      } else if (newQty <= 0) {
-        productElement.remove()
-        product.q -= qtyChange
-      } else {
-        alert("재고가 부족합니다.")
-      }
-    }
-
-    // 상품 제거
-    else if (target.classList.contains("remove-item")) {
-      const remQty = parseInt(productElement.querySelector("span").textContent.split("x ")[1])
-      product.q += remQty
-      productElement.remove()
-    }
-
-    calcCart()
+  if (!target.classList.contains("quantity-change")) {
+    return
   }
-})
+
+  const productId = target.dataset.productId
+  const product = productList.find((p) => p.id === productId)
+
+  // 수량 변경
+  const qtyChange = parseInt(target.dataset.change)
+  const cartItem = state.cart.find((product) => product.id === productId)
+  const newQty = cartItem.quantity + qtyChange
+
+  if (newQty > 0 && newQty <= product.q + cartItem.quantity) {
+    // @FIXME:
+    product.q -= qtyChange
+
+    setState({
+      cart: state.cart.map((p) => (p.id === productId ? { ...p, quantity: newQty } : p)),
+    })
+  }
+
+  // 수량이 없으면 제거
+  else if (newQty <= 0) {
+    // @FIXME:
+    product.q -= qtyChange
+
+    setState({
+      cart: state.cart.filter((p) => p.id !== productId),
+    })
+  }
+
+  // 재고부족 알림
+  else {
+    alert("재고가 부족합니다.")
+  }
+}
+
+function handleRemoveItem(event) {
+  const target = event.target
+  if (!target.classList.contains("remove-item")) {
+    return
+  }
+
+  const productId = target.dataset.productId
+  setState({
+    cart: state.cart.filter((p) => p.id !== productId),
+  })
+}
