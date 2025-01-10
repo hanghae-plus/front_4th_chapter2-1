@@ -1,5 +1,6 @@
 import { PRODUCT_LIST } from "./data/prodList";
 import { calculateCartTotals } from "./util/calculate";
+import { handleDeleteToCart, updateCartList } from "./events/cartEvent";
 var sel, addBtn, cartDisp, sum, stockInfo;
 var lastSel,
   bonusPoints = 0;
@@ -130,49 +131,20 @@ function updateStockInfo() {
   stockInfo.textContent = infoMsg;
 }
 main();
+
 addBtn.addEventListener("click", function () {
   var selItem = sel.value;
   var itemToAdd = PRODUCT_LIST.find(function (p) {
     return p.id === selItem;
   });
-  if (itemToAdd && itemToAdd.stock > 0) {
-    var item = document.getElementById(itemToAdd.id);
-    if (item) {
-      var newQty =
-        parseInt(item.querySelector("span").textContent.split("x ")[1]) + 1;
-      if (newQty <= itemToAdd.stock) {
-        item.querySelector("span").textContent =
-          itemToAdd.name + " - " + itemToAdd.cost + "원 x " + newQty;
-        itemToAdd.stock--;
-      } else {
-        alert("재고가 부족합니다.");
-      }
-    } else {
-      var newItem = document.createElement("div");
-      newItem.id = itemToAdd.id;
-      newItem.className = "flex justify-between items-center mb-2";
-      newItem.innerHTML =
-        "<span>" +
-        itemToAdd.name +
-        " - " +
-        itemToAdd.cost +
-        "원 x 1</span><div>" +
-        '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-        itemToAdd.id +
-        '" data-change="-1">-</button>' +
-        '<button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="' +
-        itemToAdd.id +
-        '" data-change="1">+</button>' +
-        '<button class="remove-item bg-red-500 text-white px-2 py-1 rounded" data-product-id="' +
-        itemToAdd.id +
-        '">삭제</button></div>';
-      cartDisp.appendChild(newItem);
-      itemToAdd.stock--;
-    }
-    calcCart();
-    lastSel = selItem;
+  const newItem = updateCartList(itemToAdd);
+  if (newItem) {
+    cartDisp.appendChild(newItem);
+    lastSel = itemToAdd;
   }
+  calcCart();
 });
+
 cartDisp.addEventListener("click", function (event) {
   var tgt = event.target;
   if (
