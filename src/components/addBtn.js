@@ -1,4 +1,12 @@
-export function createAddBtn({ sel, prodList, cartDisp, calcCart, stockInfo, state, sum }) {
+export function createAddBtn({
+  sel,
+  prodList,
+  cartDisp,
+  calcCart,
+  stockInfo,
+  state,
+  sum,
+}) {
   const addBtn = document.createElement('button');
 
   addBtn.id = 'add-to-cart';
@@ -8,14 +16,14 @@ export function createAddBtn({ sel, prodList, cartDisp, calcCart, stockInfo, sta
   addBtn.textContent = '추가';
 
   addBtn.addEventListener('click', function () {
-    var selItem = sel.value;
-    var itemToAdd = prodList.find(function (p) {
+    const selItem = sel.value;
+    const itemToAdd = prodList.find(function (p) {
       return p.id === selItem;
     });
     if (itemToAdd && itemToAdd.q > 0) {
-      var item = document.getElementById(itemToAdd.id);
+      const item = document.getElementById(itemToAdd.id);
       if (item) {
-        var newQty =
+        const newQty =
           parseInt(item.querySelector('span').textContent.split('x ')[1]) + 1;
         if (newQty <= itemToAdd.q) {
           item.querySelector('span').textContent =
@@ -25,7 +33,7 @@ export function createAddBtn({ sel, prodList, cartDisp, calcCart, stockInfo, sta
           alert('재고가 부족합니다.');
         }
       } else {
-        var newItem = document.createElement('div');
+        const newItem = document.createElement('div');
         newItem.id = itemToAdd.id;
         newItem.className = 'flex justify-between items-center mb-2';
         newItem.innerHTML =
