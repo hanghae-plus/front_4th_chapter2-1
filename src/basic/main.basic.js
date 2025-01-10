@@ -1,4 +1,5 @@
 // @ts-check
+import { PRODUCT_DISCOUNT_RATIO } from './constants';
 
 /* ===== 1. 타입 선언 =============================== */
 /**
@@ -9,8 +10,12 @@
  * @property {number} stock
  */
 
+/**
+ * @typedef {object} CartItem
+ * @property {number} quantity
+ */
+
 /* ===== 2. 변수 선언 =============================== */
-/** @type {string} */
 const template = /* HTML */ `
   <div class="bg-gray-100 p-8">
     <div class="mx-auto max-w-md overflow-hidden rounded-xl bg-white p-8 shadow-md md:max-w-2xl">
@@ -23,10 +28,6 @@ const template = /* HTML */ `
     </div>
   </div>
 `;
-
-const 초 = 1000;
-const 분 = 초 * 60;
-const 시간 = 분 * 60;
 
 /** @type {Product[]} */
 const products = [
@@ -48,10 +49,13 @@ let $buttonAddCart;
 /** @type {HTMLDivElement} */
 let $divStockStatus;
 
-let recentSale;
-let bonusPoints = 0;
-let totalAmount = 0;
+// /** @type {Map<string, CartItem>} */
+// const cart = new Map();
+
+let recentOrder = '';
 let itemCount = 0;
+let discountedPrice = 0;
+let bonusPoints = 0;
 
 /* ===== 3. 비즈니스 로직 ============================= */
 function main() {
@@ -65,46 +69,10 @@ function main() {
   $divStockStatus = /** @type {HTMLDivElement} */ ($root.querySelector('#stock-status'));
 
   calculateCart();
-  updateProductSelectOptions();
+  updateSelectProductOptions();
 
-  setTimeout(
-    () => {
-      setInterval(() => {
-        const luckyItem = products[Math.floor(Math.random() * products.length)];
-        const soldOut = luckyItem.stock === 0;
-
-        const chance = 0.3;
-        const discountRatio = 0.2;
-
-        if (Math.random() < chance && !soldOut) {
-          luckyItem.price = Math.round(luckyItem.price * (1 - discountRatio));
-
-          updateProductSelectOptions();
-          alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`);
-        }
-      }, 30 * 초);
-    },
-    Math.random() * 10 * 초,
-  );
-
-  setTimeout(
-    () => {
-      setInterval(() => {
-        if (recentSale) {
-          const suggest = products.find((product) => product.id !== recentSale && product.stock > 0);
-          const discountRatio = 0.5;
-
-          if (suggest) {
-            suggest.price = Math.round(suggest.price * (1 - discountRatio));
-
-            updateProductSelectOptions();
-            alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
-          }
-        }
-      }, 분);
-    },
-    Math.random() * 20 * 초,
-  );
+  notifySale();
+  suggestProduct();
 
   $buttonAddCart.addEventListener('click', () => {
     const selectProductId = $selectProduct.value;
@@ -146,7 +114,10 @@ function main() {
             >
               +
             </button>
-            <button class="remove-item rounded bg-red-500 px-2 py-1 text-white" data-product-id="${selectedProduct.id}">
+            <button
+              class="remove-item rounded bg-red-500 px-2 py-1 text-white"
+              data-product-id="${selectedProduct.id}"
+            >
               삭제
             </button>
           </div>
@@ -156,7 +127,7 @@ function main() {
         selectedProduct.stock--;
       }
 
-      recentSale = selectProductId;
+      recentOrder = selectProductId;
       calculateCart();
     }
   });
@@ -207,7 +178,43 @@ function main() {
   });
 }
 
-const updateProductSelectOptions = () => {
+/** 무작위 지연 시간 이후 세일 정보를 공지하는 로직을 30초 마다 반복 실행 */
+const notifySale = () => {
+  setTimeout(() => {
+    setInterval(() => {
+      const luckyProduct = products[Math.floor(Math.random() * products.length)];
+      const soldOut = luckyProduct.stock === 0;
+
+      const chance = 0.3;
+      const discountRatio = 0.2;
+
+      if (Math.random() < chance && !soldOut) {
+        luckyProduct.price = Math.round(luckyProduct.price * (1 - discountRatio));
+        alert(`번개세일! ${luckyProduct.name}이(가) 20% 할인 중입니다!`);
+      }
+    }, 30000);
+  }, Math.random() * 10000);
+};
+
+/** 무작위 지연 시간 이후 할인 된 상품을 제안하는 로직을 60초 마다 반복 실행 */
+const suggestProduct = () => {
+  setTimeout(() => {
+    setInterval(() => {
+      const suggest = getProduct(recentOrder);
+
+      if (!suggest) return;
+
+      const discountRatio = 0.5;
+      suggest.price = Math.round(suggest.price * (1 - discountRatio));
+
+      updateSelectProductOptions();
+      alert(suggest.name + '은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!');
+    }, 60000);
+  }, Math.random() * 20000);
+};
+
+/** 상품 선택 콤보박스의 옵션을 업데이트 */
+const updateSelectProductOptions = () => {
   $selectProduct.innerHTML = '';
 
   products.forEach((product) => {
@@ -216,84 +223,60 @@ const updateProductSelectOptions = () => {
 
     option.value = product.id;
     option.textContent = `${product.name} - ${product.price}원`;
-
-    if (soldOut) {
-      option.disabled = true;
-    }
+    option.disabled = soldOut;
 
     $selectProduct.appendChild(option);
   });
 };
 
 const calculateCart = () => {
-  totalAmount = 0;
   itemCount = 0;
+  discountedPrice = 0;
 
   const cartItems = $divCartItems.children;
-  let subTotal = 0;
+  let totalPrice = 0;
 
   [...cartItems].forEach((item) => {
-    const currentItem = products.find((product) => product.id === item.id);
+    const product = getProduct(item.id);
 
-    if (!currentItem) return;
+    if (!product) return;
 
     const $spanQuantity = /** @type {HTMLSpanElement} */ (item.querySelector('span'));
-
     const quantity = parseInt(($spanQuantity.textContent || '').split('x ')[1]);
-    const itemTotal = currentItem.price * quantity;
-    let discount = 0;
+
+    let discountRatio = quantity >= 10 ? PRODUCT_DISCOUNT_RATIO[item.id] || 0 : 0;
+
+    const itemPrice = product.price * quantity;
 
     itemCount += quantity;
-    subTotal += itemTotal;
-
-    if (quantity >= 10) {
-      switch (currentItem.id) {
-        case 'p1':
-          discount = 0.1;
-          break;
-        case 'p2':
-          discount = 0.15;
-          break;
-        case 'p3':
-          discount = 0.2;
-          break;
-        case 'p4':
-          discount = 0.05;
-          break;
-        case 'p5':
-          discount = 0.25;
-          break;
-      }
-    }
-
-    totalAmount += itemTotal * (1 - discount);
+    totalPrice += itemPrice;
+    discountedPrice += itemPrice * (1 - discountRatio);
   });
 
   let discountRatio = 0;
 
   if (itemCount >= 30) {
-    const bulkDiscount = totalAmount * 0.25;
-    const itemDiscount = subTotal - totalAmount;
+    const bulkDiscount = discountedPrice * 0.25;
+    const itemDiscount = totalPrice - discountedPrice;
 
     if (bulkDiscount > itemDiscount) {
-      totalAmount = subTotal * (1 - 0.25);
+      discountedPrice = totalPrice * (1 - 0.25);
       discountRatio = 0.25;
 
       return;
     }
 
-    discountRatio = (subTotal - totalAmount) / subTotal;
-    return;
+    discountRatio = (totalPrice - discountedPrice) / totalPrice;
+  } else {
+    discountRatio = (totalPrice - discountedPrice) / totalPrice;
   }
 
-  discountRatio = (subTotal - totalAmount) / subTotal;
-
   if (isTuesday(new Date())) {
-    totalAmount *= 1 - 0.1;
+    discountedPrice *= 1 - 0.1;
     discountRatio = Math.max(discountRatio, 0.1);
   }
 
-  $divTotalPrice.textContent = '총액: ' + Math.round(totalAmount) + '원';
+  $divTotalPrice.textContent = '총액: ' + Math.round(discountedPrice) + '원';
 
   if (discountRatio > 0) {
     const $span = document.createElement('span');
@@ -308,7 +291,7 @@ const calculateCart = () => {
 };
 
 const renderBonusPoints = () => {
-  bonusPoints = Math.floor(totalAmount / 1000);
+  bonusPoints = Math.floor(discountedPrice / 1000);
 
   var $spanLoyaltyPoints = document.getElementById('loyalty-points');
 
@@ -326,13 +309,21 @@ const renderBonusPoints = () => {
 const updateStockInfo = () => {
   let message = '';
 
-  products.forEach((item) => {
-    if (item.stock < 5) {
-      message += `${item.name}: ${item.stock > 0 ? `재고 부족 ${item.stock}개 남음` : '품절'}\n`;
+  products.forEach((product) => {
+    if (product.stock < 5) {
+      message += `${product.name}: ${product.stock > 0 ? `재고 부족 ${product.stock}개 남음` : '품절'}\n`;
     }
   });
 
   $divStockStatus.textContent = message;
+};
+
+/**
+ * @param {string} id
+ * @returns {Product | undefined}
+ */
+const getProduct = (id) => {
+  return products.find((product) => product.id === id);
 };
 
 /**
