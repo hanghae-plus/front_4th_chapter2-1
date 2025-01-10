@@ -1,5 +1,5 @@
 import React from 'react';
-import { ID_BY_COMPONENT } from '../const';
+
 import { useGlobalContext } from '../context';
 
 const StockInfo: React.FC = () => {
@@ -7,10 +7,7 @@ const StockInfo: React.FC = () => {
   const { productList, cartItemList } = values;
 
   return (
-    <div
-      id={ID_BY_COMPONENT.STOCK_INFO_ID}
-      className="text-sm text-gray-500 mt-2"
-    >
+    <div className="text-sm text-gray-500 mt-2">
       {productList.map(({ id, name, qty }) => {
         const cartItem = cartItemList?.find((item) => item.id === id);
         const remainQty = qty - (cartItem?.qty ?? 0);
@@ -18,7 +15,7 @@ const StockInfo: React.FC = () => {
         if (remainQty > 5) return null;
 
         return (
-          <div>
+          <div key={id}>
             {name}:&nbsp;
             {remainQty > 0 ? `재고 부족 (${remainQty}개 남음)` : '품절'}
           </div>
@@ -28,4 +25,4 @@ const StockInfo: React.FC = () => {
   );
 };
 
-export default React.memo(StockInfo);
+export default StockInfo;

@@ -1,5 +1,5 @@
-import { DISC_RATES, DISC_PROB } from './const';
-import { Discount, Product } from './type';
+import { DISC_RATES, DISC_PROB } from '../const';
+import { Discount, Product } from '../type';
 
 const DISC_MSG = Object.freeze({
   LUCKY_DISC: (itemName: string, rate: number) =>

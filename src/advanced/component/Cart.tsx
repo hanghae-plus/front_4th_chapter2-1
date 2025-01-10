@@ -1,5 +1,5 @@
 import React from 'react';
-import { CURRENCY, ID_BY_COMPONENT } from '../const';
+import { CURRENCY } from '../const';
 import { useGlobalContext } from '../context';
 
 const Cart: React.FC = () => {
@@ -27,14 +27,14 @@ const Cart: React.FC = () => {
   const handleClickRemoveItemBtn = (id: string) => removeCartItem(id);
 
   return (
-    <div id={ID_BY_COMPONENT.CART_ID}>
+    <div>
       {cartItemList.map((item) => {
         const product = productList.find(({ id }) => id === item.id);
 
         return (
           product && (
             <div
-              id={item.id}
+              key={item.id}
               className="flex justify-between items-center mb-2"
             >
               <span>
@@ -72,4 +72,4 @@ const Cart: React.FC = () => {
   );
 };
 
-export default React.memo(Cart);
+export default Cart;

@@ -1,5 +1,4 @@
 import React from 'react';
-import { ID_BY_COMPONENT } from '../const';
 import { useGlobalContext } from '../context';
 
 interface AddBtnProps {
@@ -29,7 +28,6 @@ const AddBtn: React.FC<AddBtnProps> = ({ setLastSelectedId }) => {
 
   return (
     <button
-      id={ID_BY_COMPONENT.ADD_BTN_ID}
       className="bg-blue-500 text-white px-4 py-2 rounded"
       type="submit"
       onClick={handleClickAddBtn}
@@ -39,4 +37,4 @@ const AddBtn: React.FC<AddBtnProps> = ({ setLastSelectedId }) => {
   );
 };
 
-export default React.memo(AddBtn);
+export default AddBtn;

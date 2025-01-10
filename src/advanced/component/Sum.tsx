@@ -3,7 +3,6 @@ import {
   CURRENCY,
   DISC_DAY_OF_THE_WEEK,
   DISC_RATES,
-  ID_BY_COMPONENT,
   ITEM_DISC_MIN_QTY,
 } from '../const';
 import { useGlobalContext } from '../context';
@@ -57,7 +56,7 @@ const Sum: React.FC = () => {
 
   return (
     priceWithDisc > 0 && (
-      <div id={ID_BY_COMPONENT.SUM_ID} className="text-xl font-bold my-4">
+      <div className="text-xl font-bold my-4">
         총액: {Math.round(priceWithDisc)}
         {CURRENCY}
         {discRate > 0 && (
@@ -65,7 +64,7 @@ const Sum: React.FC = () => {
             ({(discRate * 100).toFixed(1)}% 할인 적용)
           </span>
         )}
-        <span id={ID_BY_COMPONENT.PTS_TAG_ID} className="text-blue-500 ml-2">
+        <span className="text-blue-500 ml-2">
           (포인트: {Math.floor(priceWithDisc / 1000)})
         </span>
       </div>
@@ -73,4 +72,4 @@ const Sum: React.FC = () => {
   );
 };
 
-export default React.memo(Sum);
+export default Sum;

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef } from 'react';
-import { discountAlertProcessor } from './discountService';
+import { discountAlertProcessor } from './service';
 
 import { AddBtn, Cart, Select, StockInfo, Sum } from './component';
 import { useGlobalContext } from './context';
-import { DISC_INITIAL_BUFFERS, DISC_INTERVALS } from './const';
+import { DISC_INITIAL_BUFFERS, DISC_INTERVALS } from './const/const';
 
 export const AppContent = () => {
   const { values, actions } = useGlobalContext();
