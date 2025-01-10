@@ -1,4 +1,4 @@
-import Cart from '@/pages/Cart';
+import Cart from '@/basic/pages/Cart';
 
 function main() {
   Cart();

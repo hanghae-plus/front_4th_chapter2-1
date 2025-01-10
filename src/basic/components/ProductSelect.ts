@@ -1,5 +1,5 @@
-import { cartStore } from '@/stores/cartStore';
-import { createElement } from '@/utils/createElement';
+import { cartStore } from '@/basic/stores/cartStore';
+import { createElement } from '@/basic/utils/createElement';
 
 export const ProductSelect = (): HTMLSelectElement => {
   const container = createElement('select', {

@@ -1,5 +1,5 @@
-import { cartStore } from '@/stores/cartStore';
-import { DISCOUNT_RATES, SALE_DAY } from '@/types/constant';
+import { cartStore } from '@/basic/stores/cartStore';
+import { DISCOUNT_RATES, SALE_DAY } from '@/basic/types/constant';
 
 export const calcCart = () => {
   let totalAmount = 0;

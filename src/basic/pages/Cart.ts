@@ -1,11 +1,10 @@
-import CartTotal from '@/components/CartTotal';
-import ProductSelect from '@/components/ProductSelect';
-import Stock from '@/components/Stock';
-
-import AddToCartButton from '@components/AddToCartButton';
-import CartList from '@components/CartList';
-import Header from '@components/common/Header';
-import { additionalSale, randomSale } from '@utils/saleEvent';
+import AddToCartButton from '@/basic/components/AddToCartButton';
+import CartList from '@/basic/components/CartList';
+import CartTotal from '@/basic/components/CartTotal';
+import Header from '@/basic/components/common/Header';
+import ProductSelect from '@/basic/components/ProductSelect';
+import Stock from '@/basic/components/Stock';
+import { additionalSale, randomSale } from '@/basic/utils/saleEvent';
 
 const Cart = () => {
   const root = document.getElementById('app');

@@ -1,4 +1,4 @@
-import { cartStore } from '@/stores/cartStore';
+import { cartStore } from '@/basic/stores/cartStore';
 
 export const randomSale = () => {
   setTimeout(() => {

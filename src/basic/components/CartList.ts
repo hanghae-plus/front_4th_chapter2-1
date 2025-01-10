@@ -1,7 +1,7 @@
-import { cartStore } from '@/stores/cartStore';
-import { createElement } from '@/utils/createElement';
+import { calcCart } from '@/basic/hooks/calcCart';
+import { cartStore } from '@/basic/stores/cartStore';
+import { createElement } from '@/basic/utils/createElement';
 
-import { calcCart } from '@hooks/calcCart';
 
 const CartList = (): HTMLDivElement => {
   const container = createElement('div', {

@@ -20,7 +20,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    "baseUrl": "./src/basic/",
+    "baseUrl": "./src/",
     "paths": {
       "@components/*": ["./components/*"],
       "@pages/*": ["./pages/*"],
