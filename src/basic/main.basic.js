@@ -18,7 +18,7 @@ ES6+ 문법을 활용하여 코드를 더 간결하고 명확하게 작성했는
 함수가 단일 책임 원칙을 따르며, 한 가지 작업만 수행하는가?
 조건문과 반복문이 간결하고 명확한가? 복잡한 조건을 함수로 추출했는가?
 
-- magic number들을 상수로 이름짓기
+- 상수들을 설정
 - let를 최대한 제거하고 const 말들기
 - for문을 가급적 forEach로 만들고 이후 map, reduce등으로 변경할 준비
 - 복잡한 for문보다 find 등
@@ -28,17 +28,21 @@ ES6+ 문법을 활용하여 코드를 더 간결하고 명확하게 작성했는
 연관된 코드를 의미 있는 함수나 모듈로 그룹화했는가?
 전역 상태와 부수 효과(side effects)를 최소화했는가?
 
-- DOM API를 template과 render함수로 변경
 - state를 만들고 render를 분리해서 동작할 수 있게
 - 가급적 전역변수를 제거하고 로컬 변수로 활용한 방안
 - let을 통한 데이터 변경을 최소화해서 const x = getX() 와 같이 한번에 받을 수 있도록
--
 
-- 에러 처리와 예외 상황을 명확히 고려하고 처리했는가?
-- 코드 자체가 자기 문서화되어 있어, 주석 없이도 의도를 파악할 수 있는가?
-- 비즈니스 로직과 UI 로직이 적절히 분리되어 있는가?
-- 객체지향 또는 함수형 프로그래밍 원칙을 적절히 적용했는가?
-- 코드의 각 부분이 테스트 가능하도록 구조화되어 있는가?
+에러 처리와 예외 상황을 명확히 고려하고 처리했는가?
+코드 자체가 자기 문서화되어 있어, 주석 없이도 의도를 파악할 수 있는가?
+비즈니스 로직과 UI 로직이 적절히 분리되어 있는가?
+객체지향 또는 함수형 프로그래밍 원칙을 적절히 적용했는가?
+코드의 각 부분이 테스트 가능하도록 구조화되어 있는가?
+
+- state를 이용한 계산로직과 렌더링 로직을 분리
+- state의 변화를 최소화 하고 유도되는 값을 처리 let과 대입보다는 const와 함수처리
+- 그룹이 쪼개어 분리가능한 코드들을 함수로 관리하도록 수정
+
+
 - 성능 개선을 위해 불필요한 연산이나 렌더링을 제거했는가?
 - 새로운 기능 추가나 변경이 기존 코드에 미치는 영향을 최소화했는가?
 - 리팩토링 시 기존 기능을 그대로 유지하면서 점진적으로 개선했는가?
@@ -49,11 +53,10 @@ const 할인율 = (percent) => 1 - percent / 100
 const DISCOUNT_RATIO_번개세일 = 할인율(20)
 const DISCOUNT_RATIO_추천세일 = 할인율(5)
 const 화요일 = 2
+const 대량구매할인_제품개수 = 30
 
-let addBtn, cartDisp, stockInfo
-let lastSel,
-  totalAmount = 0,
-  itemCnt = 0
+let addBtn, cartDisp
+let lastSel
 
 // 상품정보
 const productList = [
@@ -75,6 +78,50 @@ function setState(newState) {
   render()
 }
 
+// 장바구니 가격 계산
+function calcCart() {
+  console.log("state.cart", state.cart)
+
+  const subTot = state.cart.reduce((subTot, { val, quantity }) => {
+    return subTot + val * quantity
+  }, 0)
+
+  let totalAmount = state.cart.reduce((totalAmount, { val, quantity, discount }) => {
+    const itemTot = val * quantity
+    const disc = quantity >= 10 ? discount : 0
+    return totalAmount + itemTot * (1 - disc)
+  }, 0)
+
+  // @TODO: discRate, totalAmount
+  let discRate = (subTot - totalAmount) / subTot
+
+  // 30개이상 대량 구매 할일
+  const itemCnt = state.cart.reduce((itemCnt, { quantity }) => itemCnt + quantity, 0)
+  if (itemCnt >= 대량구매할인_제품개수) {
+    const bulkDisc = totalAmount * 0.25
+    const itemDisc = subTot - totalAmount
+    if (bulkDisc > itemDisc) {
+      totalAmount = subTot * (1 - 0.25)
+      discRate = 0.25
+    }
+  }
+
+  // 화요일 할일
+  if (new Date().getDay() === 화요일) {
+    totalAmount *= 1 - 0.1
+    discRate = Math.max(discRate, 0.1)
+  }
+
+  // [계산] 장바구니 포인트 계산
+  const bonusPoint = Math.floor(totalAmount / 1000)
+
+  return {
+    discRate,
+    totalAmount,
+    bonusPoint,
+  }
+}
+
 function main() {
   // View
   const root = document.getElementById("app")
@@ -91,27 +138,41 @@ function main() {
     </div>
   `
 
-  // 요소들을 querySelector로 가져오기
+  // 행동 - 장바구니에 상품 추가
   addBtn = root.querySelector("#add-to-cart")
-  stockInfo = cartDisp = root.querySelector("#cart-items")
+  addBtn.addEventListener("click", handleAddProductToCart)
+
+  // 행동 - 장바구니 수량 변경
+  cartDisp = root.querySelector("#cart-items")
+  cartDisp.addEventListener("click", handleChangeQty)
+  cartDisp.addEventListener("click", handleRemoveItem)
+
+  // use번개세일()
+  // useSaleRecommend()
 
   //
-  calcCart()
+  render()
+}
 
-  // 번개세일
+// 번개세일
+function use번개세일() {
   setTimeout(() => {
     // return
     setInterval(() => {
       const luckyItem = productList[Math.floor(Math.random() * productList.length)]
       if (Math.random() < 0.3 && luckyItem.q > 0) {
         luckyItem.val = Math.round(luckyItem.val * DISCOUNT_RATIO_번개세일)
-        render()
+        // @TODO: productList를 state로 관리하기
+        setState()
+
         alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`)
       }
     }, 30000)
   }, Math.random() * 10000)
+}
 
-  // 추천세일
+// 추천세일
+function useSaleRecommend() {
   setTimeout(() => {
     // return
     setInterval(() => {
@@ -119,7 +180,9 @@ function main() {
         const suggest = productList.find((item) => item.id !== lastSel && item.q > 0)
         if (suggest) {
           suggest.val = Math.round(suggest.val * DISCOUNT_RATIO_추천세일)
-          render()
+          // @TODO: productList를 state로 관리하기
+          setState()
+
           alert(`${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`)
         }
       }
@@ -127,50 +190,12 @@ function main() {
   }, Math.random() * 20000)
 }
 
-// 장바구니 가격 계산
-function calcCart() {
-  totalAmount = 0
-  itemCnt = 0
+function render() {
+  const { totalAmount, discRate, bonusPoint } = calcCart()
 
-  // @TODO: subTot
-  let subTot = 0
-  Array.from(cartDisp.children).forEach((item) => {
-    const curItem = productList.find((product) => product.id === item.id)
-    const q = parseInt(item.querySelector("span").textContent.split("x ")[1])
-    const itemTot = curItem.val * q
+  const displayTotalAmount = Math.round(totalAmount)
+  const displayDiscRate = (discRate * 100).toFixed(1)
 
-    itemCnt += q
-    subTot += itemTot
-
-    // 10개 이상 구매 시 상품별 10% 할인
-    const disc = q >= 10 ? curItem.discount : 0
-    totalAmount += itemTot * (1 - disc)
-  })
-
-  // @TODO: discRate, totalAmount
-  let discRate = 0
-  if (itemCnt >= 30) {
-    const bulkDisc = totalAmount * 0.25
-    const itemDisc = subTot - totalAmount
-    if (bulkDisc > itemDisc) {
-      totalAmount = subTot * (1 - 0.25)
-      discRate = 0.25
-    } else {
-      discRate = (subTot - totalAmount) / subTot
-    }
-  } else {
-    discRate = (subTot - totalAmount) / subTot
-  }
-
-  if (new Date().getDay() === 화요일) {
-    totalAmount *= 1 - 0.1
-    discRate = Math.max(discRate, 0.1)
-  }
-
-  render(discRate)
-}
-
-function render(discRate) {
   // 목록 출려
   const sel = $("#product-select")
   const v = sel.value
@@ -181,11 +206,11 @@ function render(discRate) {
   )
   if (v) sel.value = v
 
-  // 장바구니 포인트 계산
-  const bonusPoint = Math.floor(totalAmount / 1000)
-
+  // 카트 총액
   $("#cart-total").innerHTML =
-    `총액: ${Math.round(totalAmount)}원${discRate > 0 ? `<span class="text-green-500 ml-2">(${(discRate * 100).toFixed(1)}% 할인 적용)</span>` : ""}<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPoint})</span>`
+    `총액: ${displayTotalAmount}원` +
+    `${discRate > 0 ? `<span class="text-green-500 ml-2">(${displayDiscRate}% 할인 적용)</span>` : ""}` +
+    `<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPoint})</span>`
 
   // 재고 출력
   $("#stock-status").textContent = productList
@@ -207,12 +232,6 @@ function render(discRate) {
     .join("")
 }
 
-// 메인
-main()
-
-// 행동 - 장바구니에 상품 추가
-addBtn.addEventListener("click", handleAddProductToCart)
-
 function handleAddProductToCart() {
   const selItem = $("#product-select").value
   const itemToAdd = productList.find((p) => p.id === selItem)
@@ -224,14 +243,14 @@ function handleAddProductToCart() {
 
   const cartItem = state.cart.find((product) => product.id === selItem)
   if (cartItem) {
-    // @TODO: 전역데이터 변경
+    // @TODO: 전역데이터 변경 state로 변경하기
     itemToAdd.q--
 
     setState({
       cart: state.cart.map((p) => (p.id === selItem ? { ...p, quantity: p.quantity + 1 } : p)),
     })
   } else {
-    // @TODO: 전역데이터 변경
+    // @TODO: 전역데이터 변경 state로 변경하기
     itemToAdd.q--
 
     setState({
@@ -240,12 +259,7 @@ function handleAddProductToCart() {
   }
 
   lastSel = selItem
-  calcCart()
 }
-
-// 행동 - 장바구니 수량 변경
-cartDisp.addEventListener("click", handleChangeQty)
-cartDisp.addEventListener("click", handleRemoveItem)
 
 function handleChangeQty(event) {
   const target = event.target
@@ -297,3 +311,6 @@ function handleRemoveItem(event) {
     cart: state.cart.filter((p) => p.id !== productId),
   })
 }
+
+// 메인
+main()
