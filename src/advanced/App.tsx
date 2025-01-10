@@ -173,8 +173,10 @@ function removeItemFromCart(setState: SetState, state: AppState, productId: Prod
 
 // 번개세일
 function useEffectSaleFlash(setState: SetState, state: AppState) {
-  setTimeout(() => {
-    setInterval(() => {
+  let intervalId: ReturnType<typeof setInterval>
+
+  const timeoutId = setTimeout(() => {
+    intervalId = setInterval(() => {
       const luckyItem = state.productList[Math.floor(Math.random() * state.productList.length)]
       if (Math.random() < 번개세일확률 && luckyItem.stock > 0) {
         const luckyItemPrice = Math.round(luckyItem.price * DISCOUNT_RATIO_번개세일)
@@ -183,6 +185,11 @@ function useEffectSaleFlash(setState: SetState, state: AppState) {
       }
     }, 30000)
   }, Math.random() * 10000)
+
+  return () => {
+    clearTimeout(timeoutId)
+    clearInterval(intervalId)
+  }
 }
 
 // 추천세일
@@ -191,8 +198,10 @@ function useEffectSaleRecommend(
   state: AppState,
   lastSelectedProductIdRef: MutableRefObject<ProductId>,
 ) {
-  setTimeout(() => {
-    setInterval(() => {
+  let intervalId: ReturnType<typeof setInterval>
+
+  const timeoutId = setTimeout(() => {
+    intervalId = setInterval(() => {
       if (lastSelectedProductIdRef.current) {
         const suggest = state.productList.find((item) => item.id !== lastSelectedProductIdRef.current && item.stock > 0)
         if (suggest) {
@@ -203,6 +212,11 @@ function useEffectSaleRecommend(
       }
     }, 60000)
   }, Math.random() * 20000)
+
+  return () => {
+    clearTimeout(timeoutId)
+    clearInterval(intervalId)
+  }
 }
 
 // React App
