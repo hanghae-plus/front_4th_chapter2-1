@@ -43,88 +43,104 @@ ES6+ 문법을 활용하여 코드를 더 간결하고 명확하게 작성했는
 - 그룹이 쪼개어 분리가능한 코드들을 함수로 관리하도록 수정
 
 
-- 성능 개선을 위해 불필요한 연산이나 렌더링을 제거했는가?
-- 새로운 기능 추가나 변경이 기존 코드에 미치는 영향을 최소화했는가?
-- 리팩토링 시 기존 기능을 그대로 유지하면서 점진적으로 개선했는가?
-- 코드 리뷰를 통해 다른 개발자들의 피드백을 반영하고 개선했는가?
+성능 개선을 위해 불필요한 연산이나 렌더링을 제거했는가?
+새로운 기능 추가나 변경이 기존 코드에 미치는 영향을 최소화했는가?
+리팩토링 시 기존 기능을 그대로 유지하면서 점진적으로 개선했는가?
+코드 리뷰를 통해 다른 개발자들의 피드백을 반영하고 개선했는가?
+
+- 이름변경 리팩토링을 잘하기 위해서 타입스크립트 적용
  */
 
-const 할인율 = (percent) => 1 - percent / 100
+interface Product {
+  id: string
+  name: string
+  price: number
+  stock: number
+  discount: number
+  quantity: number
+}
+
+type AppState = {
+  productList: Omit<Product, "quantity">[]
+  cart: Product[]
+}
+
+const $ = (selector: string) => document.body.querySelector(selector) as HTMLElement
+
+// constant.ts
+const 할인율 = (percent: number) => 1 - percent / 100
 const DISCOUNT_RATIO_번개세일 = 할인율(20)
 const DISCOUNT_RATIO_추천세일 = 할인율(5)
+
+const 번개세일확률 = 0.3
+
 const 화요일 = 2
 const 대량구매할인_제품개수 = 30
 
-let addBtn, cartDisp
-let lastSel
+let lastSelectedItem: Product["id"]
 
-// 상품정보
-const productList = [
-  { id: "p1", name: "상품1", val: 10000, q: 50, discount: 0.1 },
-  { id: "p2", name: "상품2", val: 20000, q: 30, discount: 0.15 },
-  { id: "p3", name: "상품3", val: 30000, q: 20, discount: 0.2 },
-  { id: "p4", name: "상품4", val: 15000, q: 0, discount: 0.05 },
-  { id: "p5", name: "상품5", val: 25000, q: 10, discount: 0.25 },
-]
-
-const $ = (selector) => document.body.querySelector(selector)
-
-let state = {
+let state: AppState = {
+  productList: [
+    { id: "p1", name: "상품1", price: 10000, stock: 50, discount: 0.1 },
+    { id: "p2", name: "상품2", price: 20000, stock: 30, discount: 0.15 },
+    { id: "p3", name: "상품3", price: 30000, stock: 20, discount: 0.2 },
+    { id: "p4", name: "상품4", price: 15000, stock: 0, discount: 0.05 },
+    { id: "p5", name: "상품5", price: 25000, stock: 10, discount: 0.25 },
+  ],
   cart: [],
 }
 
-function setState(newState) {
+function setState(newState: Partial<typeof state>) {
   state = { ...state, ...newState }
   render()
 }
 
 // 장바구니 가격 계산
-function calcCart() {
+function useCalcCart() {
   console.log("state.cart", state.cart)
 
-  const subTot = state.cart.reduce((subTot, { val, quantity }) => {
-    return subTot + val * quantity
+  const subTotalAmount = state.cart.reduce((subTotalAmount, { price, quantity }) => {
+    return subTotalAmount + price * quantity
   }, 0)
 
-  let totalAmount = state.cart.reduce((totalAmount, { val, quantity, discount }) => {
-    const itemTot = val * quantity
-    const disc = quantity >= 10 ? discount : 0
-    return totalAmount + itemTot * (1 - disc)
+  let totalAmount = state.cart.reduce((totalAmount, { price, quantity, discount }) => {
+    const itemTotalPrice = price * quantity
+    const itemDiscountRate = quantity >= 10 ? discount : 0
+    return totalAmount + itemTotalPrice * (1 - itemDiscountRate)
   }, 0)
 
-  // @TODO: discRate, totalAmount
-  let discRate = (subTot - totalAmount) / subTot
+  let discountRate = (subTotalAmount - totalAmount) / subTotalAmount
 
   // 30개이상 대량 구매 할일
-  const itemCnt = state.cart.reduce((itemCnt, { quantity }) => itemCnt + quantity, 0)
-  if (itemCnt >= 대량구매할인_제품개수) {
-    const bulkDisc = totalAmount * 0.25
-    const itemDisc = subTot - totalAmount
-    if (bulkDisc > itemDisc) {
-      totalAmount = subTot * (1 - 0.25)
-      discRate = 0.25
+  const numCartItems = state.cart.reduce((itemCnt, { quantity }) => itemCnt + quantity, 0)
+  if (numCartItems >= 대량구매할인_제품개수) {
+    const bulkDiscountRate = totalAmount * 0.25
+    const itemDiscountRate = subTotalAmount - totalAmount
+
+    if (bulkDiscountRate > itemDiscountRate) {
+      totalAmount = subTotalAmount * (1 - 0.25)
+      discountRate = 0.25
     }
   }
 
   // 화요일 할일
   if (new Date().getDay() === 화요일) {
     totalAmount *= 1 - 0.1
-    discRate = Math.max(discRate, 0.1)
+    discountRate = Math.max(discountRate, 0.1)
   }
 
-  // [계산] 장바구니 포인트 계산
+  // 장바구니 포인트
   const bonusPoint = Math.floor(totalAmount / 1000)
 
   return {
-    discRate,
+    discountRate,
     totalAmount,
     bonusPoint,
   }
 }
 
-function main() {
+function main(root: HTMLElement) {
   // View
-  const root = document.getElementById("app")
   root.innerHTML = `
     <div class="bg-gray-100 p-8">
       <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-2xl p-8">
@@ -139,31 +155,32 @@ function main() {
   `
 
   // 행동 - 장바구니에 상품 추가
-  addBtn = root.querySelector("#add-to-cart")
-  addBtn.addEventListener("click", handleAddProductToCart)
+  $("#add-to-cart").addEventListener("click", handleAddProductToCart)
 
   // 행동 - 장바구니 수량 변경
-  cartDisp = root.querySelector("#cart-items")
-  cartDisp.addEventListener("click", handleChangeQty)
-  cartDisp.addEventListener("click", handleRemoveItem)
+  $("#cart-items").addEventListener("click", handleChangeQty)
+  $("#cart-items").addEventListener("click", handleRemoveItemFromCart)
 
-  // use번개세일()
-  // useSaleRecommend()
+  useEffectSaleFlash()
+  useEffectSaleRecommend()
 
   //
   render()
 }
 
 // 번개세일
-function use번개세일() {
+function useEffectSaleFlash() {
   setTimeout(() => {
     // return
     setInterval(() => {
-      const luckyItem = productList[Math.floor(Math.random() * productList.length)]
-      if (Math.random() < 0.3 && luckyItem.q > 0) {
-        luckyItem.val = Math.round(luckyItem.val * DISCOUNT_RATIO_번개세일)
-        // @TODO: productList를 state로 관리하기
-        setState()
+      const luckyItem = state.productList[Math.floor(Math.random() * state.productList.length)]
+      if (Math.random() < 번개세일확률 && luckyItem.stock > 0) {
+        const luckyItemPrice = Math.round(luckyItem.price * DISCOUNT_RATIO_번개세일)
+        setState({
+          productList: state.productList.map((p) => {
+            return p === luckyItem ? { ...p, price: luckyItemPrice } : p
+          }),
+        })
 
         alert(`번개세일! ${luckyItem.name}이(가) 20% 할인 중입니다!`)
       }
@@ -172,16 +189,19 @@ function use번개세일() {
 }
 
 // 추천세일
-function useSaleRecommend() {
+function useEffectSaleRecommend() {
   setTimeout(() => {
     // return
     setInterval(() => {
-      if (lastSel) {
-        const suggest = productList.find((item) => item.id !== lastSel && item.q > 0)
+      if (lastSelectedItem) {
+        const suggest = state.productList.find((item) => item.id !== lastSelectedItem && item.stock > 0)
         if (suggest) {
-          suggest.val = Math.round(suggest.val * DISCOUNT_RATIO_추천세일)
-          // @TODO: productList를 state로 관리하기
-          setState()
+          const suggestPrice = Math.round(suggest.price * DISCOUNT_RATIO_추천세일)
+          setState({
+            productList: state.productList.map((p) => {
+              return p === suggest ? { ...p, price: suggestPrice } : p
+            }),
+          })
 
           alert(`${suggest.name}은(는) 어떠세요? 지금 구매하시면 5% 추가 할인!`)
         }
@@ -191,37 +211,40 @@ function useSaleRecommend() {
 }
 
 function render() {
-  const { totalAmount, discRate, bonusPoint } = calcCart()
+  const { totalAmount, discountRate, bonusPoint } = useCalcCart()
 
   const displayTotalAmount = Math.round(totalAmount)
-  const displayDiscRate = (discRate * 100).toFixed(1)
+  const displayDiscRate = (discountRate * 100).toFixed(1)
 
-  // 목록 출려
-  const sel = $("#product-select")
+  // 목록 출력
+  const sel = $("#product-select") as HTMLSelectElement
   const v = sel.value
-  sel.innerHTML = productList.map(
-    (item) => `
-    <option value="${item.id}" ${item.q === 0 ? "disabled" : ""}>${item.name} - ${item.val}원</option>
-  `,
-  )
+  sel.innerHTML = state.productList
+    .map(
+      (item) =>
+        `<option value="${item.id}" ${item.stock === 0 ? "disabled" : ""}>${item.name} - ${item.price}원</option>`,
+    )
+    .join("")
   if (v) sel.value = v
 
   // 카트 총액
   $("#cart-total").innerHTML =
     `총액: ${displayTotalAmount}원` +
-    `${discRate > 0 ? `<span class="text-green-500 ml-2">(${displayDiscRate}% 할인 적용)</span>` : ""}` +
+    `${discountRate > 0 ? `<span class="text-green-500 ml-2">(${displayDiscRate}% 할인 적용)</span>` : ""}` +
     `<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPoint})</span>`
 
   // 재고 출력
-  $("#stock-status").textContent = productList
-    .map((item) => (item.q < 5 ? `${item.name}: ${item.q > 0 ? `재고 부족 (${item.q}개 남음)` : "품절"}` : ""))
+  $("#stock-status").textContent = state.productList
+    .map((item) =>
+      item.stock < 5 ? `${item.name}: ${item.stock > 0 ? `재고 부족 (${item.stock}개 남음)` : "품절"}` : "",
+    )
     .join("")
 
   $("#cart-items").innerHTML = state.cart
     .map(
       (itemToAdd) => `
 <div id="${itemToAdd.id}" class="flex justify-between items-center mb-2">
-    <span>${itemToAdd.name} - ${itemToAdd.val}원 x ${itemToAdd.quantity}</span>
+    <span>${itemToAdd.name} - ${itemToAdd.price}원 x ${itemToAdd.quantity}</span>
   <div>
     <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="-1">-</button>
     <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${itemToAdd.id}" data-change="1">+</button>
@@ -233,63 +256,69 @@ function render() {
 }
 
 function handleAddProductToCart() {
-  const selItem = $("#product-select").value
-  const itemToAdd = productList.find((p) => p.id === selItem)
-  if (!itemToAdd || itemToAdd.q <= 0) {
-    // 재고부족
+  const sel = $("#product-select") as HTMLSelectElement
+  const selItem = sel.value
+  lastSelectedItem = selItem
+
+  const product = state.productList.find((p) => p.id === selItem)
+
+  // 재고확인
+  if (!product || product.stock <= 0) {
     alert("재고가 부족합니다.")
     return
   }
 
+  // 카트에 담기
   const cartItem = state.cart.find((product) => product.id === selItem)
-  if (cartItem) {
-    // @TODO: 전역데이터 변경 state로 변경하기
-    itemToAdd.q--
 
+  // 장바구니에 이미 있다면 수량 올리기
+  if (cartItem) {
     setState({
+      productList: state.productList.map((p) => (p === product ? { ...p, stock: p.stock - 1 } : p)),
       cart: state.cart.map((p) => (p.id === selItem ? { ...p, quantity: p.quantity + 1 } : p)),
     })
-  } else {
-    // @TODO: 전역데이터 변경 state로 변경하기
-    itemToAdd.q--
-
+  }
+  // 아니면 카드에 추가
+  else {
     setState({
-      cart: [...state.cart, { ...itemToAdd, quantity: 1 }],
+      productList: state.productList.map((p) => (p === product ? { ...p, stock: p.stock - 1 } : p)),
+      cart: [...state.cart, { ...product, quantity: 1 }],
     })
   }
-
-  lastSel = selItem
 }
 
-function handleChangeQty(event) {
-  const target = event.target
+function handleChangeQty(event: MouseEvent) {
+  const target = event.target as HTMLDivElement
   if (!target.classList.contains("quantity-change")) {
     return
   }
 
-  const productId = target.dataset.productId
-  const product = productList.find((p) => p.id === productId)
-
   // 수량 변경
-  const qtyChange = parseInt(target.dataset.change)
+  const productId = target.dataset.productId
+  const product = state.productList.find((p) => p.id === productId)
+  if (!product) {
+    return
+  }
+
   const cartItem = state.cart.find((product) => product.id === productId)
+  if (!cartItem) {
+    return
+  }
+
+  const qtyChange = parseInt(target.dataset.change)
   const newQty = cartItem.quantity + qtyChange
 
-  if (newQty > 0 && newQty <= product.q + cartItem.quantity) {
-    // @FIXME:
-    product.q -= qtyChange
-
+  if (newQty > 0 && newQty <= product.stock + cartItem.quantity) {
     setState({
+      productList: state.productList.map((p) => (p === product ? { ...p, stock: p.stock - qtyChange } : p)),
       cart: state.cart.map((p) => (p.id === productId ? { ...p, quantity: newQty } : p)),
     })
   }
 
   // 수량이 없으면 제거
   else if (newQty <= 0) {
-    // @FIXME:
-    product.q -= qtyChange
-
     setState({
+      productList: state.productList.map((p) => (p === product ? { ...p, stock: p.stock - qtyChange } : p)),
       cart: state.cart.filter((p) => p.id !== productId),
     })
   }
@@ -300,8 +329,8 @@ function handleChangeQty(event) {
   }
 }
 
-function handleRemoveItem(event) {
-  const target = event.target
+function handleRemoveItemFromCart(event: MouseEvent) {
+  const target = event.target as HTMLDivElement
   if (!target.classList.contains("remove-item")) {
     return
   }
@@ -313,4 +342,4 @@ function handleRemoveItem(event) {
 }
 
 // 메인
-main()
+main(document.getElementById("app")!)
