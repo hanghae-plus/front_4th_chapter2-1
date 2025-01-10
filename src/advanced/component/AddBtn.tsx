@@ -2,10 +2,13 @@ import React from 'react';
 import { ID_BY_COMPONENT } from '../const';
 import { useGlobalContext } from '../context';
 
-const AddBtn: React.FC = () => {
+interface AddBtnProps {
+  setLastSelectedId: (id: string) => void;
+}
+const AddBtn: React.FC<AddBtnProps> = ({ setLastSelectedId }) => {
   const { values, actions } = useGlobalContext();
   const { cartItemList } = values;
-  const { addCartItem, editCartItem, setLastSelectedId } = actions;
+  const { addCartItem, editCartItem } = actions;
 
   const handleClickAddBtn = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,

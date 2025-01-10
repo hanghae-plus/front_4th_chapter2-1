@@ -81,15 +81,12 @@ export const GlobalContextProvider = ({
 
   const [cartList, dispatchCartList] = useReducer(cartReducer, []);
 
-  const lastSelectedId = useRef<string | null>(null);
-
   const value = useMemo<GlobalContextType>(
     () => ({
       values: {
         productList,
         cartItemList: cartList,
         randomDiscRateByProduct,
-        lastSelectedId: lastSelectedId.current,
       },
       actions: {
         addCartItem: (id: string) => dispatchCartList({ type: 'ADD', id }),
@@ -99,15 +96,15 @@ export const GlobalContextProvider = ({
           dispatchCartList({ type: 'CHANGE_QTY', id, newQty }),
         setRandomDiscRate: (productId: string, rate: number) => {
           setRandomDiscRateByProduct((prev) => {
-            const newRandomDiscRateByProduct = { ...prev, [productId]: rate };
-            // newRandomDiscRateByProduct[productId] = rate;
-            return newRandomDiscRateByProduct;
+            const curTargetRate = prev[productId];
+            const newTargetRate = curTargetRate + (1 - curTargetRate) * rate;
+
+            return { ...prev, [productId]: newTargetRate };
           });
         },
-        setLastSelectedId: (id: string) => {},
       },
     }),
-    [productList, cartList, randomDiscRateByProduct, lastSelectedId],
+    [productList, cartList, randomDiscRateByProduct],
   );
 
   return (

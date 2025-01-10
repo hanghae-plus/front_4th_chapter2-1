@@ -39,7 +39,9 @@ const Cart: React.FC = () => {
             >
               <span>
                 {product.name} -&nbsp;
-                {product.val * (1 - randomDiscRateByProduct[item.id])}
+                {Math.round(
+                  product.val * (1 - randomDiscRateByProduct[item.id]),
+                )}
                 {CURRENCY} x {item.qty}
               </span>
               <div>

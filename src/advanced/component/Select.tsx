@@ -14,7 +14,7 @@ const Select: React.FC = () => {
     >
       {productList.map(({ id, name, qty, val }) => (
         <option key={id} value={id} disabled={!qty}>
-          {name} - {val * (1 - randomDiscRateByProduct[id])}
+          {name} - {Math.round(val * (1 - randomDiscRateByProduct[id]))}
           {CURRENCY}
         </option>
       ))}

@@ -1,18 +1,60 @@
 import React, { useEffect, useRef } from 'react';
-import { setAdditionalDiscAlert, setLuckyDiscAlert } from './discountService';
+import { discountAlertProcessor } from './discountService';
 
 import { AddBtn, Cart, Select, StockInfo, Sum } from './component';
 import { useGlobalContext } from './context';
+import { DISC_INITIAL_BUFFERS, DISC_INTERVALS } from './const';
 
 export const AppContent = () => {
   const { values, actions } = useGlobalContext();
-  const { productList, lastSelectedId } = values;
+  const { productList, cartItemList } = values;
   const { setRandomDiscRate } = actions;
 
+  const lastSelectedId = useRef<string | null>(null);
+
   useEffect(() => {
-    setLuckyDiscAlert(productList, setRandomDiscRate);
-    setAdditionalDiscAlert(productList, lastSelectedId, setRandomDiscRate);
+    setLuckyDiscAlert();
+    setAdditionalDiscAlert();
   }, []);
+
+  const setLuckyDiscAlert = () => {
+    setTimeout(() => {
+      setInterval(() => {
+        const luckyItem =
+          productList[Math.floor(Math.random() * productList.length)];
+
+        discountAlertProcessor(luckyItem, 'LUCKY_DISC', setRandomDiscRate);
+      }, DISC_INTERVALS.LUCKY_DISC);
+    }, Math.random() * DISC_INITIAL_BUFFERS.LUCKY_DISC);
+  };
+
+  const setAdditionalDiscAlert = () => {
+    setTimeout(() => {
+      setInterval(() => {
+        if (!lastSelectedId.current) return;
+
+        const suggestedProduct = productList.find((product) => {
+          const isLastSelected = product.id === lastSelectedId.current;
+
+          if (isLastSelected) {
+            return false;
+          } else {
+            const cartItemQty =
+              cartItemList.find((item) => item.id !== product.id)?.qty ?? 0;
+            return cartItemQty < product.qty;
+          }
+        });
+
+        if (!suggestedProduct) return;
+
+        discountAlertProcessor(
+          suggestedProduct,
+          'ADDITIONAL_DISC',
+          setRandomDiscRate,
+        );
+      }, DISC_INTERVALS.ADDITIONAL_DISC);
+    }, Math.random() * DISC_INITIAL_BUFFERS.ADDITIONAL_DISC);
+  };
 
   return (
     <div className="bg-gray-100 p-8">
@@ -22,7 +64,11 @@ export const AppContent = () => {
         <Sum />
         <form>
           <Select />
-          <AddBtn />
+          <AddBtn
+            setLastSelectedId={(id: string) => {
+              lastSelectedId.current = id;
+            }}
+          />
         </form>
         <StockInfo />
       </div>

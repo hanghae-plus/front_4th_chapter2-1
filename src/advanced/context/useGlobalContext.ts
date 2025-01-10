@@ -6,14 +6,12 @@ export interface GlobalContextType {
     productList: Product[];
     cartItemList: CartItem[];
     randomDiscRateByProduct: Record<string, number>;
-    lastSelectedId: string | null;
   };
   actions: {
     addCartItem: (itemId: string) => void;
     removeCartItem: (itemId: string) => void;
     editCartItem: (itemId: string, newQty: number) => void;
     setRandomDiscRate: (productId: string, rate: number) => void;
-    setLastSelectedId: (id: string) => void;
   };
 }
 

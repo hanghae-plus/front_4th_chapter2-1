@@ -1,9 +1,4 @@
-import {
-  DISC_INITIAL_BUFFERS,
-  DISC_INTERVALS,
-  DISC_RATES,
-  DISC_PROB,
-} from './const';
+import { DISC_RATES, DISC_PROB } from './const';
 import { Discount, Product } from './type';
 
 const DISC_MSG = Object.freeze({
@@ -13,7 +8,7 @@ const DISC_MSG = Object.freeze({
     `${itemName}은(는) 어떠세요? 지금 구매하시면 ${rate}% 추가 할인!`,
 });
 
-const discountAlertProcessor = (
+export const discountAlertProcessor = (
   product: Product,
   type: Discount,
   setRandomDiscRateByProduct: (productId: string, rate: number) => void,
@@ -27,46 +22,4 @@ const discountAlertProcessor = (
   setRandomDiscRateByProduct(product.id, DISC_RATES[type]);
 
   alert(DISC_MSG[type](product.name, DISC_RATES[type] * 100));
-};
-
-export const setLuckyDiscAlert = (
-  productList: Product[],
-  setRandomDiscRateByProduct: (productId: string, rate: number) => void,
-) => {
-  setTimeout(() => {
-    setInterval(() => {
-      const luckyItem =
-        productList[Math.floor(Math.random() * productList.length)];
-
-      discountAlertProcessor(
-        luckyItem,
-        'LUCKY_DISC',
-        setRandomDiscRateByProduct,
-      );
-    }, DISC_INTERVALS.LUCKY_DISC);
-  }, Math.random() * DISC_INITIAL_BUFFERS.LUCKY_DISC);
-};
-
-export const setAdditionalDiscAlert = (
-  productList: Product[],
-  lastSelId: string | null,
-  setRandomDiscRateByProduct: (productId: string, rate: number) => void,
-) => {
-  setTimeout(() => {
-    setInterval(() => {
-      if (!lastSelId) return;
-
-      const suggestedProduct = productList.find(
-        (item) => item.id !== lastSelId,
-      );
-
-      if (!suggestedProduct) return;
-
-      discountAlertProcessor(
-        suggestedProduct,
-        'ADDITIONAL_DISC',
-        setRandomDiscRateByProduct,
-      );
-    }, DISC_INTERVALS.ADDITIONAL_DISC);
-  }, Math.random() * DISC_INITIAL_BUFFERS.ADDITIONAL_DISC);
 };
