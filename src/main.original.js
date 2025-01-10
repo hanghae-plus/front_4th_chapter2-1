@@ -9,14 +9,7 @@ import { getOptionsHTML } from './utils/getOptionsHTML';
 import { getBonusPts } from './utils/getBounusPts';
 import { getLuckyEventInfo } from './utils/getLuckyEventInfo';
 import { getSuggestionInfo } from './utils/getSuggestionInfo';
-
-const DISCOUNT_RATE = {
-  p1: 0.1,
-  p2: 0.15,
-  p3: 0.2,
-  p4: 0.05,
-  p5: 0.25,
-};
+import { DISCOUNT_RATE } from './constants';
 
 function main() {
   const state = {
@@ -29,6 +22,7 @@ function main() {
       { id: 'p5', name: '상품5', val: 25000, q: 10 },
     ],
   };
+
   const { calcCart } = useCalcCart(({ totalAmt, discRate, prodList }) => {
     sum.textContent = '총액: ' + Math.round(totalAmt) + '원';
 
