@@ -1,15 +1,23 @@
 import { NewCartItem } from "../components/NewCartItem";
 import CartItem from "../domain/cart/cart-item";
 
-export function isItemAvailable(item) {
+export const isItemAvailable = (item) => {
   if (!item || item.quantity <= 0) {
     alert("선택한 상품이 없거나 재고가 없습니다.");
     return false;
   }
   return true;
-}
+};
 
-export function handleExistingCartItem(cartItem, itemToAdd, itemElement) {
+export const updateCartItemElement = (itemElement, itemToAdd, quantity) => {
+  itemElement.handleChangeSpanTextContent(`${itemToAdd.name} - ${itemToAdd.value}원 x ${quantity}`);
+};
+
+export const createNewCartItemElement = (itemToAdd) => {
+  return NewCartItem(itemToAdd); // 필요한 경우 NewCartItem의 내부를 확인해 개선 가능
+};
+
+export const handleExistingCartItem = (cartItem, itemToAdd, itemElement) => {
   const newQuantity = cartItem.quantity + 1;
 
   if (newQuantity <= itemToAdd.quantity) {
@@ -19,9 +27,9 @@ export function handleExistingCartItem(cartItem, itemToAdd, itemElement) {
   } else {
     alert("재고가 부족합니다.");
   }
-}
+};
 
-export function handleNewCartItem(itemToAdd, parentElement, cartItems) {
+export const handleNewCartItem = (itemToAdd, parentElement, cartItems) => {
   const newItemElement = createNewCartItemElement(itemToAdd);
   parentElement.appendChild(newItemElement);
   itemToAdd.decreaseQuantity();
@@ -33,12 +41,4 @@ export function handleNewCartItem(itemToAdd, parentElement, cartItems) {
       name: itemToAdd.name,
     }),
   );
-}
-
-export function updateCartItemElement(itemElement, itemToAdd, quantity) {
-  itemElement.handleChangeSpanTextContent(`${itemToAdd.name} - ${itemToAdd.value}원 x ${quantity}`);
-}
-
-export function createNewCartItemElement(itemToAdd) {
-  return NewCartItem(itemToAdd); // 필요한 경우 NewCartItem의 내부를 확인해 개선 가능
-}
+};

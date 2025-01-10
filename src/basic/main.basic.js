@@ -27,6 +27,7 @@ import {
 // ! 나름의 그라데이션 사고, 데이터, 추상화적 사고 적용
 // ! 근데 ui 는 어떻게 추상화 + 흐름을 가져가야할지 모르겠다! => 조사해보니 MVC 등장 이유를 알겠다.. 근데 이 코드에 어떻게 적용할지는 모르겠다. ui 쪽은 좀 더 생각해보고 구현할 걸...
 // ! 통일성 부족..
+// ! 내부에 선언된 변수에 대한 직접적인 참조없인 코드가 돌아가지 않는다. 특히, ui에 대한 직접적인 참조없인 코드가 돌아가지 않는다
 
 // 유저가 셀렉트에서 아이템을 선택해 추가한다 -> 총액을 표시한다. 상품수를 표시한다. 포인트를 표시한다.
 // 유저가 +,-, 삭제 버튼을 누른다. -> 총액을 표시한다. 상품 수를 표시한다. 포인트를 표시한다.
@@ -47,7 +48,7 @@ function main() {
   const wrap = Wrap();
   const heading = Heading();
   const cartItemDisplay = CartItems();
-  const sum = CartTotal();
+  const summary = CartTotal();
   const select = ProductSelect(stockItems.items);
   const addButton = AddToCart();
   const stock = StockStatus();
@@ -56,7 +57,7 @@ function main() {
 
   wrap.appendChild(heading);
   wrap.appendChild(cartItemDisplay);
-  wrap.appendChild(sum);
+  wrap.appendChild(summary);
   wrap.appendChild(select);
   wrap.appendChild(addButton);
   wrap.appendChild(stock);
@@ -118,11 +119,14 @@ function main() {
   }
 
   function updateCartSummary() {
-    sum.handleChangeTextContent("총액: " + Math.round(cartItems.totalAmount) + "원");
-    if (cartItems.discountRate > 0) {
-      sum.appendChild(DiscountRate(cartItems.discountRate));
-    }
-    sum.appendChild(BonusPoints(cartItems.bonusPoints));
+    const { totalAmount, discountRate, bonusPoints } = cartItems;
+    summary.handleUpdateCartSummary({
+      totalAmount,
+      discountRate,
+      bonusPoints,
+      DiscountRateComponent: DiscountRate,
+      BonusPointsComponent: BonusPoints,
+    });
   }
 
   function updateStockInfoMessage() {
