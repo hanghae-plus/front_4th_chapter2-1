@@ -52,6 +52,7 @@ export const App = () => {
               cartItems.map((addedItem) => (
                 <CartItem
                   key={addedItem.id}
+                  products={products}
                   addedItem={addedItem}
                   setCartItems={setCartItems}
                   setProducts={setProducts}

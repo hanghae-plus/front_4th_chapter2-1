@@ -22,21 +22,19 @@ export const AddToCartButton = ({
       alert('재고가 없습니다.');
       return;
     }
-    if (product.quantity > 0) {
-      setCartItems((prev) => {
-        //장바구니에 이미 상품이 있는 경우
-        const cartItem = prev.find((p) => p.id === selectedProduct.id);
-        if (cartItem) {
-          return prev.map((p) =>
-            p.id === selectedProduct.id ? { ...p, quantity: cartItem.quantity + 1 } : p,
-          );
-        }
-        return [...prev, { ...selectedProduct, quantity: 1 }];
-      });
-      setProducts((prev) =>
-        prev.map((p) => (p.id === selectedProduct.id ? { ...p, quantity: p.quantity - 1 } : p)),
-      );
-    }
+    setCartItems((prev) => {
+      //장바구니에 이미 상품이 있는 경우
+      const cartItem = prev.find((p) => p.id === selectedProduct.id);
+      if (cartItem) {
+        return prev.map((p) =>
+          p.id === selectedProduct.id ? { ...p, quantity: cartItem.quantity + 1 } : p,
+        );
+      }
+      return [...prev, { ...selectedProduct, quantity: 1 }];
+    });
+    setProducts((prev) =>
+      prev.map((p) => (p.id === selectedProduct.id ? { ...p, quantity: p.quantity - 1 } : p)),
+    );
   };
 
   return (

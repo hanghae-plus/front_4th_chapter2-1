@@ -1,15 +1,23 @@
 import { Product } from '../type/type';
 
 export const CartItem = ({
+  products,
   addedItem,
   setCartItems,
   setProducts,
 }: {
+  products: Product[];
   addedItem: Product;
   setCartItems: React.Dispatch<React.SetStateAction<Product[]>>;
   setProducts: React.Dispatch<React.SetStateAction<Product[]>>;
 }) => {
+  const product = products.find((p) => p.id === addedItem.id);
   const handleAddButton = () => {
+    if (!product) return;
+    if (product.quantity <= 0) {
+      alert('재고가 없습니다.');
+      return;
+    }
     setCartItems((prev) => {
       return prev.map((item) =>
         item.id === addedItem.id ? { ...item, quantity: item.quantity + 1 } : item,
@@ -40,7 +48,7 @@ export const CartItem = ({
   };
 
   const handleRemoveButton = () => {
-    if (addedItem.quantity <= 1) return;
+    if (addedItem.quantity < 1) return;
 
     setCartItems((prev) => {
       return prev.filter((item) => item.id !== addedItem.id);
@@ -59,7 +67,11 @@ export const CartItem = ({
   };
 
   return (
-    <div id='cart-item' className='flex justify-between items-center mb-2'>
+    <div
+      id='cart-item'
+      data-testid={`cart-item-${addedItem.id}`}
+      className='flex justify-between items-center mb-2'
+    >
       <span>
         {addedItem.name} - {addedItem.price}원 x {addedItem.quantity}
       </span>
@@ -79,6 +91,7 @@ export const CartItem = ({
           +
         </button>
         <button
+          data-testid={`cart-item-remove-${addedItem.id}`}
           className='remove-item bg-red-500 text-white px-2 py-1 rounded'
           onClick={handleRemoveButton}
         >
