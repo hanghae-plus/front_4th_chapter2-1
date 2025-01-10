@@ -45,11 +45,7 @@ function useCalculateCart() {
 
       if (!product) return;
 
-      let discountRatio = 0;
-
-      if (quantity >= 10) {
-        discountRatio = PRODUCT_DISCOUNT_RATIO[id] || 0;
-      }
+      let discountRatio = quantity >= 10 ? PRODUCT_DISCOUNT_RATIO[id] || 0 : 0;
 
       const itemPrice = product.price * quantity;
       const discountedPrice = itemPrice * (1 - discountRatio);

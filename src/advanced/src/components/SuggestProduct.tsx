@@ -12,8 +12,6 @@ export const SuggestProduct = () => {
 
     timer = setTimeout(() => {
       interval = setInterval(() => {
-        if (recentOrder === '') return;
-
         const suggest = getProduct(recentOrder);
 
         if (!suggest) return;
