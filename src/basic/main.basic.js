@@ -13,6 +13,16 @@ const SALE_PROBABILITY = 0.3;
 const LUCKY_SALE_DISCOUNT_RATE = 0.8;
 const RECOMMENDED_ITEM_DISCOUNT_RATE = 0.95;
 
+// 요소 생성 함수
+function createElement(tag, options = {}) {
+  const element = document.createElement(tag);
+  if (options.id) element.id = options.id;
+  if (options.className) element.className = options.className;
+  if (options.textContent) element.textContent = options.textContent;
+  if (options.value) element.value = options.value;
+  return element;
+}
+
 // 장바구니 항목의 수량 파싱
 const parseItemCount = (textContent) => parseInt(textContent.split('x ')[1]);
 // 오늘 요일 확인
@@ -45,22 +55,14 @@ const ProductService = {
   },
 
   setLastSelectedItem(itemId) {
-    this.lastSel = itemId;
+      this.lastSel = itemId;
   },
-};
+}; 
 
 const CartService = {
-  cart: [],
   bonusPts: 0,
   totalAmt: 0,
   itemCnt: 0,
-  elements: {
-    productSelectBox: null,
-    cartAddBtn: null,
-    cartList: null,
-    cartTotal: null,
-    stockStatus: null,
-  },
 };
 
 const main = () => {
@@ -80,12 +82,6 @@ const main = () => {
   `;
 
   root.innerHTML = contHTML;
-
-  CartService.elements.productSelectBox = document.getElementById('product-select');
-  CartService.elements.cartAddBtn = document.getElementById('add-to-cart');
-  CartService.elements.cartList = document.getElementById('cart-items');
-  CartService.elements.cartTotal = document.getElementById('cart-total');
-  CartService.elements.stockStatus = document.getElementById('stock-status');
 
   updateProductOptionsUI();
   calculateCart();
@@ -125,13 +121,18 @@ const initializeTimers = () => {
 
 // 상품 옵션 UI 업데이트
 const updateProductOptionsUI = () => {
-  ProductService.productList.forEach((item) => {
-    let optionHTML = `
-      <option value="${item.id}" ${item.count === 0 ? 'disabled' : ''}>
-        ${item.name} - ${item.price}원
-      </option>
-    `;
-    CartService.productSelectBox.innerHTML += optionHTML;
+  const productSelectBox = document.getElementById('product-select');
+  const productList = ProductService.productList;
+
+  productSelectBox.innerHTML = '';
+  productList.forEach((item) => {
+    let opt = createElement('option', {
+      value: item.id,
+      textContent: item.name + ' - ' + item.price + '원',
+    });
+
+    if (item.count === 0) opt.disabled = true;
+    productSelectBox.appendChild(opt);
   });
 };
 
@@ -149,7 +150,7 @@ const calculateCart = () => {
   let discRate = 0;
 
   // 대량 구매 할인 적용
-  const { final, rate } = applyBulkDiscount (
+  const { final, rate } = applyBulkDiscount(
     subTot,
     totalAmt,
     itemCnt
@@ -171,13 +172,12 @@ const calculateCart = () => {
 
 // 장바구니 항목, 할인 총액 초기화
 const calculateSubTotals = () => {
-  let cartItemElements = Array.from(CartService.cartList.children);
+  const cartListElement = document.getElementById('cart-items');
+  let cartItemElements = Array.from(cartListElement.children);
   let subTot = 0;
 
   cartItemElements.forEach((itemElement) => {
-    const curItem = ProductService.productList.find(
-      (item) => item.id === itemElement.id
-    );
+    const curItem = ProductService.getProductById(itemElement.id);
     const count = parseItemCount(itemElement.querySelector('span').textContent);
     const itemTot = curItem.price * count;
     const disc =
@@ -213,14 +213,14 @@ const applyBulkDiscount = (subTotal, total, quantity) => {
 
 // 장바구니 UI 업데이트
 const updateCartUI = (discRate) => {
-  const cartTotal = CartService.elements;
+  const cartTotalElement = document.getElementById('cart-total');
   const totalAmt = CartService.totalAmt;
 
-  cartTotal.textContent = '총액: ' + Math.round(totalAmt) + '원';
+  cartTotalElement.textContent = '총액: ' + Math.round(totalAmt) + '원';
 
   // 할인율이 있을 경우 UI에 표시
   if (discRate > 0) {
-    cartTotal.innerHTML += `
+    cartTotalElement.innerHTML += `
       <span class="text-green-500 ml-2">
         (${(discRate * 100).toFixed(1)}% 할인 적용)
       </span>
@@ -231,10 +231,9 @@ const updateCartUI = (discRate) => {
 // 포인트 렌더링
 const bonusPointsUI = () => {
   const totalAmt = CartService.totalAmt;
-  const cartTotal = CartService.elements.cartTotal;
+  const cartTotalElement = document.getElementById('cart-total');
 
   let bonusPts = CartService.bonusPts;
-
   bonusPts = Math.floor(totalAmt / 1000);
 
   let pointsElement = document.getElementById('loyalty-points');
@@ -242,15 +241,13 @@ const bonusPointsUI = () => {
   if (pointsElement) {
     pointsElement.textContent = `(포인트: ${bonusPts})`;
   } else {
-    cartTotal.innerHTML += `
-    <span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPts})</span>
-  `;
+    cartTotalElement.innerHTML += `<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPts})</span>`;
   }
 };
 
 // 재고 정보 렌더링
 const updateStockInfoUI = () => {
-  const stockStatus = CartService.elements.stockStatus;
+  const stockStatusElement = document.getElementById('stock-status');
   const productList = ProductService.productList;
 
   let infoMsg = '';
@@ -261,19 +258,16 @@ const updateStockInfoUI = () => {
     }
   });
 
-  stockStatus.textContent = infoMsg;
+  stockStatusElement.textContent = infoMsg;
 };
 
 main();
 
-// 상품 추가 이벤트
-CartService.cartAddBtn.addEventListener('click', () => {
-  const productList = ProductService.productList;
+// 장바구니 상품 추가 이벤트
+document.getElementById('add-to-cart').addEventListener('click', () => {
   let lastSel = ProductService.setLastSelectedItem;
-  let selectedItem = CartService.productSelectBox;
-
-  selectedItem = selectedItem.value;
-  let itemToAdd = productList.find((product) => product.id === selectedItem);
+  let selectedItemId = document.getElementById('product-select').value;
+  let itemToAdd = ProductService.getProductById(selectedItemId);
 
   if (itemToAdd && itemToAdd.count > 0) {
     let itemElement = document.getElementById(itemToAdd.id);
@@ -295,15 +289,17 @@ CartService.cartAddBtn.addEventListener('click', () => {
       createCartItemUI(itemToAdd);
       itemToAdd.count--;
     }
-
+    
+    lastSel(selectedItemId);
     calculateCart();
-    lastSel(selectedItem);
   }
 });
 
 // 장바구니 아이템 UI 생성
 const createCartItemUI = (itemToAdd) => {
-  CartService.cartList.appendChild(`
+  const cartListElement = document.getElementById('cart-items');
+
+  const itemHTML = `
     <div id="${itemToAdd.id}" class="flex justify-between items-center mb-2">
       <span>${itemToAdd.name} - ${itemToAdd.price}원 x 1</span>
       <div>
@@ -315,11 +311,13 @@ const createCartItemUI = (itemToAdd) => {
                 data-product-id="${itemToAdd.id}">삭제</button>
       </div>
     </div>
-  `);
-}
+  `;
+
+  cartListElement.insertAdjacentHTML('beforeend', itemHTML);
+};
 
 // 장바구니 수량 변경 및 삭제 이벤트
-CartService.cartList.addEventListener('click', (event) => {
+document.getElementById('cart-items').addEventListener('click', (event) => {
   let target = event.target;
   let prodId = target.dataset.productId;
   let itemElement = document.getElementById(prodId);
@@ -340,14 +338,12 @@ CartService.cartList.addEventListener('click', (event) => {
 // 장바구니 수량 변경
 const handleQuantityChange = (target, itemElement, product) => {
   var qtyChange = parseInt(target.dataset.change);
-  var currentQty = parseItemCount(
-    itemElement.querySelector('span').textContent
-  );
+  var currentQty = parseItemCount(itemElement.querySelector('span').textContent);
   var newQty = currentQty + qtyChange;
 
   if (newQty <= 0) {
     itemElement.remove();
-    product.count -= qtyChange;
+    product.count += qtyChange;
   } else if (newQty <= product.count + currentQty) {
     updateItemQuantity(itemElement, newQty);
     product.count -= qtyChange;
@@ -356,15 +352,15 @@ const handleQuantityChange = (target, itemElement, product) => {
   }
 }
 
-// 아이템 제거
+// 목록에서 아이템 제거
 const handleRemoveItem = (itemElement, product) => {
-  var remQty = parseItemCount(itemElement.querySelector('span').textContent);
+  const remQty = parseItemCount(itemElement.querySelector('span').textContent);
   product.count += remQty;
   itemElement.remove();
 }
 
 // 아이템 수량 업데이트
 const updateItemQuantity = (itemElem, newQty) => {
-  var itemText = itemElem.querySelector('span').textContent.split('x ')[0];
+  const itemText = itemElem.querySelector('span').textContent.split('x ')[0];
   itemElem.querySelector('span').textContent = `${itemText}x ${newQty}`;
 }
