@@ -3,8 +3,7 @@ import { useCartStore } from '../hooks/useCart';
 export const ProductSelect = () => {
   const { productList, addToCart } = useCartStore();
 
-  const handleAddToCart = (e: React.FormEvent<HTMLFormElement>) => {
-    console.log('addd');
+  const handleAddToCartClick = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const currentTarget = new FormData(e.currentTarget);
     const selectedId = currentTarget.get('product-select') as string;
@@ -15,7 +14,7 @@ export const ProductSelect = () => {
   };
 
   return (
-    <form onSubmit={(e) => handleAddToCart(e)}>
+    <form onSubmit={(e) => handleAddToCartClick(e)}>
       <select id="product-select" name="product-select" className="mr-2 rounded border p-2">
         {productList.map((product) => (
           <option

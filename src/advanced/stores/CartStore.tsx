@@ -6,6 +6,8 @@ import { INITIAL_CART } from '../types/constant';
 
 interface CartStoreContextProps extends Cart {
   addToCart: (productId: string) => void;
+  changeToCart: (productId: string, quantity: number) => void;
+  removeToCart: (productId: string) => void;
 }
 export const CartStoreContext = createContext<CartStoreContextProps | null>(null);
 
@@ -61,9 +63,70 @@ export const CartStoreProvider = ({ children }: { children: React.ReactNode }) =
     }
   };
 
+  const changeToCart = (productId: string, quantity: number) => {
+    const item = productList.find((p) => p.id === productId);
+
+    if (!item) return;
+
+    const newQuantity = item.quantity + quantity;
+
+    if (newQuantity <= 0) {
+      removeToCart(productId);
+
+      return;
+    }
+
+    if (quantity > 0 && item.stock < quantity) {
+      alert('재고가 부족합니다.');
+
+      return;
+    }
+
+    setProductList(
+      productList.map((p) =>
+        p.id === productId
+          ? {
+              ...p,
+              quantity: newQuantity,
+              stock: p.stock - quantity,
+            }
+          : p
+      )
+    );
+    setItemCount((prev) => prev + quantity);
+  };
+
+  const removeToCart = (productId: string) => {
+    const item = productList.find((p) => p.id === productId);
+
+    if (!item) return;
+
+    setProductList(
+      productList.map((p) =>
+        p.id === productId
+          ? {
+              ...p,
+              quantity: 0,
+              stock: p.stock + item.quantity,
+            }
+          : p
+      )
+    );
+    setItemCount((prev) => prev - item.quantity);
+  };
+
   return (
     <CartStoreContext.Provider
-      value={{ lastSaleItem, totalAmount, itemCount, discountRate, productList, addToCart }}
+      value={{
+        lastSaleItem,
+        totalAmount,
+        itemCount,
+        discountRate,
+        productList,
+        addToCart,
+        changeToCart,
+        removeToCart,
+      }}
     >
       {children}
     </CartStoreContext.Provider>
