@@ -1,7 +1,10 @@
-import { PRODUCT_LIST } from '../types/constant';
+import { useCartStore } from '../hooks/useCart';
 
 export const Stock = () => {
-  const defaultStock = PRODUCT_LIST.filter((item) => item.stock <= 5)
+  const { productList } = useCartStore();
+
+  const defaultStock = productList
+    .filter((item) => item.stock <= 5)
     .map((item) => `${item.name}: 품절`)
     .join('\n');
 

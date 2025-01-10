@@ -1,3 +1,14 @@
+import CartItem from './CartItem';
+import { useCartStore } from '../hooks/useCart';
+
 export const CartList = () => {
-  return <div id="cart-items"></div>;
+  const { productList } = useCartStore();
+
+  return (
+    <div id="cart-items">
+      {productList.map((p) => (
+        <CartItem key={p.id} product={p} />
+      ))}
+    </div>
+  );
 };

@@ -1,13 +1,13 @@
 import { Product } from '../types/types';
 
-interface CartItem {
+interface CartItemProps {
   product: Product;
 }
-const CartItem = (product: Product) => {
+const CartItem = ({ product }: CartItemProps) => {
   return (
     <div id={product.id} className="flex justify-between items-center mb-2">
       <span>
-        {product.name} - {product.price}원 x 1
+        {product.name} - {product.price}원 x {product.quantity}
       </span>
       <div>
         <button

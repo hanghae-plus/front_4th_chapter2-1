@@ -1,19 +1,23 @@
-import { PRODUCT_LIST } from '../types/constant';
+import { useCartStore } from '../hooks/useCart';
 
 export const ProductSelect = () => {
-  const handleAddProductToCart = (e: React.FormEvent<HTMLFormElement>) => {
+  const { productList, addToCart } = useCartStore();
+
+  const handleAddToCart = (e: React.FormEvent<HTMLFormElement>) => {
+    console.log('addd');
     e.preventDefault();
     const currentTarget = new FormData(e.currentTarget);
-    const selectedId = currentTarget.get('product-select');
-    const itemToAdd = PRODUCT_LIST.find((p) => p.id === selectedId);
+    const selectedId = currentTarget.get('product-select') as string;
 
-    if (!itemToAdd) return;
+    if (selectedId) {
+      addToCart(selectedId);
+    }
   };
 
   return (
-    <form onSubmit={(e) => handleAddProductToCart(e)}>
+    <form onSubmit={(e) => handleAddToCart(e)}>
       <select id="product-select" name="product-select" className="mr-2 rounded border p-2">
-        {PRODUCT_LIST.map((product) => (
+        {productList.map((product) => (
           <option
             key={product.id}
             id={product.id}

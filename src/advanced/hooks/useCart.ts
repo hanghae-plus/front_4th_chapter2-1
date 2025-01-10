@@ -8,4 +8,6 @@ export const useCartStore = () => {
   if (!context) {
     throw new Error('useCartStore must be used within a CartStoreProvider');
   }
+
+  return context;
 };
