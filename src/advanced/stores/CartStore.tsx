@@ -13,9 +13,6 @@ export const CartStoreContext = createContext<CartStoreContextProps | null>(null
 
 export const CartStoreProvider = ({ children }: { children: React.ReactNode }) => {
   const [lastSaleItem, setLastSaleItem] = useState<string | null>(null);
-  const [totalAmount] = useState(0);
-  const [itemCount, setItemCount] = useState(0);
-  const [discountRate] = useState(0);
   const [productList, setProductList] = useState<Product[]>(INITIAL_CART);
 
   const addToCart = (productId: string) => {
@@ -45,7 +42,6 @@ export const CartStoreProvider = ({ children }: { children: React.ReactNode }) =
           )
         );
         setLastSaleItem(productId);
-        setItemCount((prev) => prev + 1);
       } else {
         alert('재고가 부족합니다.');
       }
@@ -59,7 +55,6 @@ export const CartStoreProvider = ({ children }: { children: React.ReactNode }) =
         },
       ]);
       setLastSaleItem(productId);
-      setItemCount((prev) => prev + 1);
     }
   };
 
@@ -93,7 +88,6 @@ export const CartStoreProvider = ({ children }: { children: React.ReactNode }) =
           : p
       )
     );
-    setItemCount((prev) => prev + quantity);
   };
 
   const removeToCart = (productId: string) => {
@@ -112,16 +106,12 @@ export const CartStoreProvider = ({ children }: { children: React.ReactNode }) =
           : p
       )
     );
-    setItemCount((prev) => prev - item.quantity);
   };
 
   return (
     <CartStoreContext.Provider
       value={{
         lastSaleItem,
-        totalAmount,
-        itemCount,
-        discountRate,
         productList,
         addToCart,
         changeToCart,
